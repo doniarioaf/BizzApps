@@ -45,9 +45,9 @@ public class CustomerTypeHandler implements CustomerTypeService{
 			CustomerType table = repository.getById(id);
 			table.setNama(customertype.getNama());
 			table.setDescription(customertype.getDescription());
-			table.setIsdelete(false);
-			table.setIdcompany(idcompany);
-			table.setIdbranch(idbranch);
+//			table.setIsdelete(false);
+//			table.setIdcompany(idcompany);
+//			table.setIdbranch(idbranch);
 			CustomerType returntable = repository.saveAndFlush(table);
 			ReturnData data = new ReturnData();
 			data.setId(returntable.getId());
