@@ -6,10 +6,9 @@ import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.servlet.admin.customer.entity.CustomerDetailData;
-import com.servlet.admin.customer.entity.CustomerListData;
 
 public class GetDetailCustomer implements RowMapper<CustomerDetailData>{
-private String schemaSql;
+	private String schemaSql;
 	
 	public GetDetailCustomer() {
 		// TODO Auto-generated constructor stub
