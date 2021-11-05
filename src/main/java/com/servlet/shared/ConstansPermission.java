@@ -25,8 +25,15 @@ public class ConstansPermission {
 	public static final String CREATE_CUSTOMERTYPE = "CREATE_CUSTOMERTYPE";
 	public static final String EDIT_CUSTOMERTYPE = "EDIT_CUSTOMERTYPE";
 	
-	
 	public static final String READ_CUSTOMER = "READ_CUSTOMER";
 	public static final String CREATE_CUSTOMER = "CREATE_CUSTOMER";
 	public static final String EDIT_CUSTOMER = "EDIT_CUSTOMER";
+	
+	public static final String READ_PRODUCTTYPE = "READ_PRODUCTTYPE";
+	public static final String CREATE_PRODUCTTYPE = "CREATE_PRODUCTTYPE";
+	public static final String EDIT_PRODUCTTYPE = "EDIT_PRODUCTTYPE";
+	
+	public static final String READ_PRODUCT = "READ_PRODUCT";
+	public static final String CREATE_PRODUCT = "CREATE_PRODUCT";
+	public static final String EDIT_PRODUCT = "EDIT_PRODUCT";
 }

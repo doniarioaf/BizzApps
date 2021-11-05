@@ -17,6 +17,10 @@ import com.servlet.admin.customer.entity.BodyCustomer;
 import com.servlet.admin.customer.service.CustomerService;
 import com.servlet.admin.customertype.entity.BodyCustomerType;
 import com.servlet.admin.customertype.service.CustomerTypeService;
+import com.servlet.admin.product.entity.BodyProduct;
+import com.servlet.admin.product.service.ProductService;
+import com.servlet.admin.producttype.entity.BodyProductType;
+import com.servlet.admin.producttype.service.ProductTypeService;
 import com.servlet.admin.role.entity.BodyRole;
 import com.servlet.admin.role.service.RoleService;
 import com.servlet.admin.usermobile.entity.BodyUserMobile;
@@ -46,6 +50,10 @@ public class ProcessHandler implements ProcessService{
 	CustomerTypeService customerTypeService;
 	@Autowired
 	CustomerService customerService;
+	@Autowired
+	ProductTypeService productTypeService;
+	@Autowired
+	ProductService productService;
 	
 	@Override
 	public Object ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -111,7 +119,24 @@ public class ProcessHandler implements ProcessService{
 			BodyCustomer body = (BodyCustomer) param.get("BodyCustomer");
 			long id = (long) param.get("id");
 			val = customerService.updateCustomer(id, body, auth.getIdcompany(),auth.getIdbranch());
+		}else if(codepermission.equals(ConstansPermission.CREATE_PRODUCTTYPE)) {
+			BodyProductType body = (BodyProductType) data;
+			val = productTypeService.saveProductType(body, auth.getIdcompany(),auth.getIdbranch());
+		}else if(codepermission.equals(ConstansPermission.EDIT_PRODUCTTYPE)) {
+			HashMap<String, Object> param = (HashMap<String, Object>) data;
+			BodyProductType body = (BodyProductType) param.get("BodyProductType");
+			long id = (long) param.get("id");
+			val = productTypeService.updateProductType(id, body, auth.getIdcompany(),auth.getIdbranch());
+		}else if(codepermission.equals(ConstansPermission.CREATE_PRODUCT)) {
+			BodyProduct body = (BodyProduct) data;
+			val = productService.saveProduct(body, auth.getIdcompany(),auth.getIdbranch());
+		}else if(codepermission.equals(ConstansPermission.EDIT_PRODUCT)) {
+			HashMap<String, Object> param = (HashMap<String, Object>) data;
+			BodyProduct body = (BodyProduct) param.get("BodyProduct");
+			long id = (long) param.get("id");
+			val = productService.updateProduct(id, body, auth.getIdcompany(),auth.getIdbranch());
 		}
+		
 		return val;
 	}
 
@@ -172,6 +197,22 @@ public class ProcessHandler implements ProcessService{
 			}else {
 				long id = new Long(type).longValue();
 				val = customerService.getCustomerById(id, auth.getIdcompany(), auth.getIdbranch());
+			}
+		}else if(codepermission.equals(ConstansPermission.READ_PRODUCTTYPE)) {
+			String type = (String) data;
+			if(type == "ALL") {
+				val = productTypeService.getAllListProductType(auth.getIdcompany(), auth.getIdbranch());
+			}else {
+				long id = new Long(type).longValue();
+				val = productTypeService.getProductTypeById(id, auth.getIdcompany(), auth.getIdbranch());
+			}
+		}else if(codepermission.equals(ConstansPermission.READ_PRODUCT)) {
+			String type = (String) data;
+			if(type == "ALL") {
+				val = productService.getAllListProduct(auth.getIdcompany(), auth.getIdbranch());
+			}else {
+				long id = new Long(type).longValue();
+				val = productService.getProductById(id, auth.getIdcompany(), auth.getIdbranch());
 			}
 		}
 		return val;
