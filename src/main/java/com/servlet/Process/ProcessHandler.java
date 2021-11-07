@@ -25,6 +25,8 @@ import com.servlet.admin.role.entity.BodyRole;
 import com.servlet.admin.role.service.RoleService;
 import com.servlet.admin.usermobile.entity.BodyUserMobile;
 import com.servlet.admin.usermobile.service.UserMobileService;
+import com.servlet.mobile.callplan.entity.BodyCallPlan;
+import com.servlet.mobile.callplan.service.CallPlanService;
 import com.servlet.security.entity.AuthorizationData;
 import com.servlet.shared.AESEncryptionDecryption;
 import com.servlet.shared.ConstansPermission;
@@ -54,6 +56,8 @@ public class ProcessHandler implements ProcessService{
 	ProductTypeService productTypeService;
 	@Autowired
 	ProductService productService;
+	@Autowired
+	CallPlanService callPlanService;
 	
 	@Override
 	public Object ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -135,6 +139,14 @@ public class ProcessHandler implements ProcessService{
 			BodyProduct body = (BodyProduct) param.get("BodyProduct");
 			long id = (long) param.get("id");
 			val = productService.updateProduct(id, body, auth.getIdcompany(),auth.getIdbranch());
+		}else if(codepermission.equals(ConstansPermission.CREATE_CALLPLAN)) {
+			BodyCallPlan body = (BodyCallPlan) data;
+			val = callPlanService.saveCallPlan(body, auth.getIdcompany(),auth.getIdbranch());
+		}else if(codepermission.equals(ConstansPermission.EDIT_CALLPLAN)) {
+			HashMap<String, Object> param = (HashMap<String, Object>) data;
+			BodyCallPlan body = (BodyCallPlan) param.get("BodyCallPlan");
+			long id = (long) param.get("id");
+			val = callPlanService.updateCallPlan(id, body, auth.getIdcompany(),auth.getIdbranch());
 		}
 		
 		return val;
@@ -213,6 +225,14 @@ public class ProcessHandler implements ProcessService{
 			}else {
 				long id = new Long(type).longValue();
 				val = productService.getProductById(id, auth.getIdcompany(), auth.getIdbranch());
+			}
+		}else if(codepermission.equals(ConstansPermission.READ_CALLPLAN)) {
+			String type = (String) data;
+			if(type == "ALL") {
+				val = callPlanService.getAllListCallPlan(auth.getIdcompany(), auth.getIdbranch());
+			}else {
+				long id = new Long(type).longValue();
+				val = callPlanService.getCallPlanById(id, auth.getIdcompany(), auth.getIdbranch());
 			}
 		}
 		return val;
