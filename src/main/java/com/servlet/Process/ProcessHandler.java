@@ -27,6 +27,8 @@ import com.servlet.admin.usermobile.entity.BodyUserMobile;
 import com.servlet.admin.usermobile.service.UserMobileService;
 import com.servlet.mobile.callplan.entity.BodyCallPlan;
 import com.servlet.mobile.callplan.service.CallPlanService;
+import com.servlet.mobile.project.entity.BodyProject;
+import com.servlet.mobile.project.service.ProjectService;
 import com.servlet.security.entity.AuthorizationData;
 import com.servlet.shared.AESEncryptionDecryption;
 import com.servlet.shared.ConstansPermission;
@@ -58,6 +60,8 @@ public class ProcessHandler implements ProcessService{
 	ProductService productService;
 	@Autowired
 	CallPlanService callPlanService;
+	@Autowired
+	ProjectService projectService;
 	
 	@Override
 	public Object ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -147,6 +151,14 @@ public class ProcessHandler implements ProcessService{
 			BodyCallPlan body = (BodyCallPlan) param.get("BodyCallPlan");
 			long id = (long) param.get("id");
 			val = callPlanService.updateCallPlan(id, body, auth.getIdcompany(),auth.getIdbranch());
+		}else if(codepermission.equals(ConstansPermission.CREATE_PROJECT)) {
+			BodyProject body = (BodyProject) data;
+			val = projectService.saveProject(body, auth.getIdcompany(),auth.getIdbranch());
+		}else if(codepermission.equals(ConstansPermission.EDIT_PROJECT)) {
+			HashMap<String, Object> param = (HashMap<String, Object>) data;
+			BodyProject body = (BodyProject) param.get("BodyProject");
+			long id = (long) param.get("id");
+			val = projectService.updateProject(id, body, auth.getIdcompany(),auth.getIdbranch());
 		}
 		
 		return val;
@@ -233,6 +245,14 @@ public class ProcessHandler implements ProcessService{
 			}else {
 				long id = new Long(type).longValue();
 				val = callPlanService.getCallPlanById(id, auth.getIdcompany(), auth.getIdbranch());
+			}
+		}else if(codepermission.equals(ConstansPermission.READ_PROJECT)) {
+			String type = (String) data;
+			if(type == "ALL") {
+				val = projectService.getAllListProject(auth.getIdcompany(), auth.getIdbranch());
+			}else {
+				long id = new Long(type).longValue();
+				val = projectService.getProjectById(id, auth.getIdcompany(), auth.getIdbranch());
 			}
 		}
 		return val;
