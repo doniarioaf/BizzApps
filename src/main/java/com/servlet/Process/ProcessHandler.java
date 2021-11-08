@@ -27,6 +27,8 @@ import com.servlet.admin.usermobile.entity.BodyUserMobile;
 import com.servlet.admin.usermobile.service.UserMobileService;
 import com.servlet.mobile.callplan.entity.BodyCallPlan;
 import com.servlet.mobile.callplan.service.CallPlanService;
+import com.servlet.mobile.infoheader.entity.BodyInfoHeader;
+import com.servlet.mobile.infoheader.service.InfoHeaderService;
 import com.servlet.mobile.project.entity.BodyProject;
 import com.servlet.mobile.project.service.ProjectService;
 import com.servlet.security.entity.AuthorizationData;
@@ -62,6 +64,8 @@ public class ProcessHandler implements ProcessService{
 	CallPlanService callPlanService;
 	@Autowired
 	ProjectService projectService;
+	@Autowired
+	InfoHeaderService infoHeaderService;
 	
 	@Override
 	public Object ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -159,6 +163,14 @@ public class ProcessHandler implements ProcessService{
 			BodyProject body = (BodyProject) param.get("BodyProject");
 			long id = (long) param.get("id");
 			val = projectService.updateProject(id, body, auth.getIdcompany(),auth.getIdbranch());
+		}else if(codepermission.equals(ConstansPermission.CREATE_INFO)) {
+			BodyInfoHeader body = (BodyInfoHeader) data;
+			val = infoHeaderService.saveInfoHeader(body, auth.getIdcompany(),auth.getIdbranch());
+		}else if(codepermission.equals(ConstansPermission.EDIT_INFO)) {
+			HashMap<String, Object> param = (HashMap<String, Object>) data;
+			BodyInfoHeader body = (BodyInfoHeader) param.get("BodyInfoHeader");
+			long id = (long) param.get("id");
+			val = infoHeaderService.updateInfoHeader(id, body, auth.getIdcompany(),auth.getIdbranch());
 		}
 		
 		return val;
@@ -253,6 +265,19 @@ public class ProcessHandler implements ProcessService{
 			}else {
 				long id = new Long(type).longValue();
 				val = projectService.getProjectById(id, auth.getIdcompany(), auth.getIdbranch());
+			}
+		}else if(codepermission.equals(ConstansPermission.READ_INFO)) {
+			String type = (String) data;
+			if(type == "ALL") {
+				val = infoHeaderService.getAllListData(auth.getIdcompany(), auth.getIdbranch());
+			}else {
+				long id = new Long(type).longValue();
+				val = infoHeaderService.getDetailById(id, auth.getIdcompany(), auth.getIdbranch());
+			}
+		}else if(codepermission.equals(ConstansPermission.READ_INFO_MOBILE)) {
+			String type = (String) data;
+			if(type == "ALL_MOBILE") {
+				val = infoHeaderService.getAllListDataMobile(auth.getIdcompany(), auth.getIdbranch());
 			}
 		}
 		return val;
