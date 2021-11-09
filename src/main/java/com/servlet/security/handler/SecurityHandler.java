@@ -12,12 +12,16 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.servlet.Process.ProcessService;
-import com.servlet.admin.branch.entity.Branch;
+import com.servlet.admin.usermobile.entity.UserMobile;
+import com.servlet.admin.usermobile.entity.UserMobileDataAuth;
+import com.servlet.admin.usermobile.entity.UserMobilePermission;
+import com.servlet.admin.usermobile.service.UserMobileService;
 import com.servlet.security.entity.AuthorizationChecking;
 import com.servlet.security.entity.AuthorizationData;
 import com.servlet.security.entity.AuthorizationEntity;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.AESEncryptionDecryption;
+import com.servlet.shared.ConstansKey;
 import com.servlet.shared.Response;
 import com.servlet.user.entity.UserApps;
 import com.servlet.user.entity.UserPermissionData;
@@ -31,6 +35,8 @@ public class SecurityHandler implements SecurityService{
 	UserAppsService userappsservice;
 	@Autowired
 	ProcessService processservice;
+	@Autowired
+	UserMobileService usermobileservice;
 	
 	@Override
 	public Response response(String codepermission, Object data, String authorization) {
@@ -188,38 +194,89 @@ public class SecurityHandler implements SecurityService{
 				HashMap<String, Object> param = new HashMap<String, Object>();
 				param.put("username", data.getUsername());
 				param.put("password", data.getPassword());
-//				List<UserApps> list = userappsservice.getListLogin(param);
-				List<UserApps> list = userappsservice.getUserLoginByUserName(data.getUsername());
-				
-				UserApps userapps = null;
-				for(UserApps arruserapps:list) {
-					String passwordDB = aesEncryptionDecryption.decrypt(arruserapps.getPassword());
-					if(data.getPassword().equals(passwordDB)) {
-						userapps = arruserapps;
-						break;
-					}
-				}
-				
-				if(userapps != null) {
-				if(list.size() == 0) {
-					auth.setIsvalid(false);
-					auth.setMessageCode("security.login.not.authorized");
-					auth.setMessage("Login Not Authorized");
-				}else if(!checkPasswordToken(userapps.getToken(),data.getPasswordtoken())){
-					auth.setIsvalid(false);
-					auth.setMessageCode("security.token.password");
-					auth.setMessage("Login Not Authorized");
-				}else {
-					boolean flagpermission = false;
-					String[] arcode = codepermission.split("_");
-					String action = "";
-					if(arcode.length > 0) {
-						action = arcode[0];
+				LOGGER.info("data.getTypelogin() "+data.getTypelogin());
+				if(data.getTypelogin().equals(ConstansKey.TYPE_WEB)) {
+					List<UserApps> list = userappsservice.getUserLoginByUserName(data.getUsername());				
+					UserApps userapps = null;
+					for(UserApps arruserapps:list) {
+						String passwordDB = aesEncryptionDecryption.decrypt(arruserapps.getPassword());
+						if(data.getPassword().equals(passwordDB)) {
+							userapps = arruserapps;
+							break;
+						}
 					}
 					
-						List<UserPermissionData> listp = new ArrayList<UserPermissionData>(userappsservice.getListUserPermission(userapps.getId()));
+					if(userapps != null) {
+					if(list.size() == 0) {
+						auth.setIsvalid(false);
+						auth.setMessageCode("security.login.not.authorized");
+						auth.setMessage("Login Not Authorized");
+					}else if(!checkPasswordToken(userapps.getToken(),data.getPasswordtoken())){
+						auth.setIsvalid(false);
+						auth.setMessageCode("security.token.password");
+						auth.setMessage("Login Not Authorized");
+					}else {
+						boolean flagpermission = false;
+						String[] arcode = codepermission.split("_");
+						String action = "";
+						if(arcode.length > 0) {
+							action = arcode[0];
+						}
+						
+							List<UserPermissionData> listp = new ArrayList<UserPermissionData>(userappsservice.getListUserPermission(userapps.getId()));
+							if(listp != null && listp.size() > 0) {
+								for(UserPermissionData permissiondata : listp) {
+									if(permissiondata.getPermissioncode().equals("SUPERUSER")) {
+										flagpermission = true;
+										break;
+									}else if(permissiondata.getPermissioncode().equals("READ_SUPERUSER") && action.toUpperCase().equals("READ")) {
+										flagpermission = true;
+										break;
+									}else if(permissiondata.getPermissioncode().equals(codepermission)) {
+										flagpermission = true;
+										break;
+									}
+								}
+								if(!flagpermission) {
+									auth.setIsvalid(false);
+									auth.setMessageCode("user.does.not.have.access");
+									auth.setMessage("user does not have access");
+								}
+							}else {
+								auth.setIsvalid(false);
+								auth.setMessageCode("user.is.not.registered.role");
+								auth.setMessage("user is not registered in any role");
+							}
+							
+						}
+						
+					}else {
+						auth.setIsvalid(false);
+						auth.setMessageCode("security.login.not.authorized");
+						auth.setMessage("Login Not Authorized");
+					}
+					
+				}else if(data.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
+					List<UserMobileDataAuth> list = usermobileservice.getUserLoginByUserNameMapper(data.getUsername()); 
+					UserMobileDataAuth usermobile = null;
+					for(UserMobileDataAuth user : list) {
+						String passwordDB = aesEncryptionDecryption.decrypt(user.getPassword());
+						if(passwordDB.equals(data.getPassword())) {
+							usermobile = user;
+							break;
+						}
+					}
+					if(usermobile != null) {
+						boolean flagpermission = false;
+						String[] arcode = codepermission.split("_");
+						String action = "";
+						if(arcode.length > 0) {
+							action = arcode[0];
+						}
+						
+						List<UserMobilePermission> listp = new ArrayList<UserMobilePermission>(usermobileservice.getListUserMobilePermission(usermobile.getId()));
 						if(listp != null && listp.size() > 0) {
-							for(UserPermissionData permissiondata : listp) {
+							for(UserMobilePermission permissiondata : listp) {
 								if(permissiondata.getPermissioncode().equals("SUPERUSER")) {
 									flagpermission = true;
 									break;
@@ -241,14 +298,13 @@ public class SecurityHandler implements SecurityService{
 							auth.setMessageCode("user.is.not.registered.role");
 							auth.setMessage("user is not registered in any role");
 						}
-					
+					}else {
+						auth.setIsvalid(false);
+						auth.setMessageCode("security.login.not.authorized");
+						auth.setMessage("Login Not Authorized");
+					}
 				}
 				
-			}else {
-				auth.setIsvalid(false);
-				auth.setMessageCode("security.login.not.authorized");
-				auth.setMessage("Login Not Authorized");
-			}
 				
 			}else {
 				auth.setIsvalid(false);

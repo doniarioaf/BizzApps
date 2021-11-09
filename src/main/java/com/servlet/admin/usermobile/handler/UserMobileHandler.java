@@ -13,8 +13,10 @@ import com.servlet.admin.usermobile.entity.BodyUserMobile;
 import com.servlet.admin.usermobile.entity.UserDetailMobile;
 import com.servlet.admin.usermobile.entity.UserMobile;
 import com.servlet.admin.usermobile.entity.UserMobileData;
+import com.servlet.admin.usermobile.entity.UserMobileDataAuth;
 import com.servlet.admin.usermobile.entity.UserMobileListData;
 import com.servlet.admin.usermobile.entity.UserMobilePermission;
+import com.servlet.admin.usermobile.mapper.GetDataUserMobileAuth;
 import com.servlet.admin.usermobile.mapper.GetListAllUserMobile;
 import com.servlet.admin.usermobile.mapper.GetUserMobilePermission;
 import com.servlet.admin.usermobile.repo.UserMobileRepo;
@@ -30,6 +32,7 @@ import com.servlet.mobile.usermobilecallplan.service.UserMobileCallPlanService;
 import com.servlet.security.entity.AuthorizationData;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.AESEncryptionDecryption;
+import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConvertJson;
 import com.servlet.shared.ReturnData;
 
@@ -57,11 +60,11 @@ public class UserMobileHandler implements UserMobileService{
 	}
 
 	@Override
-	public UserMobileData actionLogin(String username, String password, String imei) {
+	public UserMobileData actionLogin(String username, String password) {
 		// TODO Auto-generated method stub
 		AESEncryptionDecryption aesEncryptionDecryption = new AESEncryptionDecryption();
 		UserMobileData userdata = null;
-		List<UserMobile> list = repository.getUserLoginByUsername(username, imei);
+		List<UserMobile> list = repository.getUserLoginByUsername(username);
 		for(UserMobile user : list) {
 			String passwordDB = aesEncryptionDecryption.decrypt(user.getPassword());
 			if(passwordDB.equals(password)) {
@@ -76,6 +79,7 @@ public class UserMobileHandler implements UserMobileService{
 				dataauth.setPasswordtoken(encryptedPassToken);
 				dataauth.setIdcompany(user.getIdcompany());
 				dataauth.setIdbranch(user.getIdbranch());
+				dataauth.setTypelogin(ConstansKey.TYPE_MOBILE);
 				String encryptedString = aesEncryptionDecryption.encrypt(new ConvertJson().toJsonString(dataauth));
 				
 				userdata = new UserMobileData();
@@ -261,6 +265,15 @@ public class UserMobileHandler implements UserMobileService{
 		sqlBuilder.append(" where mua.idcompany = ? and mua.idbranch = ? and mua.isdelete = false ");
 		final Object[] queryParameters = new Object[] { idcompany , idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListAllUserMobile(), queryParameters);
+	}
+
+	@Override
+	public List<UserMobileDataAuth> getUserLoginByUserNameMapper(String username) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataUserMobileAuth().schema());
+		sqlBuilder.append(" where mua.username = ? ");
+		final Object[] queryParameters = new Object[] { username };
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataUserMobileAuth(), queryParameters);
 	}
 
 }

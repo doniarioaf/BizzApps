@@ -49,4 +49,6 @@ public class ConstansPermission {
 	public static final String READ_INFO_MOBILE = "READ_INFO_MOBILE";
 	public static final String CREATE_INFO = "CREATE_INFO";
 	public static final String EDIT_INFO = "EDIT_INFO";
+	
+	public static final String CREATE_MONITOR_USER_MOBILE = "CREATE_MONITOR_USER_MOBILE";
 }

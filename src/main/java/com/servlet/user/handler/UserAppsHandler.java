@@ -16,6 +16,7 @@ import com.servlet.admin.userappsrole.service.UserAppsRoleService;
 import com.servlet.security.entity.AuthorizationData;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.AESEncryptionDecryption;
+import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConvertJson;
 import com.servlet.shared.ReturnData;
 import com.servlet.user.entity.BodyUserApps;
@@ -78,6 +79,7 @@ public class UserAppsHandler implements UserAppsService{
 				dataauth.setPasswordtoken(encryptedPassToken);
 				dataauth.setIdcompany(user.getIdcompany());
 				dataauth.setIdbranch(user.getIdbranch());
+				dataauth.setTypelogin(ConstansKey.TYPE_WEB);
 				
 				String encryptedString = aesEncryptionDecryption.encrypt(new ConvertJson().toJsonString(dataauth));
 				
