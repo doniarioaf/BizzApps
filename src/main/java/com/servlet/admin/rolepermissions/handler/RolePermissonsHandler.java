@@ -6,8 +6,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-
-import com.servlet.admin.companybranch.mapper.GetCompanyBranchByIdCompany;
 import com.servlet.admin.role.entity.RolePermissionData;
 import com.servlet.admin.rolepermissions.entity.RolePermissions;
 import com.servlet.admin.rolepermissions.entity.RolePermissionsPK;
