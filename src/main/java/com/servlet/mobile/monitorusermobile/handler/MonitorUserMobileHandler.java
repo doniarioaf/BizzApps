@@ -1,17 +1,23 @@
 package com.servlet.mobile.monitorusermobile.handler;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import com.servlet.mobile.monitorusermobile.entity.BodyInfoDetail;
 import com.servlet.mobile.monitorusermobile.entity.BodyMonitorUserMobile;
 import com.servlet.mobile.monitorusermobile.entity.MonitorUserMobile;
 import com.servlet.mobile.monitorusermobile.mapper.GetDataIdMonitorUserMobile;
 import com.servlet.mobile.monitorusermobile.repo.MonitorUserMobileRepo;
 import com.servlet.mobile.monitorusermobile.service.MonitorUserMobileService;
+import com.servlet.mobile.monitorusermobileinfo.entity.MonitorUserMobileInfo;
+import com.servlet.mobile.monitorusermobileinfo.entity.MonitorUserMobileInfoPK;
+import com.servlet.mobile.monitorusermobileinfo.service.MonitorUserMobileInfoService;
 import com.servlet.shared.ReturnData;
 
 @Service
@@ -20,6 +26,8 @@ public class MonitorUserMobileHandler implements MonitorUserMobileService {
 	private JdbcTemplate jdbcTemplate;
 	@Autowired
 	private MonitorUserMobileRepo repository;
+	@Autowired
+	private MonitorUserMobileInfoService monitorUserMobileInfoService;
 	
 	@Override
 	public ReturnData saveMonitorUserMobile(BodyMonitorUserMobile body, long iduser, long idcompany, long idbranch) {
@@ -55,6 +63,28 @@ public class MonitorUserMobileHandler implements MonitorUserMobileService {
 			table.setPhoto8(body.getPhoto8());
 			table.setCreated(ts);
 			table.setModified(ts);
+			
+			MonitorUserMobile returndata = repository.saveAndFlush(table);
+			
+			List<MonitorUserMobileInfo> listsave = new ArrayList<MonitorUserMobileInfo>();
+			if(body.getInfodetails().size() > 0) {
+				for(BodyInfoDetail infodetail : body.getInfodetails()) {
+					MonitorUserMobileInfoPK pk = new MonitorUserMobileInfoPK();
+					pk.setIdmonitorusermobile(returndata.getId());
+					pk.setInfoid(infodetail.getInfoid());
+					pk.setIdinfodetail(infodetail.getIdinfodetail());
+					MonitorUserMobileInfo info = new MonitorUserMobileInfo();
+					info.setMonitorUserMobileInfoPK(pk);
+					info.setInfoanswer(infodetail.getInfoanswer());
+					listsave.add(info);
+				}
+				
+				monitorUserMobileInfoService.saveMonitorUserMobileInfoList(listsave);
+			}
+			
+			ReturnData data = new ReturnData();
+			data.setId(returndata.getId());
+			return data;
 		}else {
 			if(body.getChekintime() != null) {
 				table.setCheckintime(new Timestamp(body.getChekintime()).toString());
@@ -75,14 +105,38 @@ public class MonitorUserMobileHandler implements MonitorUserMobileService {
 			table.setPhoto7(body.getPhoto7());
 			table.setPhoto8(body.getPhoto8());
 			table.setModified(ts);
-		}
-		
-		
-		MonitorUserMobile returndata = repository.saveAndFlush(table);
-		ReturnData data = new ReturnData();
-		data.setId(returndata.getId());
-		
-		return data;
+			
+			MonitorUserMobile returndata = repository.saveAndFlush(table);
+			
+			List<MonitorUserMobileInfo> listinfo = monitorUserMobileInfoService.getListData(table.getId());
+			List<MonitorUserMobileInfoPK> listdelete = new ArrayList<MonitorUserMobileInfoPK>();
+			if(listinfo.size() > 0) {
+				for(MonitorUserMobileInfo info : listinfo) {
+					listdelete.add(info.getMonitorUserMobileInfoPK());
+				}
+				monitorUserMobileInfoService.deleteAllMonitorUserMobileInfoByListPK(listdelete);
+			}
+			
+			List<MonitorUserMobileInfo> listsave = new ArrayList<MonitorUserMobileInfo>();
+			if(body.getInfodetails().size() > 0) {
+				for(BodyInfoDetail infodetail : body.getInfodetails()) {
+					MonitorUserMobileInfoPK pk = new MonitorUserMobileInfoPK();
+					pk.setIdmonitorusermobile(returndata.getId());
+					pk.setInfoid(infodetail.getInfoid());
+					pk.setIdinfodetail(infodetail.getIdinfodetail());
+					MonitorUserMobileInfo info = new MonitorUserMobileInfo();
+					info.setMonitorUserMobileInfoPK(pk);
+					info.setInfoanswer(infodetail.getInfoanswer());
+					listsave.add(info);
+				}
+				
+				monitorUserMobileInfoService.saveMonitorUserMobileInfoList(listsave);
+			}
+			
+			ReturnData data = new ReturnData();
+			data.setId(returndata.getId());
+			return data;
+		}	
 	}
 	
 	public MonitorUserMobile getDataById(long iduser,long idproject,long idcustomer,long idcompany, long idbranch,Timestamp date) {

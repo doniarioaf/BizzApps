@@ -51,4 +51,6 @@ public class ConstansPermission {
 	public static final String EDIT_INFO = "EDIT_INFO";
 	
 	public static final String CREATE_MONITOR_USER_MOBILE = "CREATE_MONITOR_USER_MOBILE";
+	
+	public static final String READ_DOWNLOAD_MOBILE = "READ_DOWNLOAD_MOBILE";
 }

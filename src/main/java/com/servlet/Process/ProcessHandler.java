@@ -27,6 +27,7 @@ import com.servlet.admin.usermobile.entity.BodyUserMobile;
 import com.servlet.admin.usermobile.service.UserMobileService;
 import com.servlet.mobile.callplan.entity.BodyCallPlan;
 import com.servlet.mobile.callplan.service.CallPlanService;
+import com.servlet.mobile.download.service.DownloadService;
 import com.servlet.mobile.infoheader.entity.BodyInfoHeader;
 import com.servlet.mobile.infoheader.service.InfoHeaderService;
 import com.servlet.mobile.monitorusermobile.entity.BodyMonitorUserMobile;
@@ -71,6 +72,8 @@ public class ProcessHandler implements ProcessService{
 	InfoHeaderService infoHeaderService;
 	@Autowired
 	MonitorUserMobileService monitorUserMobileService;
+	@Autowired
+	DownloadService downloadService;
 	
 	@Override
 	public Object ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -288,10 +291,17 @@ public class ProcessHandler implements ProcessService{
 					long id = new Long(type).longValue();
 					val = infoHeaderService.getDetailById(id, auth.getIdcompany(), auth.getIdbranch());
 				}
-			}else if(codepermission.equals(ConstansPermission.READ_INFO_MOBILE)) {
+			}
+		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
+			if(codepermission.equals(ConstansPermission.READ_INFO_MOBILE)) {
 				String type = (String) data;
 				if(type == "ALL_MOBILE") {
 					val = infoHeaderService.getAllListDataMobile(auth.getIdcompany(), auth.getIdbranch());
+				}
+			}else if(codepermission.equals(ConstansPermission.READ_DOWNLOAD_MOBILE)) {
+				String type = (String) data;
+				if(type == "ALL") {
+					val = downloadService.donwload(auth.getId(), auth.getIdcompany(), auth.getIdbranch());
 				}
 			}
 		}
