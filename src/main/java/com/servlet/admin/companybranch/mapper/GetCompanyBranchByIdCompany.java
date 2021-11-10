@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.servlet.admin.companybranch.entity.CompanyBranchData;
-import com.servlet.user.entity.UserPermissionData;
 
 public class GetCompanyBranchByIdCompany implements RowMapper<CompanyBranchData>{
 	

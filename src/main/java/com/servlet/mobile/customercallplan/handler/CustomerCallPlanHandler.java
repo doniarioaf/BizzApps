@@ -59,4 +59,13 @@ public class CustomerCallPlanHandler implements CustomerCallPlanService{
 		return null;
 	}
 
+	@Override
+	public List<CustomerCallPlanData> getListCustomerCallPlanByIdUser(long idusermobile,long idcompany,long idbranch) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetCustomerCallPlanByIdCustomer().schema());
+		sqlBuilder.append(" where mccp.idcallplan in (select idcallplan from m_user_mobile_call_plan as mumcp where mumcp.idusermobile = ? and mumcp.idcompany = ? and mumcp.idbranch = ?) ");
+		final Object[] queryParameters = new Object[] { idusermobile,idcompany,idbranch };
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetCustomerCallPlanByIdCustomer(), queryParameters);
+	}
+
 }

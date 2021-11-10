@@ -11,4 +11,5 @@ public interface CustomerCallPlanService {
 	Object saveCustomerCallPlanList(List<CustomerCallPlan> list);
 	Collection<CustomerCallPlanData> getListCustomerCallPlan(long idcallplan);
 	Object deleteAllCustomeCallPlanByListPK(List<CustomerCallPlanPK> listPK);
+	List<CustomerCallPlanData> getListCustomerCallPlanByIdUser(long idusermobile,long idcompany,long idbranch);
 }

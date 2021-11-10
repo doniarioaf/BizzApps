@@ -1,5 +1,7 @@
 package com.servlet.mobile.monitorusermobile.entity;
 
+import java.util.List;
+
 public class BodyMonitorUserMobile {
 	private long idproject;
 	private long idcustomer;
@@ -18,6 +20,13 @@ public class BodyMonitorUserMobile {
 	private String photo6;
 	private String photo7;
 	private String photo8;
+	private List<BodyInfoDetail> infodetails;
+	public List<BodyInfoDetail> getInfodetails() {
+		return infodetails;
+	}
+	public void setInfodetails(List<BodyInfoDetail> infodetails) {
+		this.infodetails = infodetails;
+	}
 	public long getIdproject() {
 		return idproject;
 	}

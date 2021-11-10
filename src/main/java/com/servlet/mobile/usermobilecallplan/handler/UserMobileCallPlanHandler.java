@@ -6,8 +6,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import com.servlet.mobile.customercallplan.entity.CustomerCallPlanData;
+import com.servlet.mobile.customercallplan.service.CustomerCallPlanService;
 import com.servlet.mobile.usermobilecallplan.entity.UserMobileCallPlan;
 import com.servlet.mobile.usermobilecallplan.entity.UserMobileCallPlanData;
+import com.servlet.mobile.usermobilecallplan.entity.UserMobileCallPlanDataMobile;
 import com.servlet.mobile.usermobilecallplan.entity.UserMobileCallPlanPK;
 import com.servlet.mobile.usermobilecallplan.mapper.GetUserMobileCallPlanByIdUser;
 import com.servlet.mobile.usermobilecallplan.repo.UserMobileCallPlanRepo;
@@ -20,6 +24,8 @@ public class UserMobileCallPlanHandler implements UserMobileCallPlanService{
 	private UserMobileCallPlanRepo repository;
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+	@Autowired
+	private CustomerCallPlanService customerCallPlanService;
 	
 	@Override
 	public Object saveUserMobileCallPlan(UserMobileCallPlanPK userMobileCallPlanPK) {
@@ -47,6 +53,15 @@ public class UserMobileCallPlanHandler implements UserMobileCallPlanService{
 		final Object[] queryParameters = new Object[] { idusermobile };
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetUserMobileCallPlanByIdUser(), queryParameters);
 	}
+	
+	private List<UserMobileCallPlanData> getListUserMobileCallPlanV2(long idusermobile,long idcompany,long idbranch) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetUserMobileCallPlanByIdUser().schema());
+		sqlBuilder.append(" where mccp.idusermobile = ? and mccp.idcompany = ? and mccp.idbranch = ? ");
+		final Object[] queryParameters = new Object[] { idusermobile,idcompany,idbranch };
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetUserMobileCallPlanByIdUser(), queryParameters);
+	}
+	
 	@Override
 	public Object deleteAllUserMobileCallPlanByListPK(List<UserMobileCallPlanPK> listPK) {
 		// TODO Auto-generated method stub
@@ -54,6 +69,16 @@ public class UserMobileCallPlanHandler implements UserMobileCallPlanService{
 			repository.deleteAllById(listPK);
 		}
 		return null;
+	}
+	@Override
+	public UserMobileCallPlanDataMobile getDataForMobile(long idusermobile, long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		List<UserMobileCallPlanData> listcallplan = getListUserMobileCallPlanV2(idusermobile,idcompany,idbranch);
+		List<CustomerCallPlanData> listcustcallplan = customerCallPlanService.getListCustomerCallPlanByIdUser(idusermobile, idcompany, idbranch);
+		UserMobileCallPlanDataMobile data = new UserMobileCallPlanDataMobile();
+		data.setCallplans(listcallplan);
+		data.setCustomercallplans(listcustcallplan);
+		return data;
 	}
 	
 
