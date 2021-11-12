@@ -25,13 +25,18 @@ public class GetDataUserMobileAuth implements RowMapper<UserMobileDataAuth>{
 	public UserMobileDataAuth mapRow(ResultSet rs, int rowNum) throws SQLException {
 		// TODO Auto-generated method stub
 		final long id = rs.getLong("id");
+		final long idcompany = rs.getLong("idcompany");
+		final long idbranch = rs.getLong("idbranch");
 		final String password = rs.getString("password");
 		final String username = rs.getString("username");
+		final String token = rs.getString("token");
 		UserMobileDataAuth data = new UserMobileDataAuth();
 		data.setId(id);
 		data.setUsername(username);
 		data.setPassword(password);
-		
+		data.setIdcompany(idcompany);
+		data.setIdbranch(idbranch);
+		data.setToken(token);
 		return data;
 	}
 }

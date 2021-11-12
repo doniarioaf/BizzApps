@@ -34,6 +34,8 @@ import com.servlet.mobile.monitorusermobile.entity.BodyMonitorUserMobile;
 import com.servlet.mobile.monitorusermobile.service.MonitorUserMobileService;
 import com.servlet.mobile.project.entity.BodyProject;
 import com.servlet.mobile.project.service.ProjectService;
+import com.servlet.mobile.usermobilelocation.entity.BodyUserMobileLocation;
+import com.servlet.mobile.usermobilelocation.service.UserMobileLocationService;
 import com.servlet.security.entity.AuthorizationData;
 import com.servlet.shared.AESEncryptionDecryption;
 import com.servlet.shared.ConstansKey;
@@ -74,6 +76,8 @@ public class ProcessHandler implements ProcessService{
 	MonitorUserMobileService monitorUserMobileService;
 	@Autowired
 	DownloadService downloadService;
+	@Autowired
+	UserMobileLocationService userMobileLocationService;
 	
 	@Override
 	public Object ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -185,6 +189,9 @@ public class ProcessHandler implements ProcessService{
 			if(codepermission.equals(ConstansPermission.CREATE_MONITOR_USER_MOBILE) ) {
 				BodyMonitorUserMobile body = (BodyMonitorUserMobile) data;
 				val = monitorUserMobileService.saveMonitorUserMobile(body, auth.getId(), auth.getIdcompany(),auth.getIdbranch());
+			}else if(codepermission.equals(ConstansPermission.CREATE_LOCATION_MOBILE) ) {
+				BodyUserMobileLocation body = (BodyUserMobileLocation) data;
+				val = userMobileLocationService.saveUserMobileLocation(body, auth.getId(), auth.getIdcompany(),auth.getIdbranch());
 			}
 		}
 		

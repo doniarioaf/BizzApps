@@ -17,7 +17,6 @@ import com.servlet.shared.Response;
 @RestController
 @RequestMapping("/v1/download")
 @CrossOrigin(origins = "${value.cross_origin}")
-
 public class DownloadDataMobileApi {
 	@Autowired
 	SecurityService securityService;
