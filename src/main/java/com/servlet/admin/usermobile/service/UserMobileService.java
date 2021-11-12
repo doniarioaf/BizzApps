@@ -14,11 +14,11 @@ import com.servlet.shared.ReturnData;
 
 public interface UserMobileService {
 	Collection<UserMobilePermission> getListUserMobilePermission(long id);
-	UserMobileData actionLogin(String username,String password);
+	UserMobileData actionLogin(String username,String password,long idcompany,long idbranch);
 	List<UserMobile> getUserLoginByUserName(String username);
 	ReturnData saveUserMobile(BodyUserMobile usermobile,long idcompany,long idbranch);
 	ReturnData editUserMobile(long id,BodyUserMobile usermobile);
 	UserDetailMobile getDetailUserMobile(long id,long idcompany,long idbranch);
 	List<UserMobileListData> getListAllUserMobile(long idcompany,long idbranch);
-	List<UserMobileDataAuth> getUserLoginByUserNameMapper(String username);
+	List<UserMobileDataAuth> getUserLoginByUserNameMapper(String username,long idcompany,long idbranch);
 }

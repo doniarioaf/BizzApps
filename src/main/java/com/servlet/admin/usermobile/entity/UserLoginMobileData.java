@@ -1,23 +1,15 @@
 package com.servlet.admin.usermobile.entity;
 
-public class UserMobileDataAuth {
-	private long id;	
-	private String username;
+public class UserLoginMobileData {
+	private long id;
 	private String password;
 	private long idcompany;
 	private long idbranch;
-	private String token;
 	public long getId() {
 		return id;
 	}
 	public void setId(long id) {
 		this.id = id;
-	}
-	public String getUsername() {
-		return username;
-	}
-	public void setUsername(String username) {
-		this.username = username;
 	}
 	public String getPassword() {
 		return password;
@@ -36,11 +28,5 @@ public class UserMobileDataAuth {
 	}
 	public void setIdbranch(long idbranch) {
 		this.idbranch = idbranch;
-	}
-	public String getToken() {
-		return token;
-	}
-	public void setToken(String token) {
-		this.token = token;
 	}
 }

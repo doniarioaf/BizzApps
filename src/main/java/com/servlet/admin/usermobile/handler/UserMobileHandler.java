@@ -60,12 +60,13 @@ public class UserMobileHandler implements UserMobileService{
 	}
 
 	@Override
-	public UserMobileData actionLogin(String username, String password) {
+	public UserMobileData actionLogin(String username, String password,long idcompany,long idbranch) {
 		// TODO Auto-generated method stub
 		AESEncryptionDecryption aesEncryptionDecryption = new AESEncryptionDecryption();
 		UserMobileData userdata = null;
-		List<UserMobile> list = repository.getUserLoginByUsername(username);
-		for(UserMobile user : list) {
+//		List<UserMobile> list = repository.getUserLoginByUsername(username);
+		List<UserMobileDataAuth> list = getUserLoginByUserNameMapper(username,idcompany,idbranch);
+		for(UserMobileDataAuth user : list) {
 			String passwordDB = aesEncryptionDecryption.decrypt(user.getPassword());
 			if(passwordDB.equals(password)) {
 				AuthorizationData dataauth = new AuthorizationData();
@@ -83,7 +84,7 @@ public class UserMobileHandler implements UserMobileService{
 				String encryptedString = aesEncryptionDecryption.encrypt(new ConvertJson().toJsonString(dataauth));
 				
 				userdata = new UserMobileData();
-				userdata.setPermissions(setPermissions(user.getId()));
+//				userdata.setPermissions(setPermissions(user.getId()));
 				userdata.setToken(encryptedString);
 				
 				UserMobile usermobil = repository.getById(user.getId());
@@ -268,11 +269,11 @@ public class UserMobileHandler implements UserMobileService{
 	}
 
 	@Override
-	public List<UserMobileDataAuth> getUserLoginByUserNameMapper(String username) {
+	public List<UserMobileDataAuth> getUserLoginByUserNameMapper(String username,long idcompany,long idbranch) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataUserMobileAuth().schema());
-		sqlBuilder.append(" where mua.username = ? ");
-		final Object[] queryParameters = new Object[] { username };
+		sqlBuilder.append(" where mua.username = ? and mua.idcompany = ? and mua.idbranch = ? ");
+		final Object[] queryParameters = new Object[] { username,idcompany,idbranch };
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataUserMobileAuth(), queryParameters);
 	}
 

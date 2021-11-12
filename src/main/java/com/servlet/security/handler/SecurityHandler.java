@@ -21,6 +21,7 @@ import com.servlet.security.entity.AuthorizationData;
 import com.servlet.security.entity.AuthorizationEntity;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.AESEncryptionDecryption;
+import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstansKey;
 import com.servlet.shared.Response;
 import com.servlet.user.entity.UserApps;
@@ -44,13 +45,13 @@ public class SecurityHandler implements SecurityService{
 		if(authorization.equals("login")) {
 			if(data != null) {
 				value.setSuccess(true);
-				value.setMessagecode("SUCCESS");
+				value.setMessagecode(ConstansCodeMessage.CODE_MESSAGE_SUCCESS);
 				value.setMessage("SUCCESS");
 				value.setData(data);
 				value.setHttpcode(HttpStatus.OK.value());
 			}else {
 				value.setSuccess(false);
-				value.setMessagecode("user.username.or.password.wrong");
+				value.setMessagecode(ConstansCodeMessage.CODE_MESSAGE_USERNAME_OR_PASSWORD_WRONG);
 				value.setMessage("Username Or Password Wrong");
 				value.setData(data);
 				value.setHttpcode(HttpStatus.UNAUTHORIZED.value());
@@ -93,7 +94,7 @@ public class SecurityHandler implements SecurityService{
 					// TODO: handle exception
 					e.printStackTrace();
 					value.setSuccess(false);
-					value.setMessagecode("internal.server.error");
+					value.setMessagecode(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR);
 					value.setMessage("Internal Server Error");
 					value.setData(null);
 					value.setHttpcode(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -103,7 +104,7 @@ public class SecurityHandler implements SecurityService{
 				value.setMessagecode(auth.getMessageCode());
 				value.setMessage(auth.getMessage());
 				value.setData(null);
-				if(auth.getMessageCode().equals("user.does.not.have.access") || auth.getMessageCode().equals("user.is.not.registered.role") || auth.getMessageCode().equals("security.api.authorized") || auth.getMessageCode().equals("security.login.authorized")) {
+				if(auth.getMessageCode().equals(ConstansCodeMessage.CODE_USER_NOT_HAVE_ACCESS) || auth.getMessageCode().equals(ConstansCodeMessage.CODE_USER_NOT_REGISTRED_ROLE) || auth.getMessageCode().equals("security.api.authorized") || auth.getMessageCode().equals("security.login.authorized")) {
 					value.setHttpcode(HttpStatus.UNAUTHORIZED.value());
 				}else {
 					value.setHttpcode(HttpStatus.BAD_REQUEST.value());
@@ -159,12 +160,12 @@ public class SecurityHandler implements SecurityService{
 				if(userapps != null) {
 					if(!checkPasswordToken(userapps.getToken(),data.getPasswordtoken())){
 						auth.setIsvalid(false);
-						auth.setMessageCode("security.token.password");
+						auth.setMessageCode(ConstansCodeMessage.CODE_MESSAGE_SECURITY_TOKEN_PASSWORD);
 						auth.setMessage("Login Not Authorized");
 					}
 				}else {
 					auth.setIsvalid(false);
-					auth.setMessageCode("security.login.not.authorized");
+					auth.setMessageCode(ConstansCodeMessage.CODE_MESSAGE_SECURITY_LOGIN_NOT_AUTHORIZED);
 					auth.setMessage("Login Not Authorized");
 				}
 				
@@ -194,7 +195,6 @@ public class SecurityHandler implements SecurityService{
 				HashMap<String, Object> param = new HashMap<String, Object>();
 				param.put("username", data.getUsername());
 				param.put("password", data.getPassword());
-				LOGGER.info("data.getTypelogin() "+data.getTypelogin());
 				if(data.getTypelogin().equals(ConstansKey.TYPE_WEB)) {
 					List<UserApps> list = userappsservice.getUserLoginByUserName(data.getUsername());				
 					UserApps userapps = null;
@@ -209,11 +209,11 @@ public class SecurityHandler implements SecurityService{
 					if(userapps != null) {
 					if(list.size() == 0) {
 						auth.setIsvalid(false);
-						auth.setMessageCode("security.login.not.authorized");
+						auth.setMessageCode(ConstansCodeMessage.CODE_MESSAGE_SECURITY_LOGIN_NOT_AUTHORIZED);
 						auth.setMessage("Login Not Authorized");
 					}else if(!checkPasswordToken(userapps.getToken(),data.getPasswordtoken())){
 						auth.setIsvalid(false);
-						auth.setMessageCode("security.token.password");
+						auth.setMessageCode(ConstansCodeMessage.CODE_MESSAGE_SECURITY_TOKEN_PASSWORD);
 						auth.setMessage("Login Not Authorized");
 					}else {
 						boolean flagpermission = false;
@@ -239,12 +239,12 @@ public class SecurityHandler implements SecurityService{
 								}
 								if(!flagpermission) {
 									auth.setIsvalid(false);
-									auth.setMessageCode("user.does.not.have.access");
+									auth.setMessageCode(ConstansCodeMessage.CODE_USER_NOT_HAVE_ACCESS);
 									auth.setMessage("user does not have access");
 								}
 							}else {
 								auth.setIsvalid(false);
-								auth.setMessageCode("user.is.not.registered.role");
+								auth.setMessageCode(ConstansCodeMessage.CODE_USER_NOT_REGISTRED_ROLE);
 								auth.setMessage("user is not registered in any role");
 							}
 							
@@ -252,12 +252,12 @@ public class SecurityHandler implements SecurityService{
 						
 					}else {
 						auth.setIsvalid(false);
-						auth.setMessageCode("security.login.not.authorized");
+						auth.setMessageCode(ConstansCodeMessage.CODE_MESSAGE_SECURITY_LOGIN_NOT_AUTHORIZED);
 						auth.setMessage("Login Not Authorized");
 					}
 					
 				}else if(data.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
-					List<UserMobileDataAuth> list = usermobileservice.getUserLoginByUserNameMapper(data.getUsername()); 
+					List<UserMobileDataAuth> list = usermobileservice.getUserLoginByUserNameMapper(data.getUsername(),data.getIdcompany(),data.getIdbranch()); 
 					UserMobileDataAuth usermobile = null;
 					for(UserMobileDataAuth user : list) {
 						String passwordDB = aesEncryptionDecryption.decrypt(user.getPassword());
@@ -267,40 +267,51 @@ public class SecurityHandler implements SecurityService{
 						}
 					}
 					if(usermobile != null) {
-						boolean flagpermission = false;
-						String[] arcode = codepermission.split("_");
-						String action = "";
-						if(arcode.length > 0) {
-							action = arcode[0];
-						}
-						
-						List<UserMobilePermission> listp = new ArrayList<UserMobilePermission>(usermobileservice.getListUserMobilePermission(usermobile.getId()));
-						if(listp != null && listp.size() > 0) {
-							for(UserMobilePermission permissiondata : listp) {
-								if(permissiondata.getPermissioncode().equals("SUPERUSER")) {
-									flagpermission = true;
-									break;
-								}else if(permissiondata.getPermissioncode().equals("READ_SUPERUSER") && action.toUpperCase().equals("READ")) {
-									flagpermission = true;
-									break;
-								}else if(permissiondata.getPermissioncode().equals(codepermission)) {
-									flagpermission = true;
-									break;
-								}
-							}
-							if(!flagpermission) {
-								auth.setIsvalid(false);
-								auth.setMessageCode("user.does.not.have.access");
-								auth.setMessage("user does not have access");
-							}
-						}else {
+						if(list.size() == 0) {
 							auth.setIsvalid(false);
-							auth.setMessageCode("user.is.not.registered.role");
-							auth.setMessage("user is not registered in any role");
+							auth.setMessageCode(ConstansCodeMessage.CODE_MESSAGE_SECURITY_LOGIN_NOT_AUTHORIZED);
+							auth.setMessage("Login Not Authorized");
+						}else if(!checkPasswordToken(usermobile.getToken(),data.getPasswordtoken())){
+							auth.setIsvalid(false);
+							auth.setMessageCode(ConstansCodeMessage.CODE_MESSAGE_SECURITY_TOKEN_PASSWORD);
+							auth.setMessage("Login Not Authorized");
+						}else {
+							boolean flagpermission = false;
+							String[] arcode = codepermission.split("_");
+							String action = "";
+							if(arcode.length > 0) {
+								action = arcode[0];
+							}
+							
+							List<UserMobilePermission> listp = new ArrayList<UserMobilePermission>(usermobileservice.getListUserMobilePermission(usermobile.getId()));
+							if(listp != null && listp.size() > 0) {
+								for(UserMobilePermission permissiondata : listp) {
+									if(permissiondata.getPermissioncode().equals("SUPERUSER")) {
+										flagpermission = true;
+										break;
+									}else if(permissiondata.getPermissioncode().equals("READ_SUPERUSER") && action.toUpperCase().equals("READ")) {
+										flagpermission = true;
+										break;
+									}else if(permissiondata.getPermissioncode().equals(codepermission)) {
+										flagpermission = true;
+										break;
+									}
+								}
+								if(!flagpermission) {
+									auth.setIsvalid(false);
+									auth.setMessageCode(ConstansCodeMessage.CODE_USER_NOT_HAVE_ACCESS);
+									auth.setMessage("user does not have access");
+								}
+							}else {
+								auth.setIsvalid(false);
+								auth.setMessageCode(ConstansCodeMessage.CODE_USER_NOT_REGISTRED_ROLE);
+								auth.setMessage("user is not registered in any role");
+							}
+						
 						}
 					}else {
 						auth.setIsvalid(false);
-						auth.setMessageCode("security.login.not.authorized");
+						auth.setMessageCode(ConstansCodeMessage.CODE_MESSAGE_SECURITY_LOGIN_NOT_AUTHORIZED);
 						auth.setMessage("Login Not Authorized");
 					}
 				}
@@ -308,7 +319,7 @@ public class SecurityHandler implements SecurityService{
 				
 			}else {
 				auth.setIsvalid(false);
-				auth.setMessageCode("security.api.authorized");
+				auth.setMessageCode(ConstansCodeMessage.CODE_MESSAGE_SECURITY_LOGIN_NOT_AUTHORIZED);
 				auth.setMessage("Not Authorized");
 			}
 		}catch (Exception e) {
