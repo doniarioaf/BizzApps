@@ -14,7 +14,7 @@ import com.servlet.shared.ReturnData;
 
 public interface UserMobileService {
 	Collection<UserMobilePermission> getListUserMobilePermission(long id);
-	UserMobileData actionLogin(String username,String password,long idcompany,long idbranch);
+	UserMobileData actionLogin(String username,String password);
 	List<UserMobile> getUserLoginByUserName(String username);
 	ReturnData saveUserMobile(BodyUserMobile usermobile,long idcompany,long idbranch);
 	ReturnData editUserMobile(long id,BodyUserMobile usermobile);

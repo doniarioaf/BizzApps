@@ -44,7 +44,7 @@ public class LoginApi {
 	
 	@PostMapping("/usermobile/login")
 	ResponseEntity<Response> getLoginMobile(@RequestBody @Validated BodyLoginMobile bodylogin){
-		Response response = securityService.response("login",userMobileService.actionLogin(bodylogin.getUser(), bodylogin.getPassword(),bodylogin.getIdcompany(),bodylogin.getIdbranch()),"login");
+		Response response = securityService.response("login",userMobileService.actionLogin(bodylogin.getUser(), bodylogin.getPassword()),"login");
 		return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	

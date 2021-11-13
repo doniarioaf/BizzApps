@@ -60,12 +60,12 @@ public class UserMobileHandler implements UserMobileService{
 	}
 
 	@Override
-	public UserMobileData actionLogin(String username, String password,long idcompany,long idbranch) {
+	public UserMobileData actionLogin(String username, String password) {
 		// TODO Auto-generated method stub
 		AESEncryptionDecryption aesEncryptionDecryption = new AESEncryptionDecryption();
 		UserMobileData userdata = null;
 //		List<UserMobile> list = repository.getUserLoginByUsername(username);
-		List<UserMobileDataAuth> list = getUserLoginByUserNameMapper(username,idcompany,idbranch);
+		List<UserMobileDataAuth> list = getUserLoginByUserNameV2(username);
 		for(UserMobileDataAuth user : list) {
 			String passwordDB = aesEncryptionDecryption.decrypt(user.getPassword());
 			if(passwordDB.equals(password)) {
@@ -95,6 +95,14 @@ public class UserMobileHandler implements UserMobileService{
 			}
 		}
 		return userdata;
+	}
+	
+	private List<UserMobileDataAuth> getUserLoginByUserNameV2(String username) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataUserMobileAuth().schema());
+		sqlBuilder.append(" where mua.username = ? ");
+		final Object[] queryParameters = new Object[] { username};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataUserMobileAuth(), queryParameters);
 	}
 	
 	private List<String> setPermissions(long id){
