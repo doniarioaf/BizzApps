@@ -1,5 +1,7 @@
 package com.servlet.mobile.upload.api;
 
+import java.util.HashMap;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.servlet.mobile.monitorusermobile.entity.BodyListPhoto;
 import com.servlet.mobile.monitorusermobile.entity.BodyMonitorUserMobile;
 import com.servlet.mobile.usermobilelocation.entity.BodyUserMobileLocation;
 import com.servlet.security.service.SecurityService;
@@ -32,7 +36,19 @@ public class UploadApi {
 	
 	@PostMapping("/monitorusermobile")
 	ResponseEntity<Response> createMonitorUserMobile(@RequestBody @Validated BodyMonitorUserMobile body, @RequestHeader(ConstansKey.AUTH) String authorization) {
-		Response response = securityService.response(ConstansPermission.CREATE_MONITOR_USER_MOBILE,body,authorization);
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("BodyMonitorUserMobile", body);
+		param.put("type", "monitorusermobile");
+		Response response = securityService.response(ConstansPermission.CREATE_MONITOR_USER_MOBILE,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@PostMapping("/photomonitorusermobile")
+	ResponseEntity<Response> savePhotoMonitorUserMobile(@RequestBody @Validated BodyListPhoto body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("BodyListPhoto", body);
+		param.put("type", "photomonitorusermobile");
+		Response response = securityService.response(ConstansPermission.CREATE_MONITOR_USER_MOBILE,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
