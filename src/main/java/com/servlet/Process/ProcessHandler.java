@@ -30,6 +30,7 @@ import com.servlet.mobile.callplan.service.CallPlanService;
 import com.servlet.mobile.download.service.DownloadService;
 import com.servlet.mobile.infoheader.entity.BodyInfoHeader;
 import com.servlet.mobile.infoheader.service.InfoHeaderService;
+import com.servlet.mobile.monitorusermobile.entity.BodyListPhoto;
 import com.servlet.mobile.monitorusermobile.entity.BodyMonitorUserMobile;
 import com.servlet.mobile.monitorusermobile.service.MonitorUserMobileService;
 import com.servlet.mobile.project.entity.BodyProject;
@@ -187,8 +188,16 @@ public class ProcessHandler implements ProcessService{
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
 			if(codepermission.equals(ConstansPermission.CREATE_MONITOR_USER_MOBILE) ) {
-				BodyMonitorUserMobile body = (BodyMonitorUserMobile) data;
-				val = monitorUserMobileService.saveMonitorUserMobile(body, auth.getId(), auth.getIdcompany(),auth.getIdbranch());
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type  = (String) param.get("type");
+				if(type.equals("monitorusermobile")) {
+					BodyMonitorUserMobile body = (BodyMonitorUserMobile) param.get("BodyMonitorUserMobile");
+					val = monitorUserMobileService.saveMonitorUserMobile(body, auth.getId(), auth.getIdcompany(),auth.getIdbranch());
+				}else if(type.equals("photomonitorusermobile")) {
+					BodyListPhoto body = (BodyListPhoto) param.get("BodyListPhoto");
+					val = monitorUserMobileService.savePhotoMonitorUserMobile(body,auth.getId(), auth.getIdcompany(),auth.getIdbranch());
+				}
+				
 			}else if(codepermission.equals(ConstansPermission.CREATE_LOCATION_MOBILE) ) {
 				BodyUserMobileLocation body = (BodyUserMobileLocation) data;
 				val = userMobileLocationService.saveUserMobileLocation(body, auth.getId(), auth.getIdcompany(),auth.getIdbranch());
