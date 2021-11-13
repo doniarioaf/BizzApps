@@ -12,7 +12,7 @@ public class GetCustomerCallPlanByIdCustomer implements RowMapper<CustomerCallPl
 	
 	public GetCustomerCallPlanByIdCustomer(){
 		final StringBuilder sqlBuilder = new StringBuilder(400);
-		sqlBuilder.append("mc.* from m_customer_call_plan as mccp ");
+		sqlBuilder.append("mc.*,mccp.idcallplan as idcallplan from m_customer_call_plan as mccp ");
 		sqlBuilder.append("join m_customer as mc on mc.id = mccp.idcustomer ");
 		
 		this.schemaSql = sqlBuilder.toString();
@@ -27,6 +27,7 @@ public class GetCustomerCallPlanByIdCustomer implements RowMapper<CustomerCallPl
 	public CustomerCallPlanData mapRow(ResultSet rs, int rowNum) throws SQLException {
 		// TODO Auto-generated method stub
 		final long id = rs.getLong("id");
+		final long idcallplan = rs.getLong("idcallplan");
 		final String nama = rs.getString("nama");
 		final String address = rs.getString("address");
 		final String city = rs.getString("city");
@@ -42,6 +43,7 @@ public class GetCustomerCallPlanByIdCustomer implements RowMapper<CustomerCallPl
 		data.setAreaname(areaname);
 		data.setSubarename(subarename);
 		data.setPhone(phone);
+		data.setIdcallplan(idcallplan);
 		
 		return data;
 	}

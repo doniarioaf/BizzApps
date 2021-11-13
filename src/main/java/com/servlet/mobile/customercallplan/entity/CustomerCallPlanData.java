@@ -2,6 +2,7 @@ package com.servlet.mobile.customercallplan.entity;
 
 public class CustomerCallPlanData {
 	private long id;
+	private long idcallplan;
 	private String nama;
 	private String address;
 	private String city;
@@ -49,5 +50,11 @@ public class CustomerCallPlanData {
 	}
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+	public long getIdcallplan() {
+		return idcallplan;
+	}
+	public void setIdcallplan(long idcallplan) {
+		this.idcallplan = idcallplan;
 	}
 }
