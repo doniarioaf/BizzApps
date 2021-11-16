@@ -42,6 +42,12 @@ public class RoleApi {
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
+	@GetMapping("/template")
+	ResponseEntity<Response> getTemplateRole(@RequestHeader(ConstansKey.AUTH) String authorization) {
+		Response response = securityService.response(ConstansPermission.READ_ROLE,"TEMPLATE",authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
 	@GetMapping
 	ResponseEntity<Response> getListRole(@RequestHeader(ConstansKey.AUTH) String authorization) {
 		Response response = securityService.response(ConstansPermission.READ_ROLE,"ALL",authorization);
