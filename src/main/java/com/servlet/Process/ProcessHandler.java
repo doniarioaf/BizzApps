@@ -17,6 +17,7 @@ import com.servlet.admin.customer.entity.BodyCustomer;
 import com.servlet.admin.customer.service.CustomerService;
 import com.servlet.admin.customertype.entity.BodyCustomerType;
 import com.servlet.admin.customertype.service.CustomerTypeService;
+import com.servlet.admin.permission.service.PermissionService;
 import com.servlet.admin.product.entity.BodyProduct;
 import com.servlet.admin.product.service.ProductService;
 import com.servlet.admin.producttype.entity.BodyProductType;
@@ -79,6 +80,8 @@ public class ProcessHandler implements ProcessService{
 	DownloadService downloadService;
 	@Autowired
 	UserMobileLocationService userMobileLocationService;
+	@Autowired
+	PermissionService permissionService;
 	
 	@Override
 	public Object ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -221,6 +224,8 @@ public class ProcessHandler implements ProcessService{
 				String type = (String) data;
 				if(type == "ALL") {
 					val = roleService.getAllListRole(auth.getIdcompany(), auth.getIdbranch());
+				}else if(type == "TEMPLATE") {
+					val = permissionService.getAllListPermission();
 				}else {
 					long id = new Long(type).longValue();
 					val = roleService.getRoleDetail(id, auth.getIdcompany(), auth.getIdbranch());
