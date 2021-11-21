@@ -21,6 +21,7 @@ import com.servlet.admin.companybranch.entity.CompanyBranchData;
 import com.servlet.admin.companybranch.entity.CompanyBranchPK;
 import com.servlet.admin.companybranch.service.CompanyBranchService;
 import com.servlet.login.api.LoginApi;
+import com.servlet.shared.ReturnData;
 import com.servlet.user.entity.UserPermissionData;
 
 @Service
@@ -59,7 +60,7 @@ public class CompanyHandler implements CompanyService{
 		table.setContactnumber(company.getContactnumber());
 		table.setDisplayname(company.getDisplayname());
 		table.setAddress(company.getAddress());
-		table.setIsactive(company.isIsactive());
+		table.setIsactive(true);
 		table.setEmail(company.getEmail());
 		table.setCreated(ts);
 		table.setModified(ts);
@@ -90,7 +91,7 @@ public class CompanyHandler implements CompanyService{
 		table.setContactnumber(company.getContactnumber());
 		table.setDisplayname(company.getDisplayname());
 		table.setAddress(company.getAddress());
-		table.setIsactive(company.isIsactive());
+//		table.setIsactive(company.isIsactive());
 		table.setEmail(company.getEmail());
 		table.setModified(ts);
 		Company returntable = repository.saveAndFlush(table);
@@ -141,6 +142,48 @@ public class CompanyHandler implements CompanyService{
 			data.setCompany(null);
 			data.setListbranches(null);
 		}
+		return data;
+	}
+
+	@Override
+	public ReturnData activatedCompany(long id) {
+		// TODO Auto-generated method stub
+		Timestamp ts = new Timestamp(new Date().getTime());
+		Company table = repository.getById(id);
+		table.setIsactive(true);
+		table.setModified(ts);
+		Company returntable = repository.saveAndFlush(table);
+		
+		ReturnData data = new ReturnData();
+		data.setId(returntable.getId());
+		return data;
+	}
+
+	@Override
+	public ReturnData unActivatedCompany(long id) {
+		// TODO Auto-generated method stub
+		Timestamp ts = new Timestamp(new Date().getTime());
+		Company table = repository.getById(id);
+		table.setIsactive(false);
+		table.setModified(ts);
+		Company returntable = repository.saveAndFlush(table);
+		
+		ReturnData data = new ReturnData();
+		data.setId(returntable.getId());
+		return data;
+	}
+
+	@Override
+	public ReturnData deleteCompany(long id) {
+		// TODO Auto-generated method stub
+		Timestamp ts = new Timestamp(new Date().getTime());
+		Company table = repository.getById(id);
+		table.setIsdelete(true);
+		table.setModified(ts);
+		Company returntable = repository.saveAndFlush(table);
+		
+		ReturnData data = new ReturnData();
+		data.setId(returntable.getId());
 		return data;
 	}
 

@@ -32,9 +32,11 @@ import com.servlet.mobile.usermobilecallplan.service.UserMobileCallPlanService;
 import com.servlet.security.entity.AuthorizationData;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.AESEncryptionDecryption;
+import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConvertJson;
 import com.servlet.shared.ReturnData;
+import com.servlet.shared.ValidationDataMessage;
 
 
 @Service
@@ -123,6 +125,7 @@ public class UserMobileHandler implements UserMobileService{
 	@Override
 	public ReturnData saveUserMobile(BodyUserMobile usermobile, long idcompany, long idbranch) {
 		// TODO Auto-generated method stub
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
 		AESEncryptionDecryption aesEncryptionDecryption = new AESEncryptionDecryption();
 		String passwordDB = aesEncryptionDecryption.encrypt(usermobile.getPassword());
 		Timestamp ts = new Timestamp(new Date().getTime());
@@ -141,45 +144,57 @@ public class UserMobileHandler implements UserMobileService{
 		table.setModified(ts);
 		table.setImei(usermobile.getImei());
 		
-		UserMobile user = repository.saveAndFlush(table);
+		List<UserMobileDataAuth> checkUsername = getUserLoginByUserNameV2(usermobile.getUsername());
+		long idreturn = 0;
 		
-		List<UserMobileRole> listsave = new ArrayList<UserMobileRole>();
-		if(usermobile.getRoles().length > 0) {
-			for (int i = 0; i < usermobile.getRoles().length; i++) {
-				UserMobileRolePK pk = new UserMobileRolePK();
-				pk.setIdrole(usermobile.getRoles()[i]);
-				pk.setIdusermobile(user.getId());
-				UserMobileRole userMobileRole = new UserMobileRole();
-				userMobileRole.setUserMobileRolePK(pk);
-				listsave.add(userMobileRole);
-			}
-			userMobileRoleService.saveUserMobileRoleList(listsave);
-		}
+		if(checkUsername != null && checkUsername.size() > 0) {
+			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.USERNAME_IS_EXIST,"Username Sudah Terpakai");
+			validations.add(msg);
+		}else {
 		
-		List<UserMobileCallPlan> listcallplansave = new ArrayList<UserMobileCallPlan>();
-		if(usermobile.getCallplans().length > 0) {
-			for (int i = 0; i < usermobile.getCallplans().length; i++) {
-				UserMobileCallPlanPK pk = new UserMobileCallPlanPK();
-				pk.setIdcompany(idcompany);
-				pk.setIdbranch(idbranch);
-				pk.setIdusermobile(user.getId());
-				pk.setIdcallplan(usermobile.getCallplans()[i]);
-				UserMobileCallPlan usermobilecallplan = new UserMobileCallPlan();
-				usermobilecallplan.setUserMobileCallPlanPK(pk);
-				listcallplansave.add(usermobilecallplan);
+			UserMobile user = repository.saveAndFlush(table);
+			idreturn = user.getId();
+			
+			List<UserMobileRole> listsave = new ArrayList<UserMobileRole>();
+			if(usermobile.getRoles().length > 0) {
+				for (int i = 0; i < usermobile.getRoles().length; i++) {
+					UserMobileRolePK pk = new UserMobileRolePK();
+					pk.setIdrole(usermobile.getRoles()[i]);
+					pk.setIdusermobile(user.getId());
+					UserMobileRole userMobileRole = new UserMobileRole();
+					userMobileRole.setUserMobileRolePK(pk);
+					listsave.add(userMobileRole);
+				}
+				userMobileRoleService.saveUserMobileRoleList(listsave);
 			}
-			userMobileCallPlanService.saveUserMobileCallPlanList(listcallplansave);
+			
+			List<UserMobileCallPlan> listcallplansave = new ArrayList<UserMobileCallPlan>();
+			if(usermobile.getCallplans().length > 0) {
+				for (int i = 0; i < usermobile.getCallplans().length; i++) {
+					UserMobileCallPlanPK pk = new UserMobileCallPlanPK();
+					pk.setIdcompany(idcompany);
+					pk.setIdbranch(idbranch);
+					pk.setIdusermobile(user.getId());
+					pk.setIdcallplan(usermobile.getCallplans()[i]);
+					UserMobileCallPlan usermobilecallplan = new UserMobileCallPlan();
+					usermobilecallplan.setUserMobileCallPlanPK(pk);
+					listcallplansave.add(usermobilecallplan);
+				}
+				userMobileCallPlanService.saveUserMobileCallPlanList(listcallplansave);
+			}
 		}
 		
 		ReturnData data = new ReturnData();
-		data.setId(user.getId());
-		
+		data.setId(idreturn);
+		data.setSuccess(validations.size() > 0?false:true);
+		data.setValidations(validations);
 		return data;
 	}
 
 	@Override
 	public ReturnData editUserMobile(long id, BodyUserMobile usermobile) {
 		// TODO Auto-generated method stub
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
 		Timestamp ts = new Timestamp(new Date().getTime());
 		UserMobile table = repository.getById(id);
 		table.setUsername(usermobile.getUsername());
@@ -189,65 +204,77 @@ public class UserMobileHandler implements UserMobileService{
 		table.setEmail(usermobile.getEmail());
 		table.setAddress(usermobile.getAddress());
 		table.setModified(ts);
-		repository.saveAndFlush(table);
 		
-		List<UserMobileRolePK> listdelete = new ArrayList<UserMobileRolePK>();
-		List<UserMobileRoleData> listroleuser = new ArrayList<UserMobileRoleData>(userMobileRoleService.getListUserMobileRole(id));
-		if(listroleuser.size() > 0) {
-			for(UserMobileRoleData data : listroleuser) {
-				UserMobileRolePK pk = new UserMobileRolePK();
-				pk.setIdrole(data.getId());
-				pk.setIdusermobile(id);
-				listdelete.add(pk);
-			}
-			userMobileRoleService.deleteAllUserMobileRolePKPK(listdelete);
-		}
+		List<UserMobileDataAuth> checkUsername = getUserLoginByUserNameV2(usermobile.getUsername());
+		long idreturn = 0;
 		
-		List<UserMobileCallPlanPK> listcallplandelete = new ArrayList<UserMobileCallPlanPK>();
-		List<UserMobileCallPlanData> listcallplanuser = new ArrayList<UserMobileCallPlanData>(userMobileCallPlanService.getListUserMobileCallPlan(id));
-		if(listcallplanuser.size() > 0) {
-			for(UserMobileCallPlanData userMobileCallPlanData : listcallplanuser) {
-				UserMobileCallPlanPK pk = new UserMobileCallPlanPK();
-				pk.setIdcompany(table.getIdcompany());
-				pk.setIdbranch(table.getIdbranch());
-				pk.setIdcallplan(userMobileCallPlanData.getIdcallplan());
-				pk.setIdusermobile(id);
-				listcallplandelete.add(pk);
+		if(checkUsername != null && checkUsername.size() > 0) {
+			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.USERNAME_IS_EXIST,"Username Sudah Terpakai");
+			validations.add(msg);
+		}else {
+			
+			repository.saveAndFlush(table);
+			
+			List<UserMobileRolePK> listdelete = new ArrayList<UserMobileRolePK>();
+			List<UserMobileRoleData> listroleuser = new ArrayList<UserMobileRoleData>(userMobileRoleService.getListUserMobileRole(id));
+			if(listroleuser.size() > 0) {
+				for(UserMobileRoleData data : listroleuser) {
+					UserMobileRolePK pk = new UserMobileRolePK();
+					pk.setIdrole(data.getId());
+					pk.setIdusermobile(id);
+					listdelete.add(pk);
+				}
+				userMobileRoleService.deleteAllUserMobileRolePKPK(listdelete);
 			}
-			userMobileCallPlanService.deleteAllUserMobileCallPlanByListPK(listcallplandelete);
-		}
+			
+			List<UserMobileCallPlanPK> listcallplandelete = new ArrayList<UserMobileCallPlanPK>();
+			List<UserMobileCallPlanData> listcallplanuser = new ArrayList<UserMobileCallPlanData>(userMobileCallPlanService.getListUserMobileCallPlan(id));
+			if(listcallplanuser.size() > 0) {
+				for(UserMobileCallPlanData userMobileCallPlanData : listcallplanuser) {
+					UserMobileCallPlanPK pk = new UserMobileCallPlanPK();
+					pk.setIdcompany(table.getIdcompany());
+					pk.setIdbranch(table.getIdbranch());
+					pk.setIdcallplan(userMobileCallPlanData.getIdcallplan());
+					pk.setIdusermobile(id);
+					listcallplandelete.add(pk);
+				}
+				userMobileCallPlanService.deleteAllUserMobileCallPlanByListPK(listcallplandelete);
+			}
+			
+			List<UserMobileRole> listsave = new ArrayList<UserMobileRole>();
+			if(usermobile.getRoles().length > 0) {
+				for (int i = 0; i < usermobile.getRoles().length; i++) {
+					UserMobileRolePK pk = new UserMobileRolePK();
+					pk.setIdrole(usermobile.getRoles()[i]);
+					pk.setIdusermobile(id);
+					UserMobileRole userMobileRole = new UserMobileRole();
+					userMobileRole.setUserMobileRolePK(pk);
+					listsave.add(userMobileRole);
+				}
+				userMobileRoleService.saveUserMobileRoleList(listsave);
+			}
+			
+			List<UserMobileCallPlan> listuserMobileCallPlansave = new ArrayList<UserMobileCallPlan>();
+			if(usermobile.getCallplans().length > 0) {
+				for (int i = 0; i < usermobile.getCallplans().length; i++) {
+					UserMobileCallPlanPK pk = new UserMobileCallPlanPK();
+					pk.setIdcompany(table.getIdcompany());
+					pk.setIdbranch(table.getIdbranch());
+					pk.setIdcallplan(usermobile.getCallplans()[i]);
+					pk.setIdusermobile(id);
+					UserMobileCallPlan userMobileCallPlan = new UserMobileCallPlan();
+					userMobileCallPlan.setUserMobileCallPlanPK(pk);
+					listuserMobileCallPlansave.add(userMobileCallPlan);
+				}
+				userMobileCallPlanService.saveUserMobileCallPlanList(listuserMobileCallPlansave);
+			}
+	}
 		
-		List<UserMobileRole> listsave = new ArrayList<UserMobileRole>();
-		if(usermobile.getRoles().length > 0) {
-			for (int i = 0; i < usermobile.getRoles().length; i++) {
-				UserMobileRolePK pk = new UserMobileRolePK();
-				pk.setIdrole(usermobile.getRoles()[i]);
-				pk.setIdusermobile(id);
-				UserMobileRole userMobileRole = new UserMobileRole();
-				userMobileRole.setUserMobileRolePK(pk);
-				listsave.add(userMobileRole);
-			}
-			userMobileRoleService.saveUserMobileRoleList(listsave);
-		}
-		
-		List<UserMobileCallPlan> listuserMobileCallPlansave = new ArrayList<UserMobileCallPlan>();
-		if(usermobile.getCallplans().length > 0) {
-			for (int i = 0; i < usermobile.getCallplans().length; i++) {
-				UserMobileCallPlanPK pk = new UserMobileCallPlanPK();
-				pk.setIdcompany(table.getIdcompany());
-				pk.setIdbranch(table.getIdbranch());
-				pk.setIdcallplan(usermobile.getCallplans()[i]);
-				pk.setIdusermobile(id);
-				UserMobileCallPlan userMobileCallPlan = new UserMobileCallPlan();
-				userMobileCallPlan.setUserMobileCallPlanPK(pk);
-				listuserMobileCallPlansave.add(userMobileCallPlan);
-			}
-			userMobileCallPlanService.saveUserMobileCallPlanList(listuserMobileCallPlansave);
-		}
 		
 		ReturnData data = new ReturnData();
 		data.setId(id);
-		
+		data.setSuccess(validations.size() > 0?false:true);
+		data.setValidations(validations);
 		return data;
 	}
 
@@ -257,11 +284,13 @@ public class UserMobileHandler implements UserMobileService{
 		List<UserMobile> list = repository.getUserById(id, idcompany, idbranch);
 		if(list != null && list.size() > 0) {
 			List<UserMobileRoleData> listroleuser = new ArrayList<UserMobileRoleData>(userMobileRoleService.getListUserMobileRole(id));
+			List<UserMobileCallPlanData> listcallplans = new ArrayList<UserMobileCallPlanData>(userMobileCallPlanService.getListUserMobileCallPlan(id));
 			UserMobile data = list.get(0);
 			data.setToken("");
 			UserDetailMobile user = new UserDetailMobile();
 			user.setUser(data);
 			user.setRoles(listroleuser);
+			user.setCallplans(listcallplans);
 			return user;
 		}
 		return null;

@@ -1,6 +1,8 @@
 package com.servlet.Process;
 
+import com.servlet.shared.ProcessReturn;
+
 public interface ProcessService {
-	Object ProcessingFunction(String codepermission,Object data,String authorization);
-	Object ProcessingReadFunction(String codepermission,Object data,String authorization);
+	ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization);
+	ProcessReturn ProcessingReadFunction(String codepermission,Object data,String authorization);
 }

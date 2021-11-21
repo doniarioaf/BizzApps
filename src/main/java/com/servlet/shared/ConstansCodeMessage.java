@@ -21,4 +21,8 @@ public class ConstansCodeMessage {
 	
 	//user belum mendapatkan role
 	public static final String CODE_USER_NOT_REGISTRED_ROLE = "user.is.not.registered.role";
+	
+	public static final String DATA_VALIDATION = "data.validation";
+	
+	public static final String USERNAME_IS_EXIST = "username.is.exist";
 }

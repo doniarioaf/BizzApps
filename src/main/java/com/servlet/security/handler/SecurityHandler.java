@@ -23,6 +23,7 @@ import com.servlet.security.service.SecurityService;
 import com.servlet.shared.AESEncryptionDecryption;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstansKey;
+import com.servlet.shared.ProcessReturn;
 import com.servlet.shared.Response;
 import com.servlet.user.entity.UserApps;
 import com.servlet.user.entity.UserPermissionData;
@@ -76,20 +77,32 @@ public class SecurityHandler implements SecurityService{
 				value.setSuccess(auth.isIsvalid());
 				value.setMessagecode("SUCCESS");
 				value.setMessage("SUCCESS");
+				value.setHttpcode(HttpStatus.OK.value());
 				
 				try {
 					if(action.equals("READ")) {
-						Object tempdata = processservice.ProcessingReadFunction(codepermission, data,authorization);
-						if(tempdata != null) {
-							value.setData(tempdata);
+						ProcessReturn tempdata = processservice.ProcessingReadFunction(codepermission, data,authorization);
+						if(tempdata.getData() != null) {
+							value.setData(tempdata.getData());
 						}else {
 							value.setData(data);
 						}
 						
 					}else  {
-						value.setData(processservice.ProcessingFunction(codepermission, data,authorization));
+						ProcessReturn tempdata = processservice.ProcessingFunction(codepermission, data,authorization);
+						if(tempdata.isSuccess()) {
+							value.setData(tempdata.getData());
+							value.setValidations(tempdata.getValidations());
+						}else {
+							value.setSuccess(tempdata.isSuccess());
+							value.setMessagecode(ConstansCodeMessage.DATA_VALIDATION);
+							value.setMessage("Terkena Data Validasi");
+							value.setHttpcode(tempdata.getHttpcode());
+							value.setValidations(tempdata.getValidations());
+						}
+						
 					}
-					value.setHttpcode(HttpStatus.OK.value());
+					
 				}catch (Exception e) {
 					// TODO: handle exception
 					e.printStackTrace();
