@@ -16,9 +16,11 @@ import com.servlet.admin.userappsrole.service.UserAppsRoleService;
 import com.servlet.security.entity.AuthorizationData;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.AESEncryptionDecryption;
+import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConvertJson;
 import com.servlet.shared.ReturnData;
+import com.servlet.shared.ValidationDataMessage;
 import com.servlet.user.entity.BodyUserApps;
 import com.servlet.user.entity.UserApps;
 import com.servlet.user.entity.UserData;
@@ -114,6 +116,7 @@ public class UserAppsHandler implements UserAppsService{
 	@Override
 	public ReturnData saveUserApps(BodyUserApps userapps,long idcompany,long idbranch) {
 		// TODO Auto-generated method stub
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
 		AESEncryptionDecryption aesEncryptionDecryption = new AESEncryptionDecryption();
 		String passwordDB = aesEncryptionDecryption.encrypt(userapps.getPassword());
 		Timestamp ts = new Timestamp(new Date().getTime());
@@ -131,24 +134,33 @@ public class UserAppsHandler implements UserAppsService{
 		table.setCreated(ts);
 		table.setModified(ts);
 		
-		UserApps user = repository.saveAndFlush(table);
-		
-		List<UserAppsRole> listsave = new ArrayList<UserAppsRole>();
-		if(userapps.getRoles().length > 0) {
-			for (int i = 0; i < userapps.getRoles().length; i++) {
-				UserAppsRolePK pk = new UserAppsRolePK();
-				pk.setIdrole(userapps.getRoles()[i]);
-				pk.setIduserapps(user.getId());
-				UserAppsRole userAppsRole = new UserAppsRole();
-				userAppsRole.setUserAppsRolePK(pk);
-				listsave.add(userAppsRole);
+		List<UserApps> checkUsername = repository.getUserLoginByUsername(userapps.getUsername());
+		long idreturn = 0;
+		if(checkUsername != null && checkUsername.size() > 0) {
+			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.USERNAME_IS_EXIST,"Username Sudah Terpakai");
+			validations.add(msg);
+		}else {
+			UserApps user = repository.saveAndFlush(table);
+			idreturn = user.getId();
+			
+			List<UserAppsRole> listsave = new ArrayList<UserAppsRole>();
+			if(userapps.getRoles().length > 0) {
+				for (int i = 0; i < userapps.getRoles().length; i++) {
+					UserAppsRolePK pk = new UserAppsRolePK();
+					pk.setIdrole(userapps.getRoles()[i]);
+					pk.setIduserapps(user.getId());
+					UserAppsRole userAppsRole = new UserAppsRole();
+					userAppsRole.setUserAppsRolePK(pk);
+					listsave.add(userAppsRole);
+				}
+				userAppsRoleService.saveUserAppsRoleList(listsave);
 			}
-			userAppsRoleService.saveUserAppsRoleList(listsave);
 		}
 		
 		ReturnData data = new ReturnData();
-		data.setId(user.getId());
-		
+		data.setId(idreturn);
+		data.setSuccess(validations.size() > 0?false:true);
+		data.setValidations(validations);
 		return data;
 	}
 
@@ -160,6 +172,8 @@ public class UserAppsHandler implements UserAppsService{
 			List<UserAppsRoleData> listroleuser = new ArrayList<UserAppsRoleData>(userAppsRoleService.getListUserAppsRole(id));
 			UserApps data = list.get(0);
 			data.setToken("");
+			data.setIdcompany(0);
+			data.setIdbranch(0);
 			UserDetailData userdetail = new UserDetailData();
 			userdetail.setUser(data);
 			userdetail.setRoles(listroleuser);

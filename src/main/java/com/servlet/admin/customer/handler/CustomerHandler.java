@@ -12,6 +12,7 @@ import com.servlet.admin.customer.entity.BodyCustomer;
 import com.servlet.admin.customer.entity.Customer;
 import com.servlet.admin.customer.entity.CustomerDetailData;
 import com.servlet.admin.customer.entity.CustomerListData;
+import com.servlet.admin.customer.entity.CustomerTemplate;
 import com.servlet.admin.customer.mapper.GetCustomerList;
 import com.servlet.admin.customer.mapper.GetDetailCustomer;
 import com.servlet.admin.customer.repo.CustomerRepo;
@@ -19,6 +20,7 @@ import com.servlet.admin.customer.service.CustomerService;
 import com.servlet.admin.customertype.entity.CustomerType;
 import com.servlet.admin.customertype.entity.CustomerTypeData;
 import com.servlet.admin.customertype.mapper.GetCustomerType;
+import com.servlet.admin.customertype.service.CustomerTypeService;
 import com.servlet.shared.ReturnData;
 
 @Service
@@ -27,6 +29,8 @@ public class CustomerHandler implements CustomerService{
 	private JdbcTemplate jdbcTemplate;
 	@Autowired
 	private CustomerRepo repository;
+	@Autowired
+	private CustomerTypeService customerTypeService;
 	
 	@Override
 	public ReturnData saveCustomer(BodyCustomer customer, long idcompany, long idbranch) {
@@ -114,6 +118,14 @@ public class CustomerHandler implements CustomerService{
 			return list.get(0);
 		}
 		return null;
+	}
+
+	@Override
+	public CustomerTemplate customerTemplate(long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		CustomerTemplate data = new CustomerTemplate();
+		data.setCustomertypeoptions(customerTypeService.getAllListCustomerType(idcompany, idbranch));
+		return data;
 	}
 
 }

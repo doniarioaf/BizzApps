@@ -8,6 +8,8 @@ public class ConstansPermission {
 	public static final String READ_COMPANY = "READ_COMPANY";
 	public static final String CREATE_COMPANY = "CREATE_COMPANY";
 	public static final String EDIT_COMPANY = "EDIT_COMPANY";
+	public static final String EDIT_ACTIVATED_COMPANY = "EDIT_ACTIVATED_COMPANY";
+	public static final String DELETE_COMPANY = "DELETE_COMPANY";
 	
 	public static final String READ_ROLE = "READ_ROLE";
 	public static final String CREATE_ROLE = "CREATE_ROLE";

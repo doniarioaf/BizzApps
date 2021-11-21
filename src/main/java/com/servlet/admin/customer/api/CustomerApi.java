@@ -43,6 +43,13 @@ public class CustomerApi {
 		Response response = securityService.response(ConstansPermission.READ_CUSTOMER,"ALL",authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
+	
+	@GetMapping("/template")
+	ResponseEntity<Response> getCustomerTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
+		Response response = securityService.response(ConstansPermission.READ_CUSTOMER,"TEMPLATE",authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
 	@PostMapping
 	ResponseEntity<Response> createCustomer(@RequestBody @Validated BodyCustomer body, @RequestHeader(ConstansKey.AUTH) String authorization) {
 		Response response = securityService.response(ConstansPermission.CREATE_CUSTOMER,body,authorization);
