@@ -197,7 +197,6 @@ public class UserMobileHandler implements UserMobileService{
 		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
 		Timestamp ts = new Timestamp(new Date().getTime());
 		UserMobile table = repository.getById(id);
-		table.setUsername(usermobile.getUsername());
 		table.setNama(usermobile.getNama());
 		table.setContactnumber(usermobile.getNotelepon());
 		table.setIsactive(usermobile.isIsactive());
@@ -205,10 +204,16 @@ public class UserMobileHandler implements UserMobileService{
 		table.setAddress(usermobile.getAddress());
 		table.setModified(ts);
 		
-		List<UserMobileDataAuth> checkUsername = getUserLoginByUserNameV2(usermobile.getUsername());
-		long idreturn = 0;
-		
-		if(checkUsername != null && checkUsername.size() > 0) {
+		boolean flagValidasiUserName = false;
+		if(!table.getUsername().equals(usermobile.getUsername())) {
+			List<UserMobileDataAuth> checkUsername = getUserLoginByUserNameV2(usermobile.getUsername());
+			if(checkUsername != null && checkUsername.size() > 0) {
+				flagValidasiUserName = true;
+			}else {
+				table.setUsername(usermobile.getUsername());
+			}
+		}
+		if(flagValidasiUserName) {
 			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.USERNAME_IS_EXIST,"Username Sudah Terpakai");
 			validations.add(msg);
 		}else {

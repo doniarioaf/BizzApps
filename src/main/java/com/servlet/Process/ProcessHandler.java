@@ -3,11 +3,14 @@ package com.servlet.Process;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
+import com.servlet.BizzAppsBackEndApplication;
 import com.servlet.admin.branch.entity.BodyBranch;
 import com.servlet.admin.branch.entity.Branch;
 import com.servlet.admin.branch.entity.BranchData;
@@ -52,6 +55,8 @@ import com.servlet.user.service.UserAppsService;
 
 @Service
 public class ProcessHandler implements ProcessService{
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProcessHandler.class);
+	
 	@Autowired
 	ProcessService processservice;
 	@Autowired
@@ -89,6 +94,7 @@ public class ProcessHandler implements ProcessService{
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
+		
 		// TODO Auto-generated constructor stub
 //		Object val = null;
 		ProcessReturn val = new ProcessReturn();
