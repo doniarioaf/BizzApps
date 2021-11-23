@@ -158,7 +158,7 @@ public class ProcessHandler implements ProcessService{
 				BodyUserApps body = (BodyUserApps) data;
 				ReturnData valReturn = userAppsService.saveUserApps(body,auth.getIdcompany(),auth.getIdbranch());
 				val.setSuccess(valReturn.isSuccess());
-				val.setHttpcode(HttpStatus.NOT_ACCEPTABLE.value());
+				val.setHttpcode(HttpStatus.BAD_REQUEST.value());
 				val.setValidations(valReturn.getValidations());
 				
 				val.setData(userAppsService.saveUserApps(body,auth.getIdcompany(),auth.getIdbranch()));
@@ -176,7 +176,7 @@ public class ProcessHandler implements ProcessService{
 					val.setData(valReturn.getId());
 				}else {
 					val.setSuccess(valReturn.isSuccess());
-					val.setHttpcode(HttpStatus.NOT_ACCEPTABLE.value());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
@@ -190,7 +190,7 @@ public class ProcessHandler implements ProcessService{
 					val.setData(valReturn.getId());
 				}else {
 					val.setSuccess(valReturn.isSuccess());
-					val.setHttpcode(HttpStatus.NOT_ACCEPTABLE.value());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
@@ -256,14 +256,31 @@ public class ProcessHandler implements ProcessService{
 //				val = projectService.updateProject(id, body, auth.getIdcompany(),auth.getIdbranch());
 			}else if(codepermission.equals(ConstansPermission.CREATE_INFO)) {
 				BodyInfoHeader body = (BodyInfoHeader) data;
-				val.setData(infoHeaderService.saveInfoHeader(body, auth.getIdcompany(),auth.getIdbranch()));
+				
+				ReturnData valReturn = infoHeaderService.saveInfoHeader(body, auth.getIdcompany(),auth.getIdbranch());
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}				
 //				val = infoHeaderService.saveInfoHeader(body, auth.getIdcompany(),auth.getIdbranch());
 			}else if(codepermission.equals(ConstansPermission.EDIT_INFO)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				BodyInfoHeader body = (BodyInfoHeader) param.get("BodyInfoHeader");
 				long id = (long) param.get("id");
-				val.setData(infoHeaderService.updateInfoHeader(id, body, auth.getIdcompany(),auth.getIdbranch()));
-//				val = infoHeaderService.updateInfoHeader(id, body, auth.getIdcompany(),auth.getIdbranch());
+				
+				ReturnData valReturn = infoHeaderService.updateInfoHeader(id, body, auth.getIdcompany(),auth.getIdbranch());
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}				
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
 			if(codepermission.equals(ConstansPermission.CREATE_MONITOR_USER_MOBILE) ) {

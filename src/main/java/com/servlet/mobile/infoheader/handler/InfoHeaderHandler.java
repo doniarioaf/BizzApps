@@ -16,7 +16,9 @@ import com.servlet.mobile.infoheader.entity.InfoHeaderDetailData;
 import com.servlet.mobile.infoheader.mapper.GetInfoHeader;
 import com.servlet.mobile.infoheader.repo.InfoHeaderRepo;
 import com.servlet.mobile.infoheader.service.InfoHeaderService;
+import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ReturnData;
+import com.servlet.shared.ValidationDataMessage;
 
 @Service
 public class InfoHeaderHandler implements InfoHeaderService{
@@ -30,6 +32,7 @@ public class InfoHeaderHandler implements InfoHeaderService{
 	@Override
 	public ReturnData saveInfoHeader(BodyInfoHeader body, long idcompany, long idbranch) {
 		// TODO Auto-generated method stub
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
 		InfoHeader table = new InfoHeader();
 		table.setIdcompany(idcompany);
 		table.setIdbranch(idbranch);
@@ -40,23 +43,33 @@ public class InfoHeaderHandler implements InfoHeaderService{
 		table.setSequence(body.getSequence());
 		table.setType(body.getType());
 		
-		InfoHeader returntable = repository.saveAndFlush(table);
+		//TA(Text Area),RB(Radio Button),CL(Chekbox List),DDL(DropDown List)
+		long idreturn = 0;
+		if(body.getType().equals("TA") || body.getType().equals("RB") || body.getType().equals("CL") || body.getType().equals("DDL")) {
 		
-		List<InfoHeaderDetail> listinfoHeaderDetail = new ArrayList<InfoHeaderDetail>();
-		if(body.getAnswer().length > 0) {
-			for(int i=0; i < body.getAnswer().length; i++) {
-				InfoHeaderDetail tabledetail = new InfoHeaderDetail();
-				tabledetail.setIdcompany(idcompany);
-				tabledetail.setIdbranch(idbranch);
-				tabledetail.setIdinfoheader(returntable.getId());
-				tabledetail.setAnswer(body.getAnswer()[i]);
-				listinfoHeaderDetail.add(tabledetail);
+			InfoHeader returntable = repository.saveAndFlush(table);
+			idreturn = returntable.getId();
+			List<InfoHeaderDetail> listinfoHeaderDetail = new ArrayList<InfoHeaderDetail>();
+			if(body.getAnswer().length > 0) {
+				for(int i=0; i < body.getAnswer().length; i++) {
+					InfoHeaderDetail tabledetail = new InfoHeaderDetail();
+					tabledetail.setIdcompany(idcompany);
+					tabledetail.setIdbranch(idbranch);
+					tabledetail.setIdinfoheader(returntable.getId());
+					tabledetail.setAnswer(body.getAnswer()[i]);
+					listinfoHeaderDetail.add(tabledetail);
+				}
+				infoHeaderDetailService.saveDataList(listinfoHeaderDetail);
 			}
-			infoHeaderDetailService.saveDataList(listinfoHeaderDetail);
+		}else {
+			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.INFO_TYPE_NOT_EXIST,"Jenis Info Tidak Ada");
+			validations.add(msg);
 		}
 		
 		ReturnData data = new ReturnData();
-		data.setId(returntable.getId());
+		data.setId(idreturn);
+		data.setSuccess(validations.size() > 0?false:true);
+		data.setValidations(validations);
 		return data;
 	}
 	
@@ -75,8 +88,17 @@ public class InfoHeaderHandler implements InfoHeaderService{
 	@Override
 	public ReturnData updateInfoHeader(long id, BodyInfoHeader body, long idcompany, long idbranch) {
 		// TODO Auto-generated method stub
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
 		InfoHeaderData checkData = checkInfoHeaderById(id,idcompany,idbranch);
-		if(checkData != null) {
+		
+		//TA(Text Area),RB(Radio Button),CL(Chekbox List),DDL(DropDown List)
+		if(body.getType().equals("TA") || body.getType().equals("RB") || body.getType().equals("CL") || body.getType().equals("DDL")) {
+			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.INFO_TYPE_NOT_EXIST,"Jenis Info Tidak Ada");
+			validations.add(msg);
+		}else if(checkData == null) {
+			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.DATA_NOT_FOUND,"Data Tidak Diketemukan");
+			validations.add(msg);
+		}else if(checkData != null) {
 			InfoHeader table = repository.getById(id);
 			table.setQuestion(body.getQuestion());
 			table.setSequence(body.getSequence());
@@ -108,11 +130,15 @@ public class InfoHeaderHandler implements InfoHeaderService{
 				infoHeaderDetailService.saveDataList(listinfoHeaderDetail);
 			}
 			
-			ReturnData data = new ReturnData();
-			data.setId(returntable.getId());
-			return data;
+//			ReturnData data = new ReturnData();
+//			data.setId(returntable.getId());
+//			return data;
 		}
-		return null;
+		ReturnData data = new ReturnData();
+		data.setId(id);
+		data.setSuccess(validations.size() > 0?false:true);
+		data.setValidations(validations);
+		return data;
 	}
 
 	@Override
