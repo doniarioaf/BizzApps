@@ -25,4 +25,6 @@ public class ConstansCodeMessage {
 	public static final String DATA_VALIDATION = "data.validation";
 	
 	public static final String USERNAME_IS_EXIST = "username.is.exist";
+	public static final String INFO_TYPE_NOT_EXIST = "info.type.not.exist";
+	public static final String DATA_NOT_FOUND = "data.not.found";
 }
