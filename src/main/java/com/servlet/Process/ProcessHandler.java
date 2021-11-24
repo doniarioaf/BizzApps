@@ -437,7 +437,9 @@ public class ProcessHandler implements ProcessService{
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_INFO)) {
 				String type = (String) data;
-				if(type == "ALL") {
+				if(type == "TEMPLATE") {
+					val.setData(infoHeaderService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type == "ALL") {
 					val.setData(infoHeaderService.getAllListData(auth.getIdcompany(), auth.getIdbranch()));
 //					val = infoHeaderService.getAllListData(auth.getIdcompany(), auth.getIdbranch());
 				}else {

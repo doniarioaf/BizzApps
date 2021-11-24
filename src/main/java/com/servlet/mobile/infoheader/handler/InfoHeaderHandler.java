@@ -1,18 +1,23 @@
 package com.servlet.mobile.infoheader.handler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.servlet.admin.customertype.entity.CustomerTypeData;
+import com.servlet.admin.customertype.service.CustomerTypeService;
 import com.servlet.mobile.infodetail.entity.InfoHeaderDetail;
 import com.servlet.mobile.infodetail.service.InfoHeaderDetailService;
 import com.servlet.mobile.infoheader.entity.BodyInfoHeader;
 import com.servlet.mobile.infoheader.entity.InfoHeader;
 import com.servlet.mobile.infoheader.entity.InfoHeaderData;
 import com.servlet.mobile.infoheader.entity.InfoHeaderDetailData;
+import com.servlet.mobile.infoheader.entity.TemplateInfo;
+import com.servlet.mobile.infoheader.entity.TypeOptions;
 import com.servlet.mobile.infoheader.mapper.GetInfoHeader;
 import com.servlet.mobile.infoheader.repo.InfoHeaderRepo;
 import com.servlet.mobile.infoheader.service.InfoHeaderService;
@@ -28,6 +33,8 @@ public class InfoHeaderHandler implements InfoHeaderService{
 	private InfoHeaderRepo repository;
 	@Autowired
 	private InfoHeaderDetailService infoHeaderDetailService;
+	@Autowired
+	private CustomerTypeService customerTypeService;
 	
 	@Override
 	public ReturnData saveInfoHeader(BodyInfoHeader body, long idcompany, long idbranch) {
@@ -180,6 +187,24 @@ public class InfoHeaderHandler implements InfoHeaderService{
 			listinfomobile.add(infomobile);
 		}
 		return listinfomobile;
+	}
+
+	@Override
+	public TemplateInfo getTemplate(long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		
+//		TA(Text Area),RB(Radio Button),CL(Chekbox List),DDL(DropDown List)
+		List<CustomerTypeData> customertypeoptions = customerTypeService.getAllListCustomerType(idcompany, idbranch);
+		List<TypeOptions> typeoptions = new ArrayList<TypeOptions>();
+		typeoptions.add(new TypeOptions("TA","Text Area"));
+		typeoptions.add(new TypeOptions("RB","Radio Button"));
+		typeoptions.add(new TypeOptions("CL","Chekbox List"));
+		typeoptions.add(new TypeOptions("DDL","DropDown List"));
+		
+		TemplateInfo data = new TemplateInfo();
+		data.setCustomertypeoptions(customertypeoptions);
+		data.setTypeoptions(typeoptions);
+		return data;
 	}
 
 }
