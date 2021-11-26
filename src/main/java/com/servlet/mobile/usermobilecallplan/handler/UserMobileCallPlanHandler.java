@@ -9,10 +9,12 @@ import org.springframework.stereotype.Service;
 
 import com.servlet.mobile.customercallplan.entity.CustomerCallPlanData;
 import com.servlet.mobile.customercallplan.service.CustomerCallPlanService;
+import com.servlet.mobile.usermobilecallplan.entity.DownloadUserMobileCallPlan;
 import com.servlet.mobile.usermobilecallplan.entity.UserMobileCallPlan;
 import com.servlet.mobile.usermobilecallplan.entity.UserMobileCallPlanData;
 import com.servlet.mobile.usermobilecallplan.entity.UserMobileCallPlanDataMobile;
 import com.servlet.mobile.usermobilecallplan.entity.UserMobileCallPlanPK;
+import com.servlet.mobile.usermobilecallplan.mapper.GetCountSizeListUserMobileCallPlanByIdUserMobile;
 import com.servlet.mobile.usermobilecallplan.mapper.GetUserMobileCallPlanByIdUser;
 import com.servlet.mobile.usermobilecallplan.repo.UserMobileCallPlanRepo;
 import com.servlet.mobile.usermobilecallplan.service.UserMobileCallPlanService;
@@ -62,6 +64,14 @@ public class UserMobileCallPlanHandler implements UserMobileCallPlanService{
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetUserMobileCallPlanByIdUser(), queryParameters);
 	}
 	
+	private List<Long> getSizeMobileCallPlanByIdUserMobile(long idusermobile,long idcompany,long idbranch) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetCountSizeListUserMobileCallPlanByIdUserMobile().schema());
+		sqlBuilder.append(" where mccp.idusermobile = ? and mccp.idcompany = ? and mccp.idbranch = ? ");
+		final Object[] queryParameters = new Object[] { idusermobile,idcompany,idbranch };
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetCountSizeListUserMobileCallPlanByIdUserMobile(), queryParameters);
+	}
+	
 	@Override
 	public Object deleteAllUserMobileCallPlanByListPK(List<UserMobileCallPlanPK> listPK) {
 		// TODO Auto-generated method stub
@@ -79,6 +89,26 @@ public class UserMobileCallPlanHandler implements UserMobileCallPlanService{
 		data.setCallplans(listcallplan);
 		data.setCustomercallplans(listcustcallplan);
 		return data;
+	}
+	@Override
+	public DownloadUserMobileCallPlan downloadUserMobileCallPlanByIdUserMobile(long idusermobile, long idcompany,
+			long idbranch, long limit, long offset) {
+		// TODO Auto-generated method stub
+		long size = getSizeMobileCallPlanByIdUserMobile(idusermobile,idcompany,idbranch).size();
+		List<UserMobileCallPlanData> list = getListUserMobileCallPlanPaging(idusermobile,idcompany,idbranch,limit,offset);
+		DownloadUserMobileCallPlan data = new DownloadUserMobileCallPlan();
+		data.setSize(size);
+		data.setCallplans(list);
+		
+		return data;
+	}
+	private List<UserMobileCallPlanData> getListUserMobileCallPlanPaging(long idusermobile,long idcompany,long idbranch,long limit, long offset) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetUserMobileCallPlanByIdUser().schema());
+		sqlBuilder.append(" where mccp.idusermobile = ? and mccp.idcompany = ? and mccp.idbranch = ? ");
+		sqlBuilder.append(" limit "+limit+" offset "+offset);
+		final Object[] queryParameters = new Object[] { idusermobile,idcompany,idbranch };
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetUserMobileCallPlanByIdUser(), queryParameters);
 	}
 	
 

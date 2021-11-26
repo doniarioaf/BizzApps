@@ -32,6 +32,7 @@ import com.servlet.admin.usermobile.entity.BodyUserMobile;
 import com.servlet.admin.usermobile.service.UserMobileService;
 import com.servlet.mobile.callplan.entity.BodyCallPlan;
 import com.servlet.mobile.callplan.service.CallPlanService;
+import com.servlet.mobile.customercallplan.entity.DownloadCustomerCallPlan;
 import com.servlet.mobile.download.service.DownloadService;
 import com.servlet.mobile.infoheader.entity.BodyInfoHeader;
 import com.servlet.mobile.infoheader.service.InfoHeaderService;
@@ -40,6 +41,7 @@ import com.servlet.mobile.monitorusermobile.entity.BodyMonitorUserMobile;
 import com.servlet.mobile.monitorusermobile.service.MonitorUserMobileService;
 import com.servlet.mobile.project.entity.BodyProject;
 import com.servlet.mobile.project.service.ProjectService;
+import com.servlet.mobile.usermobilecallplan.entity.DownloadUserMobileCallPlan;
 import com.servlet.mobile.usermobilelocation.entity.BodyUserMobileLocation;
 import com.servlet.mobile.usermobilelocation.service.UserMobileLocationService;
 import com.servlet.security.entity.AuthorizationData;
@@ -327,10 +329,10 @@ public class ProcessHandler implements ProcessService{
 		if(auth.getTypelogin().equals(ConstansKey.TYPE_WEB)) {
 			if(codepermission.equals(ConstansPermission.READ_ROLE)) {
 				String type = (String) data;
-				if(type == "ALL") {
+				if(type.equals("ALL")) {
 					val.setData(roleService.getAllListRole(auth.getIdcompany(), auth.getIdbranch()));
 //					val = roleService.getAllListRole(auth.getIdcompany(), auth.getIdbranch());
-				}else if(type == "TEMPLATE") {
+				}else if(type.equals("TEMPLATE")) {
 					val.setData(permissionService.getAllListPermission());
 //					val = permissionService.getAllListPermission();
 				}else {
@@ -340,7 +342,7 @@ public class ProcessHandler implements ProcessService{
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_USER)) {
 				String type = (String) data;
-				if(type == "ALL") {
+				if(type.equals("ALL")) {
 					val.setData(userAppsService.getListAllUser(auth.getIdcompany(), auth.getIdbranch()));
 //					val = userAppsService.getListAllUser(auth.getIdcompany(), auth.getIdbranch());
 				}else {
@@ -350,7 +352,7 @@ public class ProcessHandler implements ProcessService{
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_USER_MOBILE)) {
 				String type = (String) data;
-				if(type == "ALL") {
+				if(type.equals("ALL")) {
 					val.setData(userMobileService.getListAllUserMobile(auth.getIdcompany(), auth.getIdbranch()));
 //					val = userMobileService.getListAllUserMobile(auth.getIdcompany(), auth.getIdbranch());
 				}else {
@@ -360,10 +362,10 @@ public class ProcessHandler implements ProcessService{
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_BRANCH)) {
 				String type = (String) data;
-				if(type == "ALL") {
+				if(type.equals("ALL")) {
 					val.setData(new ArrayList<Branch>(branchservice.getListBranchActiveJdbc()));
 //					val = new ArrayList<Branch>(branchservice.getListBranchActiveJdbc());
-				}else if(type == "getlistbranchnotexistincompany") {
+				}else if(type.equals("getlistbranchnotexistincompany")) {
 					val.setData(new ArrayList<BranchData>(branchservice.getAllListBranchNotExistInCompany()));
 //					val = new ArrayList<BranchData>(branchservice.getAllListBranchNotExistInCompany());
 				}else {
@@ -384,10 +386,10 @@ public class ProcessHandler implements ProcessService{
 			}else if(codepermission.equals(ConstansPermission.READ_CUSTOMER)) {
 				String type = (String) data;
 				
-				if(type == "ALL") {
+				if(type.equals("ALL")) {
 					val.setData(customerService.getAllListCustomer(auth.getIdcompany(), auth.getIdbranch()));
 //					val = customerService.getAllListCustomer(auth.getIdcompany(), auth.getIdbranch());
-				}else if(type == "TEMPLATE") {
+				}else if(type.equals("TEMPLATE")) {
 					val.setData(customerService.customerTemplate(auth.getIdcompany(), auth.getIdbranch()));
 //					val = customerService.customerTemplate(auth.getIdcompany(), auth.getIdbranch());
 				}else {
@@ -397,7 +399,7 @@ public class ProcessHandler implements ProcessService{
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_PRODUCTTYPE)) {
 				String type = (String) data;
-				if(type == "ALL") {
+				if(type.equals("ALL")) {
 					val.setData(productTypeService.getAllListProductType(auth.getIdcompany(), auth.getIdbranch()));
 //					val = productTypeService.getAllListProductType(auth.getIdcompany(), auth.getIdbranch());
 				}else {
@@ -407,7 +409,7 @@ public class ProcessHandler implements ProcessService{
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_PRODUCT)) {
 				String type = (String) data;
-				if(type == "ALL") {
+				if(type.equals("ALL")) {
 					val.setData(productService.getAllListProduct(auth.getIdcompany(), auth.getIdbranch()));
 //					val = productService.getAllListProduct(auth.getIdcompany(), auth.getIdbranch());
 				}else {
@@ -417,7 +419,7 @@ public class ProcessHandler implements ProcessService{
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_CALLPLAN)) {
 				String type = (String) data;
-				if(type == "ALL") {
+				if(type.equals("ALL")) {
 					val.setData(callPlanService.getAllListCallPlan(auth.getIdcompany(), auth.getIdbranch()));
 //					val = callPlanService.getAllListCallPlan(auth.getIdcompany(), auth.getIdbranch());
 				}else {
@@ -427,7 +429,7 @@ public class ProcessHandler implements ProcessService{
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_PROJECT)) {
 				String type = (String) data;
-				if(type == "ALL") {
+				if(type.equals("ALL")) {
 					val.setData(projectService.getAllListProject(auth.getIdcompany(), auth.getIdbranch()));
 //					val = projectService.getAllListProject(auth.getIdcompany(), auth.getIdbranch());
 				}else {
@@ -437,9 +439,9 @@ public class ProcessHandler implements ProcessService{
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_INFO)) {
 				String type = (String) data;
-				if(type == "TEMPLATE") {
+				if(type.equals("TEMPLATE")) {
 					val.setData(infoHeaderService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
-				}else if(type == "ALL") {
+				}else if(type.equals("ALL")) {
 					val.setData(infoHeaderService.getAllListData(auth.getIdcompany(), auth.getIdbranch()));
 //					val = infoHeaderService.getAllListData(auth.getIdcompany(), auth.getIdbranch());
 				}else {
@@ -451,15 +453,26 @@ public class ProcessHandler implements ProcessService{
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
 			if(codepermission.equals(ConstansPermission.READ_INFO_MOBILE)) {
 				String type = (String) data;
-				if(type == "ALL_MOBILE") {
+				if(type.equals("ALL_MOBILE")) {
 					val.setData(infoHeaderService.getAllListDataMobile(auth.getIdcompany(), auth.getIdbranch()));
 //					val = infoHeaderService.getAllListDataMobile(auth.getIdcompany(), auth.getIdbranch());
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_DOWNLOAD_MOBILE)) {
-				String type = (String) data;
-				if(type == "ALL") {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("DOWNLOAD")) {
 					val.setData(downloadService.donwload(auth.getId(), auth.getIdcompany(), auth.getIdbranch()));
 //					val = downloadService.donwload(auth.getId(), auth.getIdcompany(), auth.getIdbranch());
+				}else if(type.equals("DOWNLOAD_CALL_PLAN")) {
+					long limit = (long) param.get("limit");
+					long offset = (long) param.get("offset");
+					DownloadUserMobileCallPlan dataval = downloadService.donwloadUserMobileCallPlan(auth.getId(), auth.getIdcompany(), auth.getIdbranch(),limit,offset);
+					val.setData(dataval);
+				}else if(type.equals("DOWNLOAD_CUSTOMER_CALL_PLAN")) {
+					long limit = (long) param.get("limit");
+					long offset = (long) param.get("offset");
+					DownloadCustomerCallPlan dataval = downloadService.donwloadCustomerCallPlan(auth.getId(), auth.getIdcompany(), auth.getIdbranch(),limit,offset);
+					val.setData(dataval);
 				}
 			}
 		}
