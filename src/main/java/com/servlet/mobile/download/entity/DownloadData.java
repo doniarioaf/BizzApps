@@ -7,17 +7,17 @@ import com.servlet.mobile.usermobilecallplan.entity.UserMobileCallPlanDataMobile
 
 public class DownloadData {
 	private List<InfoHeaderDetailData> listinfo;
-	private UserMobileCallPlanDataMobile listcallplan;
+//	private UserMobileCallPlanDataMobile listcallplan;
 	public List<InfoHeaderDetailData> getListinfo() {
 		return listinfo;
 	}
 	public void setListinfo(List<InfoHeaderDetailData> listinfo) {
 		this.listinfo = listinfo;
 	}
-	public UserMobileCallPlanDataMobile getListcallplan() {
-		return listcallplan;
-	}
-	public void setListcallplan(UserMobileCallPlanDataMobile listcallplan) {
-		this.listcallplan = listcallplan;
-	}
+//	public UserMobileCallPlanDataMobile getListcallplan() {
+//		return listcallplan;
+//	}
+//	public void setListcallplan(UserMobileCallPlanDataMobile listcallplan) {
+//		this.listcallplan = listcallplan;
+//	}
 }
