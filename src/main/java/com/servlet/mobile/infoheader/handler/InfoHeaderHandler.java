@@ -136,18 +136,32 @@ public class InfoHeaderHandler implements InfoHeaderService{
 				infoHeaderDetailService.deleteAllDataListPK(listDetailPK);
 			}
 			
+			
+			
 			List<InfoHeaderDetail> listinfoHeaderDetail = new ArrayList<InfoHeaderDetail>();
-			if(body.getAnswer().length > 0) {
-				for(int i=0; i < body.getAnswer().length; i++) {
-					InfoHeaderDetail tabledetail = new InfoHeaderDetail();
-					tabledetail.setIdcompany(idcompany);
-					tabledetail.setIdbranch(idbranch);
-					tabledetail.setIdinfoheader(returntable.getId());
-					tabledetail.setAnswer(body.getAnswer()[i]);
-					listinfoHeaderDetail.add(tabledetail);
-				}
+			if(body.getType().equals("TA")) {
+				InfoHeaderDetail tabledetail = new InfoHeaderDetail();
+				tabledetail.setIdcompany(idcompany);
+				tabledetail.setIdbranch(idbranch);
+				tabledetail.setIdinfoheader(returntable.getId());
+				tabledetail.setAnswer("Text");
+				listinfoHeaderDetail.add(tabledetail);
+				
 				infoHeaderDetailService.saveDataList(listinfoHeaderDetail);
+			}else {
+				if(body.getAnswer().length > 0) {
+					for(int i=0; i < body.getAnswer().length; i++) {
+						InfoHeaderDetail tabledetail = new InfoHeaderDetail();
+						tabledetail.setIdcompany(idcompany);
+						tabledetail.setIdbranch(idbranch);
+						tabledetail.setIdinfoheader(returntable.getId());
+						tabledetail.setAnswer(body.getAnswer()[i]);
+						listinfoHeaderDetail.add(tabledetail);
+					}
+					infoHeaderDetailService.saveDataList(listinfoHeaderDetail);
+				}
 			}
+			
 			
 //			ReturnData data = new ReturnData();
 //			data.setId(returntable.getId());
