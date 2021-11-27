@@ -57,16 +57,28 @@ public class InfoHeaderHandler implements InfoHeaderService{
 			InfoHeader returntable = repository.saveAndFlush(table);
 			idreturn = returntable.getId();
 			List<InfoHeaderDetail> listinfoHeaderDetail = new ArrayList<InfoHeaderDetail>();
-			if(body.getAnswer().length > 0) {
-				for(int i=0; i < body.getAnswer().length; i++) {
-					InfoHeaderDetail tabledetail = new InfoHeaderDetail();
-					tabledetail.setIdcompany(idcompany);
-					tabledetail.setIdbranch(idbranch);
-					tabledetail.setIdinfoheader(returntable.getId());
-					tabledetail.setAnswer(body.getAnswer()[i]);
-					listinfoHeaderDetail.add(tabledetail);
-				}
+			if(body.getType().equals("TA")) {
+				InfoHeaderDetail tabledetail = new InfoHeaderDetail();
+				tabledetail.setIdcompany(idcompany);
+				tabledetail.setIdbranch(idbranch);
+				tabledetail.setIdinfoheader(returntable.getId());
+				tabledetail.setAnswer("Text");
+				listinfoHeaderDetail.add(tabledetail);
+				
 				infoHeaderDetailService.saveDataList(listinfoHeaderDetail);
+			}else {
+				
+				if(body.getAnswer().length > 0) {
+					for(int i=0; i < body.getAnswer().length; i++) {
+						InfoHeaderDetail tabledetail = new InfoHeaderDetail();
+						tabledetail.setIdcompany(idcompany);
+						tabledetail.setIdbranch(idbranch);
+						tabledetail.setIdinfoheader(returntable.getId());
+						tabledetail.setAnswer(body.getAnswer()[i]);
+						listinfoHeaderDetail.add(tabledetail);
+					}
+					infoHeaderDetailService.saveDataList(listinfoHeaderDetail);
+				}
 			}
 		}else {
 			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.INFO_TYPE_NOT_EXIST,"Jenis Info Tidak Ada");
@@ -99,7 +111,7 @@ public class InfoHeaderHandler implements InfoHeaderService{
 		InfoHeaderData checkData = checkInfoHeaderById(id,idcompany,idbranch);
 		
 		//TA(Text Area),RB(Radio Button),CL(Chekbox List),DDL(DropDown List)
-		if(body.getType().equals("TA") || body.getType().equals("RB") || body.getType().equals("CL") || body.getType().equals("DDL")) {
+		if(!(body.getType().equals("TA") || body.getType().equals("RB") || body.getType().equals("CL") || body.getType().equals("DDL"))) {
 			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.INFO_TYPE_NOT_EXIST,"Jenis Info Tidak Ada");
 			validations.add(msg);
 		}else if(checkData == null) {

@@ -5,6 +5,8 @@ public class InfoHeaderData {
 	private String question;
 	private String type;
 	private long sequence;
+	private long idcustomertype;
+	private String customertypename;
 	public long getId() {
 		return id;
 	}
@@ -28,5 +30,17 @@ public class InfoHeaderData {
 	}
 	public void setSequence(long sequence) {
 		this.sequence = sequence;
+	}
+	public long getIdcustomertype() {
+		return idcustomertype;
+	}
+	public void setIdcustomertype(long idcustomertype) {
+		this.idcustomertype = idcustomertype;
+	}
+	public String getCustomertypename() {
+		return customertypename;
+	}
+	public void setCustomertypename(String customertypename) {
+		this.customertypename = customertypename;
 	}
 }
