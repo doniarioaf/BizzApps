@@ -8,10 +8,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import com.servlet.admin.customer.service.CustomerService;
 import com.servlet.mobile.callplan.entity.BodyCallPlan;
 import com.servlet.mobile.callplan.entity.CallPlan;
 import com.servlet.mobile.callplan.entity.CallPlanDetailData;
 import com.servlet.mobile.callplan.entity.CallPlanListData;
+import com.servlet.mobile.callplan.entity.TemplateDataCallPlan;
 import com.servlet.mobile.callplan.mapper.GetCallPlanList;
 import com.servlet.mobile.callplan.repo.CallPlanRepo;
 import com.servlet.mobile.callplan.service.CallPlanService;
@@ -29,6 +32,8 @@ public class CallPlanHandler implements CallPlanService{
 	private CallPlanRepo repository;
 	@Autowired
 	private CustomerCallPlanService customerCallPlanService;
+	@Autowired
+	private CustomerService customerService;
 	
 	@Override
 	public ReturnData saveCallPlan(BodyCallPlan callplan, long idcompany, long idbranch) {
@@ -151,6 +156,13 @@ public class CallPlanHandler implements CallPlanService{
 			return datacallplan;
 		}
 		return null;
+	}
+	@Override
+	public TemplateDataCallPlan getTemplate(long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		TemplateDataCallPlan template = new TemplateDataCallPlan();
+		template.setCustomerOptions(customerService.getAllListCustomer(idcompany, idbranch));
+		return template;
 	}
 
 }

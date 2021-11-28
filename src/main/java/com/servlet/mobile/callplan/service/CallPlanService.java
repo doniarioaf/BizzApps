@@ -5,6 +5,7 @@ import java.util.List;
 import com.servlet.mobile.callplan.entity.BodyCallPlan;
 import com.servlet.mobile.callplan.entity.CallPlanDetailData;
 import com.servlet.mobile.callplan.entity.CallPlanListData;
+import com.servlet.mobile.callplan.entity.TemplateDataCallPlan;
 import com.servlet.shared.ReturnData;
 
 public interface CallPlanService {
@@ -12,4 +13,5 @@ public interface CallPlanService {
 	ReturnData updateCallPlan(long id,BodyCallPlan callplan,long idcompany,long idbranch);
 	List<CallPlanListData> getAllListCallPlan(long idcompany,long idbranch);
 	CallPlanDetailData getCallPlanById(long id,long idcompany,long idbranch);
+	TemplateDataCallPlan getTemplate(long idcompany,long idbranch);
 }

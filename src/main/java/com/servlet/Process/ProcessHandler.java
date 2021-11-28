@@ -422,6 +422,8 @@ public class ProcessHandler implements ProcessService{
 				if(type.equals("ALL")) {
 					val.setData(callPlanService.getAllListCallPlan(auth.getIdcompany(), auth.getIdbranch()));
 //					val = callPlanService.getAllListCallPlan(auth.getIdcompany(), auth.getIdbranch());
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(callPlanService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}else {
 					long id = new Long(type).longValue();
 					val.setData(callPlanService.getCallPlanById(id, auth.getIdcompany(), auth.getIdbranch()));
