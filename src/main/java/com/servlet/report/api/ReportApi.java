@@ -29,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.servlet.report.entity.BodyReportMonitoring;
+import com.servlet.report.service.ReportService;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConstansPermission;
@@ -41,40 +43,44 @@ public class ReportApi {
 	
 	@Autowired
 	SecurityService securityService;
+	@Autowired
+	ReportService reportService;
 	
 	
 	@GetMapping("/monitoring")
 	ResponseEntity exportToExcel(HttpServletResponse response) throws IOException {
-//		 response.setContentType("application/octet-stream");
+
 	     DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 	     String currentDateTime = dateFormatter.format(new Date());
 //	     
 	     String headerKey = "Content-Disposition";
         String headerValue = "attachment; filename=users_" + currentDateTime + ".xlsx";
         response.setHeader(headerKey, headerValue);
-		
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		HttpHeaders header = new HttpHeaders();
-	        
-		XSSFWorkbook workbook = new XSSFWorkbook();
+        
+        BodyReportMonitoring body = new BodyReportMonitoring();
+        body.setIdusermobile(0);
+        body.setFromdate("2021-11-09");
+        body.setTodate("2021-11-09");
+		XSSFWorkbook workbook = reportService.getReportMonitoringData(body, 1, 1).getWorkbook();
 		
 		//writeHeaderLine
-		XSSFSheet sheet = workbook.createSheet("Users");
-		Row row = sheet.createRow(0);
-		
-		CellStyle style = workbook.createCellStyle();
-        XSSFFont font = workbook.createFont();
-        font.setBold(true);
-        font.setFontHeight(16);
-        style.setFont(font);
-         
-        createCell(row, 0, "User ID", style,sheet);      
-        createCell(row, 1, "E-mail", style,sheet);       
-        createCell(row, 2, "Full Name", style,sheet);    
-        createCell(row, 3, "Roles", style,sheet);
-        createCell(row, 4, "Enabled", style,sheet);
-		
-        writeDataLines(sheet,workbook);
+//		XSSFSheet sheet = workbook.createSheet("Users");
+//		Row row = sheet.createRow(0);
+//		
+//		CellStyle style = workbook.createCellStyle();
+//        XSSFFont font = workbook.createFont();
+//        font.setBold(true);
+//        font.setFontHeight(16);
+//        style.setFont(font);
+//         
+//        createCell(row, 0, "User ID", style,sheet);      
+//        createCell(row, 1, "E-mail", style,sheet);       
+//        createCell(row, 2, "Full Name", style,sheet);    
+//        createCell(row, 3, "Roles", style,sheet);
+//        createCell(row, 4, "Enabled", style,sheet);
+//        
+//		
+//        writeDataLines(sheet,workbook);
         export(response, workbook);
         return ResponseEntity.ok().build();
 	}
