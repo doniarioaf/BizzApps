@@ -2,10 +2,7 @@ package com.servlet.mobile.usermobilecallplan.mapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import org.springframework.jdbc.core.RowMapper;
-
-import com.servlet.mobile.customercallplan.entity.CustomerCallPlanData;
 import com.servlet.mobile.usermobilecallplan.entity.UserMobileCallPlanData;
 
 public class GetUserMobileCallPlanByIdUser implements RowMapper<UserMobileCallPlanData>{

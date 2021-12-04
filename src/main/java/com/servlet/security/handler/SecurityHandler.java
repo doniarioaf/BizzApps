@@ -120,7 +120,7 @@ public class SecurityHandler implements SecurityService{
 				if(auth.getMessageCode().equals(ConstansCodeMessage.CODE_USER_NOT_HAVE_ACCESS) || auth.getMessageCode().equals(ConstansCodeMessage.CODE_USER_NOT_REGISTRED_ROLE) || auth.getMessageCode().equals("security.api.authorized") || auth.getMessageCode().equals("security.login.authorized")) {
 					value.setHttpcode(HttpStatus.UNAUTHORIZED.value());
 				}else {
-					value.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					value.setHttpcode(HttpStatus.UNAUTHORIZED.value());
 				}
 			}
 			

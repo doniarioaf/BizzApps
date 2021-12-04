@@ -5,8 +5,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import com.servlet.mobile.monitorusermobileinfo.entity.DetailInfo;
 import com.servlet.mobile.monitorusermobileinfo.entity.MonitorUserMobileInfo;
 import com.servlet.mobile.monitorusermobileinfo.entity.MonitorUserMobileInfoPK;
+import com.servlet.mobile.monitorusermobileinfo.mapper.GetDistinctInfoId;
+import com.servlet.mobile.monitorusermobileinfo.mapper.GetListInfoByInfoHeader;
 import com.servlet.mobile.monitorusermobileinfo.mapper.GetMonitorUserMobileByIdMonitor;
 import com.servlet.mobile.monitorusermobileinfo.repo.MonitorUserMobileInfoRepo;
 import com.servlet.mobile.monitorusermobileinfo.service.MonitorUserMobileInfoService;
@@ -44,6 +48,24 @@ public class MonitorUserMobileInfoHandler implements MonitorUserMobileInfoServic
 			repository.deleteAllById(listPK);
 		}
 		return null;
+	}
+
+	@Override
+	public List<Long> getListDistinctUserMobileInfo(long idmonitoruser) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDistinctInfoId().schema());
+		sqlBuilder.append(" where data.idmonitorusermobile = ? ");
+		final Object[] queryParameters = new Object[] { idmonitoruser };
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDistinctInfoId(), queryParameters);
+	}
+
+	@Override
+	public List<DetailInfo> getDetailInfo(long infoid) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListInfoByInfoHeader().schema());
+		sqlBuilder.append(" where minfo.infoid = ? ");
+		final Object[] queryParameters = new Object[] { infoid };
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListInfoByInfoHeader(), queryParameters);
 	}
 
 }

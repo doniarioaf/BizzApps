@@ -319,4 +319,19 @@ public class UserMobileHandler implements UserMobileService{
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataUserMobileAuth(), queryParameters);
 	}
 
+	@Override
+	public List<UserMobileListData> getListAllUserMobileForMonitoring(String listid, long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		if(listid.equals("ALL")) {
+			return getListAllUserMobile(idcompany,idbranch);
+		}else {
+			String valListId = "("+listid+")";
+			final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListAllUserMobile().schema());
+			sqlBuilder.append(" where mua.id in "+valListId+" and mua.idcompany = ? and mua.idbranch = ? and mua.isdelete = false ");
+			final Object[] queryParameters = new Object[] { idcompany , idbranch};
+			return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListAllUserMobile(), queryParameters);
+		}
+//		return null;
+	}
+
 }
