@@ -1,13 +1,13 @@
 package com.servlet.report.entity;
 
 public class BodyReportMonitoring {
-	private long idusermobile;
+	private String idusermobile;
 	private String fromdate;
 	private String todate;
-	public long getIdusermobile() {
+	public String getIdusermobile() {
 		return idusermobile;
 	}
-	public void setIdusermobile(long idusermobile) {
+	public void setIdusermobile(String idusermobile) {
 		this.idusermobile = idusermobile;
 	}
 	public String getFromdate() {

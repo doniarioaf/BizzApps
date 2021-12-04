@@ -21,5 +21,5 @@ public interface UserMobileService {
 	UserDetailMobile getDetailUserMobile(long id,long idcompany,long idbranch);
 	List<UserMobileListData> getListAllUserMobile(long idcompany,long idbranch);
 	List<UserMobileDataAuth> getUserLoginByUserNameMapper(String username,long idcompany,long idbranch);
-	List<UserMobileListData> getListAllUserMobileForMonitoring(long id,long idcompany,long idbranch);
+	List<UserMobileListData> getListAllUserMobileForMonitoring(String listid,long idcompany,long idbranch);
 }

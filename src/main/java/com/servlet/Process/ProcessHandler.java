@@ -44,6 +44,8 @@ import com.servlet.mobile.project.service.ProjectService;
 import com.servlet.mobile.usermobilecallplan.entity.DownloadUserMobileCallPlan;
 import com.servlet.mobile.usermobilelocation.entity.BodyUserMobileLocation;
 import com.servlet.mobile.usermobilelocation.service.UserMobileLocationService;
+import com.servlet.report.entity.BodyReportMonitoring;
+import com.servlet.report.service.ReportService;
 import com.servlet.security.entity.AuthorizationData;
 import com.servlet.shared.AESEncryptionDecryption;
 import com.servlet.shared.ConstansKey;
@@ -93,6 +95,8 @@ public class ProcessHandler implements ProcessService{
 	UserMobileLocationService userMobileLocationService;
 	@Autowired
 	PermissionService permissionService;
+	@Autowired
+	ReportService reportService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -450,6 +454,15 @@ public class ProcessHandler implements ProcessService{
 					long id = new Long(type).longValue();
 					val.setData(infoHeaderService.getDetailById(id, auth.getIdcompany(), auth.getIdbranch()));
 //					val = infoHeaderService.getDetailById(id, auth.getIdcompany(), auth.getIdbranch());
+				}
+			}else if(codepermission.equals(ConstansPermission.READ_REPORT_MONITORING)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("TEMPLATE")) {
+					val.setData(userMobileService.getListAllUserMobileForMonitoring("ALL",auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("REPORT")) {
+					BodyReportMonitoring body = (BodyReportMonitoring) param.get("body");
+					val.setData(reportService.getReportMonitoringData(body, auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
 				}
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
