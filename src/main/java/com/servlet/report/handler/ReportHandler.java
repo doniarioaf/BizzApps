@@ -3,14 +3,16 @@ package com.servlet.report.handler;
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -35,14 +37,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import com.servlet.BizzAppsBackEndApplication;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
 import com.servlet.admin.usermobile.entity.UserMobileListData;
 import com.servlet.admin.usermobile.service.UserMobileService;
 import com.servlet.mobile.monitorusermobileinfo.entity.DetailInfo;
-import com.servlet.mobile.monitorusermobileinfo.entity.MonitorUserMobileInfo;
 import com.servlet.mobile.monitorusermobileinfo.service.MonitorUserMobileInfoService;
 import com.servlet.report.entity.BodyReportMonitoring;
 import com.servlet.report.entity.MonitoringData;
+import com.servlet.report.entity.ReportToPDF;
 import com.servlet.report.entity.ReportWorkBookExcel;
 import com.servlet.report.mapper.getMonitoringData;
 import com.servlet.report.service.ReportService;
@@ -65,7 +79,6 @@ public class ReportHandler implements ReportService {
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		
 		List<UserMobileListData> listuser = userMobileService.getListAllUserMobileForMonitoring(body.getIdusermobile(), idcompany, idbranch);
-		LOGGER.info("listuser "+listuser.size());
 		for(UserMobileListData user : listuser) {
 			XSSFSheet sheet = workbook.createSheet(user.getNama());
 			int rowcount = 0;
@@ -105,7 +118,6 @@ public class ReportHandler implements ReportService {
 			int countInfo = 0;
 			HashMap<Long, List<Long>> hashMonitorUserMobileInfo = new HashMap<Long, List<Long>>();
 			if(list != null && list.size() > 0) {
-				List<Long> listInfoIdExist = new ArrayList<Long>();
 				for(MonitoringData monitor : list) {
 					List<Long> listInfo = monitorUserMobileInfoService.getListDistinctUserMobileInfo(monitor.getIdmonitoring());
 					if(listInfo.size() > countInfo) {
@@ -308,6 +320,276 @@ public class ReportHandler implements ReportService {
 		}
 		
 		return null;
+	}
+
+	@Override
+	public ReportToPDF getReportMonitoringDataPDF(BodyReportMonitoring body, long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+//		Rectangle pagesize = new Rectangle(1012, 864);
+//		Document document = new Document(pagesize);
+		Document document = new Document(PageSize.A0);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        
+        
+        
+        List<UserMobileListData> listuser = userMobileService.getListAllUserMobileForMonitoring(body.getIdusermobile(), idcompany, idbranch);
+        // countInfo = jumlah info yang ada
+        int countInfo = 0;
+        HashMap<Long, List<MonitoringData>> hashMonitorUserMobile = new HashMap<Long, List<MonitoringData>>();
+        HashMap<Long, List<Long>> hashMonitorUserMobileInfo = new HashMap<Long, List<Long>>();
+        for(UserMobileListData user : listuser) {
+        	List<MonitoringData> list = getListMonitoringData(user.getId(),body,idcompany,idbranch);
+			
+			//Set Header Info, Mencari list Info header paling Banyak di monitoring
+			if(list != null && list.size() > 0) {
+				for(MonitoringData monitor : list) {
+					List<Long> listInfo = monitorUserMobileInfoService.getListDistinctUserMobileInfo(monitor.getIdmonitoring());
+					if(listInfo.size() > countInfo) {
+						countInfo = listInfo.size(); 
+					}
+					hashMonitorUserMobileInfo.put(monitor.getIdmonitoring(), listInfo);
+				}
+				
+				hashMonitorUserMobile.put(user.getId(), list);
+			}
+			
+			//Set Header Info//
+        }
+        
+        
+        PdfPTable table = new PdfPTable(10 + countInfo);
+        try {
+        	document.open();
+        	document.add(Chunk.NEWLINE);
+        	document.add(new Paragraph("Recommended books for Spring framework"));
+        	table.setWidthPercentage(95);
+        	table.setSpacingBefore(10);
+            
+
+            Font headFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
+            
+            int[] widthKolom = {};
+
+            PdfPCell hcell;
+            
+            hcell = new PdfPCell(new Phrase("Sales", headFont));
+            hcell.setBackgroundColor(BaseColor.CYAN);
+            widthKolom = addElementWidth(widthKolom, 3);
+            hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(hcell);
+            
+            hcell = new PdfPCell(new Phrase("Customer", headFont));
+            hcell.setBackgroundColor(BaseColor.CYAN);
+            widthKolom = addElementWidth(widthKolom, 3);
+            hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(hcell);
+
+            hcell = new PdfPCell(new Phrase("Tanggal", headFont));
+            hcell.setBackgroundColor(BaseColor.CYAN);
+            widthKolom = addElementWidth(widthKolom, 2);
+            hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(hcell);
+
+            hcell = new PdfPCell(new Phrase("Check In Time", headFont));
+            hcell.setBackgroundColor(BaseColor.CYAN);
+            widthKolom = addElementWidth(widthKolom, 3);
+            hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(hcell);
+            
+            hcell = new PdfPCell(new Phrase("Check Out Time", headFont));
+            hcell.setBackgroundColor(BaseColor.CYAN);
+            widthKolom = addElementWidth(widthKolom, 3);
+            hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(hcell);
+            
+            hcell = new PdfPCell(new Phrase("Photo 1", headFont));
+            hcell.setBackgroundColor(BaseColor.CYAN);
+            widthKolom = addElementWidth(widthKolom, 5);
+            hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(hcell);
+            
+            hcell = new PdfPCell(new Phrase("Photo 2", headFont));
+            hcell.setBackgroundColor(BaseColor.CYAN);
+            widthKolom = addElementWidth(widthKolom, 5);
+            hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(hcell);
+            
+            hcell = new PdfPCell(new Phrase("Photo 3", headFont));
+            hcell.setBackgroundColor(BaseColor.CYAN);
+            widthKolom = addElementWidth(widthKolom, 5);
+            hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(hcell);
+            
+            hcell = new PdfPCell(new Phrase("Photo 4", headFont));
+            hcell.setBackgroundColor(BaseColor.CYAN);
+            widthKolom = addElementWidth(widthKolom, 5);
+            hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(hcell);
+            
+            hcell = new PdfPCell(new Phrase("Photo 5", headFont));
+            hcell.setBackgroundColor(BaseColor.CYAN);
+            widthKolom = addElementWidth(widthKolom, 5);
+            hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(hcell);
+            
+            int seqInfo = 1; 
+            for(int cellinfo=0; cellinfo < countInfo; cellinfo++) {
+            	hcell = new PdfPCell(new Phrase("Info "+seqInfo, headFont));
+            	hcell.setBackgroundColor(BaseColor.CYAN);
+                widthKolom = addElementWidth(widthKolom, 4);
+                hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                table.addCell(hcell);
+                seqInfo++;
+            }
+            
+            table.setWidths(widthKolom);
+            
+            for(UserMobileListData user : listuser) {
+            	List<MonitoringData> list = hashMonitorUserMobile.get(user.getId());//getListMonitoringData(user.getId(),body,idcompany,idbranch);
+            	if(list != null && list.size() > 0) {
+            		for(MonitoringData monitor : list) {
+            			PdfPCell valueCell = new PdfPCell(new Phrase(user.getNama()));
+            			valueCell.setPaddingLeft(2);
+            			valueCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+            			valueCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    	table.addCell(valueCell);
+                    	
+                    	valueCell = new PdfPCell(new Phrase(monitor.getNamacustomer()));
+                    	valueCell.setPaddingLeft(2);
+                    	valueCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                    	valueCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    	table.addCell(valueCell);
+                    	
+                    	valueCell = new PdfPCell(new Phrase(monitor.getTanggal().toString()));
+                    	valueCell.setPaddingLeft(2);
+                    	valueCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                    	valueCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    	table.addCell(valueCell);
+                    	
+                    	valueCell = new PdfPCell(new Phrase(monitor.getCheckintime()));
+                    	valueCell.setPaddingLeft(2);
+                    	valueCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                    	valueCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    	table.addCell(valueCell);
+                    	
+                    	valueCell = new PdfPCell(new Phrase(monitor.getCheckouttime() ));
+                    	valueCell.setPaddingLeft(2);
+                    	valueCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                    	valueCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    	table.addCell(valueCell);
+                    	
+                    	if(monitor.getPhoto1() != null && !monitor.getPhoto1().equals("")) {
+                    		Image imagephoto = Image.getInstance(Base64.getDecoder().decode(monitor.getPhoto1()));
+                    		imagephoto.scalePercent(30, 30);
+                    		valueCell = new PdfPCell(imagephoto);
+                    	}else {
+                    		valueCell = new PdfPCell(new Phrase("Photo 1"));
+                    	}
+                    	valueCell.setPaddingLeft(2);
+                    	valueCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                    	valueCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    	table.addCell(valueCell);
+                    	
+                    	if(monitor.getPhoto2() != null && !monitor.getPhoto2().equals("")) {
+                    		Image imagephoto = Image.getInstance(Base64.getDecoder().decode(monitor.getPhoto2()));
+                    		imagephoto.scalePercent(30, 30);
+                    		valueCell = new PdfPCell(imagephoto);
+                    	}else {
+                    		valueCell = new PdfPCell(new Phrase("Photo 2"));
+                    	}
+                    	valueCell.setPaddingLeft(2);
+                    	valueCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                    	valueCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    	table.addCell(valueCell);
+                    	
+                    	if(monitor.getPhoto3() != null && !monitor.getPhoto3().equals("")) {
+                    		Image imagephoto = Image.getInstance(Base64.getDecoder().decode(monitor.getPhoto3()));
+                    		imagephoto.scalePercent(30, 30);
+                    		valueCell = new PdfPCell(imagephoto);
+                    	}else {
+                    		valueCell = new PdfPCell(new Phrase("Photo 3"));
+                    	}
+                    	valueCell.setPaddingLeft(2);
+                    	valueCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                    	valueCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    	table.addCell(valueCell);
+                    	
+                    	if(monitor.getPhoto4() != null && !monitor.getPhoto4().equals("")) {
+                    		Image imagephoto = Image.getInstance(Base64.getDecoder().decode(monitor.getPhoto4()));
+                    		imagephoto.scalePercent(30, 30);
+                    		valueCell = new PdfPCell(imagephoto);
+                    	}else {
+                    		valueCell = new PdfPCell(new Phrase("Photo 4"));
+                    	}
+                    	valueCell.setPaddingLeft(2);
+                    	valueCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                    	valueCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    	table.addCell(valueCell);
+                    	
+                    	if(monitor.getPhoto5() != null && !monitor.getPhoto5().equals("")) {
+                    		Image imagephoto = Image.getInstance(Base64.getDecoder().decode(monitor.getPhoto5()));
+                    		imagephoto.scalePercent(30, 30);
+                    		valueCell = new PdfPCell(imagephoto);
+                    	}else {
+                    		valueCell = new PdfPCell(new Phrase("Photo 5"));
+                    	}
+                    	valueCell.setPaddingLeft(2);
+                    	valueCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                    	valueCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    	table.addCell(valueCell);
+                    	
+                    	                                
+                        List<Long> listInfo = hashMonitorUserMobileInfo.get(monitor.getIdmonitoring());
+                        for(long infoid : listInfo) {
+                        	String valInfo = "";
+                        	List<DetailInfo> listdetailInfo = monitorUserMobileInfoService.getDetailInfo(infoid);
+                        	if(listdetailInfo != null && listdetailInfo.size() > 0) {
+                        		String question = "";
+    							String answer = "";
+    							for(DetailInfo detail : listdetailInfo) {
+									if(question.equals("")) {
+										question = detail.getQuestion();
+									}
+									if(detail.getAnswer().toUpperCase().equals("TEXT")) {
+										answer = detail.getInfoAnswer();
+									}else {
+										answer += detail.getAnswer()+" \n ";
+									}
+    							}
+    							valInfo = question+" \n "+answer;
+                        	}
+                        	
+                        	valueCell = new PdfPCell(new Phrase(valInfo));
+                        	valueCell.setPaddingLeft(2);
+                        	valueCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                        	valueCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        	table.addCell(valueCell);
+                        }
+            		}
+            	}    
+            }
+            
+        }catch (DocumentException ex) {
+        	LOGGER.error("Error occurred: {0}", ex);
+//        	System.out.println("Error occurred: {0}"+ ex);
+        } catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        ReportToPDF data = new ReportToPDF();
+        data.setDocument(document);
+        data.setTable(table);
+//        data.setInputStream(new ByteArrayInputStream(out.toByteArray()));
+		return data;
+	}
+	
+	private int[] addElementWidth(int[] a, int e) {
+	    a  = Arrays.copyOf(a, a.length + 1);
+	    a[a.length - 1] = e;
+	    return a;
 	}
 
 }

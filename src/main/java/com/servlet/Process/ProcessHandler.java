@@ -462,7 +462,12 @@ public class ProcessHandler implements ProcessService{
 					val.setData(userMobileService.getListAllUserMobileForMonitoring("ALL",auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("REPORT")) {
 					BodyReportMonitoring body = (BodyReportMonitoring) param.get("body");
-					val.setData(reportService.getReportMonitoringData(body, auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
+					if(body.getTypereport().equals("XLSX")) {
+						val.setData(reportService.getReportMonitoringData(body, auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
+					}else {
+						val.setData(reportService.getReportMonitoringDataPDF(body, auth.getIdcompany(), auth.getIdbranch()));
+					}
+					
 				}
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {

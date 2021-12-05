@@ -19,6 +19,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,7 +32,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.servlet.report.entity.BodyReportMonitoring;
+import com.servlet.report.entity.ReportToPDF;
 import com.servlet.report.service.ReportService;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
@@ -57,11 +63,12 @@ public class ReportApi {
 	}
 	
 	@GetMapping("/monitoring")
-	ResponseEntity<Response> getReportMonitoringExcel(HttpServletResponse response,@RequestHeader(ConstansKey.AUTH) String authorization,@RequestParam String idusermobile,@RequestParam String from,@RequestParam String thru) throws IOException {
+	ResponseEntity<Response> getReportMonitoringExcel(HttpServletResponse response,@RequestHeader(ConstansKey.AUTH) String authorization,@RequestParam String idusermobile,@RequestParam String from,@RequestParam String thru,@RequestParam String type) throws IOException {
 		BodyReportMonitoring body = new BodyReportMonitoring();
 		body.setIdusermobile(idusermobile);
 		body.setFromdate(from);
 		body.setTodate(thru);
+		body.setTypereport(type);
 		
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("type", "REPORT");
@@ -69,9 +76,17 @@ public class ReportApi {
 		
 		Response response1 = securityService.response(ConstansPermission.READ_REPORT_MONITORING,param,authorization);
 		if(response1.getHttpcode() == HttpStatus.OK.value()) {
-			XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
-			export(response, workbook);
-			return ResponseEntity.ok().build();
+			if(type.equals("XLSX")) {
+				XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+				export(response, workbook);
+				return ResponseEntity.ok().build();
+			}else {
+				//PDF
+				ReportToPDF pdf = (ReportToPDF) response1.getData();
+				exportToPdf(response,pdf.getDocument(),pdf.getTable());
+				return ResponseEntity.ok().build();
+			}
+			
 		}else {
 			return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
 		}
@@ -79,9 +94,6 @@ public class ReportApi {
 	}
 	
 	public void export(HttpServletResponse response,XSSFWorkbook workbook) throws IOException {
-//        writeHeaderLine();
-//        writeDataLines();
-         
         ServletOutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);
         workbook.close();
@@ -89,4 +101,24 @@ public class ReportApi {
         outputStream.close();
          
     }
+	
+	public void exportToPdf(HttpServletResponse response,Document document,PdfPTable table) throws IOException {
+        ServletOutputStream outputStream = response.getOutputStream();
+        try {
+			PdfWriter.getInstance(document, outputStream);
+			document.open();
+            document.add(table);
+
+            document.close();
+		} catch (DocumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//        workbook.write(outputStream);
+//        workbook.close();
+         
+        outputStream.close();
+         
+    }
+	
 }
