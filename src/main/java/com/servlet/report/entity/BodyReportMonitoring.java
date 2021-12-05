@@ -4,6 +4,13 @@ public class BodyReportMonitoring {
 	private String idusermobile;
 	private String fromdate;
 	private String todate;
+	private String typereport;
+	public String getTypereport() {
+		return typereport;
+	}
+	public void setTypereport(String typereport) {
+		this.typereport = typereport;
+	}
 	public String getIdusermobile() {
 		return idusermobile;
 	}
