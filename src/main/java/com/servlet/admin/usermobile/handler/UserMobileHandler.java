@@ -117,8 +117,16 @@ public class UserMobileHandler implements UserMobileService{
 	private List<UserMobileDataAuth> getUserLoginByUserNameV2(String username) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataUserMobileAuth().schema());
-		sqlBuilder.append(" where mua.username = ? ");
+		sqlBuilder.append(" where mua.username = ? and mua.isdelete = false ");
 		final Object[] queryParameters = new Object[] { username};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataUserMobileAuth(), queryParameters);
+	}
+	
+	private List<UserMobileDataAuth> getListUserMobileByIdCompany(long idcompany) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataUserMobileAuth().schema());
+		sqlBuilder.append(" where mua.idcompany = ? and mua.isdelete = false ");
+		final Object[] queryParameters = new Object[] { idcompany};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataUserMobileAuth(), queryParameters);
 	}
 	
@@ -159,10 +167,22 @@ public class UserMobileHandler implements UserMobileService{
 		table.setModified(ts);
 		table.setImei(usermobile.getImei());
 		
+		List<UserMobileDataAuth> listusermobileByCompany = getListUserMobileByIdCompany(idcompany);
 		List<UserMobileDataAuth> checkUsername = getUserLoginByUserNameV2(usermobile.getUsername());
 		long idreturn = 0;
 		
-		if(checkUsername != null && checkUsername.size() > 0) {
+		SecurityLicenseData checkLicense = securityService.checkLicense(idcompany, null,new Integer(listusermobileByCompany.size() + 1).longValue());
+		if(!checkLicense.getReturnData().isSuccess()) {
+			List<ValidationDataMessage> listvalidLicense = checkLicense.getReturnData().getValidations();
+			if(listvalidLicense.size() > 0) {
+				for(ValidationDataMessage licenseMsg : listvalidLicense) {
+					if(!licenseMsg.getMessageCode().equals(ConstansCodeMessage.COMPANY_LICENSE_ALERT_EXPIRED)) {
+						ValidationDataMessage msg = new ValidationDataMessage(licenseMsg.getMessageCode(),licenseMsg.getMessage());
+						validations.add(msg);
+					}
+				}
+			}
+		}else if(checkUsername != null && checkUsername.size() > 0) {
 			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.USERNAME_IS_EXIST,"Username Sudah Terpakai");
 			validations.add(msg);
 		}else {
