@@ -3,6 +3,7 @@ package com.servlet.admin.company.service;
 import java.util.List;
 
 import com.servlet.admin.company.entity.BodyCompany;
+import com.servlet.admin.company.entity.BodyCompanyy;
 import com.servlet.admin.company.entity.Company;
 import com.servlet.admin.company.entity.CompanyData;
 import com.servlet.admin.company.entity.CompanyDataDetail;
@@ -18,4 +19,5 @@ public interface CompanyService {
 	ReturnData activatedCompany(long id);
 	ReturnData unActivatedCompany(long id);
 	ReturnData deleteCompany(long id);
+	ReturnData updateCompanyy(BodyCompanyy company);
 }

@@ -27,4 +27,23 @@ public class ConstansCodeMessage {
 	public static final String USERNAME_IS_EXIST = "username.is.exist";
 	public static final String INFO_TYPE_NOT_EXIST = "info.type.not.exist";
 	public static final String DATA_NOT_FOUND = "data.not.found";
+	
+	//company user tidak ditemukan
+	public static final String USER_COMPANY_NOT_EXIST = "user.company.not.exist";
+	
+	//license company belum di setting
+	public static final String COMPANY_LICENSE_NOT_EXIST = "company.license.not.exist";
+	
+	//license company sudah expired
+	public static final String COMPANY_LICENSE_EXPIRED = "company.license.expired";
+	
+	//jika code ini muncul, ini bukan error, hanya untuk info 
+	//disarankan menampilkan alert di UI web ataupun UI android, sebagai pengingat
+	public static final String COMPANY_LICENSE_ALERT_EXPIRED = "company.license.alert.expired";
+	
+	//code ini hanya untuk web
+	public static final String LIMIT_CREATE_USER = "limit.create.user";
+	
+//	//sukses, tapi mengandung catatan, disarankan untuk menampilkan alert catatan tersebut
+//	public static final String SUCCESS_ALERT = "SUCCESS_ALERT";
 }

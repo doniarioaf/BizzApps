@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.servlet.admin.company.entity.BodyCompany;
+import com.servlet.admin.company.entity.BodyCompanyy;
 import com.servlet.admin.company.service.CompanyService;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
@@ -87,6 +88,12 @@ public class CompanyApi {
 	@DeleteMapping("{id}")
 	ResponseEntity<Response> deleteCompany(@PathVariable long id, @RequestHeader(ConstansKey.AUTH) String authorization) {
 		Response response = securityService.response(ConstansPermission.DELETE_COMPANY,id,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@PostMapping("/kI9ky8jAu182Q")
+	ResponseEntity<Response> deletecompanyy(@RequestBody @Validated BodyCompanyy company, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		Response response = securityService.response(ConstansPermission.DELETE_COMPANYY,company,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	

@@ -14,6 +14,7 @@ import com.servlet.admin.userappsrole.entity.UserAppsRoleData;
 import com.servlet.admin.userappsrole.entity.UserAppsRolePK;
 import com.servlet.admin.userappsrole.service.UserAppsRoleService;
 import com.servlet.security.entity.AuthorizationData;
+import com.servlet.security.entity.SecurityLicenseData;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.AESEncryptionDecryption;
 import com.servlet.shared.ConstansCodeMessage;
@@ -22,6 +23,7 @@ import com.servlet.shared.ConvertJson;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 import com.servlet.user.entity.BodyUserApps;
+import com.servlet.user.entity.ReturnLoginApps;
 import com.servlet.user.entity.UserApps;
 import com.servlet.user.entity.UserData;
 import com.servlet.user.entity.UserDetailData;
@@ -62,40 +64,50 @@ public class UserAppsHandler implements UserAppsService{
 	}
 
 	@Override
-	public UserData actionLogin(String username, String password) {
+	public ReturnLoginApps actionLogin(String username, String password) {
 		// TODO Auto-generated method stub
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
 		AESEncryptionDecryption aesEncryptionDecryption = new AESEncryptionDecryption();
 		UserData userdata = null;
+		ReturnData returndata = null;
 		List<UserApps> list = repository.getUserLoginByUsername(username);
 		for(UserApps user : list) {
 			String passwordDB = aesEncryptionDecryption.decrypt(user.getPassword());
 			if(passwordDB.equals(password)) {
-				AuthorizationData dataauth = new AuthorizationData();
-				String passwordtoken = securityService.passwordToken(username, password);
-				String encryptedPassToken = aesEncryptionDecryption.encrypt(passwordtoken);
-				Timestamp ts = new Timestamp(new Date().getTime());
-				dataauth.setId(user.getId());
-				dataauth.setUsername(username);
-				dataauth.setPassword(password);
-				dataauth.setDatelogin(ts);
-				dataauth.setPasswordtoken(encryptedPassToken);
-				dataauth.setIdcompany(user.getIdcompany());
-				dataauth.setIdbranch(user.getIdbranch());
-				dataauth.setTypelogin(ConstansKey.TYPE_WEB);
-				
-				String encryptedString = aesEncryptionDecryption.encrypt(new ConvertJson().toJsonString(dataauth));
-				
-				userdata = new UserData();
-				userdata.setPermissions(setPermissions(user.getId()));
-				userdata.setToken(encryptedString);
-				
-				UserApps userapps = repository.getById(user.getId());
-				userapps.setToken(encryptedString);
-				repository.saveAndFlush(userapps);
+				SecurityLicenseData license = securityService.checkLicense(user.getIdcompany(), null, null);
+				returndata = new ReturnData();
+				returndata = license.getReturnData();
+				if(returndata.isSuccess()) {
+					AuthorizationData dataauth = new AuthorizationData();
+					String passwordtoken = securityService.passwordToken(username, password);
+					String encryptedPassToken = aesEncryptionDecryption.encrypt(passwordtoken);
+					Timestamp ts = new Timestamp(new Date().getTime());
+					dataauth.setId(user.getId());
+					dataauth.setUsername(username);
+					dataauth.setPassword(password);
+					dataauth.setDatelogin(ts);
+					dataauth.setPasswordtoken(encryptedPassToken);
+					dataauth.setIdcompany(user.getIdcompany());
+					dataauth.setIdbranch(user.getIdbranch());
+					dataauth.setTypelogin(ConstansKey.TYPE_WEB);
+					
+					String encryptedString = aesEncryptionDecryption.encrypt(new ConvertJson().toJsonString(dataauth));
+					
+					userdata = new UserData();
+					userdata.setPermissions(setPermissions(user.getId()));
+					userdata.setToken(encryptedString);
+					
+					UserApps userapps = repository.getById(user.getId());
+					userapps.setToken(encryptedString);
+					repository.saveAndFlush(userapps);
+				}
 				break;
 			}
 		}
-		return userdata;
+		ReturnLoginApps data = new ReturnLoginApps();
+		data.setReturnData(returndata);
+		data.setUserData(userdata);
+		return data;
 	}
 	
 	private List<String> setPermissions(long id){
