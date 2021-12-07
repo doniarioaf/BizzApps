@@ -1,6 +1,8 @@
 package com.servlet.security.handler;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -12,6 +14,9 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.servlet.Process.ProcessService;
+import com.servlet.admin.company.entity.Company;
+import com.servlet.admin.company.service.CompanyService;
+import com.servlet.admin.usermobile.entity.ReturnLoginMobile;
 import com.servlet.admin.usermobile.entity.UserMobile;
 import com.servlet.admin.usermobile.entity.UserMobileDataAuth;
 import com.servlet.admin.usermobile.entity.UserMobilePermission;
@@ -19,12 +24,19 @@ import com.servlet.admin.usermobile.service.UserMobileService;
 import com.servlet.security.entity.AuthorizationChecking;
 import com.servlet.security.entity.AuthorizationData;
 import com.servlet.security.entity.AuthorizationEntity;
+import com.servlet.security.entity.LicenseData;
+import com.servlet.security.entity.SecurityLicenseData;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.AESEncryptionDecryption;
+import com.servlet.shared.AESEncryptionDecryptionLicense;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstansKey;
+import com.servlet.shared.GlobalFunc;
 import com.servlet.shared.ProcessReturn;
 import com.servlet.shared.Response;
+import com.servlet.shared.ReturnData;
+import com.servlet.shared.ValidationDataMessage;
+import com.servlet.user.entity.ReturnLoginApps;
 import com.servlet.user.entity.UserApps;
 import com.servlet.user.entity.UserPermissionData;
 import com.servlet.user.service.UserAppsService;
@@ -39,23 +51,65 @@ public class SecurityHandler implements SecurityService{
 	ProcessService processservice;
 	@Autowired
 	UserMobileService usermobileservice;
+	@Autowired
+	CompanyService companyService;
 	
 	@Override
 	public Response response(String codepermission, Object data, String authorization) {
 		Response value = new Response();
-		if(authorization.equals("login")) {
-			if(data != null) {
-				value.setSuccess(true);
-				value.setMessagecode(ConstansCodeMessage.CODE_MESSAGE_SUCCESS);
-				value.setMessage("SUCCESS");
-				value.setData(data);
-				value.setHttpcode(HttpStatus.OK.value());
-			}else {
-				value.setSuccess(false);
-				value.setMessagecode(ConstansCodeMessage.CODE_MESSAGE_USERNAME_OR_PASSWORD_WRONG);
-				value.setMessage("Username Or Password Wrong");
-				value.setData(data);
-				value.setHttpcode(HttpStatus.UNAUTHORIZED.value());
+		if(authorization.equals("loginweb") || authorization.equals("loginmobile")) {
+			if(authorization.equals("loginmobile")) {
+				ReturnLoginMobile mobile = (ReturnLoginMobile) data;
+				if(mobile.getReturnData() != null) {
+					ReturnData returndata = mobile.getReturnData();
+					if(returndata.isSuccess()) {
+						value.setSuccess(true);
+						value.setMessagecode(ConstansCodeMessage.CODE_MESSAGE_SUCCESS);
+						value.setMessage("SUCCESS");
+						value.setData(mobile.getUserMobileData());
+						value.setHttpcode(HttpStatus.OK.value());
+						value.setValidations(returndata.getValidations());
+					}else {
+						value.setSuccess(false);
+						value.setMessagecode(ConstansCodeMessage.DATA_VALIDATION);
+						value.setMessage("Data Validasi");
+						value.setData(null);
+						value.setHttpcode(HttpStatus.UNAUTHORIZED.value());
+						value.setValidations(returndata.getValidations());
+					}
+				}else {
+					value.setSuccess(false);
+					value.setMessagecode(ConstansCodeMessage.CODE_MESSAGE_USERNAME_OR_PASSWORD_WRONG);
+					value.setMessage("Username Or Password Wrong");
+					value.setData(null);
+					value.setHttpcode(HttpStatus.UNAUTHORIZED.value());
+				}
+			}else if(authorization.equals("loginweb")) {
+				ReturnLoginApps web = (ReturnLoginApps) data;
+				if(web.getReturnData() != null) {
+					ReturnData returndata = web.getReturnData();
+					if(returndata.isSuccess()) {
+						value.setSuccess(true);
+						value.setMessagecode(ConstansCodeMessage.CODE_MESSAGE_SUCCESS);
+						value.setMessage("SUCCESS");
+						value.setData(web.getUserData());
+						value.setHttpcode(HttpStatus.OK.value());
+						value.setValidations(returndata.getValidations());
+					}else {
+						value.setSuccess(false);
+						value.setMessagecode(ConstansCodeMessage.DATA_VALIDATION);
+						value.setMessage("Data Validasi");
+						value.setData(null);
+						value.setHttpcode(HttpStatus.UNAUTHORIZED.value());
+						value.setValidations(returndata.getValidations());
+					}
+				}else {
+					value.setSuccess(false);
+					value.setMessagecode(ConstansCodeMessage.CODE_MESSAGE_USERNAME_OR_PASSWORD_WRONG);
+					value.setMessage("Username Or Password Wrong");
+					value.setData(null);
+					value.setHttpcode(HttpStatus.UNAUTHORIZED.value());
+				}
 			}
 			
 		}else if(codepermission.equals("check")) {
@@ -204,7 +258,9 @@ public class SecurityHandler implements SecurityService{
 			if(decryption != null) {
 				auth.setIsvalid(true);
 				AuthorizationData data = gson.fromJson(decryption, AuthorizationData.class);
-				String tokepassword = aesEncryptionDecryption.decrypt(data.getPasswordtoken());
+				SecurityLicenseData license = checkLicense(data.getIdcompany(), null, null);
+//				String tokepassword = aesEncryptionDecryption.decrypt(data.getPasswordtoken());
+				if(license.getReturnData().isSuccess()) {
 				HashMap<String, Object> param = new HashMap<String, Object>();
 				param.put("username", data.getUsername());
 				param.put("password", data.getPassword());
@@ -328,7 +384,15 @@ public class SecurityHandler implements SecurityService{
 						auth.setMessage("Login Not Authorized");
 					}
 				}
-				
+			}else {
+				auth.setIsvalid(false);
+				List<ValidationDataMessage> validations = license.getReturnData().getValidations();
+				if(validations.size() > 0) {
+					ValidationDataMessage valmsg = validations.get(0);
+					auth.setMessageCode(valmsg.getMessageCode());
+					auth.setMessage(valmsg.getMessage());
+				}
+			}
 				
 			}else {
 				auth.setIsvalid(false);
@@ -351,6 +415,85 @@ public class SecurityHandler implements SecurityService{
 		int randomnumber = (int)(Math.random()*(max-min+1)+min);
 		String value = randomnumber+password;
 		return value;
+	}
+
+	@Override
+	public SecurityLicenseData checkLicense(long idcompany,Long jumlahuserweb, Long jumlahusermobile) {
+		// TODO Auto-generated method stub
+		SecurityLicenseData dataSecurity = new SecurityLicenseData();
+		Gson gson = new Gson();
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
+		LicenseData data = null;
+		Company company = companyService.getCompanyByID(idcompany);
+		if(company != null) {
+			String license = company.getLicense();
+			if(license != null && !license.equals("")) {
+				AESEncryptionDecryptionLicense aesEncryptionDecryption = new AESEncryptionDecryptionLicense();
+				try {
+					String decryption = aesEncryptionDecryption.decrypt(license);
+					data = new LicenseData();
+					data = gson.fromJson(decryption, LicenseData.class);
+					
+					Timestamp ts = new Timestamp(new Date().getTime());
+					if(ts.after(data.getExpired())) {
+						ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.COMPANY_LICENSE_EXPIRED,"Company License Sudah Expired");
+						validations.add(msg);
+					}else {
+						Timestamp tanggalExpired = GlobalFunc.setFormatDate(data.getExpired(), "yyyy-MM-dd");
+						
+						//ada alert 7 hari sebelum expired habis
+						Timestamp add7 = GlobalFunc.addDays(ts, 7);
+						boolean flagAlertDate = false;
+						if(add7.after(data.getExpired()) ) {
+							flagAlertDate = true;
+						}else if(add7.equals(data.getExpired()) ) {
+							flagAlertDate = true;
+						}
+						if(flagAlertDate) {
+							ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.COMPANY_LICENSE_ALERT_EXPIRED,"License habis pada tanggal "+tanggalExpired);
+							validations.add(msg);
+						}
+						if(jumlahuserweb != null) {
+							long userweb = jumlahuserweb.longValue();
+							if(userweb > data.getLimituserweb()) {
+								ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.LIMIT_CREATE_USER,"Tidak Bisa Membuat User, Limit Sudah Habis");
+								validations.add(msg);
+							}
+						}
+						
+						if(jumlahusermobile != null) {
+							long usermobile = jumlahusermobile.longValue();
+							if(usermobile > data.getLimitusermobile()) {
+								ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.LIMIT_CREATE_USER,"Tidak Bisa Membuat User, Limit Sudah Habis");
+								validations.add(msg);
+							}
+						}
+					}
+					
+				}catch (Exception e) {
+					// TODO: handle exception
+				}
+			}else {
+				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.COMPANY_LICENSE_NOT_EXIST,"Company License Belum di setting");
+				validations.add(msg);
+			}
+		}else {
+			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.USER_COMPANY_NOT_EXIST,"Company User Tidak ditemukan");
+			validations.add(msg);
+		}
+		ReturnData datareturn = new ReturnData();
+		datareturn.setId(0);
+		datareturn.setSuccess(validations.size() > 0?false:true);
+		if(validations.size() == 1) {
+			if(validations.get(0).getMessageCode().equals(ConstansCodeMessage.COMPANY_LICENSE_ALERT_EXPIRED)) {
+				datareturn.setSuccess(true);
+			}
+		}
+		datareturn.setValidations(validations);
+		
+		dataSecurity.setReturnData(datareturn);
+		dataSecurity.setLicenseData(data);
+		return dataSecurity;
 	}
 
 }

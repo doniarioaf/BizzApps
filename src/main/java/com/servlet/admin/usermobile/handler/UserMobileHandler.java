@@ -9,7 +9,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import com.servlet.admin.company.entity.Company;
+import com.servlet.admin.company.service.CompanyService;
 import com.servlet.admin.usermobile.entity.BodyUserMobile;
+import com.servlet.admin.usermobile.entity.ReturnLoginMobile;
 import com.servlet.admin.usermobile.entity.UserDetailMobile;
 import com.servlet.admin.usermobile.entity.UserMobile;
 import com.servlet.admin.usermobile.entity.UserMobileData;
@@ -30,6 +34,7 @@ import com.servlet.mobile.usermobilecallplan.entity.UserMobileCallPlanData;
 import com.servlet.mobile.usermobilecallplan.entity.UserMobileCallPlanPK;
 import com.servlet.mobile.usermobilecallplan.service.UserMobileCallPlanService;
 import com.servlet.security.entity.AuthorizationData;
+import com.servlet.security.entity.SecurityLicenseData;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.AESEncryptionDecryption;
 import com.servlet.shared.ConstansCodeMessage;
@@ -52,6 +57,7 @@ public class UserMobileHandler implements UserMobileService{
 	@Autowired
 	UserMobileCallPlanService userMobileCallPlanService;
 	
+	
 	@Override
 	public Collection<UserMobilePermission> getListUserMobilePermission(long id) {
 		// TODO Auto-generated method stub
@@ -62,41 +68,50 @@ public class UserMobileHandler implements UserMobileService{
 	}
 
 	@Override
-	public UserMobileData actionLogin(String username, String password) {
+	public ReturnLoginMobile actionLogin(String username, String password) {
 		// TODO Auto-generated method stub
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
 		AESEncryptionDecryption aesEncryptionDecryption = new AESEncryptionDecryption();
 		UserMobileData userdata = null;
+		ReturnData returndata = null;
 //		List<UserMobile> list = repository.getUserLoginByUsername(username);
 		List<UserMobileDataAuth> list = getUserLoginByUserNameV2(username);
 		for(UserMobileDataAuth user : list) {
 			String passwordDB = aesEncryptionDecryption.decrypt(user.getPassword());
 			if(passwordDB.equals(password)) {
-				AuthorizationData dataauth = new AuthorizationData();
-				String passwordtoken = securityService.passwordToken(username, password);
-				String encryptedPassToken = aesEncryptionDecryption.encrypt(passwordtoken);
-				Timestamp ts = new Timestamp(new Date().getTime());
-				dataauth.setId(user.getId());
-				dataauth.setUsername(username);
-				dataauth.setPassword(password);
-				dataauth.setDatelogin(ts);
-				dataauth.setPasswordtoken(encryptedPassToken);
-				dataauth.setIdcompany(user.getIdcompany());
-				dataauth.setIdbranch(user.getIdbranch());
-				dataauth.setTypelogin(ConstansKey.TYPE_MOBILE);
-				String encryptedString = aesEncryptionDecryption.encrypt(new ConvertJson().toJsonString(dataauth));
-				
-				userdata = new UserMobileData();
-//				userdata.setPermissions(setPermissions(user.getId()));
-				userdata.setToken(encryptedString);
-				
-				UserMobile usermobil = repository.getById(user.getId());
-				usermobil.setToken(encryptedString);
-				repository.saveAndFlush(usermobil);
+				SecurityLicenseData license = securityService.checkLicense(user.getIdcompany(), null, null);
+				returndata = new ReturnData();
+				returndata = license.getReturnData();
+				if(returndata.isSuccess()) {
+					AuthorizationData dataauth = new AuthorizationData();
+					String passwordtoken = securityService.passwordToken(username, password);
+					String encryptedPassToken = aesEncryptionDecryption.encrypt(passwordtoken);
+					Timestamp ts = new Timestamp(new Date().getTime());
+					dataauth.setId(user.getId());
+					dataauth.setUsername(username);
+					dataauth.setPassword(password);
+					dataauth.setDatelogin(ts);
+					dataauth.setPasswordtoken(encryptedPassToken);
+					dataauth.setIdcompany(user.getIdcompany());
+					dataauth.setIdbranch(user.getIdbranch());
+					dataauth.setTypelogin(ConstansKey.TYPE_MOBILE);
+					String encryptedString = aesEncryptionDecryption.encrypt(new ConvertJson().toJsonString(dataauth));
+					
+					userdata = new UserMobileData();
+//					userdata.setPermissions(setPermissions(user.getId()));
+					userdata.setToken(encryptedString);
+					
+					UserMobile usermobil = repository.getById(user.getId());
+					usermobil.setToken(encryptedString);
+					repository.saveAndFlush(usermobil);
+				}
 				break;
-				
 			}
 		}
-		return userdata;
+		ReturnLoginMobile data = new ReturnLoginMobile();
+		data.setUserMobileData(userdata);
+		data.setReturnData(returndata);
+		return data;
 	}
 	
 	private List<UserMobileDataAuth> getUserLoginByUserNameV2(String username) {

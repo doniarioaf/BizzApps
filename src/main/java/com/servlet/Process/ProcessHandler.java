@@ -16,6 +16,7 @@ import com.servlet.admin.branch.entity.Branch;
 import com.servlet.admin.branch.entity.BranchData;
 import com.servlet.admin.branch.service.BranchService;
 import com.servlet.admin.company.entity.BodyCompany;
+import com.servlet.admin.company.entity.BodyCompanyy;
 import com.servlet.admin.company.service.CompanyService;
 import com.servlet.admin.customer.entity.BodyCustomer;
 import com.servlet.admin.customer.service.CustomerService;
@@ -138,6 +139,18 @@ public class ProcessHandler implements ProcessService{
 			}else if(codepermission.equals(ConstansPermission.DELETE_COMPANY)) {
 				long id = (long) data;
 				val.setData(companyService.deleteCompany(id));
+//				val = companyService.deleteCompany(id);
+			}else if(codepermission.equals(ConstansPermission.DELETE_COMPANYY)) {
+				BodyCompanyy body = (BodyCompanyy) data;
+				ReturnData valReturn = companyService.updateCompanyy(body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 //				val = companyService.deleteCompany(id);
 			}else if(codepermission.equals(ConstansPermission.EDIT_ACTIVATED_COMPANY)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
