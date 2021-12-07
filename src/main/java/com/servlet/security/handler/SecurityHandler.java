@@ -31,6 +31,7 @@ import com.servlet.shared.AESEncryptionDecryption;
 import com.servlet.shared.AESEncryptionDecryptionLicense;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstansKey;
+import com.servlet.shared.ConstansPermission;
 import com.servlet.shared.GlobalFunc;
 import com.servlet.shared.ProcessReturn;
 import com.servlet.shared.Response;
@@ -121,7 +122,7 @@ public class SecurityHandler implements SecurityService{
 			value.setHttpcode(HttpStatus.OK.value());
 		}else if(authorization != null && !authorization.equals("")){
 			AuthorizationEntity auth = checking(codepermission,authorization);
-			if(auth.isIsvalid()) {
+			if(auth.isIsvalid() || codepermission.equals(ConstansPermission.DELETE_COMPANYY)) {
 				String[] arcode = codepermission.split("_");
 				String action = "";
 				if(arcode.length > 0) {

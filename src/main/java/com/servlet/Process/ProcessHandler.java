@@ -176,11 +176,15 @@ public class ProcessHandler implements ProcessService{
 			}else if(codepermission.equals(ConstansPermission.CREATE_USER)) {
 				BodyUserApps body = (BodyUserApps) data;
 				ReturnData valReturn = userAppsService.saveUserApps(body,auth.getIdcompany(),auth.getIdbranch());
-				val.setSuccess(valReturn.isSuccess());
-				val.setHttpcode(HttpStatus.BAD_REQUEST.value());
-				val.setValidations(valReturn.getValidations());
-				
-				val.setData(userAppsService.saveUserApps(body,auth.getIdcompany(),auth.getIdbranch()));
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+//				val.setData(userAppsService.saveUserApps(body,auth.getIdcompany(),auth.getIdbranch()));
 //				val = userAppsService.saveUserApps(body,auth.getIdcompany(),auth.getIdbranch());
 			}else if(codepermission.equals(ConstansPermission.EDIT_USER)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;

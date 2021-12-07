@@ -146,9 +146,22 @@ public class UserAppsHandler implements UserAppsService{
 		table.setCreated(ts);
 		table.setModified(ts);
 		
+		List<UserListData> listAllUserByIdCompany = getListAllUserByIdCompany(idcompany);
 		List<UserApps> checkUsername = repository.getUserLoginByUsername(userapps.getUsername());
 		long idreturn = 0;
-		if(checkUsername != null && checkUsername.size() > 0) {
+		
+		SecurityLicenseData checkLicense = securityService.checkLicense(idcompany, new Integer(listAllUserByIdCompany.size() + 1).longValue(),null);
+		if(!checkLicense.getReturnData().isSuccess()) {
+			List<ValidationDataMessage> listvalidLicense = checkLicense.getReturnData().getValidations();
+			if(listvalidLicense.size() > 0) {
+				for(ValidationDataMessage licenseMsg : listvalidLicense) {
+					if(!licenseMsg.getMessageCode().equals(ConstansCodeMessage.COMPANY_LICENSE_ALERT_EXPIRED)) {
+						ValidationDataMessage msg = new ValidationDataMessage(licenseMsg.getMessageCode(),licenseMsg.getMessage());
+						validations.add(msg);
+					}
+				}
+			}
+		}else if(checkUsername != null && checkUsername.size() > 0) {
 			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.USERNAME_IS_EXIST,"Username Sudah Terpakai");
 			validations.add(msg);
 		}else {
@@ -246,6 +259,14 @@ public class UserAppsHandler implements UserAppsService{
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListAllUser().schema());
 		sqlBuilder.append(" where mua.idcompany = ? and mua.idbranch = ? and mua.isdelete = false ");
 		final Object[] queryParameters = new Object[] { idcompany , idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListAllUser(), queryParameters);
+	}
+	
+	private List<UserListData> getListAllUserByIdCompany(long idcompany) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListAllUser().schema());
+		sqlBuilder.append(" where mua.idcompany = ? and mua.isdelete = false ");
+		final Object[] queryParameters = new Object[] { idcompany};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListAllUser(), queryParameters);
 	}
 
