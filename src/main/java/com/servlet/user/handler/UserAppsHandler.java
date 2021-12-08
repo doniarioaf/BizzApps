@@ -58,7 +58,7 @@ public class UserAppsHandler implements UserAppsService{
 	public Collection<UserPermissionData> getListUserPermission(long id) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new UserPermissionMapper().schema());
-		sqlBuilder.append(" where mur.iduserapps = ? ");
+		sqlBuilder.append(" where mur.iduserapps = ? and mr.isdelete = false ");
 		final Object[] queryParameters = new Object[] { id };
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new UserPermissionMapper(), queryParameters);
 	}
@@ -268,6 +268,20 @@ public class UserAppsHandler implements UserAppsService{
 		sqlBuilder.append(" where mua.idcompany = ? and mua.isdelete = false ");
 		final Object[] queryParameters = new Object[] { idcompany};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListAllUser(), queryParameters);
+	}
+
+	@Override
+	public ReturnData deleteUserApss(long id) {
+		// TODO Auto-generated method stub
+		Timestamp ts = new Timestamp(new Date().getTime());
+		UserApps table = repository.getById(id);
+		table.setIsdelete(true);
+		table.setModified(ts);
+		UserApps returntable = repository.saveAndFlush(table);
+		
+		ReturnData data = new ReturnData();
+		data.setId(returntable.getId());
+		return data;
 	}
 
 }

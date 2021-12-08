@@ -1,6 +1,8 @@
 package com.servlet.mobile.infoheader.handler;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -230,6 +232,20 @@ public class InfoHeaderHandler implements InfoHeaderService{
 		TemplateInfo data = new TemplateInfo();
 		data.setCustomertypeoptions(customertypeoptions);
 		data.setTypeoptions(typeoptions);
+		return data;
+	}
+
+	@Override
+	public ReturnData deleteInfo(long id) {
+		// TODO Auto-generated method stub
+		Timestamp ts = new Timestamp(new Date().getTime());
+		InfoHeader table = repository.getById(id);
+		table.setIsdelete(true);
+//		table.setModified(ts);
+		InfoHeader returntable = repository.saveAndFlush(table);
+		
+		ReturnData data = new ReturnData();
+		data.setId(returntable.getId());
 		return data;
 	}
 

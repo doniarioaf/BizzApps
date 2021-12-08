@@ -8,7 +8,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-
 import com.servlet.admin.customer.service.CustomerService;
 import com.servlet.mobile.callplan.entity.BodyCallPlan;
 import com.servlet.mobile.callplan.entity.CallPlan;
@@ -163,6 +162,19 @@ public class CallPlanHandler implements CallPlanService{
 		TemplateDataCallPlan template = new TemplateDataCallPlan();
 		template.setCustomerOptions(customerService.getAllListCustomer(idcompany, idbranch));
 		return template;
+	}
+	@Override
+	public ReturnData deleteCallPlan(long id) {
+		// TODO Auto-generated method stub
+		Timestamp ts = new Timestamp(new Date().getTime());
+		CallPlan table = repository.getById(id);
+		table.setIsdelete(true);
+		table.setModified(ts);
+		CallPlan returntable = repository.saveAndFlush(table);
+		
+		ReturnData data = new ReturnData();
+		data.setId(returntable.getId());
+		return data;
 	}
 
 }

@@ -18,6 +18,7 @@ public class GetUserMobilePermission implements RowMapper<UserMobilePermission>{
 		sqlBuilder.append("from m_user_mobile_role mur ");
 		sqlBuilder.append("join m_role_permissions mrp on mur.idrole = mrp.idrole ");
 		sqlBuilder.append("join m_permissions mp on mp.id = mrp.idpermissions ");
+		sqlBuilder.append("join m_role mr on mr.id = mur.idrole ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}

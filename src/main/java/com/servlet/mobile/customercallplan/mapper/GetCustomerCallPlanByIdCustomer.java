@@ -14,7 +14,7 @@ public class GetCustomerCallPlanByIdCustomer implements RowMapper<CustomerCallPl
 		final StringBuilder sqlBuilder = new StringBuilder(400);
 		sqlBuilder.append("mc.*,mccp.idcallplan as idcallplan from m_customer_call_plan as mccp ");
 		sqlBuilder.append("join m_customer as mc on mc.id = mccp.idcustomer ");
-		
+		sqlBuilder.append("join m_call_plan as mcp on mcp.id = mccp.idcallplan ");
 		this.schemaSql = sqlBuilder.toString();
 	}
 	

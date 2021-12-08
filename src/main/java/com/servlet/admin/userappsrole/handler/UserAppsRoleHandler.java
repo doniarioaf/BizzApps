@@ -44,7 +44,7 @@ public class UserAppsRoleHandler implements UserAppsRoleService{
 	public Collection<UserAppsRoleData> getListUserAppsRole(long iduserapps) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetUserAppsRoleByIdUserApps().schema());
-		sqlBuilder.append(" where userrole.iduserapps = ? ");
+		sqlBuilder.append(" where userrole.iduserapps = ? and mr.isdelete = false ");
 		final Object[] queryParameters = new Object[] { iduserapps };
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetUserAppsRoleByIdUserApps(), queryParameters);
 	}

@@ -20,4 +20,5 @@ public interface UserAppsService {
 	ReturnData editUserApps(long id,BodyUserApps userapps);
 	UserDetailData getDetailUserApps(long id,long idcompany,long idbranch);
 	List<UserListData> getListAllUser(long idcompany,long idbranch);
+	ReturnData deleteUserApss(long id);
 }

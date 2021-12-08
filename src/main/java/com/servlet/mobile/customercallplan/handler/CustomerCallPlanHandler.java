@@ -47,7 +47,7 @@ public class CustomerCallPlanHandler implements CustomerCallPlanService{
 	public Collection<CustomerCallPlanData> getListCustomerCallPlan(long idcallplan) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetCustomerCallPlanByIdCustomer().schema());
-		sqlBuilder.append(" where mccp.idcallplan = ? ");
+		sqlBuilder.append(" where mccp.idcallplan = ? and mc.isdelete = false ");
 		final Object[] queryParameters = new Object[] { idcallplan };
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetCustomerCallPlanByIdCustomer(), queryParameters);
 	}
@@ -65,6 +65,7 @@ public class CustomerCallPlanHandler implements CustomerCallPlanService{
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetCountCustomerCallPlan().schema());
 		sqlBuilder.append(" where mccp.idcallplan in (select idcallplan from m_user_mobile_call_plan as mumcp where mumcp.idusermobile = ? and mumcp.idcompany = ? and mumcp.idbranch = ?) ");
+		sqlBuilder.append(" and mc.isdelete = false and mcp.isdelete = false ");
 		final Object[] queryParameters = new Object[] { idusermobile,idcompany,idbranch };
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetCountCustomerCallPlan(), queryParameters);
 	}
@@ -74,6 +75,7 @@ public class CustomerCallPlanHandler implements CustomerCallPlanService{
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetCustomerCallPlanByIdCustomer().schema());
 		sqlBuilder.append(" where mccp.idcallplan in (select idcallplan from m_user_mobile_call_plan as mumcp where mumcp.idusermobile = ? and mumcp.idcompany = ? and mumcp.idbranch = ?) ");
+		sqlBuilder.append(" and mc.isdelete = false and mcp.isdelete = false ");
 		final Object[] queryParameters = new Object[] { idusermobile,idcompany,idbranch };
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetCustomerCallPlanByIdCustomer(), queryParameters);
 	}
@@ -82,6 +84,7 @@ public class CustomerCallPlanHandler implements CustomerCallPlanService{
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetCustomerCallPlanByIdCustomer().schema());
 		sqlBuilder.append(" where mccp.idcallplan in (select idcallplan from m_user_mobile_call_plan as mumcp where mumcp.idusermobile = ? and mumcp.idcompany = ? and mumcp.idbranch = ?) ");
+		sqlBuilder.append(" and mc.isdelete = false and mcp.isdelete = false ");
 		sqlBuilder.append("order by mccp.idcallplan limit "+limit+" offset "+offset);
 		final Object[] queryParameters = new Object[] { idusermobile,idcompany,idbranch };
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetCustomerCallPlanByIdCustomer(), queryParameters);

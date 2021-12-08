@@ -19,6 +19,7 @@ import com.servlet.admin.branch.mapper.BranchMapper;
 import com.servlet.admin.branch.mapper.GetListBranchData;
 import com.servlet.admin.branch.repo.BranchRepo;
 import com.servlet.admin.branch.service.BranchService;
+import com.servlet.shared.ReturnData;
 
 @Service
 public class BranchHandler implements BranchService{
@@ -103,9 +104,23 @@ public class BranchHandler implements BranchService{
 	public List<BranchData> getAllListBranchNotExistInCompany() {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListBranchData().schema());
-		sqlBuilder.append(" where mb.id not in(select mcb.idbranch from m_company_branch as mcb) ");
+		sqlBuilder.append(" where mb.id not in(select mcb.idbranch from m_company_branch as mcb) and mb.isdelete = false ");
 		final Object[] queryParameters = new Object[] {  };
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListBranchData(), queryParameters);
+	}
+
+	@Override
+	public ReturnData deleteBranch(long id) {
+		// TODO Auto-generated method stub
+		Timestamp ts = new Timestamp(new Date().getTime());
+		Branch table = repository.getById(id);
+		table.setIsdelete(true);
+		table.setModified(ts);
+		Branch returntable = repository.saveAndFlush(table);
+		
+		ReturnData data = new ReturnData();
+		data.setId(returntable.getId());
+		return data;
 	}
 
 	
