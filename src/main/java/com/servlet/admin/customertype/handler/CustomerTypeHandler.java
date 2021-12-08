@@ -1,4 +1,6 @@
 package com.servlet.admin.customertype.handler;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +78,19 @@ public class CustomerTypeHandler implements CustomerTypeService{
 			return listcustomertype.get(0);
 		}
 		return null;
+	}
+
+	@Override
+	public ReturnData deleteCustomerType(long id) {
+		// TODO Auto-generated method stub
+		Timestamp ts = new Timestamp(new Date().getTime());
+		CustomerType table = repository.getById(id);
+		table.setIsdelete(true);
+		CustomerType returntable = repository.saveAndFlush(table);
+		
+		ReturnData data = new ReturnData();
+		data.setId(returntable.getId());
+		return data;
 	}
 	
 }

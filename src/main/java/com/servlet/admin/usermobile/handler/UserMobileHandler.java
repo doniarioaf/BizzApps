@@ -58,13 +58,18 @@ public class UserMobileHandler implements UserMobileService{
 	UserMobileCallPlanService userMobileCallPlanService;
 	
 	
+	
 	@Override
 	public Collection<UserMobilePermission> getListUserMobilePermission(long id) {
 		// TODO Auto-generated method stub
-		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetUserMobilePermission().schema());
-		sqlBuilder.append(" where mur.idusermobile = ? ");
-		final Object[] queryParameters = new Object[] { id };
-		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetUserMobilePermission(), queryParameters);
+		UserMobile mobile = repository.getById(id);
+		if(!mobile.isIsdelete()) {
+			final StringBuilder sqlBuilder = new StringBuilder("select " + new GetUserMobilePermission().schema());
+			sqlBuilder.append(" where mur.idusermobile = ? and mr.isdelete = false and mur.isdelete = false ");
+			final Object[] queryParameters = new Object[] { id };
+			return this.jdbcTemplate.query(sqlBuilder.toString(), new GetUserMobilePermission(), queryParameters);
+		}
+		return new ArrayList<UserMobilePermission>();
 	}
 
 	@Override
@@ -349,7 +354,7 @@ public class UserMobileHandler implements UserMobileService{
 	public List<UserMobileDataAuth> getUserLoginByUserNameMapper(String username,long idcompany,long idbranch) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataUserMobileAuth().schema());
-		sqlBuilder.append(" where mua.username = ? and mua.idcompany = ? and mua.idbranch = ? ");
+		sqlBuilder.append(" where mua.username = ? and mua.idcompany = ? and mua.idbranch = ? and mua.isdelete = false ");
 		final Object[] queryParameters = new Object[] { username,idcompany,idbranch };
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataUserMobileAuth(), queryParameters);
 	}
@@ -367,6 +372,20 @@ public class UserMobileHandler implements UserMobileService{
 			return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListAllUserMobile(), queryParameters);
 		}
 //		return null;
+	}
+
+	@Override
+	public ReturnData deleteUserMobile(long id) {
+		// TODO Auto-generated method stub
+		Timestamp ts = new Timestamp(new Date().getTime());
+		UserMobile table = repository.getById(id);
+		table.setIsdelete(true);
+		table.setModified(ts);
+		UserMobile returntable = repository.saveAndFlush(table);
+		
+		ReturnData data = new ReturnData();
+		data.setId(returntable.getId());
+		return data;
 	}
 
 }

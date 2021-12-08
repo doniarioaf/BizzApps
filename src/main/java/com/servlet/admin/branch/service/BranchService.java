@@ -6,6 +6,7 @@ import java.util.List;
 import com.servlet.admin.branch.entity.BodyBranch;
 import com.servlet.admin.branch.entity.Branch;
 import com.servlet.admin.branch.entity.BranchData;
+import com.servlet.shared.ReturnData;
 
 public interface BranchService {
 	List<Branch> getListBranchActive();
@@ -15,4 +16,5 @@ public interface BranchService {
 	BranchData updateBranch(long id,BodyBranch branch);
 	Collection<Branch> getListBranchActiveJdbc();
 	List<BranchData> getAllListBranchNotExistInCompany();
+	ReturnData deleteBranch(long id);
 }

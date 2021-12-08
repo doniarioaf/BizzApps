@@ -37,7 +37,7 @@ public class RolePermissonsHandler implements RolePermissionService{
 	public Collection<RolePermissionData> getListRolePermissions(long idrole) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetRolePermissionByIdRole().schema());
-		sqlBuilder.append(" where mrp.idrole = ? ");
+		sqlBuilder.append(" where mrp.idrole = ? and mr.isdelete = false ");
 		final Object[] queryParameters = new Object[] { idrole };
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetRolePermissionByIdRole(), queryParameters);
 	}

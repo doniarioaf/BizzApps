@@ -14,4 +14,5 @@ public interface InfoHeaderService {
 	InfoHeaderDetailData getDetailById(long id,long idcompany,long idbranch);
 	List<InfoHeaderDetailData> getAllListDataMobile(long idcompany,long idbranch);
 	TemplateInfo getTemplate(long idcompany,long idbranch);
+	ReturnData deleteInfo(long id);
 }

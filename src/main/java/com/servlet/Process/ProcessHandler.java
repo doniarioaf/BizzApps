@@ -119,27 +119,25 @@ public class ProcessHandler implements ProcessService{
 			if(codepermission.equals(ConstansPermission.CREATE_BRANCH)) {
 				BodyBranch branch = (BodyBranch) data;
 				val.setData(branchservice.saveBranch(branch));
-//				val = branchservice.saveBranch(branch);
 			}else if(codepermission.equals(ConstansPermission.EDIT_BRANCH)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				BodyBranch branch = (BodyBranch) param.get("BodyBranch");
 				long id = (long) param.get("id");
 				val.setData(branchservice.updateBranch(id, branch));
-//				val = branchservice.updateBranch(id, branch);
+			}else if(codepermission.equals(ConstansPermission.DELETE_BRANCH)) {
+				long id = (long) data;
+				val.setData(branchservice.deleteBranch(id));
 			}else if(codepermission.equals(ConstansPermission.CREATE_COMPANY)) {
 				BodyCompany body = (BodyCompany) data;
 				val.setData(companyService.saveCompany(body));
-//				val = companyService.saveCompany(body);
 			}else if(codepermission.equals(ConstansPermission.EDIT_COMPANY)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				BodyCompany body = (BodyCompany) param.get("BodyCompany");
 				long id = (long) param.get("id");
 				val.setData(companyService.updateCompany(id, body));
-//				val = companyService.updateCompany(id, body);
 			}else if(codepermission.equals(ConstansPermission.DELETE_COMPANY)) {
 				long id = (long) data;
 				val.setData(companyService.deleteCompany(id));
-//				val = companyService.deleteCompany(id);
 			}else if(codepermission.equals(ConstansPermission.DELETE_COMPANYY)) {
 				BodyCompanyy body = (BodyCompanyy) data;
 				ReturnData valReturn = companyService.updateCompanyy(body);
@@ -151,7 +149,6 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
-//				val = companyService.deleteCompany(id);
 			}else if(codepermission.equals(ConstansPermission.EDIT_ACTIVATED_COMPANY)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				String type = (String) param.get("type");
@@ -166,13 +163,14 @@ public class ProcessHandler implements ProcessService{
 			}else if(codepermission.equals(ConstansPermission.CREATE_ROLE)) {
 				BodyRole body = (BodyRole) data;
 				val.setData(roleService.saveRole(body,auth.getIdcompany(),auth.getIdbranch()));
-//				val = roleService.saveRole(body,auth.getIdcompany(),auth.getIdbranch());
 			}else if(codepermission.equals(ConstansPermission.EDIT_ROLE)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				BodyRole body = (BodyRole) param.get("BodyRole");
 				long id = (long) param.get("id");
 				val.setData(roleService.updateRole(id, body));
-//				val = roleService.updateRole(id, body);
+			}else if(codepermission.equals(ConstansPermission.DELETE_ROLE)) {
+				long id = (long) data;
+				val.setData(roleService.deleteRole(id));
 			}else if(codepermission.equals(ConstansPermission.CREATE_USER)) {
 				BodyUserApps body = (BodyUserApps) data;
 				ReturnData valReturn = userAppsService.saveUserApps(body,auth.getIdcompany(),auth.getIdbranch());
@@ -192,6 +190,9 @@ public class ProcessHandler implements ProcessService{
 				long id = (long) param.get("id");
 				val.setData(userAppsService.editUserApps(id, body));
 //				val = userAppsService.editUserApps(id, body);
+			}else if(codepermission.equals(ConstansPermission.DELETE_USER)) {
+				long id = (long) data;
+				val.setData(userAppsService.deleteUserApss(id));
 			}else if(codepermission.equals(ConstansPermission.CREATE_USER_MOBILE)) {
 				BodyUserMobile body = (BodyUserMobile) data;
 				ReturnData valReturn = userMobileService.saveUserMobile(body,auth.getIdcompany(),auth.getIdbranch());
@@ -217,66 +218,66 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_USER_MOBILE)) {
+				long id = (long) data;
+				val.setData(userMobileService.deleteUserMobile(id));
 			}else if(codepermission.equals(ConstansPermission.CREATE_CUSTOMERTYPE)) {
 				BodyCustomerType body = (BodyCustomerType) data;
 				val.setData(customerTypeService.saveCustomerType(body, auth.getIdcompany(),auth.getIdbranch()));
-//				val = customerTypeService.saveCustomerType(body, auth.getIdcompany(),auth.getIdbranch());
 			}else if(codepermission.equals(ConstansPermission.EDIT_CUSTOMERTYPE)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				BodyCustomerType body = (BodyCustomerType) param.get("BodyCustomerType");
 				long id = (long) param.get("id");
 				val.setData(customerTypeService.updateCustomerType(id, body, auth.getIdcompany(),auth.getIdbranch()));
-//				val = customerTypeService.updateCustomerType(id, body, auth.getIdcompany(),auth.getIdbranch());
+			}else if(codepermission.equals(ConstansPermission.DELETE_CUSTOMERTYPE)) {
+				long id = (long) data;
+				val.setData(customerTypeService.deleteCustomerType(id));
 			}else if(codepermission.equals(ConstansPermission.CREATE_CUSTOMER)) {
 				BodyCustomer body = (BodyCustomer) data;
 				val.setData(customerService.saveCustomer(body, auth.getIdcompany(),auth.getIdbranch()));
-//				val = customerService.saveCustomer(body, auth.getIdcompany(),auth.getIdbranch());
 			}else if(codepermission.equals(ConstansPermission.EDIT_CUSTOMER)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				BodyCustomer body = (BodyCustomer) param.get("BodyCustomer");
 				long id = (long) param.get("id");
 				val.setData(customerService.updateCustomer(id, body, auth.getIdcompany(),auth.getIdbranch()));
-//				val = customerService.updateCustomer(id, body, auth.getIdcompany(),auth.getIdbranch());
+			}else if(codepermission.equals(ConstansPermission.DELETE_CUSTOMER)) {
+				long id = (long) data;
+				val.setData(customerService.deleteCustomer(id));
 			}else if(codepermission.equals(ConstansPermission.CREATE_PRODUCTTYPE)) {
 				BodyProductType body = (BodyProductType) data;
 				val.setData(productTypeService.saveProductType(body, auth.getIdcompany(),auth.getIdbranch()));
-//				val = productTypeService.saveProductType(body, auth.getIdcompany(),auth.getIdbranch());
 			}else if(codepermission.equals(ConstansPermission.EDIT_PRODUCTTYPE)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				BodyProductType body = (BodyProductType) param.get("BodyProductType");
 				long id = (long) param.get("id");
 				val.setData(productTypeService.updateProductType(id, body, auth.getIdcompany(),auth.getIdbranch()));
-//				val = productTypeService.updateProductType(id, body, auth.getIdcompany(),auth.getIdbranch());
 			}else if(codepermission.equals(ConstansPermission.CREATE_PRODUCT)) {
 				BodyProduct body = (BodyProduct) data;
 				val.setData(productService.saveProduct(body, auth.getIdcompany(),auth.getIdbranch()));
-//				val = productService.saveProduct(body, auth.getIdcompany(),auth.getIdbranch());
 			}else if(codepermission.equals(ConstansPermission.EDIT_PRODUCT)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				BodyProduct body = (BodyProduct) param.get("BodyProduct");
 				long id = (long) param.get("id");
 				val.setData(productService.updateProduct(id, body, auth.getIdcompany(),auth.getIdbranch()));
-//				val = productService.updateProduct(id, body, auth.getIdcompany(),auth.getIdbranch());
 			}else if(codepermission.equals(ConstansPermission.CREATE_CALLPLAN)) {
 				BodyCallPlan body = (BodyCallPlan) data;
 				val.setData(callPlanService.saveCallPlan(body, auth.getIdcompany(),auth.getIdbranch()));
-//				val = callPlanService.saveCallPlan(body, auth.getIdcompany(),auth.getIdbranch());
 			}else if(codepermission.equals(ConstansPermission.EDIT_CALLPLAN)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				BodyCallPlan body = (BodyCallPlan) param.get("BodyCallPlan");
 				long id = (long) param.get("id");
 				val.setData(callPlanService.updateCallPlan(id, body, auth.getIdcompany(),auth.getIdbranch()));
-//				val = callPlanService.updateCallPlan(id, body, auth.getIdcompany(),auth.getIdbranch());
+			}else if(codepermission.equals(ConstansPermission.DELETE_CALL_PLAN)) {
+				long id = (long) data;
+				val.setData(callPlanService.deleteCallPlan(id));
 			}else if(codepermission.equals(ConstansPermission.CREATE_PROJECT)) {
 				BodyProject body = (BodyProject) data;
 				val.setData(projectService.saveProject(body, auth.getIdcompany(),auth.getIdbranch()));
-//				val = projectService.saveProject(body, auth.getIdcompany(),auth.getIdbranch());
 			}else if(codepermission.equals(ConstansPermission.EDIT_PROJECT)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				BodyProject body = (BodyProject) param.get("BodyProject");
 				long id = (long) param.get("id");
 				val.setData(projectService.updateProject(id, body, auth.getIdcompany(),auth.getIdbranch()));
-//				val = projectService.updateProject(id, body, auth.getIdcompany(),auth.getIdbranch());
 			}else if(codepermission.equals(ConstansPermission.CREATE_INFO)) {
 				BodyInfoHeader body = (BodyInfoHeader) data;
 				
@@ -304,6 +305,9 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}				
+			}else if(codepermission.equals(ConstansPermission.DELETE_INFO)) {
+				long id = (long) data;
+				val.setData(infoHeaderService.deleteInfo(id));
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
 			if(codepermission.equals(ConstansPermission.CREATE_MONITOR_USER_MOBILE) ) {

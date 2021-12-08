@@ -9,4 +9,5 @@ public interface CustomerTypeService {
 	ReturnData updateCustomerType(long id,BodyCustomerType customertype,long idcompany,long idbranch);
 	List<CustomerTypeData> getAllListCustomerType(long idcompany,long idbranch);
 	CustomerTypeData getCustomerTypeById(long id,long idcompany,long idbranch);
+	ReturnData deleteCustomerType(long id);
 }

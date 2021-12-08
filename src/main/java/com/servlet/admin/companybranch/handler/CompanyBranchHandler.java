@@ -44,7 +44,7 @@ public class CompanyBranchHandler implements CompanyBranchService{
 	public Collection<CompanyBranchData> getListCompanyBranch(long idcompany) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetCompanyBranchByIdCompany().schema());
-		sqlBuilder.append(" where mcb.idcompany = ? ");
+		sqlBuilder.append(" where mcb.idcompany = ? and mb.isdelete = false ");
 		final Object[] queryParameters = new Object[] { idcompany };
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetCompanyBranchByIdCompany(), queryParameters);
 	}

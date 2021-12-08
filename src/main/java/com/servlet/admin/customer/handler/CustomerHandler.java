@@ -128,4 +128,18 @@ public class CustomerHandler implements CustomerService{
 		return data;
 	}
 
+	@Override
+	public ReturnData deleteCustomer(long id) {
+		// TODO Auto-generated method stub
+		Timestamp ts = new Timestamp(new Date().getTime());
+		Customer table = repository.getById(id);
+		table.setIsdelete(true);
+		table.setModified(ts);
+		Customer returntable = repository.saveAndFlush(table);
+		
+		ReturnData data = new ReturnData();
+		data.setId(returntable.getId());
+		return data;
+	}
+
 }

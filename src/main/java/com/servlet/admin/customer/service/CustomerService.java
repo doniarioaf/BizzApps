@@ -14,4 +14,5 @@ public interface CustomerService {
 	List<CustomerListData> getAllListCustomer(long idcompany,long idbranch);
 	CustomerDetailData getCustomerById(long id,long idcompany,long idbranch);
 	CustomerTemplate customerTemplate(long idcompany,long idbranch);
+	ReturnData deleteCustomer(long id);
 }
