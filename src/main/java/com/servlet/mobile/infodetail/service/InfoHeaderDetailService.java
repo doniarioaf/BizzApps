@@ -9,4 +9,6 @@ public interface InfoHeaderDetailService {
 	Object saveDataList(List<InfoHeaderDetail> list);
 	List<InfoHeaderDetailData> getListData(long idinfoheader);
 	Object deleteAllDataListPK(List<Long> listPK);
+	Object updateDeleteInfoDetail(long id,boolean isdelete);
+	void deleteAllInfoDetailByIdInfoHeader(long idinfoheader);
 }
