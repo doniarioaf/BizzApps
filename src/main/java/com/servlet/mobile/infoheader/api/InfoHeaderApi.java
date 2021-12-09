@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.servlet.mobile.infoheader.entity.BodyInfoHeader;
+import com.servlet.mobile.infoheader.entity.BodyInfoHeaderUpdate;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConstansPermission;
@@ -60,7 +61,7 @@ public class InfoHeaderApi {
 	}
 	
 	@PutMapping("{id}")
-	ResponseEntity<Response> editData(@PathVariable long id,@RequestBody @Validated BodyInfoHeader body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+	ResponseEntity<Response> editData(@PathVariable long id,@RequestBody @Validated BodyInfoHeaderUpdate body, @RequestHeader(ConstansKey.AUTH) String authorization) {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("id", id);
 		param.put("BodyInfoHeader", body);

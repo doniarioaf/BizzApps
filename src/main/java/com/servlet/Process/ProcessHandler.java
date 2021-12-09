@@ -36,6 +36,7 @@ import com.servlet.mobile.callplan.service.CallPlanService;
 import com.servlet.mobile.customercallplan.entity.DownloadCustomerCallPlan;
 import com.servlet.mobile.download.service.DownloadService;
 import com.servlet.mobile.infoheader.entity.BodyInfoHeader;
+import com.servlet.mobile.infoheader.entity.BodyInfoHeaderUpdate;
 import com.servlet.mobile.infoheader.service.InfoHeaderService;
 import com.servlet.mobile.monitorusermobile.entity.BodyListPhoto;
 import com.servlet.mobile.monitorusermobile.entity.BodyMonitorUserMobile;
@@ -293,7 +294,7 @@ public class ProcessHandler implements ProcessService{
 //				val = infoHeaderService.saveInfoHeader(body, auth.getIdcompany(),auth.getIdbranch());
 			}else if(codepermission.equals(ConstansPermission.EDIT_INFO)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
-				BodyInfoHeader body = (BodyInfoHeader) param.get("BodyInfoHeader");
+				BodyInfoHeaderUpdate body = (BodyInfoHeaderUpdate) param.get("BodyInfoHeader");
 				long id = (long) param.get("id");
 				
 				ReturnData valReturn = infoHeaderService.updateInfoHeader(id, body, auth.getIdcompany(),auth.getIdbranch());

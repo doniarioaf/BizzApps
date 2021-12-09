@@ -1,23 +1,22 @@
 package com.servlet.mobile.infoheader.handler;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-
 import com.servlet.admin.customertype.entity.CustomerTypeData;
 import com.servlet.admin.customertype.service.CustomerTypeService;
 import com.servlet.mobile.infodetail.entity.InfoHeaderDetail;
 import com.servlet.mobile.infodetail.service.InfoHeaderDetailService;
 import com.servlet.mobile.infoheader.entity.BodyInfoHeader;
+import com.servlet.mobile.infoheader.entity.BodyInfoHeaderUpdate;
 import com.servlet.mobile.infoheader.entity.InfoHeader;
 import com.servlet.mobile.infoheader.entity.InfoHeaderData;
 import com.servlet.mobile.infoheader.entity.InfoHeaderDetailData;
+import com.servlet.mobile.infoheader.entity.ListAnswerUpdate;
 import com.servlet.mobile.infoheader.entity.TemplateInfo;
 import com.servlet.mobile.infoheader.entity.TypeOptions;
 import com.servlet.mobile.infoheader.mapper.GetInfoHeader;
@@ -29,6 +28,7 @@ import com.servlet.shared.ValidationDataMessage;
 
 @Service
 public class InfoHeaderHandler implements InfoHeaderService{
+	private static final Logger LOGGER = LoggerFactory.getLogger(InfoHeaderHandler.class);
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	@Autowired
@@ -107,7 +107,7 @@ public class InfoHeaderHandler implements InfoHeaderService{
 	}
 
 	@Override
-	public ReturnData updateInfoHeader(long id, BodyInfoHeader body, long idcompany, long idbranch) {
+	public ReturnData updateInfoHeader(long id, BodyInfoHeaderUpdate body, long idcompany, long idbranch) {
 		// TODO Auto-generated method stub
 		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
 		InfoHeaderData checkData = checkInfoHeaderById(id,idcompany,idbranch);
@@ -128,40 +128,66 @@ public class InfoHeaderHandler implements InfoHeaderService{
 			table.setIdcustomertype(body.getIdcustomertype());
 			
 			InfoHeader returntable = repository.saveAndFlush(table);
+			infoHeaderDetailService.deleteAllInfoDetailByIdInfoHeader(id);
 			
-			List<com.servlet.mobile.infodetail.entity.InfoHeaderDetailData> listdetail = infoHeaderDetailService.getListData(id);
-			List<Long> listDetailPK = new ArrayList<Long>();
-			if(listdetail != null && listdetail.size() > 0) {
-				for(com.servlet.mobile.infodetail.entity.InfoHeaderDetailData data : listdetail) {
-					listDetailPK.add(data.getId());
-				}
-				infoHeaderDetailService.deleteAllDataListPK(listDetailPK);
-			}
-			
+//			List<com.servlet.mobile.infodetail.entity.InfoHeaderDetailData> listdetail = infoHeaderDetailService.getListData(id);
+//			List<Long> listDetailPK = new ArrayList<Long>();
+//			if(listdetail != null && listdetail.size() > 0) {
+//				for(com.servlet.mobile.infodetail.entity.InfoHeaderDetailData data : listdetail) {
+//					listDetailPK.add(data.getId());
+//				}
+//				infoHeaderDetailService.deleteAllDataListPK(listDetailPK);
+//			}
 			
 			
 			List<InfoHeaderDetail> listinfoHeaderDetail = new ArrayList<InfoHeaderDetail>();
 			if(body.getType().equals("TA")) {
-				InfoHeaderDetail tabledetail = new InfoHeaderDetail();
-				tabledetail.setIdcompany(idcompany);
-				tabledetail.setIdbranch(idbranch);
-				tabledetail.setIdinfoheader(returntable.getId());
-				tabledetail.setAnswer("Text");
-				listinfoHeaderDetail.add(tabledetail);
-				
-				infoHeaderDetailService.saveDataList(listinfoHeaderDetail);
-			}else {
-				if(body.getAnswer().length > 0) {
-					for(int i=0; i < body.getAnswer().length; i++) {
-						InfoHeaderDetail tabledetail = new InfoHeaderDetail();
-						tabledetail.setIdcompany(idcompany);
-						tabledetail.setIdbranch(idbranch);
-						tabledetail.setIdinfoheader(returntable.getId());
-						tabledetail.setAnswer(body.getAnswer()[i]);
-						listinfoHeaderDetail.add(tabledetail);
+				if(body.getAnswers().length > 0) {
+					for(int i=0; i < body.getAnswers().length; i++) {
+						ListAnswerUpdate answer = body.getAnswers()[i];
+						if(answer.getAnswer().toUpperCase().equals("TEXT")) {
+							if(infoHeaderDetailService.updateDeleteInfoDetail(answer.getId(), false) == null) {
+								InfoHeaderDetail tabledetail = new InfoHeaderDetail();
+								tabledetail.setIdcompany(idcompany);
+								tabledetail.setIdbranch(idbranch);
+								tabledetail.setIdinfoheader(returntable.getId());
+								tabledetail.setAnswer("Text");
+								listinfoHeaderDetail.add(tabledetail);
+								break;
+							}
+						}
 					}
+				}else {
+					InfoHeaderDetail tabledetail = new InfoHeaderDetail();
+					tabledetail.setIdcompany(idcompany);
+					tabledetail.setIdbranch(idbranch);
+					tabledetail.setIdinfoheader(returntable.getId());
+					tabledetail.setAnswer("Text");
+					listinfoHeaderDetail.add(tabledetail);
+				}
+				if(listinfoHeaderDetail.size() > 0) {
 					infoHeaderDetailService.saveDataList(listinfoHeaderDetail);
 				}
+			}else {
+				if(body.getAnswers().length > 0) {
+					for(int i=0; i < body.getAnswers().length; i++) {
+						ListAnswerUpdate answer = body.getAnswers()[i];
+						if(infoHeaderDetailService.updateDeleteInfoDetail(answer.getId(), false) == null) {
+							InfoHeaderDetail tabledetail = new InfoHeaderDetail();
+							tabledetail.setIdcompany(idcompany);
+							tabledetail.setIdbranch(idbranch);
+							tabledetail.setIdinfoheader(returntable.getId());
+							tabledetail.setAnswer(answer.getAnswer());
+							listinfoHeaderDetail.add(tabledetail);
+						}
+					}
+				}
+				
+				if(listinfoHeaderDetail.size() > 0) {
+					infoHeaderDetailService.saveDataList(listinfoHeaderDetail);
+				}
+				
+//				}
 			}
 			
 			
@@ -238,7 +264,6 @@ public class InfoHeaderHandler implements InfoHeaderService{
 	@Override
 	public ReturnData deleteInfo(long id) {
 		// TODO Auto-generated method stub
-		Timestamp ts = new Timestamp(new Date().getTime());
 		InfoHeader table = repository.getById(id);
 		table.setIsdelete(true);
 //		table.setModified(ts);

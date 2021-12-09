@@ -15,12 +15,19 @@ public class InfoHeaderDetail implements Serializable{
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO, generator="infoheaderdetail_id_seq")
-	private long id;	
+	private Long id;	
 	private long idcompany;
 	private long idbranch;
 	private long idinfoheader;
 	private String answer;
-	public long getId() {
+	private boolean isdelete;
+	public boolean isIsdelete() {
+		return isdelete;
+	}
+	public void setIsdelete(boolean isdelete) {
+		this.isdelete = isdelete;
+	}
+	public Long getId() {
 		return id;
 	}
 	public void setId(long id) {
