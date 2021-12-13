@@ -11,11 +11,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.servlet.admin.branch.entity.BranchData;
+import com.servlet.admin.branch.service.BranchService;
 import com.servlet.admin.company.entity.BodyCompany;
 import com.servlet.admin.company.entity.BodyCompanyy;
 import com.servlet.admin.company.entity.Company;
 import com.servlet.admin.company.entity.CompanyData;
 import com.servlet.admin.company.entity.CompanyDataDetail;
+import com.servlet.admin.company.entity.TemplateCompany;
 import com.servlet.admin.company.repo.CompanyRepo;
 import com.servlet.admin.company.service.CompanyService;
 import com.servlet.admin.companybranch.entity.CompanyBranch;
@@ -40,6 +44,8 @@ public class CompanyHandler implements CompanyService{
 	private CompanyRepo repository;
 	@Autowired
 	private CompanyBranchService companyBranchService;
+	@Autowired
+	private BranchService branchService;
 	
 	@Override
 	public List<Company> getListCompanyActive() {
@@ -229,6 +235,15 @@ public class CompanyHandler implements CompanyService{
 		data.setId(idreturn);
 		data.setSuccess(validations.size() > 0?false:true);
 		data.setValidations(validations);
+		return data;
+	}
+
+	@Override
+	public TemplateCompany getTemplateCompany() {
+		// TODO Auto-generated method stub
+		List<BranchData> listbranch = branchService.getAllListBranchNotExistInCompany();
+		TemplateCompany data = new TemplateCompany();
+		data.setBranchoptions(listbranch);
 		return data;
 	}
 

@@ -36,13 +36,20 @@ public class CompanyApi {
 	
 	@GetMapping("{id}")
 	ResponseEntity<Response> getById(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
-		Response response = securityService.response(ConstansPermission.READ_COMPANY,companyService.getCompanyAndCompanyBranchByID(id),authorization);
+		Response response = securityService.response(ConstansPermission.READ_COMPANY,new Long(id).toString(),authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
 	@GetMapping("/getlistcompanyactive")
 	ResponseEntity<Response> getListCompanyActive(@RequestHeader(ConstansKey.AUTH) String authorization) {
-		Response response = securityService.response(ConstansPermission.READ_COMPANY,companyService.getListCompanyActive(),authorization);
+//		Response response = securityService.response(ConstansPermission.READ_COMPANY,companyService.getListCompanyActive(),authorization);
+		Response response = securityService.response(ConstansPermission.READ_COMPANY,"ALL",authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@GetMapping("/template")
+	ResponseEntity<Response> getCustomerTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
+		Response response = securityService.response(ConstansPermission.READ_COMPANY,"TEMPLATE",authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	

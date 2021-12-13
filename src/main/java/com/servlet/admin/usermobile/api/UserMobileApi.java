@@ -45,6 +45,12 @@ public class UserMobileApi {
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
+	@GetMapping("/template")
+	ResponseEntity<Response> getTemplateUserMobile(@RequestHeader(ConstansKey.AUTH) String authorization) {
+		Response response = securityService.response(ConstansPermission.READ_USER_MOBILE,"TEMPLATE",authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
 	@PostMapping
 	ResponseEntity<Response> createUser(@RequestBody @Validated BodyUserMobile body, @RequestHeader(ConstansKey.AUTH) String authorization) {
 		Response response = securityService.response(ConstansPermission.CREATE_USER_MOBILE,body,authorization);

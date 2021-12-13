@@ -357,113 +357,104 @@ public class ProcessHandler implements ProcessService{
 				String type = (String) data;
 				if(type.equals("ALL")) {
 					val.setData(roleService.getAllListRole(auth.getIdcompany(), auth.getIdbranch()));
-//					val = roleService.getAllListRole(auth.getIdcompany(), auth.getIdbranch());
 				}else if(type.equals("TEMPLATE")) {
 					val.setData(permissionService.getAllListPermission());
-//					val = permissionService.getAllListPermission();
 				}else {
 					long id = new Long(type).longValue();
 					val.setData(roleService.getRoleDetail(id, auth.getIdcompany(), auth.getIdbranch()));
-//					val = roleService.getRoleDetail(id, auth.getIdcompany(), auth.getIdbranch());
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_USER)) {
 				String type = (String) data;
 				if(type.equals("ALL")) {
 					val.setData(userAppsService.getListAllUser(auth.getIdcompany(), auth.getIdbranch()));
-//					val = userAppsService.getListAllUser(auth.getIdcompany(), auth.getIdbranch());
+				}else if(type.equals("TEMPLATE")){
+					val.setData(userAppsService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}else {
 					long id = new Long(type).longValue();
 					val.setData(userAppsService.getDetailUserApps(id, auth.getIdcompany(), auth.getIdbranch()));
-//					val = userAppsService.getDetailUserApps(id, auth.getIdcompany(), auth.getIdbranch());
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_USER_MOBILE)) {
 				String type = (String) data;
 				if(type.equals("ALL")) {
 					val.setData(userMobileService.getListAllUserMobile(auth.getIdcompany(), auth.getIdbranch()));
-//					val = userMobileService.getListAllUserMobile(auth.getIdcompany(), auth.getIdbranch());
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(userMobileService.getTemplateUserMobile(auth.getIdcompany(), auth.getIdbranch()));
 				}else {
 					long id = new Long(type).longValue();
 					val.setData(userMobileService.getDetailUserMobile(id, auth.getIdcompany(), auth.getIdbranch()));
-//					val = userMobileService.getDetailUserMobile(id, auth.getIdcompany(), auth.getIdbranch());
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_BRANCH)) {
 				String type = (String) data;
 				if(type.equals("ALL")) {
 					val.setData(new ArrayList<Branch>(branchservice.getListBranchActiveJdbc()));
-//					val = new ArrayList<Branch>(branchservice.getListBranchActiveJdbc());
 				}else if(type.equals("getlistbranchnotexistincompany")) {
 					val.setData(new ArrayList<BranchData>(branchservice.getAllListBranchNotExistInCompany()));
-//					val = new ArrayList<BranchData>(branchservice.getAllListBranchNotExistInCompany());
 				}else {
 					long id = new Long(type).longValue();
 					val.setData(branchservice.getBranchByID(id));
-//					val = branchservice.getBranchByID(id);
+				}
+			}else if(codepermission.equals(ConstansPermission.READ_COMPANY)) {
+				String type = (String) data;
+				if(type.equals("ALL")) {
+					val.setData(companyService.getListCompanyActive());
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(companyService.getTemplateCompany());
+				}else {
+					long id = new Long(type).longValue();
+					val.setData(companyService.getCompanyAndCompanyBranchByID(id));
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_CUSTOMERTYPE)) {
 				String type = (String) data;
 				if(type == "ALL") {
 					val.setData(customerTypeService.getAllListCustomerType(auth.getIdcompany(), auth.getIdbranch()));
-//					val = customerTypeService.getAllListCustomerType(auth.getIdcompany(), auth.getIdbranch());
 				}else {
 					long id = new Long(type).longValue();
 					val.setData(customerTypeService.getCustomerTypeById(id, auth.getIdcompany(), auth.getIdbranch()));
-//					val = customerTypeService.getCustomerTypeById(id, auth.getIdcompany(), auth.getIdbranch());
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_CUSTOMER)) {
 				String type = (String) data;
 				
 				if(type.equals("ALL")) {
 					val.setData(customerService.getAllListCustomer(auth.getIdcompany(), auth.getIdbranch()));
-//					val = customerService.getAllListCustomer(auth.getIdcompany(), auth.getIdbranch());
 				}else if(type.equals("TEMPLATE")) {
 					val.setData(customerService.customerTemplate(auth.getIdcompany(), auth.getIdbranch()));
-//					val = customerService.customerTemplate(auth.getIdcompany(), auth.getIdbranch());
 				}else {
 					long id = new Long(type).longValue();
 					val.setData(customerService.getCustomerById(id, auth.getIdcompany(), auth.getIdbranch()));
-//					val = customerService.getCustomerById(id, auth.getIdcompany(), auth.getIdbranch());
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_PRODUCTTYPE)) {
 				String type = (String) data;
 				if(type.equals("ALL")) {
 					val.setData(productTypeService.getAllListProductType(auth.getIdcompany(), auth.getIdbranch()));
-//					val = productTypeService.getAllListProductType(auth.getIdcompany(), auth.getIdbranch());
 				}else {
 					long id = new Long(type).longValue();
 					val.setData(productTypeService.getProductTypeById(id, auth.getIdcompany(), auth.getIdbranch()));
-//					val = productTypeService.getProductTypeById(id, auth.getIdcompany(), auth.getIdbranch());
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_PRODUCT)) {
 				String type = (String) data;
 				if(type.equals("ALL")) {
 					val.setData(productService.getAllListProduct(auth.getIdcompany(), auth.getIdbranch()));
-//					val = productService.getAllListProduct(auth.getIdcompany(), auth.getIdbranch());
 				}else {
 					long id = new Long(type).longValue();
 					val.setData(productService.getProductById(id, auth.getIdcompany(), auth.getIdbranch()));
-//					val = productService.getProductById(id, auth.getIdcompany(), auth.getIdbranch());
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_CALLPLAN)) {
 				String type = (String) data;
 				if(type.equals("ALL")) {
 					val.setData(callPlanService.getAllListCallPlan(auth.getIdcompany(), auth.getIdbranch()));
-//					val = callPlanService.getAllListCallPlan(auth.getIdcompany(), auth.getIdbranch());
 				}else if(type.equals("TEMPLATE")) {
 					val.setData(callPlanService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}else {
 					long id = new Long(type).longValue();
 					val.setData(callPlanService.getCallPlanById(id, auth.getIdcompany(), auth.getIdbranch()));
-//					val = callPlanService.getCallPlanById(id, auth.getIdcompany(), auth.getIdbranch());
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_PROJECT)) {
 				String type = (String) data;
 				if(type.equals("ALL")) {
 					val.setData(projectService.getAllListProject(auth.getIdcompany(), auth.getIdbranch()));
-//					val = projectService.getAllListProject(auth.getIdcompany(), auth.getIdbranch());
 				}else {
 					long id = new Long(type).longValue();
 					val.setData(projectService.getProjectById(id, auth.getIdcompany(), auth.getIdbranch()));
-//					val = projectService.getProjectById(id, auth.getIdcompany(), auth.getIdbranch());
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_INFO)) {
 				String type = (String) data;
@@ -471,11 +462,9 @@ public class ProcessHandler implements ProcessService{
 					val.setData(infoHeaderService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("ALL")) {
 					val.setData(infoHeaderService.getAllListData(auth.getIdcompany(), auth.getIdbranch()));
-//					val = infoHeaderService.getAllListData(auth.getIdcompany(), auth.getIdbranch());
 				}else {
 					long id = new Long(type).longValue();
 					val.setData(infoHeaderService.getDetailById(id, auth.getIdcompany(), auth.getIdbranch()));
-//					val = infoHeaderService.getDetailById(id, auth.getIdcompany(), auth.getIdbranch());
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_REPORT_MONITORING)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
@@ -497,14 +486,12 @@ public class ProcessHandler implements ProcessService{
 				String type = (String) data;
 				if(type.equals("ALL_MOBILE")) {
 					val.setData(infoHeaderService.getAllListDataMobile(auth.getIdcompany(), auth.getIdbranch()));
-//					val = infoHeaderService.getAllListDataMobile(auth.getIdcompany(), auth.getIdbranch());
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_DOWNLOAD_MOBILE)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				String type = (String) param.get("type");
 				if(type.equals("DOWNLOAD")) {
 					val.setData(downloadService.donwload(auth.getId(), auth.getIdcompany(), auth.getIdbranch()));
-//					val = downloadService.donwload(auth.getId(), auth.getIdcompany(), auth.getIdbranch());
 				}else if(type.equals("DOWNLOAD_CALL_PLAN")) {
 					long limit = (long) param.get("limit");
 					long offset = (long) param.get("offset");

@@ -12,8 +12,10 @@ import org.springframework.stereotype.Service;
 
 import com.servlet.admin.company.entity.Company;
 import com.servlet.admin.company.service.CompanyService;
+import com.servlet.admin.role.service.RoleService;
 import com.servlet.admin.usermobile.entity.BodyUserMobile;
 import com.servlet.admin.usermobile.entity.ReturnLoginMobile;
+import com.servlet.admin.usermobile.entity.TemplateUserMobile;
 import com.servlet.admin.usermobile.entity.UserDetailMobile;
 import com.servlet.admin.usermobile.entity.UserMobile;
 import com.servlet.admin.usermobile.entity.UserMobileData;
@@ -29,6 +31,7 @@ import com.servlet.admin.usermobilerole.entity.UserMobileRole;
 import com.servlet.admin.usermobilerole.entity.UserMobileRoleData;
 import com.servlet.admin.usermobilerole.entity.UserMobileRolePK;
 import com.servlet.admin.usermobilerole.service.UserMobileRoleService;
+import com.servlet.mobile.callplan.service.CallPlanService;
 import com.servlet.mobile.usermobilecallplan.entity.UserMobileCallPlan;
 import com.servlet.mobile.usermobilecallplan.entity.UserMobileCallPlanData;
 import com.servlet.mobile.usermobilecallplan.entity.UserMobileCallPlanPK;
@@ -56,6 +59,10 @@ public class UserMobileHandler implements UserMobileService{
 	UserMobileRoleService userMobileRoleService;
 	@Autowired
 	UserMobileCallPlanService userMobileCallPlanService;
+	@Autowired
+	CallPlanService callPlanService;
+	@Autowired
+	RoleService roleService;
 	
 	
 	
@@ -385,6 +392,15 @@ public class UserMobileHandler implements UserMobileService{
 		
 		ReturnData data = new ReturnData();
 		data.setId(returntable.getId());
+		return data;
+	}
+
+	@Override
+	public TemplateUserMobile getTemplateUserMobile(long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		TemplateUserMobile data = new TemplateUserMobile();
+		data.setCallplanoptions(callPlanService.getAllListCallPlan(idcompany, idbranch));
+		data.setRoleoptions(roleService.getAllListRole(idcompany, idbranch));
 		return data;
 	}
 
