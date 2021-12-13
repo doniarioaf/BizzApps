@@ -44,6 +44,12 @@ public class UserApi {
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
+	@GetMapping("/template")
+	ResponseEntity<Response> getTemplateUserApps(@RequestHeader(ConstansKey.AUTH) String authorization) {
+		Response response = securityService.response(ConstansPermission.READ_USER,"TEMPLATE",authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
 	@PostMapping
 	ResponseEntity<Response> createUser(@RequestBody @Validated BodyUserApps body, @RequestHeader(ConstansKey.AUTH) String authorization) {
 		Response response = securityService.response(ConstansPermission.CREATE_USER,body,authorization);

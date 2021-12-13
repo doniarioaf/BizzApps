@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.servlet.admin.usermobile.entity.BodyUserMobile;
 import com.servlet.admin.usermobile.entity.ReturnLoginMobile;
+import com.servlet.admin.usermobile.entity.TemplateUserMobile;
 import com.servlet.admin.usermobile.entity.UserDetailMobile;
 import com.servlet.admin.usermobile.entity.UserMobile;
 import com.servlet.admin.usermobile.entity.UserMobileDataAuth;
@@ -23,4 +24,5 @@ public interface UserMobileService {
 	List<UserMobileDataAuth> getUserLoginByUserNameMapper(String username,long idcompany,long idbranch);
 	List<UserMobileListData> getListAllUserMobileForMonitoring(String listid,long idcompany,long idbranch);
 	ReturnData deleteUserMobile(long id);
+	TemplateUserMobile getTemplateUserMobile(long idcompany,long idbranch);
 }

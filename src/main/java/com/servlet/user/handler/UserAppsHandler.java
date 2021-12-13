@@ -9,6 +9,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import com.servlet.admin.role.service.RoleService;
 import com.servlet.admin.userappsrole.entity.UserAppsRole;
 import com.servlet.admin.userappsrole.entity.UserAppsRoleData;
 import com.servlet.admin.userappsrole.entity.UserAppsRolePK;
@@ -24,6 +26,7 @@ import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 import com.servlet.user.entity.BodyUserApps;
 import com.servlet.user.entity.ReturnLoginApps;
+import com.servlet.user.entity.TemplateInternalUser;
 import com.servlet.user.entity.UserApps;
 import com.servlet.user.entity.UserData;
 import com.servlet.user.entity.UserDetailData;
@@ -46,6 +49,8 @@ public class UserAppsHandler implements UserAppsService{
 	SecurityService securityService;
 	@Autowired
 	UserAppsRoleService userAppsRoleService;
+	@Autowired
+	RoleService roleService;
 
 	@Override
 	public List<UserApps> getListLogin(HashMap<String, Object> hashparam) {
@@ -281,6 +286,14 @@ public class UserAppsHandler implements UserAppsService{
 		
 		ReturnData data = new ReturnData();
 		data.setId(returntable.getId());
+		return data;
+	}
+
+	@Override
+	public TemplateInternalUser getTemplate(long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		TemplateInternalUser data = new TemplateInternalUser();
+		data.setRoleoptions(roleService.getAllListRole(idcompany, idbranch));
 		return data;
 	}
 
