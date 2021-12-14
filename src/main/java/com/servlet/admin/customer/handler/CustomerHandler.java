@@ -3,11 +3,13 @@ package com.servlet.admin.customer.handler;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.servlet.admin.branch.entity.Branch;
 import com.servlet.admin.customer.entity.BodyCustomer;
 import com.servlet.admin.customer.entity.Customer;
 import com.servlet.admin.customer.entity.CustomerDetailData;
@@ -140,6 +142,35 @@ public class CustomerHandler implements CustomerService{
 		ReturnData data = new ReturnData();
 		data.setId(returntable.getId());
 		return data;
+	}
+
+
+	@Override
+	public ReturnData updateLatLong(long id,String latitude,String longitude) {
+		// TODO Auto-generated method stub
+		Optional<Customer> value = repository.findById(id);
+		if(value.isPresent()) {
+			Customer table = value.get();
+			if(table.getLatitude() == null) {
+				table.setLatitude(latitude);
+			}else if(table.getLatitude().equals("")) {
+				table.setLatitude(latitude);
+			}
+			
+			if(table.getLongitude() == null) {
+				table.setLongitude(longitude);
+			}else if(table.getLongitude().equals("")) {
+				table.setLongitude(longitude);
+			}
+			
+			Customer returntable = repository.saveAndFlush(table);
+			
+			ReturnData data = new ReturnData();
+			data.setId(returntable.getId());
+			return data;
+		}
+		
+		return null;
 	}
 
 }

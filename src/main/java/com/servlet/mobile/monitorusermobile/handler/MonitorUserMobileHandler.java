@@ -7,6 +7,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import com.servlet.admin.customer.entity.Customer;
+import com.servlet.admin.customer.service.CustomerService;
 import com.servlet.mobile.monitorusermobile.entity.BodyInfoDetail;
 import com.servlet.mobile.monitorusermobile.entity.BodyListMonitorUserMobile;
 import com.servlet.mobile.monitorusermobile.entity.BodyListPhoto;
@@ -30,6 +33,8 @@ public class MonitorUserMobileHandler implements MonitorUserMobileService {
 	private MonitorUserMobileRepo repository;
 	@Autowired
 	private MonitorUserMobileInfoService monitorUserMobileInfoService;
+	@Autowired
+	private CustomerService customerService;
 	
 	@Override
 	public List<ReturnListData> saveMonitorUserMobile(BodyMonitorUserMobile listbody, long iduser, long idcompany, long idbranch) {
@@ -71,6 +76,8 @@ public class MonitorUserMobileHandler implements MonitorUserMobileService {
 					
 					MonitorUserMobile returndata = repository.saveAndFlush(table);
 					
+					
+					
 					List<MonitorUserMobileInfo> listsave = new ArrayList<MonitorUserMobileInfo>();
 					if(body.getInfodetails().size() > 0) {
 						for(BodyInfoDetail infodetail : body.getInfodetails()) {
@@ -86,6 +93,9 @@ public class MonitorUserMobileHandler implements MonitorUserMobileService {
 						
 						monitorUserMobileInfoService.saveMonitorUserMobileInfoList(listsave);
 					}
+					//update Lat Long Customer
+					ReturnData returnCust = customerService.updateLatLong(body.getIdcustomer(), body.getLatitudein(), body.getLongitudein());
+					
 					if(returndata != null && new Long(returndata.getId()) != null) {
 						ReturnListData data = new ReturnListData();
 						data.setIdcustomer(body.getIdcustomer());
@@ -94,6 +104,8 @@ public class MonitorUserMobileHandler implements MonitorUserMobileService {
 						data.setIdmonitoruser(returndata.getId());
 						listdonesave.add(data);
 					}
+					
+					
 					
 				}catch (Exception e) {
 					// TODO: handle exception
