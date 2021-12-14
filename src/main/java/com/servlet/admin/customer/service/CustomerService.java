@@ -2,7 +2,9 @@ package com.servlet.admin.customer.service;
 
 import java.util.List;
 
+import com.servlet.admin.branch.entity.Branch;
 import com.servlet.admin.customer.entity.BodyCustomer;
+import com.servlet.admin.customer.entity.Customer;
 import com.servlet.admin.customer.entity.CustomerDetailData;
 import com.servlet.admin.customer.entity.CustomerListData;
 import com.servlet.admin.customer.entity.CustomerTemplate;
@@ -15,4 +17,5 @@ public interface CustomerService {
 	CustomerDetailData getCustomerById(long id,long idcompany,long idbranch);
 	CustomerTemplate customerTemplate(long idcompany,long idbranch);
 	ReturnData deleteCustomer(long id);
+	ReturnData updateLatLong(long id,String latitude,String longitude);
 }
