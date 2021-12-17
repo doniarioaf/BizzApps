@@ -3,6 +3,7 @@ package com.servlet.mobile.customercallplan.entity;
 public class CustomerCallPlanData {
 	private long id;
 	private long idcallplan;
+	private long idcustomertype;
 	private String nama;
 	private String address;
 	private String city;
@@ -56,5 +57,11 @@ public class CustomerCallPlanData {
 	}
 	public void setIdcallplan(long idcallplan) {
 		this.idcallplan = idcallplan;
+	}
+	public long getIdcustomertype() {
+		return idcustomertype;
+	}
+	public void setIdcustomertype(long idcustomertype) {
+		this.idcustomertype = idcustomertype;
 	}
 }

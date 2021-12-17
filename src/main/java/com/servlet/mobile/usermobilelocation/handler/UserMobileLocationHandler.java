@@ -8,9 +8,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-
-import com.servlet.mobile.monitorusermobile.entity.MonitorUserMobile;
-import com.servlet.mobile.monitorusermobile.mapper.GetDataIdMonitorUserMobile;
 import com.servlet.mobile.usermobilelocation.entity.BodyUserMobileLocation;
 import com.servlet.mobile.usermobilelocation.entity.UserMobileLocation;
 import com.servlet.mobile.usermobilelocation.mapper.GetListLocation;

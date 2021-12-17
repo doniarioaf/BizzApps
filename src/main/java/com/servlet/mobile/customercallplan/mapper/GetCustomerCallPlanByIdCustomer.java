@@ -28,6 +28,7 @@ public class GetCustomerCallPlanByIdCustomer implements RowMapper<CustomerCallPl
 		// TODO Auto-generated method stub
 		final long id = rs.getLong("id");
 		final long idcallplan = rs.getLong("idcallplan");
+		final long idcustomertype = rs.getLong("idcustomertype");
 		final String nama = rs.getString("nama");
 		final String address = rs.getString("address");
 		final String city = rs.getString("city");
@@ -44,6 +45,7 @@ public class GetCustomerCallPlanByIdCustomer implements RowMapper<CustomerCallPl
 		data.setSubarename(subarename);
 		data.setPhone(phone);
 		data.setIdcallplan(idcallplan);
+		data.setIdcustomertype(idcustomertype);
 		
 		return data;
 	}
