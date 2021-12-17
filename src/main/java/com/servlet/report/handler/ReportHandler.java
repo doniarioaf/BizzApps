@@ -52,12 +52,17 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.servlet.admin.usermobile.entity.UserMobileListData;
 import com.servlet.admin.usermobile.service.UserMobileService;
+import com.servlet.mobile.monitorusermobile.entity.DataMonitorForMaps;
+import com.servlet.mobile.monitorusermobile.entity.MonitorUserMobile;
+import com.servlet.mobile.monitorusermobile.service.MonitorUserMobileService;
 import com.servlet.mobile.monitorusermobileinfo.entity.DetailInfo;
 import com.servlet.mobile.monitorusermobileinfo.service.MonitorUserMobileInfoService;
+import com.servlet.report.entity.BodyGetMaps;
 import com.servlet.report.entity.BodyReportMonitoring;
 import com.servlet.report.entity.MonitoringData;
 import com.servlet.report.entity.ReportToPDF;
 import com.servlet.report.entity.ReportWorkBookExcel;
+import com.servlet.report.entity.TemplateMaps;
 import com.servlet.report.mapper.getMonitoringData;
 import com.servlet.report.service.ReportService;
 
@@ -71,6 +76,8 @@ public class ReportHandler implements ReportService {
 	private UserMobileService userMobileService;
 	@Autowired
 	private MonitorUserMobileInfoService monitorUserMobileInfoService;
+	@Autowired
+	private MonitorUserMobileService monitorUserMobileService;
 	
 	@Override
 	public ReportWorkBookExcel getReportMonitoringData(BodyReportMonitoring body, long idcompany, long idbranch) {
@@ -590,6 +597,20 @@ public class ReportHandler implements ReportService {
 	    a  = Arrays.copyOf(a, a.length + 1);
 	    a[a.length - 1] = e;
 	    return a;
+	}
+
+	@Override
+	public List<DataMonitorForMaps> getListDataMaps(BodyGetMaps body, long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		return monitorUserMobileService.getListDataMonitorMaps(body.getIdusermobile(), body.getTanggal(), idcompany, idbranch);
+	}
+
+	@Override
+	public TemplateMaps getTemplateMaps(long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		TemplateMaps data = new TemplateMaps();
+		data.setUsermobileoptions(userMobileService.getListAllUserMobile(idcompany, idbranch));
+		return data;
 	}
 
 }

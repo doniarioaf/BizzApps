@@ -66,4 +66,6 @@ public class ConstansPermission {
 	public static final String CREATE_LOCATION_MOBILE = "CREATE_LOCATION_MOBILE";
 	public static final String READ_REPORT_MONITORING = "READ_REPORT_MONITORING";
 	public static final String DELETE_COMPANYY = "DELETE_COMPANYY";
+	
+	public static final String READ_MAPS_MONITORING = "READ_MAPS_MONITORING";
 }

@@ -15,9 +15,11 @@ import com.servlet.mobile.monitorusermobile.entity.BodyListMonitorUserMobile;
 import com.servlet.mobile.monitorusermobile.entity.BodyListPhoto;
 import com.servlet.mobile.monitorusermobile.entity.BodyMonitorUserMobile;
 import com.servlet.mobile.monitorusermobile.entity.BodyPhoto;
+import com.servlet.mobile.monitorusermobile.entity.DataMonitorForMaps;
 import com.servlet.mobile.monitorusermobile.entity.MonitorUserMobile;
 import com.servlet.mobile.monitorusermobile.entity.ReturnListData;
 import com.servlet.mobile.monitorusermobile.mapper.GetDataIdMonitorUserMobile;
+import com.servlet.mobile.monitorusermobile.mapper.GetDataMonitorForMaps;
 import com.servlet.mobile.monitorusermobile.repo.MonitorUserMobileRepo;
 import com.servlet.mobile.monitorusermobile.service.MonitorUserMobileService;
 import com.servlet.mobile.monitorusermobileinfo.entity.MonitorUserMobileInfo;
@@ -281,6 +283,18 @@ public class MonitorUserMobileHandler implements MonitorUserMobileService {
 			}
 		}
 		return listdonesave.size() > 0?listdonesave:null;
+	}
+
+	@Override
+	public List<DataMonitorForMaps> getListDataMonitorMaps(long iduser, String tangal, long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataMonitorForMaps().schema());
+		sqlBuilder.append(" where monitor.idusermobile = ? and monitor.idcompany = ? and monitor.idbranch = ? and to_date(monitor.checkintime,'YYYY-MM-DD') = '"+tangal+"' ");
+		sqlBuilder.append(" order by monitor.checkintime desc ");
+		final Object[] queryParameters = new Object[] {iduser, idcompany,idbranch};
+		List<DataMonitorForMaps> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataMonitorForMaps(), queryParameters);
+		return list;
 	}
 
 }
