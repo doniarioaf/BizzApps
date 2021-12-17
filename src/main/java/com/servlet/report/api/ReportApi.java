@@ -36,6 +36,7 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.servlet.report.entity.BodyGetMaps;
 import com.servlet.report.entity.BodyReportMonitoring;
 import com.servlet.report.entity.ReportToPDF;
 import com.servlet.report.service.ReportService;
@@ -59,6 +60,27 @@ public class ReportApi {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("type", "TEMPLATE");
 		Response response = securityService.response(ConstansPermission.READ_REPORT_MONITORING,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@GetMapping("/monitoring/maps/template")
+	ResponseEntity<Response> getListTemplateMaps(@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "TEMPLATE");
+		Response response = securityService.response(ConstansPermission.READ_MAPS_MONITORING,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@GetMapping("/monitoring/maps")
+	ResponseEntity<Response> getListMaps(@RequestHeader(ConstansKey.AUTH) String authorization,@RequestParam String idusermobile,@RequestParam String tanggal) {
+		BodyGetMaps body = new BodyGetMaps();
+		body.setIdusermobile(new Long(idusermobile).longValue());
+		body.setTanggal(tanggal);
+		
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "MAPS");
+		param.put("body", body);
+		Response response = securityService.response(ConstansPermission.READ_MAPS_MONITORING,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	

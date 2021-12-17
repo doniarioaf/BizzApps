@@ -46,6 +46,7 @@ import com.servlet.mobile.project.service.ProjectService;
 import com.servlet.mobile.usermobilecallplan.entity.DownloadUserMobileCallPlan;
 import com.servlet.mobile.usermobilelocation.entity.BodyUserMobileLocation;
 import com.servlet.mobile.usermobilelocation.service.UserMobileLocationService;
+import com.servlet.report.entity.BodyGetMaps;
 import com.servlet.report.entity.BodyReportMonitoring;
 import com.servlet.report.service.ReportService;
 import com.servlet.security.entity.AuthorizationData;
@@ -479,6 +480,15 @@ public class ProcessHandler implements ProcessService{
 						val.setData(reportService.getReportMonitoringDataPDF(body, auth.getIdcompany(), auth.getIdbranch()));
 					}
 					
+				}
+			}else if(codepermission.equals(ConstansPermission.READ_MAPS_MONITORING)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("TEMPLATE")) {
+					val.setData(userMobileService.getListAllUserMobileForMonitoring("ALL",auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("MAPS")) {
+					BodyGetMaps body = (BodyGetMaps) param.get("body");
+					val.setData(reportService.getListDataMaps(body, auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
