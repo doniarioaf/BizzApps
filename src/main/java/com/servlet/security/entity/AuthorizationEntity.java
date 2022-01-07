@@ -10,6 +10,10 @@ public class AuthorizationEntity {
 	private String message;
 	private List<ValidationDataMessage> validations;
 
+	private String username;
+	private long idcompany;
+	private long idbranch;
+	
 	public List<ValidationDataMessage> getValidations() {
 		return validations;
 	}
@@ -40,5 +44,29 @@ public class AuthorizationEntity {
 
 	public void setIsvalid(boolean isvalid) {
 		this.isvalid = isvalid;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public long getIdcompany() {
+		return idcompany;
+	}
+
+	public void setIdcompany(long idcompany) {
+		this.idcompany = idcompany;
+	}
+
+	public long getIdbranch() {
+		return idbranch;
+	}
+
+	public void setIdbranch(long idbranch) {
+		this.idbranch = idbranch;
 	}
 }

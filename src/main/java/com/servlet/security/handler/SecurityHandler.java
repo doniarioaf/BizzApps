@@ -16,6 +16,8 @@ import com.google.gson.Gson;
 import com.servlet.Process.ProcessService;
 import com.servlet.admin.company.entity.Company;
 import com.servlet.admin.company.service.CompanyService;
+import com.servlet.admin.logs.entity.LogsActivity;
+import com.servlet.admin.logs.service.LogsService;
 import com.servlet.admin.usermobile.entity.ReturnLoginMobile;
 import com.servlet.admin.usermobile.entity.UserMobile;
 import com.servlet.admin.usermobile.entity.UserMobileDataAuth;
@@ -54,6 +56,8 @@ public class SecurityHandler implements SecurityService{
 	UserMobileService usermobileservice;
 	@Autowired
 	CompanyService companyService;
+	@Autowired
+	LogsService logsService;
 	
 	@Override
 	public Response response(String codepermission, Object data, String authorization) {
@@ -70,6 +74,8 @@ public class SecurityHandler implements SecurityService{
 						value.setData(mobile.getUserMobileData());
 						value.setHttpcode(HttpStatus.OK.value());
 						value.setValidations(returndata.getValidations());
+						
+						setLogs(mobile.getIdcompany(), mobile.getIdbranch(), mobile.getUsername(), "loginmobile", "SUCCESS");
 					}else {
 						value.setSuccess(false);
 						value.setMessagecode(ConstansCodeMessage.DATA_VALIDATION);
@@ -77,6 +83,13 @@ public class SecurityHandler implements SecurityService{
 						value.setData(null);
 						value.setHttpcode(HttpStatus.UNAUTHORIZED.value());
 						value.setValidations(returndata.getValidations());
+						
+						if(returndata.getValidations().size() > 0) {
+							setLogs(mobile.getIdcompany(), mobile.getIdbranch(), mobile.getUsername(), "loginmobile", "Failed ("+ returndata.getValidations().get(0).getMessage() +")");
+						}else {
+							setLogs(mobile.getIdcompany(), mobile.getIdbranch(), mobile.getUsername(), "loginmobile", "Failed");
+						}
+						
 					}
 				}else {
 					value.setSuccess(false);
@@ -84,6 +97,10 @@ public class SecurityHandler implements SecurityService{
 					value.setMessage("Username Or Password Wrong");
 					value.setData(null);
 					value.setHttpcode(HttpStatus.UNAUTHORIZED.value());
+					
+					if(!mobile.getUsername().equals("")) {
+						setLogs(mobile.getIdcompany(), mobile.getIdbranch(), mobile.getUsername(), "loginmobile", "Failed (Username Or Password Wrong)");
+					}
 				}
 			}else if(authorization.equals("loginweb")) {
 				ReturnLoginApps web = (ReturnLoginApps) data;
@@ -96,6 +113,8 @@ public class SecurityHandler implements SecurityService{
 						value.setData(web.getUserData());
 						value.setHttpcode(HttpStatus.OK.value());
 						value.setValidations(returndata.getValidations());
+						
+						setLogs(web.getIdcompany(), web.getIdbranch(), web.getUsername(), "loginweb", "SUCCESS");
 					}else {
 						value.setSuccess(false);
 						value.setMessagecode(ConstansCodeMessage.DATA_VALIDATION);
@@ -103,13 +122,24 @@ public class SecurityHandler implements SecurityService{
 						value.setData(null);
 						value.setHttpcode(HttpStatus.UNAUTHORIZED.value());
 						value.setValidations(returndata.getValidations());
+						
+						if(returndata.getValidations().size() > 0) {
+							setLogs(web.getIdcompany(), web.getIdbranch(), web.getUsername(), "loginweb", "Failed ("+ returndata.getValidations().get(0).getMessage() +")");
+						}else {
+							setLogs(web.getIdcompany(), web.getIdbranch(), web.getUsername(), "loginweb", "Failed");
+						}
 					}
+					
 				}else {
 					value.setSuccess(false);
 					value.setMessagecode(ConstansCodeMessage.CODE_MESSAGE_USERNAME_OR_PASSWORD_WRONG);
 					value.setMessage("Username Or Password Wrong");
 					value.setData(null);
 					value.setHttpcode(HttpStatus.UNAUTHORIZED.value());
+					
+					if(!web.getUsername().equals("")) {
+						setLogs(web.getIdcompany(), web.getIdbranch(), web.getUsername(), "loginweb", "Failed (Username Or Password Wrong)");
+					}
 				}
 			}
 			
@@ -123,6 +153,9 @@ public class SecurityHandler implements SecurityService{
 		}else if(authorization != null && !authorization.equals("")){
 			AuthorizationEntity auth = checking(codepermission,authorization);
 			if(auth.isIsvalid() || codepermission.equals(ConstansPermission.DELETE_COMPANYY)) {
+				Gson gson = new Gson();
+				AESEncryptionDecryption aesEncryptionDecryption = new AESEncryptionDecryption();
+				
 				String[] arcode = codepermission.split("_");
 				String action = "";
 				if(arcode.length > 0) {
@@ -142,18 +175,34 @@ public class SecurityHandler implements SecurityService{
 						}else {
 							value.setData(data);
 						}
+						if(!codepermission.equals(ConstansPermission.DELETE_COMPANYY) && !auth.getUsername().equals("")) {
+							setLogs(auth.getIdcompany(), auth.getIdbranch(), auth.getUsername(), codepermission, "SUCCESS");
+						}
 						
 					}else  {
 						ProcessReturn tempdata = processservice.ProcessingFunction(codepermission, data,authorization);
 						if(tempdata.isSuccess()) {
 							value.setData(tempdata.getData());
 							value.setValidations(tempdata.getValidations());
+							
+							if(!codepermission.equals(ConstansPermission.DELETE_COMPANYY) && !auth.getUsername().equals("")) {
+								setLogs(auth.getIdcompany(), auth.getIdbranch(), auth.getUsername(), codepermission, "SUCCESS");
+							}
 						}else {
 							value.setSuccess(tempdata.isSuccess());
 							value.setMessagecode(ConstansCodeMessage.DATA_VALIDATION);
 							value.setMessage("Terkena Data Validasi");
 							value.setHttpcode(tempdata.getHttpcode());
 							value.setValidations(tempdata.getValidations());
+							
+							if(!codepermission.equals(ConstansPermission.DELETE_COMPANYY) && !auth.getUsername().equals("")) {
+								if(tempdata.getValidations().size() > 0) {
+									setLogs(auth.getIdcompany(), auth.getIdbranch(), auth.getUsername(), codepermission, "Failed ("+tempdata.getValidations().get(0).getMessage()+")");
+								}else {
+									setLogs(auth.getIdcompany(), auth.getIdbranch(), auth.getUsername(), codepermission, "Failed");
+								}
+							}
+							
 						}
 						
 					}
@@ -166,6 +215,12 @@ public class SecurityHandler implements SecurityService{
 					value.setMessage("Internal Server Error");
 					value.setData(null);
 					value.setHttpcode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+					
+					if(!codepermission.equals(ConstansPermission.DELETE_COMPANYY)) {
+						setLogs(auth.getIdcompany(), auth.getIdbranch(), auth.getUsername(), codepermission, "Failed (Internal Server Error)");
+					}
+					
+					
 				}
 			}else {
 				value.setSuccess(auth.isIsvalid());
@@ -188,6 +243,17 @@ public class SecurityHandler implements SecurityService{
 		}
 		
 		return value;
+	}
+	
+	private boolean setLogs(long idcompany,long idbranch,String username,String activity,String msg) {
+		LogsActivity table = new LogsActivity();
+		table.setIdcompany(idcompany);
+		table.setIdbranch(idbranch);
+		table.setUsername(username);
+		table.setActivity(activity);
+		table.setMessage(msg);
+		logsService.saveLogs(table);
+		return true;
 	}
 	
 	private boolean checkPasswordToken(String dbPasswordToken,String passwordToken) {
@@ -230,14 +296,13 @@ public class SecurityHandler implements SecurityService{
 						auth.setIsvalid(false);
 						auth.setMessageCode(ConstansCodeMessage.CODE_MESSAGE_SECURITY_TOKEN_PASSWORD);
 						auth.setMessage("Login Not Authorized");
+						
 					}
 				}else {
 					auth.setIsvalid(false);
 					auth.setMessageCode(ConstansCodeMessage.CODE_MESSAGE_SECURITY_LOGIN_NOT_AUTHORIZED);
 					auth.setMessage("Login Not Authorized");
 				}
-				
-				
 			}
 			
 		}catch (Exception e) {
@@ -254,11 +319,18 @@ public class SecurityHandler implements SecurityService{
 		AuthorizationEntity auth = new AuthorizationEntity();
 		Gson gson = new Gson();
 		AESEncryptionDecryption aesEncryptionDecryption = new AESEncryptionDecryption();
+		
+		String tempUser = "";
+		long idcompany = 0;
+		long idbranch = 0;
 		try {
 			String decryption = aesEncryptionDecryption.decrypt(authorization);
 			if(decryption != null) {
 				auth.setIsvalid(true);
 				AuthorizationData data = gson.fromJson(decryption, AuthorizationData.class);
+				tempUser = data.getUsername();
+				idcompany = data.getIdcompany();
+				idbranch = data.getIdbranch();
 				SecurityLicenseData license = checkLicense(data.getIdcompany(), null, null);
 //				String tokepassword = aesEncryptionDecryption.decrypt(data.getPasswordtoken());
 				if(license.getReturnData().isSuccess()) {
@@ -394,17 +466,26 @@ public class SecurityHandler implements SecurityService{
 					auth.setMessage(valmsg.getMessage());
 				}
 			}
-				
+			if(!auth.isIsvalid()) {
+				setLogs(data.getIdcompany(), data.getIdbranch(), data.getUsername(), codepermission, auth.getMessage());
+			}
+			
 			}else {
 				auth.setIsvalid(false);
 				auth.setMessageCode(ConstansCodeMessage.CODE_MESSAGE_SECURITY_LOGIN_NOT_AUTHORIZED);
 				auth.setMessage("Not Authorized");
 			}
+			
+			
 		}catch (Exception e) {
 			
 //			LOGGER.info("AuthorizationEntity "+e.toString());
 			// TODO: handle exception
 		}
+		
+		auth.setUsername(tempUser);
+		auth.setIdcompany(idcompany);
+		auth.setIdbranch(idbranch);
 		return auth;
 	}
 

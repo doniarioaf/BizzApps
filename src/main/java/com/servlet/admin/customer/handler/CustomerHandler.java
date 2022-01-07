@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import com.servlet.admin.branch.entity.Branch;
 import com.servlet.admin.customer.entity.BodyCustomer;
 import com.servlet.admin.customer.entity.Customer;
 import com.servlet.admin.customer.entity.CustomerDetailData;
@@ -19,9 +18,6 @@ import com.servlet.admin.customer.mapper.GetCustomerList;
 import com.servlet.admin.customer.mapper.GetDetailCustomer;
 import com.servlet.admin.customer.repo.CustomerRepo;
 import com.servlet.admin.customer.service.CustomerService;
-import com.servlet.admin.customertype.entity.CustomerType;
-import com.servlet.admin.customertype.entity.CustomerTypeData;
-import com.servlet.admin.customertype.mapper.GetCustomerType;
 import com.servlet.admin.customertype.service.CustomerTypeService;
 import com.servlet.shared.ReturnData;
 

@@ -76,9 +76,15 @@ public class UserAppsHandler implements UserAppsService{
 		UserData userdata = null;
 		ReturnData returndata = null;
 		List<UserApps> list = repository.getUserLoginByUsername(username);
+		String tempusername = "";
+		long idcompany = 0;
+		long idbranch = 0;
 		for(UserApps user : list) {
 			String passwordDB = aesEncryptionDecryption.decrypt(user.getPassword());
 			if(passwordDB.equals(password)) {
+				tempusername = username;
+				idcompany = user.getIdcompany();
+				idbranch = user.getIdbranch();
 				SecurityLicenseData license = securityService.checkLicense(user.getIdcompany(), null, null);
 				returndata = new ReturnData();
 				returndata = license.getReturnData();
@@ -112,6 +118,9 @@ public class UserAppsHandler implements UserAppsService{
 		ReturnLoginApps data = new ReturnLoginApps();
 		data.setReturnData(returndata);
 		data.setUserData(userdata);
+		data.setUsername(tempusername);
+		data.setIdcompany(idcompany);
+		data.setIdbranch(idbranch);
 		return data;
 	}
 	

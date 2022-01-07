@@ -4,7 +4,6 @@ public class AuthorizationChecking {
 	private boolean isvalid;
 	private String messageCode;
 	private String message;
-
 	public String getMessageCode() {
 		return messageCode;
 	}
