@@ -88,9 +88,16 @@ public class UserMobileHandler implements UserMobileService{
 		ReturnData returndata = null;
 //		List<UserMobile> list = repository.getUserLoginByUsername(username);
 		List<UserMobileDataAuth> list = getUserLoginByUserNameV2(username);
+		String tempusername = "";
+		long idcompany = 0;
+		long idbranch = 0;
 		for(UserMobileDataAuth user : list) {
 			String passwordDB = aesEncryptionDecryption.decrypt(user.getPassword());
 			if(passwordDB.equals(password)) {
+				tempusername = username;
+				idcompany = user.getIdcompany();
+				idbranch = user.getIdbranch();
+				
 				SecurityLicenseData license = securityService.checkLicense(user.getIdcompany(), null, null);
 				returndata = new ReturnData();
 				returndata = license.getReturnData();
