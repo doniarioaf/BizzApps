@@ -130,6 +130,10 @@ public class UserMobileHandler implements UserMobileService{
 		ReturnLoginMobile data = new ReturnLoginMobile();
 		data.setUserMobileData(userdata);
 		data.setReturnData(returndata);
+		
+		data.setUsername(tempusername);
+		data.setIdcompany(idcompany);
+		data.setIdbranch(idbranch);
 		return data;
 	}
 	
