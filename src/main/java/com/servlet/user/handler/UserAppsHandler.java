@@ -29,6 +29,7 @@ import com.servlet.user.entity.ReturnLoginApps;
 import com.servlet.user.entity.TemplateInternalUser;
 import com.servlet.user.entity.UserApps;
 import com.servlet.user.entity.UserData;
+import com.servlet.user.entity.UserDataDetail;
 import com.servlet.user.entity.UserDetailData;
 import com.servlet.user.entity.UserListData;
 import com.servlet.user.entity.UserPermissionData;
@@ -210,11 +211,28 @@ public class UserAppsHandler implements UserAppsService{
 		if(list != null && list.size() > 0) {
 			List<UserAppsRoleData> listroleuser = new ArrayList<UserAppsRoleData>(userAppsRoleService.getListUserAppsRole(id));
 			UserApps data = list.get(0);
-			data.setToken("");
-			data.setIdcompany(0);
-			data.setIdbranch(0);
+//			data.setToken("");
+//			data.setIdcompany(0);
+//			data.setIdbranch(0);
+			
+			UserDataDetail datadetail = new UserDataDetail();
+			datadetail.setId(data.getId());
+			datadetail.setUsername(data.getUsername());
+			datadetail.setPassword(data.getPassword());
+			datadetail.setNama(data.getNama());
+			datadetail.setNotelepon(data.getNotelepon());
+			datadetail.setAddress(data.getAddress());
+			datadetail.setIsactive(data.isIsactive());
+			datadetail.setToken("");
+			datadetail.setIdcompany(0);
+			datadetail.setIdbranch(0);
+			datadetail.setEmail(data.getEmail());
+			datadetail.setIsdelete(data.isIsdelete());
+			datadetail.setCreated(data.getCreated());
+			datadetail.setModified(data.getModified());
+			
 			UserDetailData userdetail = new UserDetailData();
-			userdetail.setUser(data);
+			userdetail.setUser(datadetail);
 			userdetail.setRoles(listroleuser);
 			return userdetail;
 		}

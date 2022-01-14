@@ -1,5 +1,6 @@
 package com.servlet.report.handler;
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -22,12 +24,13 @@ import javax.imageio.ImageIO;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.ClientAnchor.AnchorType;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
-import org.apache.poi.ss.usermodel.Picture;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.util.IOUtils;
+import org.apache.poi.util.Units;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -52,8 +55,9 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.servlet.admin.usermobile.entity.UserMobileListData;
 import com.servlet.admin.usermobile.service.UserMobileService;
+import com.servlet.mobile.infoheader.entity.InfoHeaderData;
+import com.servlet.mobile.infoheader.service.InfoHeaderService;
 import com.servlet.mobile.monitorusermobile.entity.DataMonitorForMaps;
-import com.servlet.mobile.monitorusermobile.entity.MonitorUserMobile;
 import com.servlet.mobile.monitorusermobile.service.MonitorUserMobileService;
 import com.servlet.mobile.monitorusermobileinfo.entity.DetailInfo;
 import com.servlet.mobile.monitorusermobileinfo.service.MonitorUserMobileInfoService;
@@ -78,6 +82,8 @@ public class ReportHandler implements ReportService {
 	private MonitorUserMobileInfoService monitorUserMobileInfoService;
 	@Autowired
 	private MonitorUserMobileService monitorUserMobileService;
+	@Autowired
+	private InfoHeaderService infoHeaderService;
 	
 	@Override
 	public ReportWorkBookExcel getReportMonitoringData(BodyReportMonitoring body, long idcompany, long idbranch) {
@@ -85,9 +91,17 @@ public class ReportHandler implements ReportService {
 		ReportWorkBookExcel data = new ReportWorkBookExcel();
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		
+		HashMap<Long, InfoHeaderData> mapListInfoHeader = new HashMap<Long, InfoHeaderData>();
+        List<InfoHeaderData> listInfoHeader = infoHeaderService.getAllListDataForReport(idcompany, idbranch);
+        for(InfoHeaderData info : listInfoHeader) {
+        	mapListInfoHeader.put(info.getId(), info);
+        }
+		
 		List<UserMobileListData> listuser = userMobileService.getListAllUserMobileForMonitoring(body.getIdusermobile(), idcompany, idbranch);
 		for(UserMobileListData user : listuser) {
 			XSSFSheet sheet = workbook.createSheet(user.getNama());
+			sheet.setDefaultColumnWidth(1000);
+			Drawing<?> drawing = sheet.createDrawingPatriarch();
 			int rowcount = 0;
 			Row rowNamaUser = sheet.createRow(rowcount);
 			
@@ -120,26 +134,42 @@ public class ReportHandler implements ReportService {
 	        int rowHeader = 14;
 	        
 			List<MonitoringData> list = getListMonitoringData(user.getId(),body,idcompany,idbranch);
-			
+			List<Integer> listQuestionExistInMonitoring = new ArrayList<>();
 			//Set Header Info, Mencari list Info header paling Banyak di monitoring
 			int countInfo = 0;
 			HashMap<Long, List<Long>> hashMonitorUserMobileInfo = new HashMap<Long, List<Long>>();
+			//List<DetailInfo> listdetailInfo = monitorUserMobileInfoService.getDetailInfo(infoid,monitor.getIdmonitoring());
 			if(list != null && list.size() > 0) {
 				for(MonitoringData monitor : list) {
 					List<Long> listInfo = monitorUserMobileInfoService.getListDistinctUserMobileInfo(monitor.getIdmonitoring());
 					if(listInfo.size() > countInfo) {
 						countInfo = listInfo.size(); 
 					}
+					for(Long infoid : listInfo) {
+						if(listQuestionExistInMonitoring.indexOf(infoid.intValue()) == -1) {
+							listQuestionExistInMonitoring.add(infoid.intValue());
+						}
+					}
 					hashMonitorUserMobileInfo.put(monitor.getIdmonitoring(), listInfo);
 					
 				}
 				
 				int seqInfo = 1;
-				for(int idxInfo=0; idxInfo < countInfo; idxInfo++) {
-					createCell(row, rowHeader, "Info "+seqInfo, style,sheet);
-					rowHeader++;
-					seqInfo++;
-				}
+				for(Integer infoidMonitoring : listQuestionExistInMonitoring) {
+	            	String question = "";
+	            	if(mapListInfoHeader.get(infoidMonitoring.longValue()) != null) {
+	            		InfoHeaderData infoHeaderData = mapListInfoHeader.get(infoidMonitoring.longValue());
+	            		question = infoHeaderData.getQuestion();
+	            	}
+	            	createCell(row, rowHeader, question, style,sheet);
+	            	rowHeader++;
+	            	seqInfo++;
+	            }
+//				for(int idxInfo=0; idxInfo < countInfo; idxInfo++) {
+//					createCell(row, rowHeader, "Info "+seqInfo, style,sheet);
+//					rowHeader++;
+//					seqInfo++;
+//				}
 			}
 			//Set Header Info//
 			
@@ -150,9 +180,12 @@ public class ReportHandler implements ReportService {
 		        fontMonitor.setFontHeight(14);
 		        styleMonitor.setFont(font);
 		        rowcount = 2;
+		        int rowphoto = 2;
 				for(MonitoringData monitor : list) {
-					
+					rowphoto = rowcount;
+					short s = 1000;
 					Row rowMonitor = sheet.createRow(rowcount++);
+					rowMonitor.setHeight(s);
 					int columnCount = 0;
 					createCell(rowMonitor, columnCount++, monitor.getNamacustomer(), style,sheet);
 					createCell(rowMonitor, columnCount++, monitor.getTanggal().toString(), style,sheet);
@@ -163,76 +196,97 @@ public class ReportHandler implements ReportService {
 					CreationHelper helper = workbook.getCreationHelper();
 					
 					// Create the drawing patriarch. This is the top level container for all shapes.
-					Drawing<?> drawing = sheet.createDrawingPatriarch();
+					
 					// add a picture shape
 					ClientAnchor anchor = helper.createClientAnchor();
+					anchor.setAnchorType( ClientAnchor.AnchorType.MOVE_AND_RESIZE );
 					
 					Integer objIntPhoto1 = decodeToImageExcel(monitor.getPhoto1(),workbook);
+					int widhtPhoto = 50;
+					int heightPhoto = 50;
 					if(objIntPhoto1 != null) {
 						int kolom = columnCount++;
-						anchor.setCol1(kolom);
-						anchor.setRow1(rowcount);
-						Picture pict = drawing.createPicture(anchor, objIntPhoto1.intValue());
+						Cell celPhoto = rowMonitor.createCell(kolom);
+						celPhoto.setCellValue("");
+						int columnIndex = celPhoto.getColumnIndex();
+		                sheet.autoSizeColumn(columnIndex);
+//		                workbook.getSheetAt(workbook.getSheetIndex(sheet)).autoSizeColumn(columnIndex);
+						try {
+							drawImageOnExcelSheet((XSSFSheet)sheet, rowphoto, kolom, widhtPhoto, heightPhoto, objIntPhoto1.intValue());
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						
-//						//get the picture width in px
-//						  int pictWidthPx = pict.getImageDimension().width;
-//						  //get the picture height in px
-//						  int pictHeightPx = pict.getImageDimension().height;
-//						  
-//						//get column width of column in px
-//						 float columnWidthPx = sheet.getColumnWidthInPixels(kolom);
-
-						// auto-size picture relative to its top-left corner
-						pict.resize();
 					}else {
 						createCell(rowMonitor, columnCount++, "", style,sheet);
 					}
 					
 					Integer objIntPhoto2 = decodeToImageExcel(monitor.getPhoto2(),workbook);
 					if(objIntPhoto2 != null) {
-						anchor.setCol1(columnCount++);
-						anchor.setRow1(rowcount);
-						Picture pict = drawing.createPicture(anchor, objIntPhoto2.intValue());
-
-						// auto-size picture relative to its top-left corner
-						pict.resize();
+						int kolom = columnCount++;
+						Cell celPhoto = rowMonitor.createCell(kolom);
+						celPhoto.setCellValue("");
+						int columnIndex = celPhoto.getColumnIndex();
+		                sheet.autoSizeColumn(columnIndex);
+						try {
+							drawImageOnExcelSheet((XSSFSheet)sheet, rowphoto, kolom, widhtPhoto, heightPhoto, objIntPhoto2.intValue());
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}else {
 						createCell(rowMonitor, columnCount++, "", style,sheet);
 					}
 					
 					Integer objIntPhoto3 = decodeToImageExcel(monitor.getPhoto3(),workbook);
 					if(objIntPhoto3 != null) {
-						anchor.setCol1(columnCount++);
-						anchor.setRow1(rowcount);
-						Picture pict = drawing.createPicture(anchor, objIntPhoto3.intValue());
-
-						// auto-size picture relative to its top-left corner
-						pict.resize();
+						int kolom = columnCount++;
+						Cell celPhoto = rowMonitor.createCell(kolom);
+						celPhoto.setCellValue("");
+						int columnIndex = celPhoto.getColumnIndex();
+		                sheet.autoSizeColumn(columnIndex);
+						try {
+							drawImageOnExcelSheet((XSSFSheet)sheet, rowphoto, kolom, widhtPhoto, heightPhoto, objIntPhoto3.intValue());
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}else {
 						createCell(rowMonitor, columnCount++, "", style,sheet);
 					}
 					
 					Integer objIntPhoto4 = decodeToImageExcel(monitor.getPhoto4(),workbook);
 					if(objIntPhoto4 != null) {
-						anchor.setCol1(columnCount++);
-						anchor.setRow1(rowcount);
-						
-						Picture pict = drawing.createPicture(anchor, objIntPhoto4.intValue());
-
-						// auto-size picture relative to its top-left corner
-						pict.resize();
+						int kolom = columnCount++;
+						Cell celPhoto = rowMonitor.createCell(kolom);
+						celPhoto.setCellValue("");
+						int columnIndex = celPhoto.getColumnIndex();
+		                sheet.autoSizeColumn(columnIndex);
+						try {
+							drawImageOnExcelSheet((XSSFSheet)sheet, rowphoto, kolom, widhtPhoto, heightPhoto, objIntPhoto4.intValue());
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}else {
 						createCell(rowMonitor, columnCount++, "", style,sheet);
 					}
 					
 					Integer objIntPhoto5 = decodeToImageExcel(monitor.getPhoto5(),workbook);
 					if(objIntPhoto5 != null) {
-						anchor.setCol1(columnCount++);
-						anchor.setRow1(rowcount);
-						Picture pict = drawing.createPicture(anchor, objIntPhoto5.intValue());
-
-						// auto-size picture relative to its top-left corner
-						pict.resize();
+						int kolom = columnCount++;
+						Cell celPhoto = rowMonitor.createCell(kolom);
+						celPhoto.setCellValue("");
+						int columnIndex = celPhoto.getColumnIndex();
+		                sheet.autoSizeColumn(columnIndex);
+						try {
+							drawImageOnExcelSheet((XSSFSheet)sheet, rowphoto, kolom, widhtPhoto, heightPhoto, objIntPhoto5.intValue());
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
 					}else {
 						createCell(rowMonitor, columnCount++, "", style,sheet);
 					}
@@ -244,10 +298,10 @@ public class ReportHandler implements ReportService {
 					createCell(rowMonitor, columnCount++, monitor.getPhoto5() != null && !monitor.getPhoto5().equals("")?"Y":"N", style,sheet);
 					
 					//set Value Info
-					List<Long> listInfo = hashMonitorUserMobileInfo.get(monitor.getIdmonitoring());
-					for(long infoid : listInfo) {
+//					List<Long> listInfo = hashMonitorUserMobileInfo.get(monitor.getIdmonitoring());
+					for(Integer infoidMonitoring : listQuestionExistInMonitoring) {
 						String valInfo = "";
-						List<DetailInfo> listdetailInfo = monitorUserMobileInfoService.getDetailInfo(infoid);
+						List<DetailInfo> listdetailInfo = monitorUserMobileInfoService.getDetailInfo(infoidMonitoring.longValue(),monitor.getIdmonitoring());
 						if(listdetailInfo != null && listdetailInfo.size() > 0) {
 							String question = "";
 							String answer = "";
@@ -261,7 +315,8 @@ public class ReportHandler implements ReportService {
 									answer += detail.getAnswer()+" \n ";
 								}
 							}
-							valInfo = question+" \n "+answer;
+//							valInfo = question+" \n "+answer;
+							valInfo = answer;
 						}
 						createCell(rowMonitor, columnCount++, valInfo, style,sheet);
 					}
@@ -275,6 +330,28 @@ public class ReportHandler implements ReportService {
 		data.setWorkbook(workbook);
 		return data;
 	}
+	
+	private static void drawImageOnExcelSheet(XSSFSheet sheet, int row, int col, 
+			  int height, int width, int pictureIdx) throws Exception {
+
+			  CreationHelper helper = sheet.getWorkbook().getCreationHelper();
+
+			  Drawing drawing = sheet.createDrawingPatriarch();
+
+			  ClientAnchor anchor = helper.createClientAnchor();
+			  anchor.setAnchorType(AnchorType.MOVE_AND_RESIZE);
+
+			  anchor.setCol1(col); //first anchor determines upper left position
+			  anchor.setRow1(row);
+
+			  anchor.setRow2(row); //second anchor determines bottom right position
+			  anchor.setCol2(col);
+			  anchor.setDx2(Units.toEMU(width)); //dx = left + wanted width
+			  anchor.setDy2(Units.toEMU(height)); //dy= top + wanted height
+
+			  drawing.createPicture(anchor, pictureIdx);
+
+			 }
 	
 	private List<MonitoringData> getListMonitoringData(long idusermobile,BodyReportMonitoring body, long idcompany, long idbranch) {
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new getMonitoringData().schema());
@@ -300,17 +377,36 @@ public class ReportHandler implements ReportService {
 	private Integer decodeToImageExcel(String imageString,XSSFWorkbook workbook){
 		if(imageString != null && !imageString.equals("")) {
 			try {
-				
+			byte[] imagebyte = Base64.getDecoder().decode(imageString.getBytes(StandardCharsets.UTF_8));
 			
-			byte[] imagebyte = Base64.getDecoder().decode(imageString);
 			ByteArrayInputStream bis = new ByteArrayInputStream(imagebyte);
 			BufferedImage image = ImageIO.read(bis);
+			
+			int scaledWidth = 200;
+            int scaledHeight = 200;
+            
+			// creates output image
+	        BufferedImage outputImage = new BufferedImage(scaledWidth,
+	        		scaledHeight, image.getType());
+	        
+	     // scales the input image to the output image
+	        
+	        Graphics2D g2d = outputImage.createGraphics();
+	        g2d.drawImage(image, 0, 0, scaledWidth, scaledHeight, null);
+	        g2d.dispose();
+	        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	        
+	     // writes to output file
+	        ImageIO.write(outputImage, "png", baos);
+	        byte[] imagebytev2 = baos.toByteArray();
+	        
 			bis.close();
 			
 			// write the image to a file
 			File outputfile = new File("image.png");
 			try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(outputfile))) {
-	            outputStream.write(imagebyte);
+//	            outputStream.write(imagebyte);
+				outputStream.write(imagebytev2);
 	        } catch (IOException e) {
 	            e.printStackTrace();
 	        }
@@ -323,11 +419,13 @@ public class ReportHandler implements ReportService {
 			}catch (IOException e) {
 				// TODO: handle exception
 				return null;
-			}
+			} 
 		}
 		
 		return null;
 	}
+	
+	
 
 	@Override
 	public ReportToPDF getReportMonitoringDataPDF(BodyReportMonitoring body, long idcompany, long idbranch) {
@@ -337,13 +435,17 @@ public class ReportHandler implements ReportService {
 		Document document = new Document(PageSize.A0);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         
-        
-        
+        HashMap<Long, InfoHeaderData> mapListInfoHeader = new HashMap<Long, InfoHeaderData>();
+        List<InfoHeaderData> listInfoHeader = infoHeaderService.getAllListDataForReport(idcompany, idbranch);
+        for(InfoHeaderData info : listInfoHeader) {
+        	mapListInfoHeader.put(info.getId(), info);
+        }
         List<UserMobileListData> listuser = userMobileService.getListAllUserMobileForMonitoring(body.getIdusermobile(), idcompany, idbranch);
         // countInfo = jumlah info yang ada
         int countInfo = 0;
         HashMap<Long, List<MonitoringData>> hashMonitorUserMobile = new HashMap<Long, List<MonitoringData>>();
         HashMap<Long, List<Long>> hashMonitorUserMobileInfo = new HashMap<Long, List<Long>>();
+        List<Integer> listQuestionExistInMonitoring = new ArrayList<>();
         for(UserMobileListData user : listuser) {
         	List<MonitoringData> list = getListMonitoringData(user.getId(),body,idcompany,idbranch);
 			
@@ -353,6 +455,11 @@ public class ReportHandler implements ReportService {
 					List<Long> listInfo = monitorUserMobileInfoService.getListDistinctUserMobileInfo(monitor.getIdmonitoring());
 					if(listInfo.size() > countInfo) {
 						countInfo = listInfo.size(); 
+					}
+					for(Long infoid : listInfo) {
+						if(listQuestionExistInMonitoring.indexOf(infoid.intValue()) == -1) {
+							listQuestionExistInMonitoring.add(infoid.intValue());
+						}
 					}
 					hashMonitorUserMobileInfo.put(monitor.getIdmonitoring(), listInfo);
 				}
@@ -439,15 +546,31 @@ public class ReportHandler implements ReportService {
             hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(hcell);
             
-            int seqInfo = 1; 
-            for(int cellinfo=0; cellinfo < countInfo; cellinfo++) {
-            	hcell = new PdfPCell(new Phrase("Info "+seqInfo, headFont));
+            
+            int seqInfo = 1;
+            for(Integer infoidMonitoring : listQuestionExistInMonitoring) {
+            	String question = "";
+            	if(mapListInfoHeader.get(infoidMonitoring.longValue()) != null) {
+            		InfoHeaderData infoHeaderData = mapListInfoHeader.get(infoidMonitoring.longValue());
+            		question = infoHeaderData.getQuestion();
+            	}
+            	hcell = new PdfPCell(new Phrase(question, headFont));
             	hcell.setBackgroundColor(BaseColor.CYAN);
-                widthKolom = addElementWidth(widthKolom, 4);
-                hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                table.addCell(hcell);
-                seqInfo++;
+            	widthKolom = addElementWidth(widthKolom, 4);
+            	hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            	table.addCell(hcell);
+            	seqInfo++;
+            	
+            	
             }
+//            for(int cellinfo=0; cellinfo < countInfo; cellinfo++) {
+//            	hcell = new PdfPCell(new Phrase("Info "+seqInfo, headFont));
+//            	hcell.setBackgroundColor(BaseColor.CYAN);
+//                widthKolom = addElementWidth(widthKolom, 4);
+//                hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+//                table.addCell(hcell);
+//                seqInfo++;
+//            }
             
             table.setWidths(widthKolom);
             
@@ -546,10 +669,10 @@ public class ReportHandler implements ReportService {
                     	table.addCell(valueCell);
                     	
                     	                                
-                        List<Long> listInfo = hashMonitorUserMobileInfo.get(monitor.getIdmonitoring());
-                        for(long infoid : listInfo) {
+//                        List<Long> listInfo = hashMonitorUserMobileInfo.get(monitor.getIdmonitoring());
+                        for(Integer infoidMonitoring : listQuestionExistInMonitoring) {
                         	String valInfo = "";
-                        	List<DetailInfo> listdetailInfo = monitorUserMobileInfoService.getDetailInfo(infoid);
+                        	List<DetailInfo> listdetailInfo = monitorUserMobileInfoService.getDetailInfo(infoidMonitoring.longValue(),monitor.getIdmonitoring());
                         	if(listdetailInfo != null && listdetailInfo.size() > 0) {
                         		String question = "";
     							String answer = "";
@@ -563,7 +686,8 @@ public class ReportHandler implements ReportService {
 										answer += detail.getAnswer()+" \n ";
 									}
     							}
-    							valInfo = question+" \n "+answer;
+//    							valInfo = question+" \n "+answer;
+    							valInfo = answer;
                         	}
                         	
                         	valueCell = new PdfPCell(new Phrase(valInfo));

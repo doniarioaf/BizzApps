@@ -11,5 +11,5 @@ public interface MonitorUserMobileInfoService {
 	List<MonitorUserMobileInfo> getListData(long idmonitoruser);
 	Object deleteAllMonitorUserMobileInfoByListPK(List<MonitorUserMobileInfoPK> listPK) ;
 	List<Long> getListDistinctUserMobileInfo(long idmonitoruser);
-	List<DetailInfo> getDetailInfo(long infoid);
+	List<DetailInfo> getDetailInfo(long infoid,long idmonitoruser);
 }
