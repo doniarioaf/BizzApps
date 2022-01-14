@@ -274,4 +274,15 @@ public class InfoHeaderHandler implements InfoHeaderService{
 		return data;
 	}
 
+	@Override
+	public List<InfoHeaderData> getAllListDataForReport(long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		
+		//IsDelete Sengaja Dihapus, untuk mengambil Question yang Exist Di Monitoring
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetInfoHeader().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInfoHeader(), queryParameters);
+	}
+
 }

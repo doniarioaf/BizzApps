@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
@@ -54,6 +55,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.servlet.admin.usermobile.entity.UserMobileListData;
 import com.servlet.admin.usermobile.service.UserMobileService;
+import com.servlet.mobile.infoheader.entity.InfoHeaderData;
 import com.servlet.mobile.infoheader.service.InfoHeaderService;
 import com.servlet.mobile.monitorusermobile.entity.DataMonitorForMaps;
 import com.servlet.mobile.monitorusermobile.service.MonitorUserMobileService;
@@ -89,9 +91,16 @@ public class ReportHandler implements ReportService {
 		ReportWorkBookExcel data = new ReportWorkBookExcel();
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		
+		HashMap<Long, InfoHeaderData> mapListInfoHeader = new HashMap<Long, InfoHeaderData>();
+        List<InfoHeaderData> listInfoHeader = infoHeaderService.getAllListDataForReport(idcompany, idbranch);
+        for(InfoHeaderData info : listInfoHeader) {
+        	mapListInfoHeader.put(info.getId(), info);
+        }
+		
 		List<UserMobileListData> listuser = userMobileService.getListAllUserMobileForMonitoring(body.getIdusermobile(), idcompany, idbranch);
 		for(UserMobileListData user : listuser) {
 			XSSFSheet sheet = workbook.createSheet(user.getNama());
+			sheet.setDefaultColumnWidth(1000);
 			Drawing<?> drawing = sheet.createDrawingPatriarch();
 			int rowcount = 0;
 			Row rowNamaUser = sheet.createRow(rowcount);
@@ -125,7 +134,7 @@ public class ReportHandler implements ReportService {
 	        int rowHeader = 14;
 	        
 			List<MonitoringData> list = getListMonitoringData(user.getId(),body,idcompany,idbranch);
-			
+			List<Integer> listQuestionExistInMonitoring = new ArrayList<>();
 			//Set Header Info, Mencari list Info header paling Banyak di monitoring
 			int countInfo = 0;
 			HashMap<Long, List<Long>> hashMonitorUserMobileInfo = new HashMap<Long, List<Long>>();
@@ -136,16 +145,31 @@ public class ReportHandler implements ReportService {
 					if(listInfo.size() > countInfo) {
 						countInfo = listInfo.size(); 
 					}
+					for(Long infoid : listInfo) {
+						if(listQuestionExistInMonitoring.indexOf(infoid.intValue()) == -1) {
+							listQuestionExistInMonitoring.add(infoid.intValue());
+						}
+					}
 					hashMonitorUserMobileInfo.put(monitor.getIdmonitoring(), listInfo);
 					
 				}
 				
 				int seqInfo = 1;
-				for(int idxInfo=0; idxInfo < countInfo; idxInfo++) {
-					createCell(row, rowHeader, "Info "+seqInfo, style,sheet);
-					rowHeader++;
-					seqInfo++;
-				}
+				for(Integer infoidMonitoring : listQuestionExistInMonitoring) {
+	            	String question = "";
+	            	if(mapListInfoHeader.get(infoidMonitoring.longValue()) != null) {
+	            		InfoHeaderData infoHeaderData = mapListInfoHeader.get(infoidMonitoring.longValue());
+	            		question = infoHeaderData.getQuestion();
+	            	}
+	            	createCell(row, rowHeader, question, style,sheet);
+	            	rowHeader++;
+	            	seqInfo++;
+	            }
+//				for(int idxInfo=0; idxInfo < countInfo; idxInfo++) {
+//					createCell(row, rowHeader, "Info "+seqInfo, style,sheet);
+//					rowHeader++;
+//					seqInfo++;
+//				}
 			}
 			//Set Header Info//
 			
@@ -159,9 +183,9 @@ public class ReportHandler implements ReportService {
 		        int rowphoto = 2;
 				for(MonitoringData monitor : list) {
 					rowphoto = rowcount;
-					
+					short s = 1000;
 					Row rowMonitor = sheet.createRow(rowcount++);
-					
+					rowMonitor.setHeight(s);
 					int columnCount = 0;
 					createCell(rowMonitor, columnCount++, monitor.getNamacustomer(), style,sheet);
 					createCell(rowMonitor, columnCount++, monitor.getTanggal().toString(), style,sheet);
@@ -178,8 +202,8 @@ public class ReportHandler implements ReportService {
 					anchor.setAnchorType( ClientAnchor.AnchorType.MOVE_AND_RESIZE );
 					
 					Integer objIntPhoto1 = decodeToImageExcel(monitor.getPhoto1(),workbook);
-					int widhtPhoto = 40;
-					int heightPhoto = 40;
+					int widhtPhoto = 50;
+					int heightPhoto = 50;
 					if(objIntPhoto1 != null) {
 						int kolom = columnCount++;
 						Cell celPhoto = rowMonitor.createCell(kolom);
@@ -202,26 +226,15 @@ public class ReportHandler implements ReportService {
 					if(objIntPhoto2 != null) {
 						int kolom = columnCount++;
 						Cell celPhoto = rowMonitor.createCell(kolom);
-						celPhoto.setCellValue("\n \n \n");
+						celPhoto.setCellValue("");
+						int columnIndex = celPhoto.getColumnIndex();
+		                sheet.autoSizeColumn(columnIndex);
 						try {
 							drawImageOnExcelSheet((XSSFSheet)sheet, rowphoto, kolom, widhtPhoto, heightPhoto, objIntPhoto2.intValue());
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-//						anchor.setCol1(kolom);
-//						anchor.setRow1(rowcount);
-//						   
-//						Picture pict = drawing.createPicture(anchor, objIntPhoto2.intValue());
-//
-//						// auto-size picture relative to its top-left corner
-//						pict.resize();
-//						
-//						for (int i = 0; i < 13; i++) {
-//						    sheet.autoSizeColumn(i);
-//						}
-//						sheet.autoSizeColumn(1);
-//						sheet.autoSizeColumn(1);
 					}else {
 						createCell(rowMonitor, columnCount++, "", style,sheet);
 					}
@@ -231,18 +244,14 @@ public class ReportHandler implements ReportService {
 						int kolom = columnCount++;
 						Cell celPhoto = rowMonitor.createCell(kolom);
 						celPhoto.setCellValue("");
+						int columnIndex = celPhoto.getColumnIndex();
+		                sheet.autoSizeColumn(columnIndex);
 						try {
 							drawImageOnExcelSheet((XSSFSheet)sheet, rowphoto, kolom, widhtPhoto, heightPhoto, objIntPhoto3.intValue());
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-//						anchor.setCol1(columnCount++);
-//						anchor.setRow1(rowcount);
-//						Picture pict = drawing.createPicture(anchor, objIntPhoto3.intValue());
-
-						// auto-size picture relative to its top-left corner
-//						pict.resize();
 					}else {
 						createCell(rowMonitor, columnCount++, "", style,sheet);
 					}
@@ -252,20 +261,14 @@ public class ReportHandler implements ReportService {
 						int kolom = columnCount++;
 						Cell celPhoto = rowMonitor.createCell(kolom);
 						celPhoto.setCellValue("");
+						int columnIndex = celPhoto.getColumnIndex();
+		                sheet.autoSizeColumn(columnIndex);
 						try {
 							drawImageOnExcelSheet((XSSFSheet)sheet, rowphoto, kolom, widhtPhoto, heightPhoto, objIntPhoto4.intValue());
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						
-//						anchor.setCol1(columnCount++);
-//						anchor.setRow1(rowcount);
-//						
-//						Picture pict = drawing.createPicture(anchor, objIntPhoto4.intValue());
-
-						// auto-size picture relative to its top-left corner
-//						pict.resize();
 					}else {
 						createCell(rowMonitor, columnCount++, "", style,sheet);
 					}
@@ -275,6 +278,8 @@ public class ReportHandler implements ReportService {
 						int kolom = columnCount++;
 						Cell celPhoto = rowMonitor.createCell(kolom);
 						celPhoto.setCellValue("");
+						int columnIndex = celPhoto.getColumnIndex();
+		                sheet.autoSizeColumn(columnIndex);
 						try {
 							drawImageOnExcelSheet((XSSFSheet)sheet, rowphoto, kolom, widhtPhoto, heightPhoto, objIntPhoto5.intValue());
 						} catch (Exception e) {
@@ -282,12 +287,6 @@ public class ReportHandler implements ReportService {
 							e.printStackTrace();
 						}
 						
-//						anchor.setCol1(columnCount++);
-//						anchor.setRow1(rowcount);
-//						Picture pict = drawing.createPicture(anchor, objIntPhoto5.intValue());
-
-						// auto-size picture relative to its top-left corner
-//						pict.resize();
 					}else {
 						createCell(rowMonitor, columnCount++, "", style,sheet);
 					}
@@ -299,10 +298,10 @@ public class ReportHandler implements ReportService {
 					createCell(rowMonitor, columnCount++, monitor.getPhoto5() != null && !monitor.getPhoto5().equals("")?"Y":"N", style,sheet);
 					
 					//set Value Info
-					List<Long> listInfo = hashMonitorUserMobileInfo.get(monitor.getIdmonitoring());
-					for(long infoid : listInfo) {
+//					List<Long> listInfo = hashMonitorUserMobileInfo.get(monitor.getIdmonitoring());
+					for(Integer infoidMonitoring : listQuestionExistInMonitoring) {
 						String valInfo = "";
-						List<DetailInfo> listdetailInfo = monitorUserMobileInfoService.getDetailInfo(infoid,monitor.getIdmonitoring());
+						List<DetailInfo> listdetailInfo = monitorUserMobileInfoService.getDetailInfo(infoidMonitoring.longValue(),monitor.getIdmonitoring());
 						if(listdetailInfo != null && listdetailInfo.size() > 0) {
 							String question = "";
 							String answer = "";
@@ -316,7 +315,8 @@ public class ReportHandler implements ReportService {
 									answer += detail.getAnswer()+" \n ";
 								}
 							}
-							valInfo = question+" \n "+answer;
+//							valInfo = question+" \n "+answer;
+							valInfo = answer;
 						}
 						createCell(rowMonitor, columnCount++, valInfo, style,sheet);
 					}
@@ -435,13 +435,17 @@ public class ReportHandler implements ReportService {
 		Document document = new Document(PageSize.A0);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         
-        
-        
+        HashMap<Long, InfoHeaderData> mapListInfoHeader = new HashMap<Long, InfoHeaderData>();
+        List<InfoHeaderData> listInfoHeader = infoHeaderService.getAllListDataForReport(idcompany, idbranch);
+        for(InfoHeaderData info : listInfoHeader) {
+        	mapListInfoHeader.put(info.getId(), info);
+        }
         List<UserMobileListData> listuser = userMobileService.getListAllUserMobileForMonitoring(body.getIdusermobile(), idcompany, idbranch);
         // countInfo = jumlah info yang ada
         int countInfo = 0;
         HashMap<Long, List<MonitoringData>> hashMonitorUserMobile = new HashMap<Long, List<MonitoringData>>();
         HashMap<Long, List<Long>> hashMonitorUserMobileInfo = new HashMap<Long, List<Long>>();
+        List<Integer> listQuestionExistInMonitoring = new ArrayList<>();
         for(UserMobileListData user : listuser) {
         	List<MonitoringData> list = getListMonitoringData(user.getId(),body,idcompany,idbranch);
 			
@@ -451,6 +455,11 @@ public class ReportHandler implements ReportService {
 					List<Long> listInfo = monitorUserMobileInfoService.getListDistinctUserMobileInfo(monitor.getIdmonitoring());
 					if(listInfo.size() > countInfo) {
 						countInfo = listInfo.size(); 
+					}
+					for(Long infoid : listInfo) {
+						if(listQuestionExistInMonitoring.indexOf(infoid.intValue()) == -1) {
+							listQuestionExistInMonitoring.add(infoid.intValue());
+						}
 					}
 					hashMonitorUserMobileInfo.put(monitor.getIdmonitoring(), listInfo);
 				}
@@ -537,15 +546,31 @@ public class ReportHandler implements ReportService {
             hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(hcell);
             
-            int seqInfo = 1; 
-            for(int cellinfo=0; cellinfo < countInfo; cellinfo++) {
-            	hcell = new PdfPCell(new Phrase("Info "+seqInfo, headFont));
+            
+            int seqInfo = 1;
+            for(Integer infoidMonitoring : listQuestionExistInMonitoring) {
+            	String question = "";
+            	if(mapListInfoHeader.get(infoidMonitoring.longValue()) != null) {
+            		InfoHeaderData infoHeaderData = mapListInfoHeader.get(infoidMonitoring.longValue());
+            		question = infoHeaderData.getQuestion();
+            	}
+            	hcell = new PdfPCell(new Phrase(question, headFont));
             	hcell.setBackgroundColor(BaseColor.CYAN);
-                widthKolom = addElementWidth(widthKolom, 4);
-                hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                table.addCell(hcell);
-                seqInfo++;
+            	widthKolom = addElementWidth(widthKolom, 4);
+            	hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            	table.addCell(hcell);
+            	seqInfo++;
+            	
+            	
             }
+//            for(int cellinfo=0; cellinfo < countInfo; cellinfo++) {
+//            	hcell = new PdfPCell(new Phrase("Info "+seqInfo, headFont));
+//            	hcell.setBackgroundColor(BaseColor.CYAN);
+//                widthKolom = addElementWidth(widthKolom, 4);
+//                hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+//                table.addCell(hcell);
+//                seqInfo++;
+//            }
             
             table.setWidths(widthKolom);
             
@@ -644,10 +669,10 @@ public class ReportHandler implements ReportService {
                     	table.addCell(valueCell);
                     	
                     	                                
-                        List<Long> listInfo = hashMonitorUserMobileInfo.get(monitor.getIdmonitoring());
-                        for(long infoid : listInfo) {
+//                        List<Long> listInfo = hashMonitorUserMobileInfo.get(monitor.getIdmonitoring());
+                        for(Integer infoidMonitoring : listQuestionExistInMonitoring) {
                         	String valInfo = "";
-                        	List<DetailInfo> listdetailInfo = monitorUserMobileInfoService.getDetailInfo(infoid,monitor.getIdmonitoring());
+                        	List<DetailInfo> listdetailInfo = monitorUserMobileInfoService.getDetailInfo(infoidMonitoring.longValue(),monitor.getIdmonitoring());
                         	if(listdetailInfo != null && listdetailInfo.size() > 0) {
                         		String question = "";
     							String answer = "";
@@ -661,7 +686,8 @@ public class ReportHandler implements ReportService {
 										answer += detail.getAnswer()+" \n ";
 									}
     							}
-    							valInfo = question+" \n "+answer;
+//    							valInfo = question+" \n "+answer;
+    							valInfo = answer;
                         	}
                         	
                         	valueCell = new PdfPCell(new Phrase(valInfo));
