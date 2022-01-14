@@ -60,11 +60,11 @@ public class MonitorUserMobileInfoHandler implements MonitorUserMobileInfoServic
 	}
 
 	@Override
-	public List<DetailInfo> getDetailInfo(long infoid) {
+	public List<DetailInfo> getDetailInfo(long infoid,long idmonitoruser) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListInfoByInfoHeader().schema());
-		sqlBuilder.append(" where minfo.infoid = ? ");
-		final Object[] queryParameters = new Object[] { infoid };
+		sqlBuilder.append(" where minfo.infoid = ? and minfo.idmonitorusermobile = ?");
+		final Object[] queryParameters = new Object[] { infoid ,idmonitoruser};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListInfoByInfoHeader(), queryParameters);
 	}
 
