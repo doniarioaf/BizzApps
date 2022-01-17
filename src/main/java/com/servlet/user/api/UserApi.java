@@ -70,5 +70,11 @@ public class UserApi {
 		Response response = securityService.response(ConstansPermission.DELETE_USER,id,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
+	
+	@GetMapping("/logout")
+	ResponseEntity<Response> logout(@RequestHeader(ConstansKey.AUTH) String authorization) {
+		Response response = securityService.response(ConstansPermission.LOGOUT,"LOGOUT",authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
 
 }

@@ -23,4 +23,5 @@ public interface UserAppsService {
 	List<UserListData> getListAllUser(long idcompany,long idbranch);
 	ReturnData deleteUserApss(long id);
 	TemplateInternalUser getTemplate(long idcompany,long idbranch);
+	ReturnData logout(long id);
 }

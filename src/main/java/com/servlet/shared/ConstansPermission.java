@@ -1,6 +1,7 @@
 package com.servlet.shared;
 
 public class ConstansPermission {
+	public static final String LOGOUT = "LOGOUT";
 	public static final String READ_BRANCH = "READ_BRANCH";
 	public static final String CREATE_BRANCH = "CREATE_BRANCH";
 	public static final String EDIT_BRANCH = "EDIT_BRANCH";
@@ -68,4 +69,5 @@ public class ConstansPermission {
 	public static final String DELETE_COMPANYY = "DELETE_COMPANYY";
 	
 	public static final String READ_MAPS_MONITORING = "READ_MAPS_MONITORING";
+	public static final String CREATE_MAINTENANCE = "CREATE_MAINTENANCE";
 }
