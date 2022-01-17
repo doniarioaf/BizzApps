@@ -152,7 +152,7 @@ public class SecurityHandler implements SecurityService{
 			value.setHttpcode(HttpStatus.OK.value());
 		}else if(authorization != null && !authorization.equals("")){
 			AuthorizationEntity auth = checking(codepermission,authorization);
-			if(auth.isIsvalid() || codepermission.equals(ConstansPermission.DELETE_COMPANYY)) {
+			if(auth.isIsvalid() || codepermission.equals(ConstansPermission.DELETE_COMPANYY) || codepermission.equals(ConstansPermission.LOGOUT)) {
 				Gson gson = new Gson();
 				AESEncryptionDecryption aesEncryptionDecryption = new AESEncryptionDecryption();
 				

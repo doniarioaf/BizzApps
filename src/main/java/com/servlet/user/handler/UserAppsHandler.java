@@ -324,4 +324,16 @@ public class UserAppsHandler implements UserAppsService{
 		return data;
 	}
 
+	@Override
+	public ReturnData logout(long id) {
+		// TODO Auto-generated method stub
+		UserApps table = repository.getById(id);
+		table.setToken("");
+		UserApps user = repository.saveAndFlush(table);
+		ReturnData data = new ReturnData();
+		data.setId(user.getId());
+		data.setSuccess(true);
+		return data;
+	}
+
 }

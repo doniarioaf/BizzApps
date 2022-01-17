@@ -22,6 +22,7 @@ import com.servlet.admin.customer.entity.BodyCustomer;
 import com.servlet.admin.customer.service.CustomerService;
 import com.servlet.admin.customertype.entity.BodyCustomerType;
 import com.servlet.admin.customertype.service.CustomerTypeService;
+import com.servlet.admin.permission.entity.BodyPermission;
 import com.servlet.admin.permission.service.PermissionService;
 import com.servlet.admin.product.entity.BodyProduct;
 import com.servlet.admin.product.service.ProductService;
@@ -310,6 +311,21 @@ public class ProcessHandler implements ProcessService{
 			}else if(codepermission.equals(ConstansPermission.DELETE_INFO)) {
 				long id = (long) data;
 				val.setData(infoHeaderService.deleteInfo(id));
+			}else if(codepermission.equals(ConstansPermission.CREATE_MAINTENANCE)) {
+				BodyPermission body = (BodyPermission) data;
+				ReturnData valReturn = permissionService.savePermission(body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}	
+			}else if(codepermission.equals(ConstansPermission.LOGOUT)) {
+				ReturnData valReturn = userAppsService.logout(auth.getId());
+				val.setSuccess(valReturn.isSuccess());
+				val.setData(null);
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
 			if(codepermission.equals(ConstansPermission.CREATE_MONITOR_USER_MOBILE) ) {
