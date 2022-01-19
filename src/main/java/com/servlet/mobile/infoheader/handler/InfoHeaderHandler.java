@@ -123,7 +123,7 @@ public class InfoHeaderHandler implements InfoHeaderService{
 			InfoHeader table = repository.getById(id);
 			table.setQuestion(body.getQuestion());
 			table.setSequence(body.getSequence());
-			table.setIsactive(body.isIsactive());
+//			table.setIsactive(body.isIsactive());
 			table.setType(body.getType());
 			table.setIdcustomertype(body.getIdcustomertype());
 			
