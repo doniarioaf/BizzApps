@@ -7,9 +7,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import com.servlet.admin.product.entity.BodyProduct;
 import com.servlet.admin.product.entity.Product;
+import com.servlet.admin.product.entity.ProductData;
 import com.servlet.admin.product.entity.ProductDetailData;
 import com.servlet.admin.product.entity.ProductListData;
 import com.servlet.admin.product.mapper.GetDetailProduct;
+import com.servlet.admin.product.mapper.GetProductData;
 import com.servlet.admin.product.mapper.GetProductList;
 import com.servlet.admin.product.repo.ProductRepo;
 import com.servlet.admin.product.service.ProductService;
@@ -32,6 +34,18 @@ public class ProductHandler implements ProductService{
 		table.setDescription(product.getDescription());
 		table.setIdproducttype(product.getIdproducttype());
 		table.setIsdelete(false);
+		
+		table.setProductcode(product.getProductcode());
+		table.setShortname(product.getShortname());
+		table.setUom1(product.getUom1());
+		table.setUom2(product.getUom2());
+		table.setUom3(product.getUom3());
+		table.setUom4(product.getUom4());
+		table.setPricebuy(product.getPricebuy());
+		table.setPricesell(product.getPricesell());
+		table.setConversion1to4(product.getConversion1to4());
+		table.setConversion2to4(product.getConversion2to4());
+		table.setConversion3to4(product.getConversion3to4());
 		Product returntable = repository.saveAndFlush(table);
 		ReturnData data = new ReturnData();
 		data.setId(returntable.getId());
@@ -48,6 +62,19 @@ public class ProductHandler implements ProductService{
 			table.setNama(product.getNama());
 			table.setDescription(product.getDescription());
 			table.setIdproducttype(product.getIdproducttype());
+			
+			table.setProductcode(product.getProductcode());
+			table.setShortname(product.getShortname());
+			table.setUom1(product.getUom1());
+			table.setUom2(product.getUom2());
+			table.setUom3(product.getUom3());
+			table.setUom4(product.getUom4());
+			table.setPricebuy(product.getPricebuy());
+			table.setPricesell(product.getPricesell());
+			table.setConversion1to4(product.getConversion1to4());
+			table.setConversion2to4(product.getConversion2to4());
+			table.setConversion3to4(product.getConversion3to4());
+			
 			Product returntable = repository.saveAndFlush(table);
 			ReturnData data = new ReturnData();
 			data.setId(returntable.getId());
@@ -72,6 +99,19 @@ public class ProductHandler implements ProductService{
 		sqlBuilder.append(" where mp.id = ? and mp.idcompany = ? and mp.isdelete = false ");
 		final Object[] queryParameters = new Object[] {id,idcompany};
 		List<ProductDetailData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailProduct(), queryParameters);
+		if(list != null && list.size() > 0) {
+			return list.get(0);
+		}
+		return null;
+	}
+
+	@Override
+	public ProductData getProductByProductCode(String productcode, long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetProductList().schema());
+		sqlBuilder.append(" where data.idcompany = ? and productcode = ? and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {idcompany,productcode};
+		List<ProductData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetProductData(), queryParameters);
 		if(list != null && list.size() > 0) {
 			return list.get(0);
 		}

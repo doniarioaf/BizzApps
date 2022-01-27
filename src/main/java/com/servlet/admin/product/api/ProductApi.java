@@ -31,13 +31,27 @@ public class ProductApi {
 	
 	@GetMapping("{id}")
 	ResponseEntity<Response> getById(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
-		Response response = securityService.response(ConstansPermission.READ_PRODUCT,new Long(id).toString(),authorization);
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "DETAIL");
+		param.put("id", id);
+		Response response = securityService.response(ConstansPermission.READ_PRODUCT,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
 	@GetMapping
 	ResponseEntity<Response> getListProduct(@RequestHeader(ConstansKey.AUTH) String authorization) {
-		Response response = securityService.response(ConstansPermission.READ_PRODUCT,"ALL",authorization);
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "ALL");
+		Response response = securityService.response(ConstansPermission.READ_PRODUCT,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@GetMapping("{id}")
+	ResponseEntity<Response> searchProduct(@PathVariable String productcode,@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "SEARCH");
+		param.put("productcode", productcode);
+		Response response = securityService.response(ConstansPermission.READ_PRODUCT,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	

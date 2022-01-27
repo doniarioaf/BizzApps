@@ -1,12 +1,9 @@
 package com.servlet.admin.product.entity;
 
-public class ProductDetailData {
+public class ProductData {
 	private long id;
 	private String nama;
 	private String description;
-	private long idproducttype;
-	private String nameproducttype;
-	
 	private String productcode;
 	private String shortname;
 	private String uom1;
@@ -35,18 +32,6 @@ public class ProductDetailData {
 	}
 	public void setDescription(String description) {
 		this.description = description;
-	}
-	public long getIdproducttype() {
-		return idproducttype;
-	}
-	public void setIdproducttype(long idproducttype) {
-		this.idproducttype = idproducttype;
-	}
-	public String getNameproducttype() {
-		return nameproducttype;
-	}
-	public void setNameproducttype(String nameproducttype) {
-		this.nameproducttype = nameproducttype;
 	}
 	public String getProductcode() {
 		return productcode;

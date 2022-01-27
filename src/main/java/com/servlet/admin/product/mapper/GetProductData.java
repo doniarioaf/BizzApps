@@ -4,13 +4,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
-import com.servlet.admin.product.entity.ProductDetailData;
+import com.servlet.admin.product.entity.ProductData;
 
-public class GetDetailProduct implements RowMapper<ProductDetailData>{
-	
+public class GetProductData implements RowMapper<ProductData>{
 	private String schemaSql;
 	
-	public GetDetailProduct() {
+	public String schema() {
+		return this.schemaSql;
+	}
+	
+	public GetProductData() {
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
 		sqlBuilder.append("mp.id as id ,mp.nama as namaprod ,mp.description as descprod, ");
@@ -18,25 +21,18 @@ public class GetDetailProduct implements RowMapper<ProductDetailData>{
 		sqlBuilder.append("mp.uom2 as uom2 ,mp.uom3 as uom3 ,mp.uom4 as uom4, ");
 		sqlBuilder.append("mp.pricebuy as pricebuy ,mp.pricesell as pricesell ,mp.conversion1to4 as conversion1to4, ");
 		sqlBuilder.append("mp.conversion2to4 as conversion2to4 ,mp.conversion3to4 as conversion3to4, ");
-		sqlBuilder.append("mpt.id as prodtypeid ,mpt.nama as prodtypename ");
 		sqlBuilder.append("from m_product as mp ");
-		sqlBuilder.append("join m_product_type as mpt on mpt.id = mp.idproducttype ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}
 
-	public String schema() {
-		return this.schemaSql;
-	}
-	
+
 	@Override
-	public ProductDetailData mapRow(ResultSet rs, int rowNum) throws SQLException {
+	public ProductData mapRow(ResultSet rs, int rowNum) throws SQLException {
 		// TODO Auto-generated method stub
 		final long id = rs.getLong("id");
 		final String namaprod = rs.getString("namaprod");
 		final String descprod = rs.getString("descprod");
-		final long prodtypeid = rs.getLong("prodtypeid");
-		final String prodtypename = rs.getString("prodtypename");
 		final String productcode = rs.getString("productcode");
 		final String shortname = rs.getString("shortname");
 		final String uom1 = rs.getString("uom1");
@@ -49,12 +45,10 @@ public class GetDetailProduct implements RowMapper<ProductDetailData>{
 		final int conversion2to4 = rs.getInt("conversion2to4");
 		final int conversion3to4 = rs.getInt("conversion3to4");
 		
-		ProductDetailData data = new ProductDetailData();
+		ProductData data = new ProductData();
 		data.setId(id);
 		data.setNama(namaprod);
 		data.setDescription(descprod);
-		data.setIdproducttype(prodtypeid);
-		data.setNameproducttype(prodtypename);
 		data.setProductcode(productcode);
 		data.setShortname(shortname);
 		data.setUom1(uom1);
@@ -68,5 +62,4 @@ public class GetDetailProduct implements RowMapper<ProductDetailData>{
 		data.setConversion3to4(conversion3to4);
 		return data;
 	}
-
 }
