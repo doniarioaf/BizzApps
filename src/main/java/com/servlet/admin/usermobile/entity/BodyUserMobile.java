@@ -10,6 +10,13 @@ public class BodyUserMobile {
 	private String email;
 	private String imei;
 	private Long[] roles;
+	private Long[] callplans;
+	public Long[] getCallplans() {
+		return callplans;
+	}
+	public void setCallplans(Long[] callplans) {
+		this.callplans = callplans;
+	}
 	public String getUsername() {
 		return username;
 	}

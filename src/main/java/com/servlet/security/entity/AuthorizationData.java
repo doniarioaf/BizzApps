@@ -10,6 +10,13 @@ public class AuthorizationData {
 	private Timestamp datelogin;
 	private long idcompany;
 	private long idbranch;
+	private String typelogin;
+	public String getTypelogin() {
+		return typelogin;
+	}
+	public void setTypelogin(String typelogin) {
+		this.typelogin = typelogin;
+	}
 	public long getIdcompany() {
 		return idcompany;
 	}

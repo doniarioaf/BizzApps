@@ -6,8 +6,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-
-import com.servlet.admin.companybranch.mapper.GetCompanyBranchByIdCompany;
 import com.servlet.admin.role.entity.RolePermissionData;
 import com.servlet.admin.rolepermissions.entity.RolePermissions;
 import com.servlet.admin.rolepermissions.entity.RolePermissionsPK;
@@ -39,7 +37,7 @@ public class RolePermissonsHandler implements RolePermissionService{
 	public Collection<RolePermissionData> getListRolePermissions(long idrole) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetRolePermissionByIdRole().schema());
-		sqlBuilder.append(" where mrp.idrole = ? ");
+		sqlBuilder.append(" where mrp.idrole = ? and mr.isdelete = false ");
 		final Object[] queryParameters = new Object[] { idrole };
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetRolePermissionByIdRole(), queryParameters);
 	}

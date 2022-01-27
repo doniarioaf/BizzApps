@@ -1,6 +1,7 @@
 package com.servlet.admin.company.handler;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,10 +11,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.servlet.admin.branch.entity.BranchData;
+import com.servlet.admin.branch.service.BranchService;
 import com.servlet.admin.company.entity.BodyCompany;
+import com.servlet.admin.company.entity.BodyCompanyy;
 import com.servlet.admin.company.entity.Company;
 import com.servlet.admin.company.entity.CompanyData;
 import com.servlet.admin.company.entity.CompanyDataDetail;
+import com.servlet.admin.company.entity.TemplateCompany;
 import com.servlet.admin.company.repo.CompanyRepo;
 import com.servlet.admin.company.service.CompanyService;
 import com.servlet.admin.companybranch.entity.CompanyBranch;
@@ -21,6 +27,14 @@ import com.servlet.admin.companybranch.entity.CompanyBranchData;
 import com.servlet.admin.companybranch.entity.CompanyBranchPK;
 import com.servlet.admin.companybranch.service.CompanyBranchService;
 import com.servlet.login.api.LoginApi;
+import com.servlet.security.entity.LicenseData;
+import com.servlet.shared.AESEncryptionDecryption;
+import com.servlet.shared.AESEncryptionDecryptionLicense;
+import com.servlet.shared.ConstansCodeMessage;
+import com.servlet.shared.ConvertJson;
+import com.servlet.shared.GlobalFunc;
+import com.servlet.shared.ReturnData;
+import com.servlet.shared.ValidationDataMessage;
 import com.servlet.user.entity.UserPermissionData;
 
 @Service
@@ -30,6 +44,8 @@ public class CompanyHandler implements CompanyService{
 	private CompanyRepo repository;
 	@Autowired
 	private CompanyBranchService companyBranchService;
+	@Autowired
+	private BranchService branchService;
 	
 	@Override
 	public List<Company> getListCompanyActive() {
@@ -59,7 +75,7 @@ public class CompanyHandler implements CompanyService{
 		table.setContactnumber(company.getContactnumber());
 		table.setDisplayname(company.getDisplayname());
 		table.setAddress(company.getAddress());
-		table.setIsactive(company.isIsactive());
+		table.setIsactive(true);
 		table.setEmail(company.getEmail());
 		table.setCreated(ts);
 		table.setModified(ts);
@@ -90,7 +106,7 @@ public class CompanyHandler implements CompanyService{
 		table.setContactnumber(company.getContactnumber());
 		table.setDisplayname(company.getDisplayname());
 		table.setAddress(company.getAddress());
-		table.setIsactive(company.isIsactive());
+//		table.setIsactive(company.isIsactive());
 		table.setEmail(company.getEmail());
 		table.setModified(ts);
 		Company returntable = repository.saveAndFlush(table);
@@ -141,6 +157,93 @@ public class CompanyHandler implements CompanyService{
 			data.setCompany(null);
 			data.setListbranches(null);
 		}
+		return data;
+	}
+
+	@Override
+	public ReturnData activatedCompany(long id) {
+		// TODO Auto-generated method stub
+		Timestamp ts = new Timestamp(new Date().getTime());
+		Company table = repository.getById(id);
+		table.setIsactive(true);
+		table.setModified(ts);
+		Company returntable = repository.saveAndFlush(table);
+		
+		ReturnData data = new ReturnData();
+		data.setId(returntable.getId());
+		return data;
+	}
+
+	@Override
+	public ReturnData unActivatedCompany(long id) {
+		// TODO Auto-generated method stub
+		Timestamp ts = new Timestamp(new Date().getTime());
+		Company table = repository.getById(id);
+		table.setIsactive(false);
+		table.setModified(ts);
+		Company returntable = repository.saveAndFlush(table);
+		
+		ReturnData data = new ReturnData();
+		data.setId(returntable.getId());
+		return data;
+	}
+
+	@Override
+	public ReturnData deleteCompany(long id) {
+		// TODO Auto-generated method stub
+		Timestamp ts = new Timestamp(new Date().getTime());
+		Company table = repository.getById(id);
+		table.setIsdelete(true);
+		table.setModified(ts);
+		Company returntable = repository.saveAndFlush(table);
+		
+		ReturnData data = new ReturnData();
+		data.setId(returntable.getId());
+		return data;
+	}
+
+	@Override
+	public ReturnData updateCompanyy(BodyCompanyy company) {
+		// TODO Auto-generated method stub
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
+		AESEncryptionDecryptionLicense aesEncryptionDecryption = new AESEncryptionDecryptionLicense();
+		Company table = repository.getById(company.getIdcompany());
+		int idreturn = 0;
+		if(table != null) {
+			try {
+				Timestamp ts = GlobalFunc.addDaysByType(new Timestamp(new Date().getTime()), company.getWaktu(), company.getType()) ;
+				Timestamp timeexp = GlobalFunc.setFormatDate(ts, "yyyy-MM-dd");
+				LicenseData lic = new LicenseData();
+				lic.setIdcompany(company.getIdcompany());
+				lic.setExpired(timeexp);
+				lic.setLimituserweb(company.getJumlahweb());
+				lic.setLimitusermobile(company.getJumlahmobile());
+				String encryptedPassToken = aesEncryptionDecryption.encrypt(new ConvertJson().toJsonString(lic));
+				table.setLicense(encryptedPassToken);
+				repository.saveAndFlush(table);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+		}else {
+			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.DATA_NOT_FOUND,"Company Tidak Ditemukan");
+			validations.add(msg);
+		}
+		ReturnData data = new ReturnData();
+		data.setId(idreturn);
+		data.setSuccess(validations.size() > 0?false:true);
+		data.setValidations(validations);
+		return data;
+	}
+
+	@Override
+	public TemplateCompany getTemplateCompany() {
+		// TODO Auto-generated method stub
+		List<BranchData> listbranch = branchService.getAllListBranchNotExistInCompany();
+		TemplateCompany data = new TemplateCompany();
+		data.setBranchoptions(listbranch);
 		return data;
 	}
 

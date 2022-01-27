@@ -38,14 +38,14 @@ public class LoginApi {
 	
 	@PostMapping("/login")
 	ResponseEntity<Response> getLogin(@RequestBody @Validated BodyLogin bodylogin){
-		Response response = securityService.response("login",userappsservice.actionLogin(bodylogin.getUser(), bodylogin.getPassword()),"login");
-		return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
+		Response response = securityService.response("loginweb",userappsservice.actionLogin(bodylogin.getUser(), bodylogin.getPassword()),"loginweb");
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
 	@PostMapping("/usermobile/login")
 	ResponseEntity<Response> getLoginMobile(@RequestBody @Validated BodyLoginMobile bodylogin){
-		Response response = securityService.response("login",userMobileService.actionLogin(bodylogin.getUser(), bodylogin.getPassword(),bodylogin.getImei()),"login");
-		return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
+		Response response = securityService.response("loginmobile",userMobileService.actionLogin(bodylogin.getUser(), bodylogin.getPassword()),"loginmobile");
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
 	@PostMapping("/jdhaiieuwolashey")

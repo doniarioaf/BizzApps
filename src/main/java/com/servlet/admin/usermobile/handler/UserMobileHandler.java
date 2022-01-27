@@ -9,12 +9,20 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import com.servlet.admin.company.entity.Company;
+import com.servlet.admin.company.service.CompanyService;
+import com.servlet.admin.role.service.RoleService;
 import com.servlet.admin.usermobile.entity.BodyUserMobile;
+import com.servlet.admin.usermobile.entity.ReturnLoginMobile;
+import com.servlet.admin.usermobile.entity.TemplateUserMobile;
 import com.servlet.admin.usermobile.entity.UserDetailMobile;
 import com.servlet.admin.usermobile.entity.UserMobile;
 import com.servlet.admin.usermobile.entity.UserMobileData;
+import com.servlet.admin.usermobile.entity.UserMobileDataAuth;
 import com.servlet.admin.usermobile.entity.UserMobileListData;
 import com.servlet.admin.usermobile.entity.UserMobilePermission;
+import com.servlet.admin.usermobile.mapper.GetDataUserMobileAuth;
 import com.servlet.admin.usermobile.mapper.GetListAllUserMobile;
 import com.servlet.admin.usermobile.mapper.GetUserMobilePermission;
 import com.servlet.admin.usermobile.repo.UserMobileRepo;
@@ -23,11 +31,20 @@ import com.servlet.admin.usermobilerole.entity.UserMobileRole;
 import com.servlet.admin.usermobilerole.entity.UserMobileRoleData;
 import com.servlet.admin.usermobilerole.entity.UserMobileRolePK;
 import com.servlet.admin.usermobilerole.service.UserMobileRoleService;
+import com.servlet.mobile.callplan.service.CallPlanService;
+import com.servlet.mobile.usermobilecallplan.entity.UserMobileCallPlan;
+import com.servlet.mobile.usermobilecallplan.entity.UserMobileCallPlanData;
+import com.servlet.mobile.usermobilecallplan.entity.UserMobileCallPlanPK;
+import com.servlet.mobile.usermobilecallplan.service.UserMobileCallPlanService;
 import com.servlet.security.entity.AuthorizationData;
+import com.servlet.security.entity.SecurityLicenseData;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.AESEncryptionDecryption;
+import com.servlet.shared.ConstansCodeMessage;
+import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConvertJson;
 import com.servlet.shared.ReturnData;
+import com.servlet.shared.ValidationDataMessage;
 
 
 @Service
@@ -40,50 +57,100 @@ public class UserMobileHandler implements UserMobileService{
 	SecurityService securityService;
 	@Autowired
 	UserMobileRoleService userMobileRoleService;
+	@Autowired
+	UserMobileCallPlanService userMobileCallPlanService;
+	@Autowired
+	CallPlanService callPlanService;
+	@Autowired
+	RoleService roleService;
+	
+	
 	
 	@Override
 	public Collection<UserMobilePermission> getListUserMobilePermission(long id) {
 		// TODO Auto-generated method stub
-		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetUserMobilePermission().schema());
-		sqlBuilder.append(" where mur.idusermobile = ? ");
-		final Object[] queryParameters = new Object[] { id };
-		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetUserMobilePermission(), queryParameters);
+		UserMobile mobile = repository.getById(id);
+		if(!mobile.isIsdelete()) {
+			final StringBuilder sqlBuilder = new StringBuilder("select " + new GetUserMobilePermission().schema());
+			sqlBuilder.append(" where mur.idusermobile = ? and mr.isdelete = false and mur.isdelete = false ");
+			final Object[] queryParameters = new Object[] { id };
+			return this.jdbcTemplate.query(sqlBuilder.toString(), new GetUserMobilePermission(), queryParameters);
+		}
+		return new ArrayList<UserMobilePermission>();
 	}
 
 	@Override
-	public UserMobileData actionLogin(String username, String password, String imei) {
+	public ReturnLoginMobile actionLogin(String username, String password) {
 		// TODO Auto-generated method stub
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
 		AESEncryptionDecryption aesEncryptionDecryption = new AESEncryptionDecryption();
 		UserMobileData userdata = null;
-		List<UserMobile> list = repository.getUserLoginByUsername(username, imei);
-		for(UserMobile user : list) {
+		ReturnData returndata = null;
+//		List<UserMobile> list = repository.getUserLoginByUsername(username);
+		List<UserMobileDataAuth> list = getUserLoginByUserNameV2(username);
+		String tempusername = "";
+		long idcompany = 0;
+		long idbranch = 0;
+		for(UserMobileDataAuth user : list) {
 			String passwordDB = aesEncryptionDecryption.decrypt(user.getPassword());
 			if(passwordDB.equals(password)) {
-				AuthorizationData dataauth = new AuthorizationData();
-				String passwordtoken = securityService.passwordToken(username, password);
-				String encryptedPassToken = aesEncryptionDecryption.encrypt(passwordtoken);
-				Timestamp ts = new Timestamp(new Date().getTime());
-				dataauth.setId(user.getId());
-				dataauth.setUsername(username);
-				dataauth.setPassword(password);
-				dataauth.setDatelogin(ts);
-				dataauth.setPasswordtoken(encryptedPassToken);
-				dataauth.setIdcompany(user.getIdcompany());
-				dataauth.setIdbranch(user.getIdbranch());
-				String encryptedString = aesEncryptionDecryption.encrypt(new ConvertJson().toJsonString(dataauth));
+				tempusername = username;
+				idcompany = user.getIdcompany();
+				idbranch = user.getIdbranch();
 				
-				userdata = new UserMobileData();
-				userdata.setPermissions(setPermissions(user.getId()));
-				userdata.setToken(encryptedString);
-				
-				UserMobile usermobil = repository.getById(user.getId());
-				usermobil.setToken(encryptedString);
-				repository.saveAndFlush(usermobil);
+				SecurityLicenseData license = securityService.checkLicense(user.getIdcompany(), null, null);
+				returndata = new ReturnData();
+				returndata = license.getReturnData();
+				if(returndata.isSuccess()) {
+					AuthorizationData dataauth = new AuthorizationData();
+					String passwordtoken = securityService.passwordToken(username, password);
+					String encryptedPassToken = aesEncryptionDecryption.encrypt(passwordtoken);
+					Timestamp ts = new Timestamp(new Date().getTime());
+					dataauth.setId(user.getId());
+					dataauth.setUsername(username);
+					dataauth.setPassword(password);
+					dataauth.setDatelogin(ts);
+					dataauth.setPasswordtoken(encryptedPassToken);
+					dataauth.setIdcompany(user.getIdcompany());
+					dataauth.setIdbranch(user.getIdbranch());
+					dataauth.setTypelogin(ConstansKey.TYPE_MOBILE);
+					String encryptedString = aesEncryptionDecryption.encrypt(new ConvertJson().toJsonString(dataauth));
+					
+					userdata = new UserMobileData();
+//					userdata.setPermissions(setPermissions(user.getId()));
+					userdata.setToken(encryptedString);
+					
+					UserMobile usermobil = repository.getById(user.getId());
+					usermobil.setToken(encryptedString);
+					repository.saveAndFlush(usermobil);
+				}
 				break;
-				
 			}
 		}
-		return userdata;
+		ReturnLoginMobile data = new ReturnLoginMobile();
+		data.setUserMobileData(userdata);
+		data.setReturnData(returndata);
+		
+		data.setUsername(tempusername);
+		data.setIdcompany(idcompany);
+		data.setIdbranch(idbranch);
+		return data;
+	}
+	
+	private List<UserMobileDataAuth> getUserLoginByUserNameV2(String username) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataUserMobileAuth().schema());
+		sqlBuilder.append(" where mua.username = ? and mua.isdelete = false ");
+		final Object[] queryParameters = new Object[] { username};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataUserMobileAuth(), queryParameters);
+	}
+	
+	private List<UserMobileDataAuth> getListUserMobileByIdCompany(long idcompany) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataUserMobileAuth().schema());
+		sqlBuilder.append(" where mua.idcompany = ? and mua.isdelete = false ");
+		final Object[] queryParameters = new Object[] { idcompany};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataUserMobileAuth(), queryParameters);
 	}
 	
 	private List<String> setPermissions(long id){
@@ -104,6 +171,7 @@ public class UserMobileHandler implements UserMobileService{
 	@Override
 	public ReturnData saveUserMobile(BodyUserMobile usermobile, long idcompany, long idbranch) {
 		// TODO Auto-generated method stub
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
 		AESEncryptionDecryption aesEncryptionDecryption = new AESEncryptionDecryption();
 		String passwordDB = aesEncryptionDecryption.encrypt(usermobile.getPassword());
 		Timestamp ts = new Timestamp(new Date().getTime());
@@ -122,68 +190,154 @@ public class UserMobileHandler implements UserMobileService{
 		table.setModified(ts);
 		table.setImei(usermobile.getImei());
 		
-		UserMobile user = repository.saveAndFlush(table);
+		List<UserMobileDataAuth> listusermobileByCompany = getListUserMobileByIdCompany(idcompany);
+		List<UserMobileDataAuth> checkUsername = getUserLoginByUserNameV2(usermobile.getUsername());
+		long idreturn = 0;
 		
-		List<UserMobileRole> listsave = new ArrayList<UserMobileRole>();
-		if(usermobile.getRoles().length > 0) {
-			for (int i = 0; i < usermobile.getRoles().length; i++) {
-				UserMobileRolePK pk = new UserMobileRolePK();
-				pk.setIdrole(usermobile.getRoles()[i]);
-				pk.setIdusermobile(user.getId());
-				UserMobileRole userMobileRole = new UserMobileRole();
-				userMobileRole.setUserMobileRolePK(pk);
-				listsave.add(userMobileRole);
+		SecurityLicenseData checkLicense = securityService.checkLicense(idcompany, null,new Integer(listusermobileByCompany.size() + 1).longValue());
+		if(!checkLicense.getReturnData().isSuccess()) {
+			List<ValidationDataMessage> listvalidLicense = checkLicense.getReturnData().getValidations();
+			if(listvalidLicense.size() > 0) {
+				for(ValidationDataMessage licenseMsg : listvalidLicense) {
+					if(!licenseMsg.getMessageCode().equals(ConstansCodeMessage.COMPANY_LICENSE_ALERT_EXPIRED)) {
+						ValidationDataMessage msg = new ValidationDataMessage(licenseMsg.getMessageCode(),licenseMsg.getMessage());
+						validations.add(msg);
+					}
+				}
 			}
-			userMobileRoleService.saveUserMobileRoleList(listsave);
-		}
-		ReturnData data = new ReturnData();
-		data.setId(user.getId());
+		}else if(checkUsername != null && checkUsername.size() > 0) {
+			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.USERNAME_IS_EXIST,"Username Sudah Terpakai");
+			validations.add(msg);
+		}else {
 		
+			UserMobile user = repository.saveAndFlush(table);
+			idreturn = user.getId();
+			
+			List<UserMobileRole> listsave = new ArrayList<UserMobileRole>();
+			if(usermobile.getRoles().length > 0) {
+				for (int i = 0; i < usermobile.getRoles().length; i++) {
+					UserMobileRolePK pk = new UserMobileRolePK();
+					pk.setIdrole(usermobile.getRoles()[i]);
+					pk.setIdusermobile(user.getId());
+					UserMobileRole userMobileRole = new UserMobileRole();
+					userMobileRole.setUserMobileRolePK(pk);
+					listsave.add(userMobileRole);
+				}
+				userMobileRoleService.saveUserMobileRoleList(listsave);
+			}
+			
+			List<UserMobileCallPlan> listcallplansave = new ArrayList<UserMobileCallPlan>();
+			if(usermobile.getCallplans().length > 0) {
+				for (int i = 0; i < usermobile.getCallplans().length; i++) {
+					UserMobileCallPlanPK pk = new UserMobileCallPlanPK();
+					pk.setIdcompany(idcompany);
+					pk.setIdbranch(idbranch);
+					pk.setIdusermobile(user.getId());
+					pk.setIdcallplan(usermobile.getCallplans()[i]);
+					UserMobileCallPlan usermobilecallplan = new UserMobileCallPlan();
+					usermobilecallplan.setUserMobileCallPlanPK(pk);
+					listcallplansave.add(usermobilecallplan);
+				}
+				userMobileCallPlanService.saveUserMobileCallPlanList(listcallplansave);
+			}
+		}
+		
+		ReturnData data = new ReturnData();
+		data.setId(idreturn);
+		data.setSuccess(validations.size() > 0?false:true);
+		data.setValidations(validations);
 		return data;
 	}
 
 	@Override
 	public ReturnData editUserMobile(long id, BodyUserMobile usermobile) {
 		// TODO Auto-generated method stub
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
 		Timestamp ts = new Timestamp(new Date().getTime());
 		UserMobile table = repository.getById(id);
-		table.setUsername(usermobile.getUsername());
 		table.setNama(usermobile.getNama());
 		table.setContactnumber(usermobile.getNotelepon());
 		table.setIsactive(usermobile.isIsactive());
 		table.setEmail(usermobile.getEmail());
 		table.setAddress(usermobile.getAddress());
 		table.setModified(ts);
-		repository.saveAndFlush(table);
 		
-		List<UserMobileRolePK> listdelete = new ArrayList<UserMobileRolePK>();
-		List<UserMobileRoleData> listroleuser = new ArrayList<UserMobileRoleData>(userMobileRoleService.getListUserMobileRole(id));
-		if(listroleuser.size() > 0) {
-			for(UserMobileRoleData data : listroleuser) {
-				UserMobileRolePK pk = new UserMobileRolePK();
-				pk.setIdrole(data.getId());
-				pk.setIdusermobile(id);
-				listdelete.add(pk);
+		boolean flagValidasiUserName = false;
+		if(!table.getUsername().equals(usermobile.getUsername())) {
+			List<UserMobileDataAuth> checkUsername = getUserLoginByUserNameV2(usermobile.getUsername());
+			if(checkUsername != null && checkUsername.size() > 0) {
+				flagValidasiUserName = true;
+			}else {
+				table.setUsername(usermobile.getUsername());
 			}
-			userMobileRoleService.deleteAllUserMobileRolePKPK(listdelete);
 		}
+		if(flagValidasiUserName) {
+			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.USERNAME_IS_EXIST,"Username Sudah Terpakai");
+			validations.add(msg);
+		}else {
+			
+			repository.saveAndFlush(table);
+			
+			List<UserMobileRolePK> listdelete = new ArrayList<UserMobileRolePK>();
+			List<UserMobileRoleData> listroleuser = new ArrayList<UserMobileRoleData>(userMobileRoleService.getListUserMobileRole(id));
+			if(listroleuser.size() > 0) {
+				for(UserMobileRoleData data : listroleuser) {
+					UserMobileRolePK pk = new UserMobileRolePK();
+					pk.setIdrole(data.getId());
+					pk.setIdusermobile(id);
+					listdelete.add(pk);
+				}
+				userMobileRoleService.deleteAllUserMobileRolePKPK(listdelete);
+			}
+			
+			List<UserMobileCallPlanPK> listcallplandelete = new ArrayList<UserMobileCallPlanPK>();
+			List<UserMobileCallPlanData> listcallplanuser = new ArrayList<UserMobileCallPlanData>(userMobileCallPlanService.getListUserMobileCallPlan(id));
+			if(listcallplanuser.size() > 0) {
+				for(UserMobileCallPlanData userMobileCallPlanData : listcallplanuser) {
+					UserMobileCallPlanPK pk = new UserMobileCallPlanPK();
+					pk.setIdcompany(table.getIdcompany());
+					pk.setIdbranch(table.getIdbranch());
+					pk.setIdcallplan(userMobileCallPlanData.getIdcallplan());
+					pk.setIdusermobile(id);
+					listcallplandelete.add(pk);
+				}
+				userMobileCallPlanService.deleteAllUserMobileCallPlanByListPK(listcallplandelete);
+			}
+			
+			List<UserMobileRole> listsave = new ArrayList<UserMobileRole>();
+			if(usermobile.getRoles().length > 0) {
+				for (int i = 0; i < usermobile.getRoles().length; i++) {
+					UserMobileRolePK pk = new UserMobileRolePK();
+					pk.setIdrole(usermobile.getRoles()[i]);
+					pk.setIdusermobile(id);
+					UserMobileRole userMobileRole = new UserMobileRole();
+					userMobileRole.setUserMobileRolePK(pk);
+					listsave.add(userMobileRole);
+				}
+				userMobileRoleService.saveUserMobileRoleList(listsave);
+			}
+			
+			List<UserMobileCallPlan> listuserMobileCallPlansave = new ArrayList<UserMobileCallPlan>();
+			if(usermobile.getCallplans().length > 0) {
+				for (int i = 0; i < usermobile.getCallplans().length; i++) {
+					UserMobileCallPlanPK pk = new UserMobileCallPlanPK();
+					pk.setIdcompany(table.getIdcompany());
+					pk.setIdbranch(table.getIdbranch());
+					pk.setIdcallplan(usermobile.getCallplans()[i]);
+					pk.setIdusermobile(id);
+					UserMobileCallPlan userMobileCallPlan = new UserMobileCallPlan();
+					userMobileCallPlan.setUserMobileCallPlanPK(pk);
+					listuserMobileCallPlansave.add(userMobileCallPlan);
+				}
+				userMobileCallPlanService.saveUserMobileCallPlanList(listuserMobileCallPlansave);
+			}
+	}
 		
-		List<UserMobileRole> listsave = new ArrayList<UserMobileRole>();
-		if(usermobile.getRoles().length > 0) {
-			for (int i = 0; i < usermobile.getRoles().length; i++) {
-				UserMobileRolePK pk = new UserMobileRolePK();
-				pk.setIdrole(usermobile.getRoles()[i]);
-				pk.setIdusermobile(id);
-				UserMobileRole userMobileRole = new UserMobileRole();
-				userMobileRole.setUserMobileRolePK(pk);
-				listsave.add(userMobileRole);
-			}
-			userMobileRoleService.saveUserMobileRoleList(listsave);
-		}
 		
 		ReturnData data = new ReturnData();
 		data.setId(id);
-		
+		data.setSuccess(validations.size() > 0?false:true);
+		data.setValidations(validations);
 		return data;
 	}
 
@@ -193,11 +347,13 @@ public class UserMobileHandler implements UserMobileService{
 		List<UserMobile> list = repository.getUserById(id, idcompany, idbranch);
 		if(list != null && list.size() > 0) {
 			List<UserMobileRoleData> listroleuser = new ArrayList<UserMobileRoleData>(userMobileRoleService.getListUserMobileRole(id));
+			List<UserMobileCallPlanData> listcallplans = new ArrayList<UserMobileCallPlanData>(userMobileCallPlanService.getListUserMobileCallPlan(id));
 			UserMobile data = list.get(0);
 			data.setToken("");
 			UserDetailMobile user = new UserDetailMobile();
 			user.setUser(data);
 			user.setRoles(listroleuser);
+			user.setCallplans(listcallplans);
 			return user;
 		}
 		return null;
@@ -210,6 +366,53 @@ public class UserMobileHandler implements UserMobileService{
 		sqlBuilder.append(" where mua.idcompany = ? and mua.idbranch = ? and mua.isdelete = false ");
 		final Object[] queryParameters = new Object[] { idcompany , idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListAllUserMobile(), queryParameters);
+	}
+
+	@Override
+	public List<UserMobileDataAuth> getUserLoginByUserNameMapper(String username,long idcompany,long idbranch) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataUserMobileAuth().schema());
+		sqlBuilder.append(" where mua.username = ? and mua.idcompany = ? and mua.idbranch = ? and mua.isdelete = false ");
+		final Object[] queryParameters = new Object[] { username,idcompany,idbranch };
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataUserMobileAuth(), queryParameters);
+	}
+
+	@Override
+	public List<UserMobileListData> getListAllUserMobileForMonitoring(String listid, long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		if(listid.equals("ALL")) {
+			return getListAllUserMobile(idcompany,idbranch);
+		}else {
+			String valListId = "("+listid+")";
+			final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListAllUserMobile().schema());
+			sqlBuilder.append(" where mua.id in "+valListId+" and mua.idcompany = ? and mua.idbranch = ? and mua.isdelete = false ");
+			final Object[] queryParameters = new Object[] { idcompany , idbranch};
+			return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListAllUserMobile(), queryParameters);
+		}
+//		return null;
+	}
+
+	@Override
+	public ReturnData deleteUserMobile(long id) {
+		// TODO Auto-generated method stub
+		Timestamp ts = new Timestamp(new Date().getTime());
+		UserMobile table = repository.getById(id);
+		table.setIsdelete(true);
+		table.setModified(ts);
+		UserMobile returntable = repository.saveAndFlush(table);
+		
+		ReturnData data = new ReturnData();
+		data.setId(returntable.getId());
+		return data;
+	}
+
+	@Override
+	public TemplateUserMobile getTemplateUserMobile(long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		TemplateUserMobile data = new TemplateUserMobile();
+		data.setCallplanoptions(callPlanService.getAllListCallPlan(idcompany, idbranch));
+		data.setRoleoptions(roleService.getAllListRole(idcompany, idbranch));
+		return data;
 	}
 
 }

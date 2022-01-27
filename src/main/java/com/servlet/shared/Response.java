@@ -1,5 +1,7 @@
 package com.servlet.shared;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +13,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(Response.class);
 	private String message;
 	private String messagecode;
 	private int httpcode;
+	private List<ValidationDataMessage> validations;
 	private Object data;
 	
 	public boolean isSuccess() {
@@ -42,5 +45,11 @@ private static final Logger LOGGER = LoggerFactory.getLogger(Response.class);
 	}
 	public void setHttpcode(int httpcode) {
 		this.httpcode = httpcode;
+	}
+	public List<ValidationDataMessage> getValidations() {
+		return validations;
+	}
+	public void setValidations(List<ValidationDataMessage> validations) {
+		this.validations = validations;
 	}
 }

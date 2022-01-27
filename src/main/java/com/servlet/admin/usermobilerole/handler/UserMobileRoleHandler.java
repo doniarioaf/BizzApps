@@ -1,5 +1,6 @@
 package com.servlet.admin.usermobilerole.handler;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -7,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.servlet.admin.usermobile.entity.UserMobile;
+import com.servlet.admin.usermobile.repo.UserMobileRepo;
 import com.servlet.admin.usermobilerole.entity.UserMobileRole;
 import com.servlet.admin.usermobilerole.entity.UserMobileRoleData;
 import com.servlet.admin.usermobilerole.entity.UserMobileRolePK;
@@ -20,6 +23,8 @@ public class UserMobileRoleHandler implements UserMobileRoleService{
 	private UserMobileRoleRepo repository;
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+	@Autowired
+	private UserMobileRepo repositoryMobile;
 	
 	@Override
 	public Object saveUserMobileRole(UserMobileRolePK userMobileRolePK) {
@@ -42,10 +47,15 @@ public class UserMobileRoleHandler implements UserMobileRoleService{
 	@Override
 	public Collection<UserMobileRoleData> getListUserMobileRole(long idusermobile) {
 		// TODO Auto-generated method stub
-		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetUserMobileRoleByIdUserMobile().schema());
-		sqlBuilder.append(" where userrole.idusermobile = ? ");
-		final Object[] queryParameters = new Object[] { idusermobile };
-		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetUserMobileRoleByIdUserMobile(), queryParameters);
+		UserMobile mobile = repositoryMobile.getById(idusermobile);
+		if(!mobile.isIsdelete()) {
+			final StringBuilder sqlBuilder = new StringBuilder("select " + new GetUserMobileRoleByIdUserMobile().schema());
+			sqlBuilder.append(" where userrole.idusermobile = ? and mr.isdelete = false ");
+			final Object[] queryParameters = new Object[] { idusermobile };
+			return this.jdbcTemplate.query(sqlBuilder.toString(), new GetUserMobileRoleByIdUserMobile(), queryParameters);
+		}
+		
+		return new ArrayList<UserMobileRoleData>();
 	}
 
 	@Override
