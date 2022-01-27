@@ -3,7 +3,8 @@ package com.servlet.login.entity;
 public class BodyLoginMobile {
 	private String user;
 	private String password;
-	private String imei;
+	private long idcompany;
+	private long idbranch;
 	public String getUser() {
 		return user;
 	}
@@ -16,13 +17,17 @@ public class BodyLoginMobile {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public String getImei() {
-		return imei;
+	public long getIdcompany() {
+		return idcompany;
 	}
-	public void setImei(String imei) {
-		this.imei = imei;
+	public void setIdcompany(long idcompany) {
+		this.idcompany = idcompany;
 	}
-	
-	
+	public long getIdbranch() {
+		return idbranch;
+	}
+	public void setIdbranch(long idbranch) {
+		this.idbranch = idbranch;
+	}
 
 }

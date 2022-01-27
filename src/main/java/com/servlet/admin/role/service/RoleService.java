@@ -12,4 +12,5 @@ public interface RoleService {
 	ReturnData saveRole(BodyRole role,long idcompany,long idbranch);
 	ReturnData updateRole(long id,BodyRole role);
 	RoleDetail getRoleDetail(long id,long idcompany, long idbranch);
+	ReturnData deleteRole(long id);
 }

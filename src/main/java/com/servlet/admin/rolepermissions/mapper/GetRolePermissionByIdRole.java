@@ -14,6 +14,7 @@ public class GetRolePermissionByIdRole implements RowMapper<RolePermissionData>{
 		final StringBuilder sqlBuilder = new StringBuilder(400);
 		sqlBuilder.append("mp.* from m_role_permissions as mrp ");
 		sqlBuilder.append("join m_permissions as mp on mp.id = mrp.idpermissions ");
+		sqlBuilder.append("join m_role as mr on mr.id = mrp.idrole ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}

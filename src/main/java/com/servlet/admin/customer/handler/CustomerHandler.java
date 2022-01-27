@@ -3,6 +3,7 @@ package com.servlet.admin.customer.handler;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,13 +13,12 @@ import com.servlet.admin.customer.entity.BodyCustomer;
 import com.servlet.admin.customer.entity.Customer;
 import com.servlet.admin.customer.entity.CustomerDetailData;
 import com.servlet.admin.customer.entity.CustomerListData;
+import com.servlet.admin.customer.entity.CustomerTemplate;
 import com.servlet.admin.customer.mapper.GetCustomerList;
 import com.servlet.admin.customer.mapper.GetDetailCustomer;
 import com.servlet.admin.customer.repo.CustomerRepo;
 import com.servlet.admin.customer.service.CustomerService;
-import com.servlet.admin.customertype.entity.CustomerType;
-import com.servlet.admin.customertype.entity.CustomerTypeData;
-import com.servlet.admin.customertype.mapper.GetCustomerType;
+import com.servlet.admin.customertype.service.CustomerTypeService;
 import com.servlet.shared.ReturnData;
 
 @Service
@@ -27,6 +27,8 @@ public class CustomerHandler implements CustomerService{
 	private JdbcTemplate jdbcTemplate;
 	@Autowired
 	private CustomerRepo repository;
+	@Autowired
+	private CustomerTypeService customerTypeService;
 	
 	@Override
 	public ReturnData saveCustomer(BodyCustomer customer, long idcompany, long idbranch) {
@@ -113,6 +115,57 @@ public class CustomerHandler implements CustomerService{
 		if(list != null && list.size() > 0) {
 			return list.get(0);
 		}
+		return null;
+	}
+
+	@Override
+	public CustomerTemplate customerTemplate(long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		CustomerTemplate data = new CustomerTemplate();
+		data.setCustomertypeoptions(customerTypeService.getAllListCustomerType(idcompany, idbranch));
+		return data;
+	}
+
+	@Override
+	public ReturnData deleteCustomer(long id) {
+		// TODO Auto-generated method stub
+		Timestamp ts = new Timestamp(new Date().getTime());
+		Customer table = repository.getById(id);
+		table.setIsdelete(true);
+		table.setModified(ts);
+		Customer returntable = repository.saveAndFlush(table);
+		
+		ReturnData data = new ReturnData();
+		data.setId(returntable.getId());
+		return data;
+	}
+
+
+	@Override
+	public ReturnData updateLatLong(long id,String latitude,String longitude) {
+		// TODO Auto-generated method stub
+		Optional<Customer> value = repository.findById(id);
+		if(value.isPresent()) {
+			Customer table = value.get();
+			if(table.getLatitude() == null) {
+				table.setLatitude(latitude);
+			}else if(table.getLatitude().equals("")) {
+				table.setLatitude(latitude);
+			}
+			
+			if(table.getLongitude() == null) {
+				table.setLongitude(longitude);
+			}else if(table.getLongitude().equals("")) {
+				table.setLongitude(longitude);
+			}
+			
+			Customer returntable = repository.saveAndFlush(table);
+			
+			ReturnData data = new ReturnData();
+			data.setId(returntable.getId());
+			return data;
+		}
+		
 		return null;
 	}
 

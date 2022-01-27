@@ -4,8 +4,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -139,6 +137,20 @@ public class RoleHandler implements RoleService{
 			data.setRole(null);
 			data.setPermissions(null);
 		}
+		return data;
+	}
+
+	@Override
+	public ReturnData deleteRole(long id) {
+		// TODO Auto-generated method stub
+		Timestamp ts = new Timestamp(new Date().getTime());
+		Role table = repository.getById(id);
+		table.setIsdelete(true);
+		table.setModified(ts);
+		Role returntable = repository.saveAndFlush(table);
+		
+		ReturnData data = new ReturnData();
+		data.setId(returntable.getId());
 		return data;
 	}
 
