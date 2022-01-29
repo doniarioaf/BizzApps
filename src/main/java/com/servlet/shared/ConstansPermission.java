@@ -70,4 +70,7 @@ public class ConstansPermission {
 	
 	public static final String READ_MAPS_MONITORING = "READ_MAPS_MONITORING";
 	public static final String CREATE_MAINTENANCE = "CREATE_MAINTENANCE";
+	
+	public static final String CREATE_STOCK_PRODUCT = "CREATE_STOCK_PRODUCT";
+	public static final String CREATE_REJECT_STOCK_PRODUCT = "CREATE_REJECT_STOCK_PRODUCT";
 }

@@ -20,7 +20,7 @@ public class GetProductData implements RowMapper<ProductData>{
 		sqlBuilder.append("mp.productcode as productcode ,mp.shortname as shortname ,mp.uom1 as uom1, ");
 		sqlBuilder.append("mp.uom2 as uom2 ,mp.uom3 as uom3 ,mp.uom4 as uom4, ");
 		sqlBuilder.append("mp.pricebuy as pricebuy ,mp.pricesell as pricesell ,mp.conversion1to4 as conversion1to4, ");
-		sqlBuilder.append("mp.conversion2to4 as conversion2to4 ,mp.conversion3to4 as conversion3to4, ");
+		sqlBuilder.append("mp.conversion2to4 as conversion2to4 ,mp.conversion3to4 as conversion3to4 ");
 		sqlBuilder.append("from m_product as mp ");
 		
 		this.schemaSql = sqlBuilder.toString();

@@ -7,8 +7,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-
-import com.servlet.admin.customer.entity.Customer;
 import com.servlet.admin.customer.service.CustomerService;
 import com.servlet.mobile.monitorusermobile.entity.BodyInfoDetail;
 import com.servlet.mobile.monitorusermobile.entity.BodyListMonitorUserMobile;

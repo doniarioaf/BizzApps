@@ -44,6 +44,9 @@ public class ConstansCodeMessage {
 	//code ini hanya untuk web
 	public static final String LIMIT_CREATE_USER = "limit.create.user";
 	
+	public static final String PRODUCTCODE_IS_EXIST = "productcode.is.exist";
+	public static final String PRODUCT_NOT_EXIST = "product.not.exist";
+	public static final String STOCK_NOT_ENOUGH = "product.not.enough";
 //	//sukses, tapi mengandung catatan, disarankan untuk menampilkan alert catatan tersebut
 //	public static final String SUCCESS_ALERT = "SUCCESS_ALERT";
 }

@@ -20,7 +20,7 @@ public class GetDetailProduct implements RowMapper<ProductDetailData>{
 		sqlBuilder.append("mp.conversion2to4 as conversion2to4 ,mp.conversion3to4 as conversion3to4, ");
 		sqlBuilder.append("mpt.id as prodtypeid ,mpt.nama as prodtypename ");
 		sqlBuilder.append("from m_product as mp ");
-		sqlBuilder.append("join m_product_type as mpt on mpt.id = mp.idproducttype ");
+		sqlBuilder.append("left join m_product_type as mpt on mpt.id = mp.idproducttype ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}

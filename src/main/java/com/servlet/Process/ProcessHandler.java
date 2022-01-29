@@ -57,6 +57,8 @@ import com.servlet.shared.ConstansPermission;
 import com.servlet.shared.ProcessReturn;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.transaction.productstock.entity.BodyProductStock;
+import com.servlet.transaction.productstock.service.ProductStockService;
 import com.servlet.user.entity.BodyUserApps;
 import com.servlet.user.service.UserAppsService;
 
@@ -101,6 +103,8 @@ public class ProcessHandler implements ProcessService{
 	PermissionService permissionService;
 	@Autowired
 	ReportService reportService;
+	@Autowired
+	ProductStockService productStockService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -256,12 +260,30 @@ public class ProcessHandler implements ProcessService{
 				val.setData(productTypeService.updateProductType(id, body, auth.getIdcompany(),auth.getIdbranch()));
 			}else if(codepermission.equals(ConstansPermission.CREATE_PRODUCT)) {
 				BodyProduct body = (BodyProduct) data;
-				val.setData(productService.saveProduct(body, auth.getIdcompany(),auth.getIdbranch()));
+//				val.setData(productService.saveProduct(body, auth.getIdcompany(),auth.getIdbranch()));
+				ReturnData valReturn = productService.saveProduct(body, auth.getIdcompany(),auth.getIdbranch());
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 			}else if(codepermission.equals(ConstansPermission.EDIT_PRODUCT)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				BodyProduct body = (BodyProduct) param.get("BodyProduct");
 				long id = (long) param.get("id");
-				val.setData(productService.updateProduct(id, body, auth.getIdcompany(),auth.getIdbranch()));
+//				val.setData(productService.updateProduct(id, body, auth.getIdcompany(),auth.getIdbranch(),auth.getId()));
+				ReturnData valReturn = productService.updateProduct(id, body, auth.getIdcompany(),auth.getIdbranch(),auth.getId());
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 			}else if(codepermission.equals(ConstansPermission.CREATE_CALLPLAN)) {
 				BodyCallPlan body = (BodyCallPlan) data;
 				val.setData(callPlanService.saveCallPlan(body, auth.getIdcompany(),auth.getIdbranch()));
@@ -326,6 +348,20 @@ public class ProcessHandler implements ProcessService{
 				ReturnData valReturn = userAppsService.logout(auth.getId());
 				val.setSuccess(valReturn.isSuccess());
 				val.setData(null);
+			}else if(codepermission.equals(ConstansPermission.CREATE_STOCK_PRODUCT)) {
+				BodyProductStock body = (BodyProductStock) data;
+				val.setData(productStockService.addStock(body.getIdproduct(), body.getStock(), auth.getIdcompany(),auth.getIdbranch(), auth.getId()));
+			}else if(codepermission.equals(ConstansPermission.CREATE_REJECT_STOCK_PRODUCT)) {
+				BodyProductStock body = (BodyProductStock) data;
+				ReturnData valReturn = productStockService.rejectStock(body.getIdproduct(), body.getStock(), auth.getIdcompany(),auth.getIdbranch(), auth.getId(),body.getReason());
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
 			if(codepermission.equals(ConstansPermission.CREATE_MONITOR_USER_MOBILE) ) {

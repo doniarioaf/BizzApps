@@ -4,8 +4,6 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import com.servlet.mobile.customercallplan.entity.CustomerCallPlanPK;
-
 @Entity
 @Table(name = "t_product_stock", schema = "public")
 public class ProductStock {

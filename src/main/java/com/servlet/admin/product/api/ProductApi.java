@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.servlet.admin.product.entity.BodyProduct;
@@ -21,6 +22,7 @@ import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConstansPermission;
 import com.servlet.shared.Response;
+import com.servlet.transaction.productstock.entity.BodyProductStock;
 
 @RestController
 @RequestMapping("/v1/product")
@@ -46,8 +48,8 @@ public class ProductApi {
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
-	@GetMapping("{id}")
-	ResponseEntity<Response> searchProduct(@PathVariable String productcode,@RequestHeader(ConstansKey.AUTH) String authorization) {
+	@GetMapping("/search")
+	ResponseEntity<Response> searchProduct(@RequestHeader(ConstansKey.AUTH) String authorization,@RequestParam String productcode) {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("type", "SEARCH");
 		param.put("productcode", productcode);
@@ -58,6 +60,18 @@ public class ProductApi {
 	@PostMapping
 	ResponseEntity<Response> createProduct(@RequestBody @Validated BodyProduct body, @RequestHeader(ConstansKey.AUTH) String authorization) {
 		Response response = securityService.response(ConstansPermission.CREATE_PRODUCT,body,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@PostMapping("/addstock")
+	ResponseEntity<Response> addStockProduct(@RequestBody @Validated BodyProductStock body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		Response response = securityService.response(ConstansPermission.CREATE_STOCK_PRODUCT,body,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@PostMapping("/rejectstock")
+	ResponseEntity<Response> rejectStockProduct(@RequestBody @Validated BodyProductStock body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		Response response = securityService.response(ConstansPermission.CREATE_REJECT_STOCK_PRODUCT,body,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	

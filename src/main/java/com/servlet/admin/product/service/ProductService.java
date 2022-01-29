@@ -10,7 +10,7 @@ import com.servlet.shared.ReturnData;
 
 public interface ProductService {
 	ReturnData saveProduct(BodyProduct product,long idcompany,long idbranch);
-	ReturnData updateProduct(long id,BodyProduct product,long idcompany,long idbranch);
+	ReturnData updateProduct(long id,BodyProduct product,long idcompany,long idbranch,long userid);
 	List<ProductListData> getAllListProduct(long idcompany,long idbranch);
 	ProductDetailData getProductById(long id,long idcompany,long idbranch);
 	ProductData getProductByProductCode(String productcode,long idcompany,long idbranch);
