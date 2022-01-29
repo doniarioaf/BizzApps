@@ -100,14 +100,14 @@ public class ProductStockHandler implements ProductStockService{
 				table.setStock(totalstock);
 				ProductStock returntable = repository.saveAndFlush(table);
 				idreturn = returntable.getProductStockPK().getIdproduct();
+				
+				StockProductHistory stockhistory = setStockProductHistory(idcompany,idproduct,stock,"SUBSTRACT",userid,"");
+				stockProductHistoryService.saveStockProductHistory(stockhistory);
 			}
 		}else {
 			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.STOCK_NOT_ENOUGH,"Stock Tidak Cukup");
 			validations.add(msg);
 		}
-		
-		StockProductHistory stockhistory = setStockProductHistory(idcompany,idproduct,stock,"SUBSTRACT",userid,"");
-		stockProductHistoryService.saveStockProductHistory(stockhistory);
 		
 		ReturnData data = new ReturnData();
 		data.setId(idreturn);
@@ -148,14 +148,16 @@ public class ProductStockHandler implements ProductStockService{
 				table.setStock(totalstock);
 				ProductStock returntable = repository.saveAndFlush(table);
 				idreturn = returntable.getProductStockPK().getIdproduct();
+				
+				StockProductHistory stockhistory = setStockProductHistory(idcompany,idproduct,stock,"REJECT",userid,reason);
+				stockProductHistoryService.saveStockProductHistory(stockhistory);
 			}
 		}else {
 			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.STOCK_NOT_ENOUGH,"Stock Tidak Cukup");
 			validations.add(msg);
 		}
 		
-		StockProductHistory stockhistory = setStockProductHistory(idcompany,idproduct,stock,"REJECT",userid,reason);
-		stockProductHistoryService.saveStockProductHistory(stockhistory);
+		
 		
 		ReturnData data = new ReturnData();
 		data.setId(idreturn);
