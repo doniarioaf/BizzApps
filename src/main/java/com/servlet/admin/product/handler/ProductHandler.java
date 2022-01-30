@@ -38,8 +38,11 @@ public class ProductHandler implements ProductService{
 		// TODO Auto-generated method stub
 		long idreturn = 0;
 		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
-		ProductData searchcode = getProductByProductCode(product.getProductcode(),idcompany,idbranch);
-		if(searchcode != null) {
+		ProductData searchcode = getProductByProductCode(product.getBarcode1(),idcompany,idbranch);
+		ProductData searchcode2 = getProductByProductCode(product.getBarcode2(),idcompany,idbranch);
+		ProductData searchcode3 = getProductByProductCode(product.getBarcode3(),idcompany,idbranch);
+		ProductData searchcode4 = getProductByProductCode(product.getBarcode4(),idcompany,idbranch);
+		if(searchcode != null || searchcode2 != null || searchcode3 != null || searchcode4 != null) {
 			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.PRODUCTCODE_IS_EXIST,"Product Code Sudah Terpakai");
 			validations.add(msg);
 		}else {
@@ -61,6 +64,13 @@ public class ProductHandler implements ProductService{
 			table.setConversion1to4(product.getConversion1to4());
 			table.setConversion2to4(product.getConversion2to4());
 			table.setConversion3to4(product.getConversion3to4());
+			table.setPriceselluom2(product.getPriceselluom2());
+			table.setPriceselluom3(product.getPriceselluom3());
+			table.setPriceselluom4(product.getPriceselluom4());
+			table.setBarcode1(product.getBarcode1());
+			table.setBarcode2(product.getBarcode2());
+			table.setBarcode3(product.getBarcode3());
+			table.setBarcode4(product.getBarcode4());
 			Product returntable = repository.saveAndFlush(table);
 			idreturn = returntable.getId();
 		}
@@ -78,40 +88,75 @@ public class ProductHandler implements ProductService{
 		ProductDetailData check = getProductById(id,idcompany,idbranch);
 		long idreturn = 0;
 		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
-		ProductData searchcode = getProductByProductCode(product.getProductcode(),idcompany,idbranch);
-		if(searchcode != null) {
-			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.PRODUCTCODE_IS_EXIST,"Product Code Sudah Terpakai");
-			validations.add(msg);
-		}else {
 			if(check != null) {
 				Product table = repository.getById(id);
-				
-				table.setNama(product.getNama());
-				table.setDescription(product.getDescription());
-				table.setIdproducttype(product.getIdproducttype());
-				
-				table.setProductcode(product.getProductcode());
-				table.setShortname(product.getShortname());
-				table.setUom1(product.getUom1());
-				table.setUom2(product.getUom2());
-				table.setUom3(product.getUom3());
-				table.setUom4(product.getUom4());
-				if(table.getPricebuy() != product.getPricebuy() || table.getPricesell() != product.getPricesell()) {
-					priceProductHistoryService.savePriceProductHistory(setPriceProductHistory(table,userid));
+//				ProductData searchcode = getProductByProductCode(product.getProductcode(),idcompany,idbranch);
+				if(!table.getBarcode1().equals(product.getBarcode1())) {
+					ProductData searchcode = getProductByProductCode(product.getBarcode1(),idcompany,idbranch);
+					if(searchcode != null) {
+						ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.PRODUCTCODE_IS_EXIST,"BarCode 1 Sudah Terpakai");
+						validations.add(msg);
+					}
 				}
-				table.setPricebuy(product.getPricebuy());
-				table.setPricesell(product.getPricesell());
-				table.setConversion1to4(product.getConversion1to4());
-				table.setConversion2to4(product.getConversion2to4());
-				table.setConversion3to4(product.getConversion3to4());
 				
-				Product returntable = repository.saveAndFlush(table);
-				idreturn = returntable.getId();
+				if(!table.getBarcode2().equals(product.getBarcode2())) {
+					ProductData searchcode = getProductByProductCode(product.getBarcode2(),idcompany,idbranch);
+					if(searchcode != null) {
+						ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.PRODUCTCODE_IS_EXIST,"BarCode 2 Sudah Terpakai");
+						validations.add(msg);
+					}
+				}
+				
+				if(!table.getBarcode3().equals(product.getBarcode3())) {
+					ProductData searchcode = getProductByProductCode(product.getBarcode3(),idcompany,idbranch);
+					if(searchcode != null) {
+						ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.PRODUCTCODE_IS_EXIST,"BarCode 3 Sudah Terpakai");
+						validations.add(msg);
+					}
+				}
+				
+				if(!table.getBarcode4().equals(product.getBarcode4())) {
+					ProductData searchcode = getProductByProductCode(product.getBarcode4(),idcompany,idbranch);
+					if(searchcode != null) {
+						ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.PRODUCTCODE_IS_EXIST,"BarCode 4 Sudah Terpakai");
+						validations.add(msg);
+					}
+				}
+				
+				if(validations.size() == 0) {
+					table.setNama(product.getNama());
+					table.setDescription(product.getDescription());
+					table.setIdproducttype(product.getIdproducttype());
+					
+					table.setProductcode(product.getProductcode());
+					table.setShortname(product.getShortname());
+					table.setUom1(product.getUom1());
+					table.setUom2(product.getUom2());
+					table.setUom3(product.getUom3());
+					table.setUom4(product.getUom4());
+					if(table.getPricebuy() != product.getPricebuy() || table.getPricesell() != product.getPricesell()) {
+						priceProductHistoryService.savePriceProductHistory(setPriceProductHistory(table,userid));
+					}
+					table.setPricebuy(product.getPricebuy());
+					table.setPricesell(product.getPricesell());
+					table.setConversion1to4(product.getConversion1to4());
+					table.setConversion2to4(product.getConversion2to4());
+					table.setConversion3to4(product.getConversion3to4());
+					table.setPriceselluom2(product.getPriceselluom2());
+					table.setPriceselluom3(product.getPriceselluom3());
+					table.setPriceselluom4(product.getPriceselluom4());
+					table.setBarcode1(product.getBarcode1());
+					table.setBarcode2(product.getBarcode2());
+					table.setBarcode3(product.getBarcode3());
+					table.setBarcode4(product.getBarcode4());
+					
+					Product returntable = repository.saveAndFlush(table);
+					idreturn = returntable.getId();
+				}
 			}else {
 				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.PRODUCT_NOT_EXIST,"Product Tidak Ditemukan");
 				validations.add(msg);
 			}
-		}
 		ReturnData data = new ReturnData();
 		data.setId(idreturn);
 		data.setSuccess(validations.size() > 0?false:true);
@@ -129,6 +174,9 @@ public class ProductHandler implements ProductService{
 		priceProductHistory.setPricebuy(product.getPricebuy());
 		priceProductHistory.setPricesell(product.getPricesell());
 		priceProductHistory.setUserid(userid);
+		priceProductHistory.setPriceselluom2(product.getPriceselluom2());
+		priceProductHistory.setPriceselluom3(product.getPriceselluom3());
+		priceProductHistory.setPriceselluom4(product.getPriceselluom4());
 		return priceProductHistory;
 	}
 
@@ -158,8 +206,8 @@ public class ProductHandler implements ProductService{
 	public ProductData getProductByProductCode(String productcode, long idcompany, long idbranch) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetProductData().schema());
-		sqlBuilder.append(" where mp.idcompany = ? and mp.productcode = ? and mp.isdelete = false ");
-		final Object[] queryParameters = new Object[] {idcompany,productcode};
+		sqlBuilder.append(" where mp.idcompany = ? and (mp.barcode1='"+productcode+"' or mp.barcode2='"+productcode+"' or mp.barcode3='"+productcode+"' or mp.barcode4='"+productcode+"') and mp.isdelete = false ");
+		final Object[] queryParameters = new Object[] {idcompany};
 		List<ProductData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetProductData(), queryParameters);
 		if(list != null && list.size() > 0) {
 			return list.get(0);

@@ -20,7 +20,11 @@ public class GetProductData implements RowMapper<ProductData>{
 		sqlBuilder.append("mp.productcode as productcode ,mp.shortname as shortname ,mp.uom1 as uom1, ");
 		sqlBuilder.append("mp.uom2 as uom2 ,mp.uom3 as uom3 ,mp.uom4 as uom4, ");
 		sqlBuilder.append("mp.pricebuy as pricebuy ,mp.pricesell as pricesell ,mp.conversion1to4 as conversion1to4, ");
-		sqlBuilder.append("mp.conversion2to4 as conversion2to4 ,mp.conversion3to4 as conversion3to4 ");
+		sqlBuilder.append("mp.conversion2to4 as conversion2to4 ,mp.conversion3to4 as conversion3to4, ");
+		sqlBuilder.append("mp.priceselluom2 as priceselluom2 ,mp.priceselluom3 as priceselluom3, ");
+		sqlBuilder.append("mp.priceselluom4 as priceselluom4 ,mp.barcode1 as barcode1, ");
+		sqlBuilder.append("mp.barcode2 as barcode2 ,mp.barcode3 as barcode3, ");
+		sqlBuilder.append("mp.barcode4 as barcode4 ");
 		sqlBuilder.append("from m_product as mp ");
 		
 		this.schemaSql = sqlBuilder.toString();
@@ -44,6 +48,13 @@ public class GetProductData implements RowMapper<ProductData>{
 		final int conversion1to4 = rs.getInt("conversion1to4");
 		final int conversion2to4 = rs.getInt("conversion2to4");
 		final int conversion3to4 = rs.getInt("conversion3to4");
+		final double priceselluom2 = rs.getDouble("priceselluom2");
+		final double priceselluom3 = rs.getDouble("priceselluom3");
+		final double priceselluom4 = rs.getDouble("priceselluom4");
+		final String barcode1 = rs.getString("barcode1");
+		final String barcode2 = rs.getString("barcode2");
+		final String barcode3 = rs.getString("barcode3");
+		final String barcode4 = rs.getString("barcode4");
 		
 		ProductData data = new ProductData();
 		data.setId(id);
@@ -60,6 +71,13 @@ public class GetProductData implements RowMapper<ProductData>{
 		data.setConversion1to4(conversion1to4);
 		data.setConversion2to4(conversion2to4);
 		data.setConversion3to4(conversion3to4);
+		data.setPriceselluom2(priceselluom2);
+		data.setPriceselluom3(priceselluom3);
+		data.setPriceselluom4(priceselluom4);
+		data.setBarcode1(barcode1);
+		data.setBarcode2(barcode2);
+		data.setBarcode3(barcode3);
+		data.setBarcode4(barcode4);
 		return data;
 	}
 }

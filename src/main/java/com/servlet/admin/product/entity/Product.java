@@ -28,10 +28,18 @@ private static final long serialVersionUID = 1L;
 	private String uom3;
 	private String uom4;
 	private double pricebuy;
-	private double pricesell;
+	private double pricesell;//priceselluom1
 	private int conversion1to4;
 	private int conversion2to4;
 	private int conversion3to4;
+	private double priceselluom2;
+	private double priceselluom3;
+	private double priceselluom4;
+	private String barcode1;
+	private String barcode2;
+	private String barcode3;
+	private String barcode4;
+	
 	public long getId() {
 		return id;
 	}
@@ -133,5 +141,47 @@ private static final long serialVersionUID = 1L;
 	}
 	public void setConversion3to4(int conversion3to4) {
 		this.conversion3to4 = conversion3to4;
+	}
+	public double getPriceselluom2() {
+		return priceselluom2;
+	}
+	public void setPriceselluom2(double priceselluom2) {
+		this.priceselluom2 = priceselluom2;
+	}
+	public double getPriceselluom3() {
+		return priceselluom3;
+	}
+	public void setPriceselluom3(double priceselluom3) {
+		this.priceselluom3 = priceselluom3;
+	}
+	public double getPriceselluom4() {
+		return priceselluom4;
+	}
+	public void setPriceselluom4(double priceselluom4) {
+		this.priceselluom4 = priceselluom4;
+	}
+	public String getBarcode1() {
+		return barcode1;
+	}
+	public void setBarcode1(String barcode1) {
+		this.barcode1 = barcode1;
+	}
+	public String getBarcode2() {
+		return barcode2;
+	}
+	public void setBarcode2(String barcode2) {
+		this.barcode2 = barcode2;
+	}
+	public String getBarcode3() {
+		return barcode3;
+	}
+	public void setBarcode3(String barcode3) {
+		this.barcode3 = barcode3;
+	}
+	public String getBarcode4() {
+		return barcode4;
+	}
+	public void setBarcode4(String barcode4) {
+		this.barcode4 = barcode4;
 	}
 }
