@@ -20,8 +20,11 @@ public class PriceProductHistory implements Serializable{
 	private long idcompany;
 	private long idproduct;
 	private Timestamp tanggal;
-	private Double pricebuy;
-	private Double pricesell;
+	private double pricebuy;
+	private double pricesell;
+	private double priceselluom2;
+	private double priceselluom3;
+	private double priceselluom4;
 	private long userid;
 	public long getId() {
 		return id;
@@ -64,6 +67,24 @@ public class PriceProductHistory implements Serializable{
 	}
 	public void setUserid(long userid) {
 		this.userid = userid;
+	}
+	public double getPriceselluom2() {
+		return priceselluom2;
+	}
+	public void setPriceselluom2(double priceselluom2) {
+		this.priceselluom2 = priceselluom2;
+	}
+	public double getPriceselluom3() {
+		return priceselluom3;
+	}
+	public void setPriceselluom3(double priceselluom3) {
+		this.priceselluom3 = priceselluom3;
+	}
+	public double getPriceselluom4() {
+		return priceselluom4;
+	}
+	public void setPriceselluom4(double priceselluom4) {
+		this.priceselluom4 = priceselluom4;
 	}
 	
 }
