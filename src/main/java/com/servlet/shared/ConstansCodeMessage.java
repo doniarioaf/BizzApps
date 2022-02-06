@@ -44,6 +44,8 @@ public class ConstansCodeMessage {
 	//code ini hanya untuk web
 	public static final String LIMIT_CREATE_USER = "limit.create.user";
 	
+	public static final String FILE_EXCEL_FAILED = "file.excel.failed";
+	
 //	//sukses, tapi mengandung catatan, disarankan untuk menampilkan alert catatan tersebut
 //	public static final String SUCCESS_ALERT = "SUCCESS_ALERT";
 }

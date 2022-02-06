@@ -1,5 +1,6 @@
 package com.servlet.Process;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -8,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
 import com.servlet.BizzAppsBackEndApplication;
@@ -22,6 +24,7 @@ import com.servlet.admin.customer.entity.BodyCustomer;
 import com.servlet.admin.customer.service.CustomerService;
 import com.servlet.admin.customertype.entity.BodyCustomerType;
 import com.servlet.admin.customertype.service.CustomerTypeService;
+import com.servlet.admin.importfile.service.ImportFileService;
 import com.servlet.admin.permission.entity.BodyPermission;
 import com.servlet.admin.permission.service.PermissionService;
 import com.servlet.admin.product.entity.BodyProduct;
@@ -101,6 +104,8 @@ public class ProcessHandler implements ProcessService{
 	PermissionService permissionService;
 	@Autowired
 	ReportService reportService;
+	@Autowired
+	ImportFileService importFileService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -326,6 +331,23 @@ public class ProcessHandler implements ProcessService{
 				ReturnData valReturn = userAppsService.logout(auth.getId());
 				val.setSuccess(valReturn.isSuccess());
 				val.setData(null);
+			}else if(codepermission.equals(ConstansPermission.CREATE_UPLOAD_CUSTOMER_CALLPLAN)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				MultipartFile file = (MultipartFile) param.get("file");
+				try {
+					ReturnData valReturn = importFileService.importFileExcelCustomerCallPlan(file.getInputStream(), file);
+					if(valReturn.isSuccess()) {
+						val.setData(valReturn.getId());
+					}else {
+						val.setSuccess(valReturn.isSuccess());
+						val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+						val.setValidations(valReturn.getValidations());
+						val.setData(null);
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
 			if(codepermission.equals(ConstansPermission.CREATE_MONITOR_USER_MOBILE) ) {

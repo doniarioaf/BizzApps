@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.servlet.admin.customer.entity.BodyCustomer;
 import com.servlet.admin.customer.service.CustomerService;
@@ -68,6 +70,14 @@ public class CustomerApi {
 	@DeleteMapping("{id}")
 	ResponseEntity<Response> deleteCustomer(@PathVariable long id, @RequestHeader(ConstansKey.AUTH) String authorization) {
 		Response response = securityService.response(ConstansPermission.DELETE_CUSTOMER,id,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@PostMapping("/uploadcustomercallplan")
+	ResponseEntity<Response> uploadCustomerCallPlan(@RequestParam("file") MultipartFile file, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("file", file);
+		Response response = securityService.response(ConstansPermission.CREATE_UPLOAD_CUSTOMER_CALLPLAN,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 
