@@ -50,6 +50,8 @@ public class CustomerHandler implements CustomerService{
 		table.setIsdelete(false);
 		table.setCreated(ts);
 		table.setModified(ts);
+		table.setCustomercode(customer.getCustomercode());
+		table.setContactperson(customer.getContactperson());
 		Customer returntable = repository.saveAndFlush(table);
 		ReturnData data = new ReturnData();
 		data.setId(returntable.getId());
@@ -75,6 +77,8 @@ public class CustomerHandler implements CustomerService{
 			table.setLatitude(customer.getLatitude());
 			table.setLongitude(customer.getLongitude());
 			table.setModified(ts);
+			table.setCustomercode(customer.getCustomercode());
+			table.setContactperson(customer.getContactperson());
 			Customer returntable = repository.saveAndFlush(table);
 			ReturnData data = new ReturnData();
 			data.setId(returntable.getId());
@@ -166,6 +170,19 @@ public class CustomerHandler implements CustomerService{
 			return data;
 		}
 		
+		return null;
+	}
+
+	@Override
+	public CustomerListData getCustomerByCustomerCode(String customerCode, long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetCustomerList().schema());
+		sqlBuilder.append(" where data.customercode = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {customerCode, idcompany,idbranch};
+		List<CustomerListData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetCustomerList(), queryParameters);
+		if(list != null && list.size() > 0) {
+			return list.get(0);
+		}
 		return null;
 	}
 

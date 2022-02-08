@@ -28,6 +28,7 @@ public class ProjectHandler implements ProjectService{
 		project.setIdbranch(idbranch);
 		project.setNama(body.getNama());
 		project.setDescription(body.getDescription());
+		project.setProjectnumber(body.getProjectnumber());
 		project.setIsdelete(false);
 		
 		Project returndata = repository.saveAndFlush(project);
@@ -64,6 +65,19 @@ public class ProjectHandler implements ProjectService{
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataProject().schema());
 		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
 		final Object[] queryParameters = new Object[] {id, idcompany,idbranch};
+		List<ProjectData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataProject(), queryParameters);
+		if(list != null && list.size() > 0) {
+			return list.get(0);
+		}
+		return null;
+	}
+
+	@Override
+	public ProjectData getProjectByProjectNumber(String projectnumber, long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataProject().schema());
+		sqlBuilder.append(" where data.projectnumber = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {projectnumber, idcompany,idbranch};
 		List<ProjectData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataProject(), queryParameters);
 		if(list != null && list.size() > 0) {
 			return list.get(0);

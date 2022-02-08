@@ -3,6 +3,7 @@ package com.servlet.mobile.project.entity;
 public class BodyProject {
 	private String nama;
 	private String description;
+	private String projectnumber;
 	public String getNama() {
 		return nama;
 	}
@@ -14,5 +15,11 @@ public class BodyProject {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	public String getProjectnumber() {
+		return projectnumber;
+	}
+	public void setProjectnumber(String projectnumber) {
+		this.projectnumber = projectnumber;
 	}
 }

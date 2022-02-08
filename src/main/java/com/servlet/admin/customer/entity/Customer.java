@@ -32,6 +32,9 @@ public class Customer implements Serializable{
 	private Timestamp created;
 	private Timestamp modified;
 	private boolean isdelete;
+	private String contactperson;
+	private String customercode;
+	private long projectid;
 	public long getId() {
 		return id;
 	}
@@ -127,6 +130,24 @@ public class Customer implements Serializable{
 	}
 	public void setIsdelete(boolean isdelete) {
 		this.isdelete = isdelete;
+	}
+	public String getContactperson() {
+		return contactperson;
+	}
+	public void setContactperson(String contactperson) {
+		this.contactperson = contactperson;
+	}
+	public String getCustomercode() {
+		return customercode;
+	}
+	public void setCustomercode(String customercode) {
+		this.customercode = customercode;
+	}
+	public long getProjectid() {
+		return projectid;
+	}
+	public void setProjectid(long projectid) {
+		this.projectid = projectid;
 	}
 
 }

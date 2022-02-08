@@ -10,4 +10,5 @@ public interface ProjectService {
 	ReturnData updateProject(long id,BodyProject body,long idcompany,long idbranch);
 	List<ProjectData> getAllListProject(long idcompany,long idbranch);
 	ProjectData getProjectById(long id,long idcompany,long idbranch);
+	ProjectData getProjectByProjectNumber(String projectnumber,long idcompany,long idbranch);
 }
