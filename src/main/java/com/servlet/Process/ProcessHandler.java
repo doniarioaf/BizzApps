@@ -335,7 +335,7 @@ public class ProcessHandler implements ProcessService{
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				MultipartFile file = (MultipartFile) param.get("file");
 				try {
-					ReturnData valReturn = importFileService.importFileExcelCustomerCallPlan(file.getInputStream(), file);
+					ReturnData valReturn = importFileService.importFileExcelCustomerCallPlan(file.getInputStream(), file,auth.getIdcompany(),auth.getIdbranch());
 					if(valReturn.isSuccess()) {
 						val.setData(valReturn.getId());
 					}else {
