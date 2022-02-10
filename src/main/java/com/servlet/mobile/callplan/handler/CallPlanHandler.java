@@ -176,5 +176,16 @@ public class CallPlanHandler implements CallPlanService{
 		data.setId(returntable.getId());
 		return data;
 	}
+	@Override
+	public CallPlanListData getCallByName(String nama, long idcompany, long idbranch) {
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetCallPlanList().schema());
+		sqlBuilder.append(" where data.nama = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {nama, idcompany,idbranch};
+		List<CallPlanListData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetCallPlanList(), queryParameters);
+		if(list != null && list.size() > 0) {
+			return list.get(0);
+		}
+		return null;
+	}
 
 }

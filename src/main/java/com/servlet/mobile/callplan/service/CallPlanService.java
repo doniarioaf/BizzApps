@@ -15,4 +15,5 @@ public interface CallPlanService {
 	CallPlanDetailData getCallPlanById(long id,long idcompany,long idbranch);
 	TemplateDataCallPlan getTemplate(long idcompany,long idbranch);
 	ReturnData deleteCallPlan(long id);
+	CallPlanListData getCallByName(String nama,long idcompany,long idbranch);
 }

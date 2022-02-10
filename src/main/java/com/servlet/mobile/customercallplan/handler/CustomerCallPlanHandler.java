@@ -2,10 +2,13 @@ package com.servlet.mobile.customercallplan.handler;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import com.servlet.admin.company.entity.Company;
 import com.servlet.mobile.customercallplan.entity.CustomerCallPlan;
 import com.servlet.mobile.customercallplan.entity.CustomerCallPlanData;
 import com.servlet.mobile.customercallplan.entity.CustomerCallPlanPK;
@@ -101,6 +104,16 @@ public class CustomerCallPlanHandler implements CustomerCallPlanService{
 		data.setCustomercallplan(list);
 		
 		return data;
+	}
+
+	@Override
+	public boolean getCustCallPlanByPK(CustomerCallPlanPK custcallplanPK) {
+		// TODO Auto-generated method stub
+		Optional<CustomerCallPlan> value = repository.findById(custcallplanPK);
+		if(value.isPresent()) {
+			return true;
+		}
+		return false;
 	}
 
 }

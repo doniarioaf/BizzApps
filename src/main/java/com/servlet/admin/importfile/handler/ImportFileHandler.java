@@ -18,10 +18,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.servlet.admin.customer.entity.BodyCustomer;
+import com.servlet.admin.customer.entity.CustomerListData;
 import com.servlet.admin.customer.service.CustomerService;
 import com.servlet.admin.importfile.entity.DataColumnFileCustomerCallPlan;
 import com.servlet.admin.importfile.entity.ReturnDataCustomerCallPlan;
 import com.servlet.admin.importfile.service.ImportFileService;
+import com.servlet.mobile.callplan.entity.BodyCallPlan;
+import com.servlet.mobile.callplan.entity.CallPlanDetailData;
+import com.servlet.mobile.callplan.entity.CallPlanListData;
+import com.servlet.mobile.callplan.service.CallPlanService;
+import com.servlet.mobile.customercallplan.entity.CustomerCallPlanPK;
+import com.servlet.mobile.customercallplan.service.CustomerCallPlanService;
 import com.servlet.mobile.project.entity.BodyProject;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ReturnData;
@@ -31,6 +39,10 @@ import com.servlet.shared.ValidationDataMessage;
 public class ImportFileHandler implements ImportFileService{
 	@Autowired
 	private CustomerService customerService;
+	@Autowired
+	private CallPlanService callPlanService;
+	@Autowired
+	private CustomerCallPlanService customerCallPlanService;
 
 	@Override
 	public ReturnData importFileExcelCustomerCallPlan(InputStream is, MultipartFile file,long idcompany, long idbranch) {
@@ -52,13 +64,68 @@ public class ImportFileHandler implements ImportFileService{
 					if(data.getValidations().size() > 0) {
 						validations.addAll(data.getValidations());
 					}else {
-						for (Map.Entry<String, String> set :
-							data.getMapDistinctCallPlan().entrySet()) {
-				 
-				            // Printing all elements of a Map
-				            System.out.println("CallPlan | "+set.getKey() + " = "
-				                               + set.getValue());
+						HashMap<String, DataColumnFileCustomerCallPlan> mapsCustInDB = new HashMap<String, DataColumnFileCustomerCallPlan>();
+						HashMap<String, Long> mapsCustInDBByID = new HashMap<String, Long>();
+						
+						for (Map.Entry<String, List<DataColumnFileCustomerCallPlan>> set : data.getMapGroupCustomerCallPlan().entrySet()) {
+							List<DataColumnFileCustomerCallPlan> listdataFile = set.getValue();
+				            System.out.println("CallPlan "+set.getKey());
+				            CallPlanListData callPlanData = null;
+				            String callPlanName = "";
+				            if(listdataFile.size() > 0) {
+				            	callPlanName = listdataFile.get(0).getCallplanName();
+				            	callPlanData = new CallPlanListData();
+				            	callPlanData = callPlanService.getCallByName(callPlanName, idcompany, idbranch);
+				            	
+				            }
+				            
+				            List<Long> listCustIdToCallPlan = new ArrayList<Long>();
+				            for(DataColumnFileCustomerCallPlan datafile : listdataFile) {
+								System.out.println("Cust CallPlan "+datafile.getNama());
+								CustomerListData datacust = customerService.getCustomerByCustomerCode(datafile.getCustomerCode(), idcompany, idbranch);
+								long idcust = 0;
+								if(datacust != null) {
+									idcust = datacust.getId();
+								}else {
+									idcust = customerService.saveCustomer(setBodyCust(datafile), idcompany, idbranch).getId();
+								}
+								
+								if(callPlanData != null) {
+									CustomerCallPlanPK custCallPlanPK = new CustomerCallPlanPK();
+									custCallPlanPK.setIdcompany(idcompany);
+									custCallPlanPK.setIdbranch(idbranch);
+									custCallPlanPK.setIdcallplan(callPlanData.getId());
+									custCallPlanPK.setIdcustomer(idcust);
+									boolean flag = customerCallPlanService.getCustCallPlanByPK(custCallPlanPK);
+									if(!flag) {
+										listCustIdToCallPlan.add(idcust);
+									}
+								}else {
+									listCustIdToCallPlan.add(idcust);
+								}
+								
+								mapsCustInDB.put(datafile.getCustomerCode(), datafile);
+								mapsCustInDBByID.put(datafile.getCustomerCode(), idcust);
+								
+							}
+				            
+				            BodyCallPlan bodycallplan = setBodyCallPlan(callPlanName, callPlanData, listCustIdToCallPlan, idcompany, idbranch);
+				            if(callPlanData == null) {
+				            	callPlanService.saveCallPlan(bodycallplan, idcompany, idbranch);
+				            }else {
+				            	callPlanService.updateCallPlan(callPlanData.getId(), bodycallplan, idcompany, idbranch);
+				            }
+				            
+				            
 				        }
+						
+//						for (Map.Entry<String, String> set :
+//							data.getMapDistinctCallPlan().entrySet()) {
+//				 
+//				            // Printing all elements of a Map
+//				            System.out.println("CallPlan | "+set.getKey() + " = "
+//				                               + set.getValue());
+//				        }
 						
 						for (Map.Entry<String, BodyProject> set :
 							data.getMapDistinctProject().entrySet()) {
@@ -68,50 +135,10 @@ public class ImportFileHandler implements ImportFileService{
 				                               + set.getValue().getNama());
 				        }
 						
-						for(DataColumnFileCustomerCallPlan datafile : data.getListDataFile()) {
-							System.out.println("Data File "+datafile.getNama());
-						}
+//						for(DataColumnFileCustomerCallPlan datafile : data.getListDataFile()) {
+//							System.out.println("Data File "+datafile.getNama());
+//						}
 					}
-					
-					
-//					Iterator<Row> rows = sheet.iterator();
-//					
-//					int rowNumber = 0;
-//					 while (rows.hasNext()) {
-//						 Row currentRow = rows.next();
-//						 
-//						// skip header
-//				        if (rowNumber == 0) {
-//				          rowNumber++;
-//				          continue;
-//				        }
-//				        Iterator<Cell> cellsInRow = currentRow.iterator();
-//				        int cellIdx = 0;
-//				        while (cellsInRow.hasNext()) {
-//				        	Cell currentCell = cellsInRow.next();
-//				        	switch (cellIdx) {
-//				        	case 0:
-////				                tutorial.setId((long) currentCell.getNumericCellValue());
-//				                break;
-//
-//				              case 1:
-////				                tutorial.setTitle(currentCell.getStringCellValue());
-//				                break;
-//
-//				              case 2:
-////				                tutorial.setDescription(currentCell.getStringCellValue());
-//				                break;
-//
-//				              case 3:
-////				                tutorial.setPublished(currentCell.getBooleanCellValue());
-//				                break;
-//
-//				              default:
-//				                break;
-//				              }
-//				        	cellIdx++;
-//				        	}
-//				        }
 				}
 				
 				 }catch (IOException e) {
@@ -130,6 +157,49 @@ public class ImportFileHandler implements ImportFileService{
 		return data;
 	}
 	
+	private BodyCallPlan setBodyCallPlan(String callPlanName,CallPlanListData callPlanData,List<Long> listCustIdToCallPlan,long idcompany, long idbranch) {
+		BodyCallPlan body = new BodyCallPlan();
+		if(callPlanData == null) {
+			Long[] longArray = new Long[listCustIdToCallPlan.size()];
+			for (int i = 0; i < listCustIdToCallPlan.size(); i++) {
+				longArray[i] = listCustIdToCallPlan.get(i);
+			}
+			body.setNama(callPlanName);
+			body.setDescription(callPlanName);
+			body.setCustomers(longArray);
+		}else {
+			CallPlanDetailData callPlanDetail = callPlanService.getCallPlanById(callPlanData.getId(),idcompany,idbranch);
+			Long[] longArray = new Long[listCustIdToCallPlan.size()+callPlanDetail.getCustomers().size()];
+			int count = 0;
+			for (int i = 0; i < listCustIdToCallPlan.size(); i++) {
+				longArray[count] = listCustIdToCallPlan.get(i);
+				count++;
+			}
+			for (int i = 0; i < callPlanDetail.getCustomers().size(); i++) {
+				longArray[i] = callPlanDetail.getCustomers().get(i).getId();
+				count++;
+			}
+		}
+		return body;
+		
+	}
+	private BodyCustomer setBodyCust(DataColumnFileCustomerCallPlan datafile) {
+		BodyCustomer bodycust = new BodyCustomer();
+		bodycust.setIdcustomertype(1);
+		bodycust.setNama(datafile.getNama());
+		bodycust.setAddress(datafile.getAddress());
+		bodycust.setProvinsi(datafile.getProvinsi());
+		bodycust.setCity(datafile.getCity());
+		bodycust.setAreaname(datafile.getArea());
+		bodycust.setSubarename(datafile.getSubArea());
+		bodycust.setPhone(datafile.getContactNumber());
+		bodycust.setLatitude(datafile.getLatitude());
+		bodycust.setLongitude(datafile.getLongitude());
+		bodycust.setCustomercode(datafile.getCustomerCode());
+		bodycust.setContactperson(datafile.getContactPerson());
+		return bodycust;
+	}
+	
 	private ReturnDataCustomerCallPlan validasiExcelFileCustomerCallPlan(Sheet sheet,long idcompany, long idbranch){
 		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
 		List<DataColumnFileCustomerCallPlan> listDataFile = new ArrayList<DataColumnFileCustomerCallPlan>();
@@ -141,6 +211,7 @@ public class ImportFileHandler implements ImportFileService{
 		HashMap<String, String> mapCustomerCodeExistInDB = new HashMap<String, String>();
 		HashMap<String, String> mapDistinctCallPlan = new HashMap<String, String>();
 		HashMap<String, BodyProject> mapDistinctProject = new HashMap<String, BodyProject>();
+		HashMap<String, List<DataColumnFileCustomerCallPlan>> mapGroupCustomerCallPlan = new HashMap<String, List<DataColumnFileCustomerCallPlan>>();
 		while (rows.hasNext()) {
 			Row currentRow = rows.next();
 			
@@ -211,18 +282,20 @@ public class ImportFileHandler implements ImportFileService{
 //	                			  message = "Cust Code Tidak Boleh Sama";
 //	                		  }else 
 	                		  if(mapCustomerCodeExistInDB.get(customerCode) != null){
-	                			  message = "Cust Code ("+customerCode+") Sudah Terdaftar Di Datababse";
+	                			  message = "Cust Code ("+customerCode+") Sudah Terdaftar";
 	                		  }else {
-	                			  boolean flagCustCodeNotExistInDB = customerService.getCustomerByCustomerCode(customerCode, idcompany, idbranch) == null?true:false;
-	                			  if(flagCustCodeNotExistInDB) {
-	                				  custCodeCheck = customerCode;
-//	                				  mapCustomerCode.put(customerCode, customerCode);
-	                			  }else {
-	                				  
-	                				  //dimasukan ke hash, karena jika menemukan kode yg sama, tidak perlu cek ke db lagi
-	                				  mapCustomerCodeExistInDB.put(customerCode, customerCode);
-	                				  message = "Cust Code ("+customerCode+") Sudah Terdaftar Di Datababse";
-	                			  }
+	                			  custCodeCheck = customerCode;
+//	                			  CustomerListData custInDB = customerService.getCustomerByCustomerCode(customerCode, idcompany, idbranch);
+//	                			  boolean flagCustCodeNotExistInDB = custInDB == null?true:false;
+//	                			  if(flagCustCodeNotExistInDB) {
+//	                				  custCodeCheck = customerCode;
+////	                				  mapCustomerCode.put(customerCode, customerCode);
+//	                			  }else {
+//	                				  
+//	                				  //dimasukan ke hash, karena jika menemukan kode yg sama, tidak perlu cek ke db lagi
+//	                				  mapCustomerCodeExistInDB.put(customerCode, customerCode);
+//	                				  message = "Cust Code ("+customerCode+") Sudah Terdaftar Di Datababse";
+//	                			  }
 	                			  
 	                		  }
 	                	  }
@@ -333,7 +406,32 @@ public class ImportFileHandler implements ImportFileService{
 		        	
 		        	if(!custCodeCheck.equals("") && !custNameCheck.equals("")) {
 		        		String mapsCustGet = mapCustomerCode.get(custCodeCheck);
+		        		
+		        		if(mapCustomerCodeExistInDB.get(custCodeCheck) != null){
+	              			  message = "Cust Code ("+custCodeCheck+") Sudah Terdaftar";
+	              		  }else {
+	              			  
+	              			  CustomerListData custInDB = customerService.getCustomerByCustomerCode(custCodeCheck, idcompany, idbranch);
+	              			  boolean flagCustCodeNotExistInDB = custInDB == null?true:false;
+	              			  if(flagCustCodeNotExistInDB) {
+	              				  
+	//              				  mapCustomerCode.put(customerCode, customerCode);
+	              			  }else {
+	              				  
+	              				  //Cek Jika Cust Code Sama tapi Nama Cust Berbeda 
+	              				  if(!custInDB.getNama().toLowerCase().replaceAll(" ", "").equals(custNameCheck.toLowerCase().replaceAll(" ", ""))) {
+	              					  
+	              					//dimasukan ke hash, karena jika menemukan kode yg sama, tidak perlu cek ke db lagi
+	              					mapCustomerCodeExistInDB.put(custCodeCheck, custCodeCheck);
+		              				message = "Cust Code ("+custCodeCheck+") Sudah Terdaftar";
+	              				  }
+	              				  
+	              			  }
+	              			  
+	              		  }
 		        		if(mapsCustGet != null) {
+		        			
+		        			//Cek Jika Cust Code Sama tapi Nama Cust Berbeda 
 		        			if(!mapsCustGet.equals(custNameCheck)) {
 		        				message = "Cust Code ("+custCodeCheck+") Tidak Boleh Sama";
 		        			}
@@ -350,7 +448,18 @@ public class ImportFileHandler implements ImportFileService{
 		        	}
 	        	}
 	        	if(!callplanNameCheck.equals("")) {
+	        		//List<DataColumnFileCustomerCallPlan>
 	        		listDataFile.add(datafile);
+	        		String callplanNameNoSpace = datafile.getCallplanName().replaceAll(" ", "");
+	        		List<DataColumnFileCustomerCallPlan> listTempData = mapGroupCustomerCallPlan.get(callplanNameNoSpace);
+	        		if(listTempData != null) {
+	        			listTempData.add(datafile);
+	        			mapGroupCustomerCallPlan.put(callplanNameNoSpace, listTempData);
+	        		}else {
+	        			listTempData = new ArrayList<DataColumnFileCustomerCallPlan>();
+	        			listTempData.add(datafile);
+	        			mapGroupCustomerCallPlan.put(callplanNameNoSpace, listTempData);
+	        		}
 	        		callplanNameCheck = "";
 	        	}
 	        	
@@ -370,6 +479,7 @@ public class ImportFileHandler implements ImportFileService{
 		data.setListDataFile(listDataFile);
 		data.setMapDistinctProject(mapDistinctProject);
 		data.setMapDistinctCallPlan(mapDistinctCallPlan);
+		data.setMapGroupCustomerCallPlan(mapGroupCustomerCallPlan);
 		return data;
 	}
 	

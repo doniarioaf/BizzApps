@@ -11,6 +11,14 @@ public class ReturnDataCustomerCallPlan {
 	private List<DataColumnFileCustomerCallPlan> listDataFile;
 	private HashMap<String, String> mapDistinctCallPlan;
 	private HashMap<String, BodyProject> mapDistinctProject;
+	HashMap<String, List<DataColumnFileCustomerCallPlan>> mapGroupCustomerCallPlan;
+	public HashMap<String, List<DataColumnFileCustomerCallPlan>> getMapGroupCustomerCallPlan() {
+		return mapGroupCustomerCallPlan;
+	}
+	public void setMapGroupCustomerCallPlan(
+			HashMap<String, List<DataColumnFileCustomerCallPlan>> mapGroupCustomerCallPlan) {
+		this.mapGroupCustomerCallPlan = mapGroupCustomerCallPlan;
+	}
 	public List<ValidationDataMessage> getValidations() {
 		return validations;
 	}
