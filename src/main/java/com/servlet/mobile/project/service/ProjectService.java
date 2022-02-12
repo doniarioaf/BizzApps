@@ -2,10 +2,10 @@ package com.servlet.mobile.project.service;
 
 import java.util.List;
 
-import com.servlet.mobile.callplan.entity.CallPlanDetailData;
 import com.servlet.mobile.project.entity.BodyProject;
 import com.servlet.mobile.project.entity.ProjectData;
 import com.servlet.mobile.project.entity.ProjectDetailData;
+import com.servlet.mobile.project.entity.ProjectTemplateData;
 import com.servlet.shared.ReturnData;
 
 public interface ProjectService {
@@ -15,4 +15,6 @@ public interface ProjectService {
 	ProjectData getProjectById(long id,long idcompany,long idbranch);
 	ProjectData getProjectByProjectNumber(String projectnumber,long idcompany,long idbranch);
 	ProjectDetailData getProjectByIdDetail(long id,long idcompany,long idbranch);
+	ProjectTemplateData getTemplate(long idcompany,long idbranch);
+	ReturnData deleteProject(long id);
 }

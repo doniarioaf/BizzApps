@@ -286,6 +286,9 @@ public class ProcessHandler implements ProcessService{
 				BodyProject body = (BodyProject) param.get("BodyProject");
 				long id = (long) param.get("id");
 				val.setData(projectService.updateProject(id, body, auth.getIdcompany(),auth.getIdbranch()));
+			}else if(codepermission.equals(ConstansPermission.DELETE_PROJECT)) {
+				long id = (long) data;
+				val.setData(projectService.deleteProject(id));
 			}else if(codepermission.equals(ConstansPermission.CREATE_INFO)) {
 				BodyInfoHeader body = (BodyInfoHeader) data;
 				
@@ -491,9 +494,11 @@ public class ProcessHandler implements ProcessService{
 				String type = (String) data;
 				if(type.equals("ALL")) {
 					val.setData(projectService.getAllListProject(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(projectService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}else {
 					long id = new Long(type).longValue();
-					val.setData(projectService.getProjectById(id, auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(projectService.getProjectByIdDetail(id, auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_INFO)) {
 				String type = (String) data;

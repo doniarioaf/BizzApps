@@ -7,15 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.servlet.admin.customer.service.CustomerService;
 import com.servlet.admin.customerproject.entity.CustomerProject;
 import com.servlet.admin.customerproject.entity.CustomerProjectData;
 import com.servlet.admin.customerproject.entity.CustomerProjectPK;
 import com.servlet.admin.customerproject.service.CustomerProjectService;
-import com.servlet.mobile.customercallplan.entity.CustomerCallPlanData;
 import com.servlet.mobile.project.entity.BodyProject;
 import com.servlet.mobile.project.entity.Project;
 import com.servlet.mobile.project.entity.ProjectData;
 import com.servlet.mobile.project.entity.ProjectDetailData;
+import com.servlet.mobile.project.entity.ProjectTemplateData;
 import com.servlet.mobile.project.mapper.GetDataProject;
 import com.servlet.mobile.project.repo.ProjectRepo;
 import com.servlet.mobile.project.service.ProjectService;
@@ -29,6 +30,8 @@ public class ProjectHandler implements ProjectService{
 	private ProjectRepo repository;
 	@Autowired
 	private CustomerProjectService customerProjectService;
+	@Autowired
+	private CustomerService customerService;
 	
 	@Override
 	public ReturnData saveProject(BodyProject body, long idcompany, long idbranch) {
@@ -144,8 +147,8 @@ public class ProjectHandler implements ProjectService{
 		// TODO Auto-generated method stub
 		
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataProject().schema());
-		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
-		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
 		List<ProjectData> list =  this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataProject(), queryParameters);
 		if(list != null && list.size() > 0) {
 			List<CustomerProjectData> listcustproject = new ArrayList<CustomerProjectData>(customerProjectService.getListCustomerProject(id));
@@ -160,6 +163,26 @@ public class ProjectHandler implements ProjectService{
 			return detail;
 		}
 		return null;
+	}
+
+	@Override
+	public ProjectTemplateData getTemplate(long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		ProjectTemplateData data = new ProjectTemplateData();
+		data.setCustomerOptions(customerService.getAllListCustomer(idcompany, idbranch));
+		return data;
+	}
+
+	@Override
+	public ReturnData deleteProject(long id) {
+		// TODO Auto-generated method stub
+		Project project = repository.getById(id);
+		project.setIsdelete(true);
+		Project returndata = repository.saveAndFlush(project);
+		
+		ReturnData data = new ReturnData();
+		data.setId(returndata.getId());
+		return data;
 	}
 
 }

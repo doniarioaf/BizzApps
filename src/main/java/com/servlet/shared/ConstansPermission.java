@@ -54,6 +54,7 @@ public class ConstansPermission {
 	public static final String READ_PROJECT = "READ_PROJECT";
 	public static final String CREATE_PROJECT = "CREATE_PROJECT";
 	public static final String EDIT_PROJECT = "EDIT_PROJECT";
+	public static final String DELETE_PROJECT = "DELETE_PROJECT";
 	
 	public static final String READ_INFO = "READ_INFO";
 	public static final String READ_INFO_MOBILE = "READ_INFO_MOBILE";
