@@ -1,10 +1,15 @@
 package com.servlet.mobile.project.entity;
 
-public class ProjectData {
+import java.util.List;
+
+import com.servlet.admin.customerproject.entity.CustomerProjectData;
+
+public class ProjectDetailData {
 	private long id;
 	private String nama;
 	private String description;
 	private String projectnumber;
+	private List<CustomerProjectData> customers;
 	public long getId() {
 		return id;
 	}
@@ -28,5 +33,11 @@ public class ProjectData {
 	}
 	public void setProjectnumber(String projectnumber) {
 		this.projectnumber = projectnumber;
+	}
+	public List<CustomerProjectData> getCustomers() {
+		return customers;
+	}
+	public void setCustomers(List<CustomerProjectData> customers) {
+		this.customers = customers;
 	}
 }

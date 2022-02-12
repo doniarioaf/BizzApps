@@ -21,6 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.servlet.admin.customer.entity.BodyCustomer;
 import com.servlet.admin.customer.entity.CustomerListData;
 import com.servlet.admin.customer.service.CustomerService;
+import com.servlet.admin.customerproject.entity.CustomerProjectPK;
+import com.servlet.admin.customerproject.service.CustomerProjectService;
 import com.servlet.admin.importfile.entity.DataColumnFileCustomerCallPlan;
 import com.servlet.admin.importfile.entity.ReturnDataCustomerCallPlan;
 import com.servlet.admin.importfile.service.ImportFileService;
@@ -31,6 +33,9 @@ import com.servlet.mobile.callplan.service.CallPlanService;
 import com.servlet.mobile.customercallplan.entity.CustomerCallPlanPK;
 import com.servlet.mobile.customercallplan.service.CustomerCallPlanService;
 import com.servlet.mobile.project.entity.BodyProject;
+import com.servlet.mobile.project.entity.ProjectData;
+import com.servlet.mobile.project.entity.ProjectDetailData;
+import com.servlet.mobile.project.service.ProjectService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
@@ -43,6 +48,10 @@ public class ImportFileHandler implements ImportFileService{
 	private CallPlanService callPlanService;
 	@Autowired
 	private CustomerCallPlanService customerCallPlanService;
+	@Autowired
+	private CustomerProjectService customerProjectService;
+	@Autowired
+	private ProjectService projectService;
 
 	@Override
 	public ReturnData importFileExcelCustomerCallPlan(InputStream is, MultipartFile file,long idcompany, long idbranch) {
@@ -119,25 +128,48 @@ public class ImportFileHandler implements ImportFileService{
 				            
 				        }
 						
-//						for (Map.Entry<String, String> set :
-//							data.getMapDistinctCallPlan().entrySet()) {
-//				 
-//				            // Printing all elements of a Map
-//				            System.out.println("CallPlan | "+set.getKey() + " = "
-//				                               + set.getValue());
-//				        }
+						for (Map.Entry<String, List<DataColumnFileCustomerCallPlan>> set : data.getMapGroupCustomerProject().entrySet()) {
+							List<DataColumnFileCustomerCallPlan> listdataFile = set.getValue();
+							
+							ProjectData projectData = null;
+							String projectNumber = "";
+							String projectName = "";
+							if(listdataFile.size() > 0) {
+								projectNumber = listdataFile.get(0).getProjectNumber();
+								projectName = listdataFile.get(0).getProjectName();
+								projectData = new ProjectData();
+								projectData = projectService.getProjectByProjectNumber(projectNumber, idcompany, idbranch);
+				            }
+							
+							List<Long> listCustIdToProject = new ArrayList<Long>();
+							for(DataColumnFileCustomerCallPlan datafile : listdataFile) {
+								Long tempidcust = mapsCustInDBByID.get(datafile.getCustomerCode());
+								if(tempidcust != null) {
+									long idcust = tempidcust.longValue();
+									if(projectData != null) {
+										CustomerProjectPK customerProjectPK = new CustomerProjectPK();
+										customerProjectPK.setIdcompany(idcompany);
+										customerProjectPK.setIdbranch(idbranch);
+										customerProjectPK.setIdcustomer(idcust);
+										customerProjectPK.setIdproject(projectData.getId());
+										boolean flag = customerProjectService.getCustProjectByPK(customerProjectPK);
+										if(!flag) {
+											listCustIdToProject.add(idcust);
+										}
+									}else {
+										listCustIdToProject.add(idcust);
+									}
+								}
+							}
+							
+							BodyProject bodyproject = setBodyProject(projectNumber, projectName, projectData, listCustIdToProject, idcompany, idbranch);
+							if(projectData == null) {
+								projectService.saveProject(bodyproject, idcompany, idbranch);
+							}else {
+								projectService.updateProject(projectData.getId(), bodyproject, idcompany, idbranch);
+							}
+						}
 						
-						for (Map.Entry<String, BodyProject> set :
-							data.getMapDistinctProject().entrySet()) {
-				 
-				            // Printing all elements of a Map
-				            System.out.println("Project | "+set.getKey() + " = "
-				                               + set.getValue().getNama());
-				        }
-						
-//						for(DataColumnFileCustomerCallPlan datafile : data.getListDataFile()) {
-//							System.out.println("Data File "+datafile.getNama());
-//						}
 					}
 				}
 				
@@ -176,12 +208,48 @@ public class ImportFileHandler implements ImportFileService{
 				count++;
 			}
 			for (int i = 0; i < callPlanDetail.getCustomers().size(); i++) {
-				longArray[i] = callPlanDetail.getCustomers().get(i).getId();
+				longArray[count] = callPlanDetail.getCustomers().get(i).getId();
 				count++;
 			}
+			
+			body.setNama(callPlanName);
+			body.setDescription(callPlanName);
+			body.setCustomers(longArray);
 		}
 		return body;
 		
+	}
+	
+	private BodyProject setBodyProject(String projectNumber,String projectName,ProjectData projectData,List<Long> listCustIdToProject,long idcompany, long idbranch) {
+		BodyProject body = new BodyProject();
+		if(projectData == null) {
+			Long[] longArray = new Long[listCustIdToProject.size()];
+			for (int i = 0; i < listCustIdToProject.size(); i++) {
+				longArray[i] = listCustIdToProject.get(i);
+			}
+			body.setNama(projectName);
+			body.setDescription(projectName);
+			body.setProjectnumber(projectNumber);
+			body.setCustomers(longArray);
+		}else {
+			ProjectDetailData projectDetailData = projectService.getProjectByIdDetail(projectData.getId(), idcompany, idbranch);
+			Long[] longArray = new Long[listCustIdToProject.size()+projectDetailData.getCustomers().size()];
+			int count = 0;
+			for (int i = 0; i < listCustIdToProject.size(); i++) {
+				longArray[count] = listCustIdToProject.get(i);
+				count++;
+			}
+			for (int i = 0; i < projectDetailData.getCustomers().size(); i++) {
+				longArray[count] = projectDetailData.getCustomers().get(i).getId();
+				count++;
+			}
+			
+			body.setNama(projectName);
+			body.setDescription(projectName);
+			body.setProjectnumber(projectNumber);
+			body.setCustomers(longArray);
+		}
+		return body;
 	}
 	private BodyCustomer setBodyCust(DataColumnFileCustomerCallPlan datafile) {
 		BodyCustomer bodycust = new BodyCustomer();
@@ -212,6 +280,7 @@ public class ImportFileHandler implements ImportFileService{
 		HashMap<String, String> mapDistinctCallPlan = new HashMap<String, String>();
 		HashMap<String, BodyProject> mapDistinctProject = new HashMap<String, BodyProject>();
 		HashMap<String, List<DataColumnFileCustomerCallPlan>> mapGroupCustomerCallPlan = new HashMap<String, List<DataColumnFileCustomerCallPlan>>();
+		HashMap<String, List<DataColumnFileCustomerCallPlan>> mapGroupCustomerProject = new HashMap<String, List<DataColumnFileCustomerCallPlan>>();
 		while (rows.hasNext()) {
 			Row currentRow = rows.next();
 			
@@ -258,6 +327,8 @@ public class ImportFileHandler implements ImportFileService{
 	                	  datafile.setProjectNumber(projectNumber);
 	                	  if(projectNumberNoSpace.equals("")) {
 		        				message = "Project Number Tidak Boleh Kosong";
+	                	  }else {
+	                		  
 	                	  }
 	                    break;
 
@@ -450,6 +521,7 @@ public class ImportFileHandler implements ImportFileService{
 	        	if(!callplanNameCheck.equals("")) {
 	        		//List<DataColumnFileCustomerCallPlan>
 	        		listDataFile.add(datafile);
+	        		
 	        		String callplanNameNoSpace = datafile.getCallplanName().replaceAll(" ", "");
 	        		List<DataColumnFileCustomerCallPlan> listTempData = mapGroupCustomerCallPlan.get(callplanNameNoSpace);
 	        		if(listTempData != null) {
@@ -460,6 +532,18 @@ public class ImportFileHandler implements ImportFileService{
 	        			listTempData.add(datafile);
 	        			mapGroupCustomerCallPlan.put(callplanNameNoSpace, listTempData);
 	        		}
+	        		
+	        		String projectNumberNoSpace = datafile.getProjectNumber().replaceAll(" ", "");
+	        		List<DataColumnFileCustomerCallPlan> listTempDataProject = mapGroupCustomerProject.get(projectNumberNoSpace);
+	        		if(listTempDataProject != null) {
+	        			listTempDataProject.add(datafile);
+	        			mapGroupCustomerProject.put(projectNumberNoSpace, listTempDataProject);
+	        		}else {
+	        			listTempDataProject = new ArrayList<DataColumnFileCustomerCallPlan>();
+	        			listTempDataProject.add(datafile);
+	        			mapGroupCustomerProject.put(projectNumberNoSpace, listTempDataProject);
+	        		}
+	        		
 	        		callplanNameCheck = "";
 	        	}
 	        	
@@ -480,6 +564,7 @@ public class ImportFileHandler implements ImportFileService{
 		data.setMapDistinctProject(mapDistinctProject);
 		data.setMapDistinctCallPlan(mapDistinctCallPlan);
 		data.setMapGroupCustomerCallPlan(mapGroupCustomerCallPlan);
+		data.setMapGroupCustomerProject(mapGroupCustomerProject);
 		return data;
 	}
 	

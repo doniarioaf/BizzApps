@@ -4,6 +4,7 @@ public class BodyProject {
 	private String nama;
 	private String description;
 	private String projectnumber;
+	private Long[] customers;
 	public String getNama() {
 		return nama;
 	}
@@ -21,5 +22,11 @@ public class BodyProject {
 	}
 	public void setProjectnumber(String projectnumber) {
 		this.projectnumber = projectnumber;
+	}
+	public Long[] getCustomers() {
+		return customers;
+	}
+	public void setCustomers(Long[] customers) {
+		this.customers = customers;
 	}
 }

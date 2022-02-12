@@ -12,6 +12,7 @@ public class ReturnDataCustomerCallPlan {
 	private HashMap<String, String> mapDistinctCallPlan;
 	private HashMap<String, BodyProject> mapDistinctProject;
 	HashMap<String, List<DataColumnFileCustomerCallPlan>> mapGroupCustomerCallPlan;
+	HashMap<String, List<DataColumnFileCustomerCallPlan>> mapGroupCustomerProject;
 	public HashMap<String, List<DataColumnFileCustomerCallPlan>> getMapGroupCustomerCallPlan() {
 		return mapGroupCustomerCallPlan;
 	}
@@ -42,5 +43,11 @@ public class ReturnDataCustomerCallPlan {
 	}
 	public void setMapDistinctProject(HashMap<String, BodyProject> mapDistinctProject) {
 		this.mapDistinctProject = mapDistinctProject;
+	}
+	public HashMap<String, List<DataColumnFileCustomerCallPlan>> getMapGroupCustomerProject() {
+		return mapGroupCustomerProject;
+	}
+	public void setMapGroupCustomerProject(HashMap<String, List<DataColumnFileCustomerCallPlan>> mapGroupCustomerProject) {
+		this.mapGroupCustomerProject = mapGroupCustomerProject;
 	}
 }

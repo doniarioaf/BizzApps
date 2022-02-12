@@ -34,7 +34,7 @@ public class Customer implements Serializable{
 	private boolean isdelete;
 	private String contactperson;
 	private String customercode;
-	private long projectid;
+//	private long projectid;
 	public long getId() {
 		return id;
 	}
@@ -143,11 +143,11 @@ public class Customer implements Serializable{
 	public void setCustomercode(String customercode) {
 		this.customercode = customercode;
 	}
-	public long getProjectid() {
-		return projectid;
-	}
-	public void setProjectid(long projectid) {
-		this.projectid = projectid;
-	}
+//	public long getProjectid() {
+//		return projectid;
+//	}
+//	public void setProjectid(long projectid) {
+//		this.projectid = projectid;
+//	}
 
 }
