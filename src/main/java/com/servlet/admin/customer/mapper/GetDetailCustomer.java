@@ -15,6 +15,7 @@ public class GetDetailCustomer implements RowMapper<CustomerDetailData>{
 		final StringBuilder sqlBuilder = new StringBuilder(400);
 		sqlBuilder.append("mc.id as id ,mc.nama as namacust ,mc.address as custaddress ,mc.provinsi as custprovinsi, ");
 		sqlBuilder.append("mc.city as custcity ,mc.areaname as custareaname ,mc.subarename as custsubareaname ,mc.phone as custphone, ");
+		sqlBuilder.append("mc.contactperson as custcontactperson ,mc.customercode as custcustomercode, ");
 		sqlBuilder.append("mc.latitude as custlatitude , mc.longitude as custlongitude ,mct.id as custtypeid ,mct.nama as custtypenama from m_customer as mc ");
 		sqlBuilder.append("join m_customer_type as mct on mct.id = mc.idcustomertype ");
 		
@@ -40,6 +41,8 @@ public class GetDetailCustomer implements RowMapper<CustomerDetailData>{
 		final String custlongitude = rs.getString("custlongitude");
 		final long custtypeid = rs.getLong("custtypeid");
 		final String custtypenama = rs.getString("custtypenama");
+		final String custcontactperson = rs.getString("custcontactperson");
+		final String custcustomercode = rs.getString("custcustomercode");
 		
 		CustomerDetailData data = new CustomerDetailData();
 		data.setId(id);
@@ -54,6 +57,8 @@ public class GetDetailCustomer implements RowMapper<CustomerDetailData>{
 		data.setLongitude(custlongitude);
 		data.setIdcustomertype(custtypeid);
 		data.setNamecustomertype(custtypenama);
+		data.setContactperson(custcontactperson);
+		data.setCustomercode(custcustomercode);
 		return data;
 	}
 }

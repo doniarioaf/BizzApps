@@ -242,12 +242,32 @@ public class ProcessHandler implements ProcessService{
 				val.setData(customerTypeService.deleteCustomerType(id));
 			}else if(codepermission.equals(ConstansPermission.CREATE_CUSTOMER)) {
 				BodyCustomer body = (BodyCustomer) data;
-				val.setData(customerService.saveCustomer(body, auth.getIdcompany(),auth.getIdbranch()));
+				ReturnData valReturn = customerService.saveCustomer(body, auth.getIdcompany(),auth.getIdbranch());
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+//				val.setData(customerService.saveCustomer(body, auth.getIdcompany(),auth.getIdbranch()));
+				
 			}else if(codepermission.equals(ConstansPermission.EDIT_CUSTOMER)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				BodyCustomer body = (BodyCustomer) param.get("BodyCustomer");
 				long id = (long) param.get("id");
-				val.setData(customerService.updateCustomer(id, body, auth.getIdcompany(),auth.getIdbranch()));
+				
+				ReturnData valReturn = customerService.updateCustomer(id, body, auth.getIdcompany(),auth.getIdbranch());
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+//				val.setData(customerService.updateCustomer(id, body, auth.getIdcompany(),auth.getIdbranch()));
 			}else if(codepermission.equals(ConstansPermission.DELETE_CUSTOMER)) {
 				long id = (long) data;
 				val.setData(customerService.deleteCustomer(id));

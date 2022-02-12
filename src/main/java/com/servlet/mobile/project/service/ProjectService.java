@@ -17,4 +17,5 @@ public interface ProjectService {
 	ProjectDetailData getProjectByIdDetail(long id,long idcompany,long idbranch);
 	ProjectTemplateData getTemplate(long idcompany,long idbranch);
 	ReturnData deleteProject(long id);
+	List<ProjectData> getListProjectByIdCustomer(long idcustomer,long idcompany,long idbranch);
 }

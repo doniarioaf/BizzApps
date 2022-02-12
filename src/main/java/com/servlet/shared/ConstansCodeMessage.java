@@ -46,6 +46,8 @@ public class ConstansCodeMessage {
 	
 	public static final String FILE_EXCEL_FAILED = "file.excel.failed";
 	
+	public static final String CUSTOMERCODE_IS_EXIST = "customercode.is.exist";
+	
 //	//sukses, tapi mengandung catatan, disarankan untuk menampilkan alert catatan tersebut
 //	public static final String SUCCESS_ALERT = "SUCCESS_ALERT";
 }

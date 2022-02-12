@@ -185,4 +185,18 @@ public class ProjectHandler implements ProjectService{
 		return data;
 	}
 
+	@Override
+	public List<ProjectData> getListProjectByIdCustomer(long idcustomer, long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataProject().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		sqlBuilder.append(" and data.id in (select idproject from m_customer_project mcp where mcp.idcustomer = "+idcustomer+" and mcp.idcompany="+idcompany+" and mcp.idbranch="+idbranch+" ) ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		List<ProjectData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataProject(), queryParameters);
+		if(list != null && list.size() > 0) {
+			return list;
+		}
+		return null;
+	}
+
 }
