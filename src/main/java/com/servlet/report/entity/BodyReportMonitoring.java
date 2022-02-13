@@ -5,6 +5,7 @@ public class BodyReportMonitoring {
 	private String fromdate;
 	private String todate;
 	private String typereport;
+	private long idproject;
 	public String getTypereport() {
 		return typereport;
 	}
@@ -29,4 +30,11 @@ public class BodyReportMonitoring {
 	public void setTodate(String todate) {
 		this.todate = todate;
 	}
+	public long getIdproject() {
+		return idproject;
+	}
+	public void setIdproject(long idproject) {
+		this.idproject = idproject;
+	}
+	
 }

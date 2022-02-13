@@ -5,16 +5,15 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
 
-public class GetCountCustomerCallPlan implements RowMapper<Long>{
+public class GetCountCustomerCallPlanMobile implements RowMapper<Long>{
+private String schemaSql;
 	
-	private String schemaSql;
-	
-	public GetCountCustomerCallPlan(){
+	public GetCountCustomerCallPlanMobile(){
 		final StringBuilder sqlBuilder = new StringBuilder(400);
 		sqlBuilder.append("idcustomer from m_customer_call_plan as mccp ");
-		sqlBuilder.append("left join m_customer as mc on mc.id = mccp.idcustomer ");
-		sqlBuilder.append("left join m_call_plan as mcp on mcp.id = mccp.idcallplan ");
-		sqlBuilder.append("left join m_project as mp on mp.id = mcp.idproject and mp.isdelete = false ");
+		sqlBuilder.append("join m_customer as mc on mc.id = mccp.idcustomer ");
+		sqlBuilder.append("join m_call_plan as mcp on mcp.id = mccp.idcallplan ");
+		sqlBuilder.append("join m_project as mp on mp.id = mcp.idproject and mp.isdelete = false ");
 		this.schemaSql = sqlBuilder.toString();
 	}
 	
@@ -27,5 +26,4 @@ public class GetCountCustomerCallPlan implements RowMapper<Long>{
 		final long idcustomer = rs.getLong("idcustomer");
 		return idcustomer;
 	}
-
 }

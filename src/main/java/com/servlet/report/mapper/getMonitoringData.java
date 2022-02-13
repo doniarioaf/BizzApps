@@ -19,7 +19,7 @@ public class getMonitoringData implements RowMapper<MonitoringData>{
 		sqlBuilder.append("from  m_monitor_user_mobile as monitor ");
 		sqlBuilder.append("join m_user_mobile as usermobile on usermobile.id = monitor.idusermobile ");
 		sqlBuilder.append("join m_customer as customer on customer.id = monitor.idcustomer ");
-		sqlBuilder.append("join m_customer_type as customertype on customer.idcustomertype = customertype.id ");
+		sqlBuilder.append("left join m_customer_type as customertype on customer.idcustomertype = customertype.id ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}

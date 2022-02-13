@@ -21,6 +21,8 @@ import com.servlet.mobile.customercallplan.entity.CustomerCallPlan;
 import com.servlet.mobile.customercallplan.entity.CustomerCallPlanData;
 import com.servlet.mobile.customercallplan.entity.CustomerCallPlanPK;
 import com.servlet.mobile.customercallplan.service.CustomerCallPlanService;
+import com.servlet.mobile.project.entity.ProjectData;
+import com.servlet.mobile.project.service.ProjectService;
 import com.servlet.shared.ReturnData;
 
 @Service
@@ -33,6 +35,8 @@ public class CallPlanHandler implements CallPlanService{
 	private CustomerCallPlanService customerCallPlanService;
 	@Autowired
 	private CustomerService customerService;
+	@Autowired
+	private ProjectService projectService;
 	
 	@Override
 	public ReturnData saveCallPlan(BodyCallPlan callplan, long idcompany, long idbranch) {
@@ -46,6 +50,7 @@ public class CallPlanHandler implements CallPlanService{
 		table.setModified(ts);
 		table.setNama(callplan.getNama());
 		table.setDescription(callplan.getDescription());
+		table.setIdproject(callplan.getIdproject());
 		
 		CallPlan returntable = repository.saveAndFlush(table);
 		List<CustomerCallPlan> listcustcallplan = new ArrayList<CustomerCallPlan>();
@@ -76,6 +81,7 @@ public class CallPlanHandler implements CallPlanService{
 			table.setModified(ts);
 			table.setNama(callplan.getNama());
 			table.setDescription(callplan.getDescription());
+			table.setIdproject(callplan.getIdproject());
 			CallPlan returntable = repository.saveAndFlush(table);
 			
 			List<CustomerCallPlanPK> listdelete = new ArrayList<CustomerCallPlanPK>();
@@ -147,11 +153,18 @@ public class CallPlanHandler implements CallPlanService{
 			List<CustomerCallPlanData> listcustcallplan = new ArrayList<CustomerCallPlanData>(customerCallPlanService.getListCustomerCallPlan(id));
 			CallPlanListData callplan = list.get(0);
 			
+			String projectName = "";
+			ProjectData project = projectService.getProjectById(callplan.getIdproject(), idcompany, idbranch);
+			if(project != null) {
+				projectName = project.getNama();
+			}
 			CallPlanDetailData datacallplan = new CallPlanDetailData();
 			datacallplan.setId(id);
 			datacallplan.setNama(callplan.getNama());
 			datacallplan.setDescription(callplan.getDescription());
 			datacallplan.setCustomers(listcustcallplan);
+			datacallplan.setProjectname(projectName);
+			datacallplan.setIdproject(callplan.getIdproject());
 			return datacallplan;
 		}
 		return null;
@@ -161,6 +174,7 @@ public class CallPlanHandler implements CallPlanService{
 		// TODO Auto-generated method stub
 		TemplateDataCallPlan template = new TemplateDataCallPlan();
 		template.setCustomerOptions(customerService.getAllListCustomer(idcompany, idbranch));
+		template.setProjectoptions(projectService.getAllListProject(idcompany, idbranch));
 		return template;
 	}
 	@Override

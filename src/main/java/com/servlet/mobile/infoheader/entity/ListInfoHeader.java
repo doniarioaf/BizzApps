@@ -1,15 +1,18 @@
 package com.servlet.mobile.infoheader.entity;
 
-import java.util.List;
-
-public class BodyInfoHeaderUpdate {
+public class ListInfoHeader {
+	private long id;
 	private String question;
 	private String type;
 	private long sequence;
-	private long idcustomertype;
-	private boolean isactive;
-	private ListAnswerUpdate[] answers;
 	private long idproject;
+	private String projectname;
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	public String getQuestion() {
 		return question;
 	}
@@ -28,29 +31,16 @@ public class BodyInfoHeaderUpdate {
 	public void setSequence(long sequence) {
 		this.sequence = sequence;
 	}
-	public long getIdcustomertype() {
-		return idcustomertype;
-	}
-	public void setIdcustomertype(long idcustomertype) {
-		this.idcustomertype = idcustomertype;
-	}
-	public boolean isIsactive() {
-		return isactive;
-	}
-	public ListAnswerUpdate[] getAnswers() {
-		return answers;
-	}
-	public void setAnswers(ListAnswerUpdate[] answers) {
-		this.answers = answers;
-	}
-	public void setIsactive(boolean isactive) {
-		this.isactive = isactive;
-	}
 	public long getIdproject() {
 		return idproject;
 	}
 	public void setIdproject(long idproject) {
 		this.idproject = idproject;
 	}
-	
+	public String getProjectname() {
+		return projectname;
+	}
+	public void setProjectname(String projectname) {
+		this.projectname = projectname;
+	}
 }

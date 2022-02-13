@@ -525,7 +525,7 @@ public class ProcessHandler implements ProcessService{
 				if(type.equals("TEMPLATE")) {
 					val.setData(infoHeaderService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("ALL")) {
-					val.setData(infoHeaderService.getAllListData(auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(infoHeaderService.getAllListDataWeb(auth.getIdcompany(), auth.getIdbranch()));
 				}else {
 					long id = new Long(type).longValue();
 					val.setData(infoHeaderService.getDetailById(id, auth.getIdcompany(), auth.getIdbranch()));
@@ -534,7 +534,7 @@ public class ProcessHandler implements ProcessService{
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				String type = (String) param.get("type");
 				if(type.equals("TEMPLATE")) {
-					val.setData(userMobileService.getListAllUserMobileForMonitoring("ALL",auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(reportService.getTemplateReport(auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("REPORT")) {
 					BodyReportMonitoring body = (BodyReportMonitoring) param.get("body");
 					if(body.getTypereport().equals("XLSX")) {

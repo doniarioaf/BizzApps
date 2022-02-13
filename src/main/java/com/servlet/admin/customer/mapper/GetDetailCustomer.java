@@ -17,7 +17,7 @@ public class GetDetailCustomer implements RowMapper<CustomerDetailData>{
 		sqlBuilder.append("mc.city as custcity ,mc.areaname as custareaname ,mc.subarename as custsubareaname ,mc.phone as custphone, ");
 		sqlBuilder.append("mc.contactperson as custcontactperson ,mc.customercode as custcustomercode, ");
 		sqlBuilder.append("mc.latitude as custlatitude , mc.longitude as custlongitude ,mct.id as custtypeid ,mct.nama as custtypenama from m_customer as mc ");
-		sqlBuilder.append("join m_customer_type as mct on mct.id = mc.idcustomertype ");
+		sqlBuilder.append("left join m_customer_type as mct on mct.id = mc.idcustomertype ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}

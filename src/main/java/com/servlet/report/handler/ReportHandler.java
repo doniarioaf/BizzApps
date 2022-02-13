@@ -61,12 +61,14 @@ import com.servlet.mobile.monitorusermobile.entity.DataMonitorForMaps;
 import com.servlet.mobile.monitorusermobile.service.MonitorUserMobileService;
 import com.servlet.mobile.monitorusermobileinfo.entity.DetailInfo;
 import com.servlet.mobile.monitorusermobileinfo.service.MonitorUserMobileInfoService;
+import com.servlet.mobile.project.service.ProjectService;
 import com.servlet.report.entity.BodyGetMaps;
 import com.servlet.report.entity.BodyReportMonitoring;
 import com.servlet.report.entity.MonitoringData;
 import com.servlet.report.entity.ReportToPDF;
 import com.servlet.report.entity.ReportWorkBookExcel;
 import com.servlet.report.entity.TemplateMaps;
+import com.servlet.report.entity.TemplateReport;
 import com.servlet.report.mapper.getMonitoringData;
 import com.servlet.report.service.ReportService;
 
@@ -84,6 +86,8 @@ public class ReportHandler implements ReportService {
 	private MonitorUserMobileService monitorUserMobileService;
 	@Autowired
 	private InfoHeaderService infoHeaderService;
+	@Autowired
+	private ProjectService projectService;
 	
 	@Override
 	public ReportWorkBookExcel getReportMonitoringData(BodyReportMonitoring body, long idcompany, long idbranch) {
@@ -356,6 +360,9 @@ public class ReportHandler implements ReportService {
 	private List<MonitoringData> getListMonitoringData(long idusermobile,BodyReportMonitoring body, long idcompany, long idbranch) {
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new getMonitoringData().schema());
 		sqlBuilder.append(" where monitor.idusermobile = ? and monitor.idcompany = ? and monitor.idbranch = ? and monitor.tanggal >= '"+body.getFromdate()+"' and monitor.tanggal <= '"+body.getTodate()+"' ");
+		if(body.getIdproject() > 0) {
+			sqlBuilder.append(" and monitor.idcustomer in (select idcustomer from m_customer_project as mcp where mcp.idproject="+body.getIdproject()+" and mcp.idcompany="+idcompany+" and mcp.idbranch="+idbranch+" ) ");
+		}
 		sqlBuilder.append(" order by monitor.idusermobile");
 		final Object[] queryParameters = new Object[] { idusermobile,idcompany,idbranch };
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new getMonitoringData(), queryParameters);
@@ -734,6 +741,16 @@ public class ReportHandler implements ReportService {
 		// TODO Auto-generated method stub
 		TemplateMaps data = new TemplateMaps();
 		data.setUsermobileoptions(userMobileService.getListAllUserMobile(idcompany, idbranch));
+		data.setProjectoptions(projectService.getAllListProject(idcompany, idbranch));
+		return data;
+	}
+
+	@Override
+	public TemplateReport getTemplateReport(long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		TemplateReport data = new TemplateReport();
+		data.setUserMobileOptions(userMobileService.getListAllUserMobileForMonitoring("ALL",idcompany, idbranch));
+		data.setProjectoptions(projectService.getAllListProject(idcompany, idbranch));
 		return data;
 	}
 

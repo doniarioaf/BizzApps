@@ -24,6 +24,7 @@ public class MonitoringData {
 	private String photo6;
 	private String photo7;
 	private String photo8;
+	private String project;
 	public long getIdmonitoring() {
 		return idmonitoring;
 	}
@@ -149,5 +150,11 @@ public class MonitoringData {
 	}
 	public void setNamacustomertype(String namacustomertype) {
 		this.namacustomertype = namacustomertype;
+	}
+	public String getProject() {
+		return project;
+	}
+	public void setProject(String project) {
+		this.project = project;
 	}
 }
