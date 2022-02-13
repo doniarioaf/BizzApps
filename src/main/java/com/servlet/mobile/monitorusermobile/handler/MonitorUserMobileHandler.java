@@ -75,6 +75,7 @@ public class MonitorUserMobileHandler implements MonitorUserMobileService {
 //					table.setPhoto8(body.getPhoto8());
 					table.setCreated(ts);
 					table.setModified(ts);
+					table.setIdcallplan(body.getIdcallplan());
 					
 					MonitorUserMobile returndata = repository.saveAndFlush(table);
 					
