@@ -11,8 +11,9 @@ public class GetUserMobileCallPlanByIdUser implements RowMapper<UserMobileCallPl
 	
 	public GetUserMobileCallPlanByIdUser(){
 		final StringBuilder sqlBuilder = new StringBuilder(400);
-		sqlBuilder.append("mc.* from m_user_mobile_call_plan as mccp ");
+		sqlBuilder.append("mc.*,mp.id as idproject, mp.nama as projectname from m_user_mobile_call_plan as mccp ");
 		sqlBuilder.append("join m_call_plan as mc on mc.id = mccp.idcallplan ");
+		sqlBuilder.append("join m_project as mp on mp.id = mc.idproject and mp.isdelete = false ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}
@@ -27,11 +28,15 @@ public class GetUserMobileCallPlanByIdUser implements RowMapper<UserMobileCallPl
 		final long id = rs.getLong("id");
 		final String nama = rs.getString("nama");
 		final String description = rs.getString("description");
+		final long idproject = rs.getLong("idproject");
+		final String projectname = rs.getString("projectname");
 		
 		UserMobileCallPlanData data = new UserMobileCallPlanData();
 		data.setIdcallplan(id);
 		data.setNama(nama);
 		data.setDescription(description);
+		data.setProjectname(projectname);
+		data.setIdproject(idproject);
 		
 		return data;
 	}

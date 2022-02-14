@@ -7,6 +7,8 @@ public class CallPlanDetailData {
 	private long id;
 	private String nama;
 	private String description;
+	private long idproject;
+	private String projectname;
 	private List<CustomerCallPlanData> customers;
 	
 	public List<CustomerCallPlanData> getCustomers() {
@@ -32,5 +34,17 @@ public class CallPlanDetailData {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	public long getIdproject() {
+		return idproject;
+	}
+	public void setIdproject(long idproject) {
+		this.idproject = idproject;
+	}
+	public String getProjectname() {
+		return projectname;
+	}
+	public void setProjectname(String projectname) {
+		this.projectname = projectname;
 	}
 }

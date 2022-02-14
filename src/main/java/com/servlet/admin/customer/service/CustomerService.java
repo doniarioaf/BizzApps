@@ -16,4 +16,5 @@ public interface CustomerService {
 	CustomerTemplate customerTemplate(long idcompany,long idbranch);
 	ReturnData deleteCustomer(long id);
 	ReturnData updateLatLong(long id,String latitude,String longitude);
+	CustomerListData getCustomerByCustomerCode(String customerCode,long idcompany,long idbranch);
 }

@@ -1,5 +1,6 @@
 package com.servlet.Process;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -8,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
 import com.servlet.BizzAppsBackEndApplication;
@@ -22,6 +24,7 @@ import com.servlet.admin.customer.entity.BodyCustomer;
 import com.servlet.admin.customer.service.CustomerService;
 import com.servlet.admin.customertype.entity.BodyCustomerType;
 import com.servlet.admin.customertype.service.CustomerTypeService;
+import com.servlet.admin.importfile.service.ImportFileService;
 import com.servlet.admin.permission.entity.BodyPermission;
 import com.servlet.admin.permission.service.PermissionService;
 import com.servlet.admin.product.entity.BodyProduct;
@@ -101,6 +104,8 @@ public class ProcessHandler implements ProcessService{
 	PermissionService permissionService;
 	@Autowired
 	ReportService reportService;
+	@Autowired
+	ImportFileService importFileService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -237,12 +242,32 @@ public class ProcessHandler implements ProcessService{
 				val.setData(customerTypeService.deleteCustomerType(id));
 			}else if(codepermission.equals(ConstansPermission.CREATE_CUSTOMER)) {
 				BodyCustomer body = (BodyCustomer) data;
-				val.setData(customerService.saveCustomer(body, auth.getIdcompany(),auth.getIdbranch()));
+				ReturnData valReturn = customerService.saveCustomer(body, auth.getIdcompany(),auth.getIdbranch());
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+//				val.setData(customerService.saveCustomer(body, auth.getIdcompany(),auth.getIdbranch()));
+				
 			}else if(codepermission.equals(ConstansPermission.EDIT_CUSTOMER)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				BodyCustomer body = (BodyCustomer) param.get("BodyCustomer");
 				long id = (long) param.get("id");
-				val.setData(customerService.updateCustomer(id, body, auth.getIdcompany(),auth.getIdbranch()));
+				
+				ReturnData valReturn = customerService.updateCustomer(id, body, auth.getIdcompany(),auth.getIdbranch());
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+//				val.setData(customerService.updateCustomer(id, body, auth.getIdcompany(),auth.getIdbranch()));
 			}else if(codepermission.equals(ConstansPermission.DELETE_CUSTOMER)) {
 				long id = (long) data;
 				val.setData(customerService.deleteCustomer(id));
@@ -281,6 +306,9 @@ public class ProcessHandler implements ProcessService{
 				BodyProject body = (BodyProject) param.get("BodyProject");
 				long id = (long) param.get("id");
 				val.setData(projectService.updateProject(id, body, auth.getIdcompany(),auth.getIdbranch()));
+			}else if(codepermission.equals(ConstansPermission.DELETE_PROJECT)) {
+				long id = (long) data;
+				val.setData(projectService.deleteProject(id));
 			}else if(codepermission.equals(ConstansPermission.CREATE_INFO)) {
 				BodyInfoHeader body = (BodyInfoHeader) data;
 				
@@ -326,6 +354,23 @@ public class ProcessHandler implements ProcessService{
 				ReturnData valReturn = userAppsService.logout(auth.getId());
 				val.setSuccess(valReturn.isSuccess());
 				val.setData(null);
+			}else if(codepermission.equals(ConstansPermission.CREATE_UPLOAD_CUSTOMER_CALLPLAN)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				MultipartFile file = (MultipartFile) param.get("file");
+				try {
+					ReturnData valReturn = importFileService.importFileExcelCustomerCallPlan(file.getInputStream(), file,auth.getIdcompany(),auth.getIdbranch());
+					if(valReturn.isSuccess()) {
+						val.setData(valReturn.getId());
+					}else {
+						val.setSuccess(valReturn.isSuccess());
+						val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+						val.setValidations(valReturn.getValidations());
+						val.setData(null);
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
 			if(codepermission.equals(ConstansPermission.CREATE_MONITOR_USER_MOBILE) ) {
@@ -469,16 +514,18 @@ public class ProcessHandler implements ProcessService{
 				String type = (String) data;
 				if(type.equals("ALL")) {
 					val.setData(projectService.getAllListProject(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(projectService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}else {
 					long id = new Long(type).longValue();
-					val.setData(projectService.getProjectById(id, auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(projectService.getProjectByIdDetail(id, auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_INFO)) {
 				String type = (String) data;
 				if(type.equals("TEMPLATE")) {
 					val.setData(infoHeaderService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("ALL")) {
-					val.setData(infoHeaderService.getAllListData(auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(infoHeaderService.getAllListDataWeb(auth.getIdcompany(), auth.getIdbranch()));
 				}else {
 					long id = new Long(type).longValue();
 					val.setData(infoHeaderService.getDetailById(id, auth.getIdcompany(), auth.getIdbranch()));
@@ -487,7 +534,7 @@ public class ProcessHandler implements ProcessService{
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				String type = (String) param.get("type");
 				if(type.equals("TEMPLATE")) {
-					val.setData(userMobileService.getListAllUserMobileForMonitoring("ALL",auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(reportService.getTemplateReport(auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("REPORT")) {
 					BodyReportMonitoring body = (BodyReportMonitoring) param.get("body");
 					if(body.getTypereport().equals("XLSX")) {

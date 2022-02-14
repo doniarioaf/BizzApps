@@ -14,6 +14,14 @@ public class InfoHeaderDetailData {
 		this.detail = detail;
 	}
 
+//	public ListInfoHeader getInfoheader() {
+//		return infoheader;
+//	}
+//
+//	public void setInfoheader(ListInfoHeader infoheader) {
+//		this.infoheader = infoheader;
+//	}
+
 	public InfoHeaderData getInfoheader() {
 		return infoheader;
 	}

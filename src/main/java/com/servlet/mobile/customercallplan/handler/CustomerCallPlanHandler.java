@@ -2,6 +2,7 @@ package com.servlet.mobile.customercallplan.handler;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,7 +12,9 @@ import com.servlet.mobile.customercallplan.entity.CustomerCallPlanData;
 import com.servlet.mobile.customercallplan.entity.CustomerCallPlanPK;
 import com.servlet.mobile.customercallplan.entity.DownloadCustomerCallPlan;
 import com.servlet.mobile.customercallplan.mapper.GetCountCustomerCallPlan;
+import com.servlet.mobile.customercallplan.mapper.GetCountCustomerCallPlanMobile;
 import com.servlet.mobile.customercallplan.mapper.GetCustomerCallPlanByIdCustomer;
+import com.servlet.mobile.customercallplan.mapper.GetCustomerCallPlanByIdCustomerMobile;
 import com.servlet.mobile.customercallplan.repo.CustomerCallPlanRepo;
 import com.servlet.mobile.customercallplan.service.CustomerCallPlanService;
 import com.servlet.shared.ReturnData;
@@ -63,11 +66,11 @@ public class CustomerCallPlanHandler implements CustomerCallPlanService{
 	
 	private List<Long> getCountListCustomerCallPlanByIdUser(long idusermobile,long idcompany,long idbranch) {
 		// TODO Auto-generated method stub
-		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetCountCustomerCallPlan().schema());
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetCountCustomerCallPlanMobile().schema());
 		sqlBuilder.append(" where mccp.idcallplan in (select idcallplan from m_user_mobile_call_plan as mumcp where mumcp.idusermobile = ? and mumcp.idcompany = ? and mumcp.idbranch = ?) ");
 		sqlBuilder.append(" and mc.isdelete = false and mcp.isdelete = false ");
 		final Object[] queryParameters = new Object[] { idusermobile,idcompany,idbranch };
-		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetCountCustomerCallPlan(), queryParameters);
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetCountCustomerCallPlanMobile(), queryParameters);
 	}
 
 	@Override
@@ -82,12 +85,12 @@ public class CustomerCallPlanHandler implements CustomerCallPlanService{
 
 	public List<CustomerCallPlanData> getListCustomerCallPlanPaging(long idusermobile,long idcompany,long idbranch,long limit, long offset) {
 		// TODO Auto-generated method stub
-		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetCustomerCallPlanByIdCustomer().schema());
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetCustomerCallPlanByIdCustomerMobile().schema());
 		sqlBuilder.append(" where mccp.idcallplan in (select idcallplan from m_user_mobile_call_plan as mumcp where mumcp.idusermobile = ? and mumcp.idcompany = ? and mumcp.idbranch = ?) ");
 		sqlBuilder.append(" and mc.isdelete = false and mcp.isdelete = false ");
 		sqlBuilder.append("order by mccp.idcallplan limit "+limit+" offset "+offset);
 		final Object[] queryParameters = new Object[] { idusermobile,idcompany,idbranch };
-		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetCustomerCallPlanByIdCustomer(), queryParameters);
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetCustomerCallPlanByIdCustomerMobile(), queryParameters);
 	}
 	
 	@Override
@@ -101,6 +104,16 @@ public class CustomerCallPlanHandler implements CustomerCallPlanService{
 		data.setCustomercallplan(list);
 		
 		return data;
+	}
+
+	@Override
+	public boolean getCustCallPlanByPK(CustomerCallPlanPK custcallplanPK) {
+		// TODO Auto-generated method stub
+		Optional<CustomerCallPlan> value = repository.findById(custcallplanPK);
+		if(value.isPresent()) {
+			return true;
+		}
+		return false;
 	}
 
 }

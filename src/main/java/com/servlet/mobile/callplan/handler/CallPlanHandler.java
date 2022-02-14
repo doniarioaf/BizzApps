@@ -4,10 +4,12 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+
 import com.servlet.admin.customer.service.CustomerService;
 import com.servlet.mobile.callplan.entity.BodyCallPlan;
 import com.servlet.mobile.callplan.entity.CallPlan;
@@ -21,6 +23,8 @@ import com.servlet.mobile.customercallplan.entity.CustomerCallPlan;
 import com.servlet.mobile.customercallplan.entity.CustomerCallPlanData;
 import com.servlet.mobile.customercallplan.entity.CustomerCallPlanPK;
 import com.servlet.mobile.customercallplan.service.CustomerCallPlanService;
+import com.servlet.mobile.project.entity.ProjectData;
+import com.servlet.mobile.project.service.ProjectService;
 import com.servlet.shared.ReturnData;
 
 @Service
@@ -33,6 +37,8 @@ public class CallPlanHandler implements CallPlanService{
 	private CustomerCallPlanService customerCallPlanService;
 	@Autowired
 	private CustomerService customerService;
+	@Autowired
+	private ProjectService projectService;
 	
 	@Override
 	public ReturnData saveCallPlan(BodyCallPlan callplan, long idcompany, long idbranch) {
@@ -46,6 +52,7 @@ public class CallPlanHandler implements CallPlanService{
 		table.setModified(ts);
 		table.setNama(callplan.getNama());
 		table.setDescription(callplan.getDescription());
+		table.setIdproject(callplan.getIdproject());
 		
 		CallPlan returntable = repository.saveAndFlush(table);
 		List<CustomerCallPlan> listcustcallplan = new ArrayList<CustomerCallPlan>();
@@ -76,6 +83,7 @@ public class CallPlanHandler implements CallPlanService{
 			table.setModified(ts);
 			table.setNama(callplan.getNama());
 			table.setDescription(callplan.getDescription());
+			table.setIdproject(callplan.getIdproject());
 			CallPlan returntable = repository.saveAndFlush(table);
 			
 			List<CustomerCallPlanPK> listdelete = new ArrayList<CustomerCallPlanPK>();
@@ -147,11 +155,18 @@ public class CallPlanHandler implements CallPlanService{
 			List<CustomerCallPlanData> listcustcallplan = new ArrayList<CustomerCallPlanData>(customerCallPlanService.getListCustomerCallPlan(id));
 			CallPlanListData callplan = list.get(0);
 			
+			String projectName = "";
+			ProjectData project = projectService.getProjectById(callplan.getIdproject(), idcompany, idbranch);
+			if(project != null) {
+				projectName = project.getNama();
+			}
 			CallPlanDetailData datacallplan = new CallPlanDetailData();
 			datacallplan.setId(id);
 			datacallplan.setNama(callplan.getNama());
 			datacallplan.setDescription(callplan.getDescription());
 			datacallplan.setCustomers(listcustcallplan);
+			datacallplan.setProjectname(projectName);
+			datacallplan.setIdproject(callplan.getIdproject());
 			return datacallplan;
 		}
 		return null;
@@ -161,6 +176,7 @@ public class CallPlanHandler implements CallPlanService{
 		// TODO Auto-generated method stub
 		TemplateDataCallPlan template = new TemplateDataCallPlan();
 		template.setCustomerOptions(customerService.getAllListCustomer(idcompany, idbranch));
+		template.setProjectoptions(projectService.getAllListProject(idcompany, idbranch));
 		return template;
 	}
 	@Override
@@ -175,6 +191,44 @@ public class CallPlanHandler implements CallPlanService{
 		ReturnData data = new ReturnData();
 		data.setId(returntable.getId());
 		return data;
+	}
+	@Override
+	public CallPlanListData getCallByName(String nama, long idcompany, long idbranch) {
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetCallPlanList().schema());
+		sqlBuilder.append(" where data.nama = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {nama, idcompany,idbranch};
+		List<CallPlanListData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetCallPlanList(), queryParameters);
+		if(list != null && list.size() > 0) {
+			return list.get(0);
+		}
+		return null;
+	}
+	@Override
+	public String getProjectNameByIdCallPlan(long id, long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		Optional<CallPlan> value = repository.findById(id);
+		if(value.isPresent()) {
+			CallPlan callplan = value.get();
+			ProjectData data = projectService.getProjectById(callplan.getIdproject(), idcompany, idbranch);
+			if(data != null) {
+				return data.getNama();
+			}
+		}
+		return "";
+	}
+	@Override
+	public ProjectData getProjectNumberByIdCallPlanName(String nama, long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetCallPlanList().schema());
+		sqlBuilder.append(" where data.nama = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {nama, idcompany,idbranch};
+		List<CallPlanListData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetCallPlanList(), queryParameters);
+		if(list != null && list.size() > 0) {
+			CallPlanListData callplan = list.get(0);
+			ProjectData data = projectService.getProjectById(callplan.getIdproject(), idcompany, idbranch);
+			return data;
+		}
+		return null;
 	}
 
 }

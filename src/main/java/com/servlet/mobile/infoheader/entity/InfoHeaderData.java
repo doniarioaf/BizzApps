@@ -7,6 +7,20 @@ public class InfoHeaderData {
 	private long sequence;
 	private long idcustomertype;
 	private String customertypename;
+	private long idproject;
+	private String projectname;
+	public long getIdproject() {
+		return idproject;
+	}
+	public void setIdproject(long idproject) {
+		this.idproject = idproject;
+	}
+	public String getProjectname() {
+		return projectname;
+	}
+	public void setProjectname(String projectname) {
+		this.projectname = projectname;
+	}
 	public long getId() {
 		return id;
 	}

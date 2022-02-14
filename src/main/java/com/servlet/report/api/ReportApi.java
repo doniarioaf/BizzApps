@@ -85,12 +85,13 @@ public class ReportApi {
 	}
 	
 	@GetMapping("/monitoring")
-	ResponseEntity<Response> getReportMonitoringExcel(HttpServletResponse response,@RequestHeader(ConstansKey.AUTH) String authorization,@RequestParam String idusermobile,@RequestParam String from,@RequestParam String thru,@RequestParam String type) throws IOException {
+	ResponseEntity<Response> getReportMonitoringExcel(HttpServletResponse response,@RequestHeader(ConstansKey.AUTH) String authorization,@RequestParam String idusermobile,@RequestParam String from,@RequestParam String thru,@RequestParam String type,@RequestParam long project) throws IOException {
 		BodyReportMonitoring body = new BodyReportMonitoring();
 		body.setIdusermobile(idusermobile);
 		body.setFromdate(from);
 		body.setTodate(thru);
 		body.setTypereport(type);
+		body.setIdproject(project);
 		
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("type", "REPORT");

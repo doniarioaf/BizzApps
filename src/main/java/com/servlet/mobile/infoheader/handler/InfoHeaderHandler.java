@@ -17,11 +17,14 @@ import com.servlet.mobile.infoheader.entity.InfoHeader;
 import com.servlet.mobile.infoheader.entity.InfoHeaderData;
 import com.servlet.mobile.infoheader.entity.InfoHeaderDetailData;
 import com.servlet.mobile.infoheader.entity.ListAnswerUpdate;
+import com.servlet.mobile.infoheader.entity.ListInfoHeader;
 import com.servlet.mobile.infoheader.entity.TemplateInfo;
 import com.servlet.mobile.infoheader.entity.TypeOptions;
 import com.servlet.mobile.infoheader.mapper.GetInfoHeader;
+import com.servlet.mobile.infoheader.mapper.GetInfoHeaderWeb;
 import com.servlet.mobile.infoheader.repo.InfoHeaderRepo;
 import com.servlet.mobile.infoheader.service.InfoHeaderService;
+import com.servlet.mobile.project.service.ProjectService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
@@ -37,6 +40,8 @@ public class InfoHeaderHandler implements InfoHeaderService{
 	private InfoHeaderDetailService infoHeaderDetailService;
 	@Autowired
 	private CustomerTypeService customerTypeService;
+	@Autowired
+	private ProjectService projectService;
 	
 	@Override
 	public ReturnData saveInfoHeader(BodyInfoHeader body, long idcompany, long idbranch) {
@@ -51,6 +56,7 @@ public class InfoHeaderHandler implements InfoHeaderService{
 		table.setQuestion(body.getQuestion());
 		table.setSequence(body.getSequence());
 		table.setType(body.getType());
+		table.setIdproject(body.getIdproject());
 		
 		//TA(Text Area),RB(Radio Button),CL(Chekbox List),DDL(DropDown List)
 		long idreturn = 0;
@@ -94,15 +100,16 @@ public class InfoHeaderHandler implements InfoHeaderService{
 		return data;
 	}
 	
-	private InfoHeaderData checkInfoHeaderById(long id,long idcompany, long idbranch) {
+	private ListInfoHeader checkInfoHeaderById(long id,long idcompany, long idbranch) {
 		// TODO Auto-generated method stub
-		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetInfoHeader().schema());
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetInfoHeaderWeb().schema());
 		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
-		final Object[] queryParameters = new Object[] {id, idcompany,idbranch};
-		List<InfoHeaderData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetInfoHeader(), queryParameters);
+		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+		List<ListInfoHeader> list =  this.jdbcTemplate.query(sqlBuilder.toString(), new GetInfoHeaderWeb(), queryParameters);
 		if(list != null && list.size() > 0) {
 			return list.get(0);
 		}
+		
 		return null;
 	}
 
@@ -110,7 +117,7 @@ public class InfoHeaderHandler implements InfoHeaderService{
 	public ReturnData updateInfoHeader(long id, BodyInfoHeaderUpdate body, long idcompany, long idbranch) {
 		// TODO Auto-generated method stub
 		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
-		InfoHeaderData checkData = checkInfoHeaderById(id,idcompany,idbranch);
+		ListInfoHeader checkData = checkInfoHeaderById(id,idcompany,idbranch);
 		
 		//TA(Text Area),RB(Radio Button),CL(Chekbox List),DDL(DropDown List)
 		if(!(body.getType().equals("TA") || body.getType().equals("RB") || body.getType().equals("CL") || body.getType().equals("DDL"))) {
@@ -126,6 +133,7 @@ public class InfoHeaderHandler implements InfoHeaderService{
 //			table.setIsactive(body.isIsactive());
 			table.setType(body.getType());
 			table.setIdcustomertype(body.getIdcustomertype());
+			table.setIdproject(body.getIdproject());
 			
 			InfoHeader returntable = repository.saveAndFlush(table);
 			infoHeaderDetailService.deleteAllInfoDetailByIdInfoHeader(id);
@@ -214,11 +222,21 @@ public class InfoHeaderHandler implements InfoHeaderService{
 	@Override
 	public InfoHeaderDetailData getDetailById(long id, long idcompany, long idbranch) {
 		// TODO Auto-generated method stub
-		InfoHeaderData header = checkInfoHeaderById(id,idcompany,idbranch);
+		ListInfoHeader header = checkInfoHeaderById(id,idcompany,idbranch);
 		List<com.servlet.mobile.infodetail.entity.InfoHeaderDetailData> listdetail = infoHeaderDetailService.getListData(id);
 		
+		InfoHeaderData tempHeader = null;
+		if(header != null) {
+			tempHeader = new InfoHeaderData();
+			tempHeader.setId(header.getId());
+			tempHeader.setQuestion(header.getQuestion());
+			tempHeader.setType(header.getType());
+			tempHeader.setSequence(header.getSequence());
+			tempHeader.setIdproject(header.getIdproject());
+			tempHeader.setProjectname(header.getProjectname());
+		}
 		InfoHeaderDetailData data = new InfoHeaderDetailData();
-		data.setInfoheader(header);
+		data.setInfoheader(tempHeader);
 		data.setDetail(listdetail);
 		return data;
 	}
@@ -258,6 +276,7 @@ public class InfoHeaderHandler implements InfoHeaderService{
 		TemplateInfo data = new TemplateInfo();
 		data.setCustomertypeoptions(customertypeoptions);
 		data.setTypeoptions(typeoptions);
+		data.setProjectoptions(projectService.getAllListProject(idcompany, idbranch));
 		return data;
 	}
 
@@ -283,6 +302,15 @@ public class InfoHeaderHandler implements InfoHeaderService{
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInfoHeader(), queryParameters);
+	}
+
+	@Override
+	public List<ListInfoHeader> getAllListDataWeb(long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetInfoHeaderWeb().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInfoHeaderWeb(), queryParameters);
 	}
 
 }

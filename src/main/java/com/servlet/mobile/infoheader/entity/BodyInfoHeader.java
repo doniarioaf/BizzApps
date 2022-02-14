@@ -7,6 +7,7 @@ public class BodyInfoHeader {
 	private long idcustomertype;
 	private boolean isactive;
 	private String[] answer;
+	private long idproject;
 	public String[] getAnswer() {
 		return answer;
 	}
@@ -42,5 +43,11 @@ public class BodyInfoHeader {
 	}
 	public void setIsactive(boolean isactive) {
 		this.isactive = isactive;
+	}
+	public long getIdproject() {
+		return idproject;
+	}
+	public void setIdproject(long idproject) {
+		this.idproject = idproject;
 	}
 }

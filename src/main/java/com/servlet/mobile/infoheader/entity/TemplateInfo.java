@@ -4,11 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.servlet.admin.customertype.entity.CustomerTypeData;
+import com.servlet.mobile.project.entity.ProjectData;
 
 public class TemplateInfo {
-	List<CustomerTypeData> customertypeoptions;
-	List<TypeOptions> typeoptions;
-
+	private List<CustomerTypeData> customertypeoptions;
+	private List<TypeOptions> typeoptions;
+	private List<ProjectData> projectoptions;
 	
 	public List<TypeOptions> getTypeoptions() {
 		return typeoptions;
@@ -24,5 +25,13 @@ public class TemplateInfo {
 
 	public void setCustomertypeoptions(List<CustomerTypeData> customertypeoptions) {
 		this.customertypeoptions = customertypeoptions;
+	}
+
+	public List<ProjectData> getProjectoptions() {
+		return projectoptions;
+	}
+
+	public void setProjectoptions(List<ProjectData> projectoptions) {
+		this.projectoptions = projectoptions;
 	}
 }

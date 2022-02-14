@@ -28,11 +28,13 @@ public class GetDataProject implements RowMapper<ProjectData>{
 		final Long id = rs.getLong("id");
 		final String nama = rs.getString("nama");
 		final String description = rs.getString("description");
+		final String projectnumber = rs.getString("projectnumber");
 		
 		ProjectData data = new ProjectData();
 		data.setId(id);
 		data.setNama(nama);
 		data.setDescription(description);
+		data.setProjectnumber(projectnumber);
 		return data;
 	}
 

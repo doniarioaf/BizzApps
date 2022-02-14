@@ -21,6 +21,7 @@ public class Project implements Serializable{
 	private String nama;
 	private String description;
 	private boolean isdelete;
+	private String projectnumber;
 	public long getId() {
 		return id;
 	}
@@ -56,5 +57,11 @@ public class Project implements Serializable{
 	}
 	public void setIsdelete(boolean isdelete) {
 		this.isdelete = isdelete;
+	}
+	public String getProjectnumber() {
+		return projectnumber;
+	}
+	public void setProjectnumber(String projectnumber) {
+		this.projectnumber = projectnumber;
 	}
 }

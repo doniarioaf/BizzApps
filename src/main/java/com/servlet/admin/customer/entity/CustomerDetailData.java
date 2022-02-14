@@ -1,5 +1,9 @@
 package com.servlet.admin.customer.entity;
 
+import java.util.List;
+
+import com.servlet.mobile.project.entity.ProjectData;
+
 public class CustomerDetailData {
 	private long id;
 	private String nama;
@@ -9,10 +13,13 @@ public class CustomerDetailData {
 	private String areaname;
 	private String subarename;
 	private String phone;
+	private String contactperson;
+	private String customercode;
 	private String latitude;
 	private String longitude;
 	private long idcustomertype;
 	private String namecustomertype;
+	private List<ProjectData> projects;
 	public long getId() {
 		return id;
 	}
@@ -84,5 +91,23 @@ public class CustomerDetailData {
 	}
 	public void setNamecustomertype(String namecustomertype) {
 		this.namecustomertype = namecustomertype;
+	}
+	public String getContactperson() {
+		return contactperson;
+	}
+	public void setContactperson(String contactperson) {
+		this.contactperson = contactperson;
+	}
+	public String getCustomercode() {
+		return customercode;
+	}
+	public void setCustomercode(String customercode) {
+		this.customercode = customercode;
+	}
+	public List<ProjectData> getProjects() {
+		return projects;
+	}
+	public void setProjects(List<ProjectData> projects) {
+		this.projects = projects;
 	}
 }
