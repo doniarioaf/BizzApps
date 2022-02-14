@@ -81,8 +81,13 @@ public class ImportFileHandler implements ImportFileService{
 				            System.out.println("CallPlan "+set.getKey());
 				            CallPlanListData callPlanData = null;
 				            String callPlanName = "";
+				            String projectNumber = "";
+				            String projectName = "";
 				            if(listdataFile.size() > 0) {
-				            	callPlanName = listdataFile.get(0).getCallplanName();
+				            	DataColumnFileCustomerCallPlan datatemp = listdataFile.get(0);
+				            	callPlanName = datatemp.getCallplanName();
+				            	projectNumber = datatemp.getProjectNumber();
+				            	projectName = datatemp.getProjectName();
 				            	callPlanData = new CallPlanListData();
 				            	callPlanData = callPlanService.getCallByName(callPlanName, idcompany, idbranch);
 				            	
@@ -118,7 +123,17 @@ public class ImportFileHandler implements ImportFileService{
 								
 							}
 				            
+				            ProjectData projectData = projectService.getProjectByProjectNumber(projectNumber, idcompany, idbranch);;
+				            long idproject = 0;
+				            if(projectData != null) {
+				            	idproject = projectData.getId();
+				            }else {
+				            	BodyProject bodyproject = setBodyProject(projectNumber, projectName, projectData, new ArrayList<Long>(), idcompany, idbranch);
+				            	idproject = projectService.saveProject(bodyproject, idcompany, idbranch).getId();
+				            }
+				            
 				            BodyCallPlan bodycallplan = setBodyCallPlan(callPlanName, callPlanData, listCustIdToCallPlan, idcompany, idbranch);
+				            bodycallplan.setIdproject(idproject);
 				            if(callPlanData == null) {
 				            	callPlanService.saveCallPlan(bodycallplan, idcompany, idbranch);
 				            }else {
@@ -281,6 +296,7 @@ public class ImportFileHandler implements ImportFileService{
 		HashMap<String, BodyProject> mapDistinctProject = new HashMap<String, BodyProject>();
 		HashMap<String, List<DataColumnFileCustomerCallPlan>> mapGroupCustomerCallPlan = new HashMap<String, List<DataColumnFileCustomerCallPlan>>();
 		HashMap<String, List<DataColumnFileCustomerCallPlan>> mapGroupCustomerProject = new HashMap<String, List<DataColumnFileCustomerCallPlan>>();
+		HashMap<String, String> mapDistinctCallPlanProject = new HashMap<String, String>();
 		while (rows.hasNext()) {
 			Row currentRow = rows.next();
 			
@@ -300,6 +316,7 @@ public class ImportFileHandler implements ImportFileService{
         		String custCodeCheck = "";
         		String custNameCheck = "";
         		String callplanNameCheck = "";
+        		String projectNumberCheck = "";
 	        	while (cellsInRow.hasNext()) {
 	        		Cell currentCell = cellsInRow.next();
 	        		
@@ -322,6 +339,7 @@ public class ImportFileHandler implements ImportFileService{
 
 	                  case 1:
 	                	  String projectNumber = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
+	                	  projectNumberCheck = projectNumber;
 	                	  projectNumberDistinct = projectNumber;
 	                	  String projectNumberNoSpace = projectNumber.replaceAll(" ", "");
 	                	  datafile.setProjectNumber(projectNumber);
@@ -517,6 +535,27 @@ public class ImportFileHandler implements ImportFileService{
 						validations.add(msg);
 						break;
 		        	}
+	        	}
+	        	if(!callplanNameCheck.equals("") && !projectNumberCheck.equals("")) {
+	        		String callplanNameCheckNoSpace = callplanNameCheck.replaceAll(" ", "");
+	        		String mapTemp = mapDistinctCallPlanProject.get(callplanNameCheckNoSpace);
+	        		if(mapTemp != null) {
+	        			if(!mapTemp.equals(projectNumberCheck)) {
+	        				message = "1 CallPlan ("+callplanNameCheck+") untuk 1 Project";
+	        			}else {
+	        				ProjectData projectdata = callPlanService.getProjectNumberByIdCallPlanName(callplanNameCheck, idcompany, idbranch);
+	        				if(projectdata != null) {
+	        					if(!mapTemp.equals(projectdata.getProjectnumber())) {
+		        					message = "CallPlan ("+callplanNameCheck+") Sudah Terdaftar Untuk Project "+projectdata.getNama();
+		        				}
+	        				}
+	        				
+	        			}
+	        		}else {
+	        			mapDistinctCallPlanProject.put(callplanNameCheckNoSpace, projectNumberCheck);
+	        		}
+	        		
+	        		projectNumberCheck = "";
 	        	}
 	        	if(!callplanNameCheck.equals("")) {
 	        		//List<DataColumnFileCustomerCallPlan>

@@ -25,6 +25,14 @@ public class MonitoringData {
 	private String photo7;
 	private String photo8;
 	private String project;
+	private String customercode;
+	private long idcallplan;
+	public long getIdcallplan() {
+		return idcallplan;
+	}
+	public void setIdcallplan(long idcallplan) {
+		this.idcallplan = idcallplan;
+	}
 	public long getIdmonitoring() {
 		return idmonitoring;
 	}
@@ -156,5 +164,11 @@ public class MonitoringData {
 	}
 	public void setProject(String project) {
 		this.project = project;
+	}
+	public String getCustomercode() {
+		return customercode;
+	}
+	public void setCustomercode(String customercode) {
+		this.customercode = customercode;
 	}
 }

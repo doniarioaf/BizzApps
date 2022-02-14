@@ -6,6 +6,7 @@ import com.servlet.mobile.callplan.entity.BodyCallPlan;
 import com.servlet.mobile.callplan.entity.CallPlanDetailData;
 import com.servlet.mobile.callplan.entity.CallPlanListData;
 import com.servlet.mobile.callplan.entity.TemplateDataCallPlan;
+import com.servlet.mobile.project.entity.ProjectData;
 import com.servlet.shared.ReturnData;
 
 public interface CallPlanService {
@@ -16,4 +17,6 @@ public interface CallPlanService {
 	TemplateDataCallPlan getTemplate(long idcompany,long idbranch);
 	ReturnData deleteCallPlan(long id);
 	CallPlanListData getCallByName(String nama,long idcompany,long idbranch);
+	String getProjectNameByIdCallPlan(long id,long idcompany,long idbranch);
+	ProjectData getProjectNumberByIdCallPlanName(String nama,long idcompany,long idbranch);
 }

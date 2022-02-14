@@ -55,6 +55,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.servlet.admin.usermobile.entity.UserMobileListData;
 import com.servlet.admin.usermobile.service.UserMobileService;
+import com.servlet.mobile.callplan.service.CallPlanService;
 import com.servlet.mobile.infoheader.entity.InfoHeaderData;
 import com.servlet.mobile.infoheader.service.InfoHeaderService;
 import com.servlet.mobile.monitorusermobile.entity.DataMonitorForMaps;
@@ -88,6 +89,8 @@ public class ReportHandler implements ReportService {
 	private InfoHeaderService infoHeaderService;
 	@Autowired
 	private ProjectService projectService;
+	@Autowired
+	private CallPlanService callPlanService;
 	
 	@Override
 	public ReportWorkBookExcel getReportMonitoringData(BodyReportMonitoring body, long idcompany, long idbranch) {
@@ -121,21 +124,22 @@ public class ReportHandler implements ReportService {
 	        rowcount = 1;
 	        Row row = sheet.createRow(rowcount);
 	        
-	        createCell(row, 0, "Customer", style,sheet);      
-	        createCell(row, 1, "Tanggal", style,sheet);       
-	        createCell(row, 2, "Check In Time", style,sheet);    
-	        createCell(row, 3, "Check Out Time", style,sheet);
-	        createCell(row, 4, "Photo 1", style,sheet);
-	        createCell(row, 5, "Photo 2", style,sheet);
-	        createCell(row, 6, "Photo 3", style,sheet);
-	        createCell(row, 7, "Photo 4", style,sheet);
-	        createCell(row, 8, "Photo 5", style,sheet);
-	        createCell(row, 9, "Is Photo 1", style,sheet);
-	        createCell(row, 10, "Is Photo 2", style,sheet);
-	        createCell(row, 11, "Is Photo 3", style,sheet);
-	        createCell(row, 12, "Is Photo 4", style,sheet);
-	        createCell(row, 13, "Is Photo 5", style,sheet);
-	        int rowHeader = 14;
+	        createCell(row, 0, "Customer", style,sheet);
+	        createCell(row, 1, "Project", style,sheet);
+	        createCell(row, 2, "Tanggal", style,sheet);       
+	        createCell(row, 3, "Check In Time", style,sheet);    
+	        createCell(row, 4, "Check Out Time", style,sheet);
+	        createCell(row, 5, "Photo 1", style,sheet);
+	        createCell(row, 6, "Photo 2", style,sheet);
+	        createCell(row, 7, "Photo 3", style,sheet);
+	        createCell(row, 8, "Photo 4", style,sheet);
+	        createCell(row, 9, "Photo 5", style,sheet);
+	        createCell(row, 10, "Is Photo 1", style,sheet);
+	        createCell(row, 11, "Is Photo 2", style,sheet);
+	        createCell(row, 12, "Is Photo 3", style,sheet);
+	        createCell(row, 13, "Is Photo 4", style,sheet);
+	        createCell(row, 14, "Is Photo 5", style,sheet);
+	        int rowHeader = 15;
 	        
 			List<MonitoringData> list = getListMonitoringData(user.getId(),body,idcompany,idbranch);
 			List<Integer> listQuestionExistInMonitoring = new ArrayList<>();
@@ -191,7 +195,8 @@ public class ReportHandler implements ReportService {
 					Row rowMonitor = sheet.createRow(rowcount++);
 					rowMonitor.setHeight(s);
 					int columnCount = 0;
-					createCell(rowMonitor, columnCount++, monitor.getNamacustomer(), style,sheet);
+					createCell(rowMonitor, columnCount++, monitor.getNamacustomer()+"( "+monitor.getCustomercode()+" )", style,sheet);
+					createCell(rowMonitor, columnCount++, callPlanService.getProjectNameByIdCallPlan(monitor.getIdcallplan(), idcompany, idbranch), style,sheet);
 					createCell(rowMonitor, columnCount++, monitor.getTanggal().toString(), style,sheet);
 					createCell(rowMonitor, columnCount++, monitor.getCheckintime(), style,sheet);
 					createCell(rowMonitor, columnCount++, monitor.getCheckouttime(), style,sheet);
@@ -361,7 +366,10 @@ public class ReportHandler implements ReportService {
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new getMonitoringData().schema());
 		sqlBuilder.append(" where monitor.idusermobile = ? and monitor.idcompany = ? and monitor.idbranch = ? and monitor.tanggal >= '"+body.getFromdate()+"' and monitor.tanggal <= '"+body.getTodate()+"' ");
 		if(body.getIdproject() > 0) {
+			String selectIdCallPlan = "select id from m_call_plan where idproject = "+body.getIdproject()+" and idcompany = "+idcompany+" and idbranch = "+idbranch+" ";
+//			String selectIdCustCallPlan = "select idcustomer from m_customer_call_plan where idcallplan in ("+selectIdCallPlan+") ";
 			sqlBuilder.append(" and monitor.idcustomer in (select idcustomer from m_customer_project as mcp where mcp.idproject="+body.getIdproject()+" and mcp.idcompany="+idcompany+" and mcp.idbranch="+idbranch+" ) ");
+			sqlBuilder.append(" and monitor.idcallplan in ("+selectIdCallPlan+") ");
 		}
 		sqlBuilder.append(" order by monitor.idusermobile");
 		final Object[] queryParameters = new Object[] { idusermobile,idcompany,idbranch };
@@ -478,7 +486,7 @@ public class ReportHandler implements ReportService {
         }
         
         
-        PdfPTable table = new PdfPTable(10 + countInfo);
+        PdfPTable table = new PdfPTable(11 + countInfo);
         try {
         	document.open();
         	document.add(Chunk.NEWLINE);
@@ -500,6 +508,12 @@ public class ReportHandler implements ReportService {
             table.addCell(hcell);
             
             hcell = new PdfPCell(new Phrase("Customer", headFont));
+            hcell.setBackgroundColor(BaseColor.CYAN);
+            widthKolom = addElementWidth(widthKolom, 3);
+            hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(hcell);
+            
+            hcell = new PdfPCell(new Phrase("Project", headFont));
             hcell.setBackgroundColor(BaseColor.CYAN);
             widthKolom = addElementWidth(widthKolom, 3);
             hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -591,7 +605,13 @@ public class ReportHandler implements ReportService {
             			valueCell.setHorizontalAlignment(Element.ALIGN_CENTER);
                     	table.addCell(valueCell);
                     	
-                    	valueCell = new PdfPCell(new Phrase(monitor.getNamacustomer()));
+                    	valueCell = new PdfPCell(new Phrase(monitor.getNamacustomer()+" ( "+monitor.getCustomercode()+" ) "));
+                    	valueCell.setPaddingLeft(2);
+                    	valueCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                    	valueCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    	table.addCell(valueCell);
+                    	
+                    	valueCell = new PdfPCell(new Phrase(callPlanService.getProjectNameByIdCallPlan(monitor.getIdcallplan(), idcompany, idbranch)));
                     	valueCell.setPaddingLeft(2);
                     	valueCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
                     	valueCell.setHorizontalAlignment(Element.ALIGN_CENTER);

@@ -39,6 +39,8 @@ public class GetCustomerCallPlanByIdCustomerMobile implements RowMapper<Customer
 		final String phone = rs.getString("phone");
 		final String latitude = rs.getString("latitude");
 		final String longitude = rs.getString("longitude");
+		final String contactperson = rs.getString("contactperson");
+		final String customercode = rs.getString("customercode");
 		
 		CustomerCallPlanData data = new CustomerCallPlanData();
 		data.setId(id);
@@ -52,6 +54,8 @@ public class GetCustomerCallPlanByIdCustomerMobile implements RowMapper<Customer
 		data.setIdcustomertype(idcustomertype);
 		data.setLatitude(latitude);
 		data.setLongitude(longitude);
+		data.setCustomercode(customercode);
+		data.setContactperson(contactperson);
 		
 		return data;
 	}
