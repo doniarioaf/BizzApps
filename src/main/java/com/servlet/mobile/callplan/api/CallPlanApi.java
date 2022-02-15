@@ -35,7 +35,7 @@ public class CallPlanApi {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("id", id);
 		param.put("type", "DETAIL");
-		Response response = securityService.response(ConstansPermission.READ_CALLPLAN,param.toString(),authorization);
+		Response response = securityService.response(ConstansPermission.READ_CALLPLAN,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	

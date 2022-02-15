@@ -83,7 +83,7 @@ public class CallPlanHandler implements CallPlanService{
 			table.setModified(ts);
 			table.setNama(callplan.getNama());
 			table.setDescription(callplan.getDescription());
-			table.setIdproject(callplan.getIdproject());
+//			table.setIdproject(callplan.getIdproject());
 			CallPlan returntable = repository.saveAndFlush(table);
 			
 			List<CustomerCallPlanPK> listdelete = new ArrayList<CustomerCallPlanPK>();
@@ -175,7 +175,7 @@ public class CallPlanHandler implements CallPlanService{
 	public TemplateDataCallPlan getTemplate(long idcompany, long idbranch) {
 		// TODO Auto-generated method stub
 		TemplateDataCallPlan template = new TemplateDataCallPlan();
-		template.setCustomerOptions(customerService.getAllListCustomer(idcompany, idbranch));
+//		template.setCustomerOptions(customerService.getAllListCustomer(idcompany, idbranch));
 		template.setProjectoptions(projectService.getAllListProject(idcompany, idbranch));
 		return template;
 	}
