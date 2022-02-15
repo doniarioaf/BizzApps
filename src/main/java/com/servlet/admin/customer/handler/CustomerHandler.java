@@ -224,4 +224,14 @@ public class CustomerHandler implements CustomerService{
 		return null;
 	}
 
+	@Override
+	public List<CustomerListData> getListCustomerByIdProject(long idproject, long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetCustomerList().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		sqlBuilder.append(" and data.id in (select idcustomer from m_customer_project where idproject = "+idproject+") ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetCustomerList(), queryParameters);
+	}
+
 }

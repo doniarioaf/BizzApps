@@ -32,19 +32,35 @@ public class CallPlanApi {
 	
 	@GetMapping("{id}")
 	ResponseEntity<Response> getById(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
-		Response response = securityService.response(ConstansPermission.READ_CALLPLAN,new Long(id).toString(),authorization);
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("id", id);
+		param.put("type", "DETAIL");
+		Response response = securityService.response(ConstansPermission.READ_CALLPLAN,param.toString(),authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
 	@GetMapping
 	ResponseEntity<Response> getListCallPlan(@RequestHeader(ConstansKey.AUTH) String authorization) {
-		Response response = securityService.response(ConstansPermission.READ_CALLPLAN,"ALL",authorization);
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "ALL");
+		Response response = securityService.response(ConstansPermission.READ_CALLPLAN,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
 	@GetMapping("/template")
 	ResponseEntity<Response> getTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
-		Response response = securityService.response(ConstansPermission.READ_CALLPLAN,"TEMPLATE",authorization);
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "TEMPLATE");
+		Response response = securityService.response(ConstansPermission.READ_CALLPLAN,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@GetMapping("/template/searchcustomer/{idproject}")
+	ResponseEntity<Response> getTemplateSearcCustomer(@PathVariable long idproject,@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("idproject", idproject);
+		param.put("type", "SEARCHCUSTOMER");
+		Response response = securityService.response(ConstansPermission.READ_CALLPLAN,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	

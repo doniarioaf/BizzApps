@@ -501,13 +501,18 @@ public class ProcessHandler implements ProcessService{
 					val.setData(productService.getProductById(id, auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_CALLPLAN)) {
-				String type = (String) data;
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+//				String type = (String) data;
 				if(type.equals("ALL")) {
 					val.setData(callPlanService.getAllListCallPlan(auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("TEMPLATE")) {
 					val.setData(callPlanService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("SEARCHCUSTOMER")) {
+					long idproject = (long) param.get("idproject");
+					val.setData(customerService.getListCustomerByIdProject(idproject, auth.getIdcompany(), auth.getIdbranch()));
 				}else {
-					long id = new Long(type).longValue();
+					long id = (long) param.get("id");//new Long(type).longValue();
 					val.setData(callPlanService.getCallPlanById(id, auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_PROJECT)) {

@@ -17,4 +17,5 @@ public interface CustomerService {
 	ReturnData deleteCustomer(long id);
 	ReturnData updateLatLong(long id,String latitude,String longitude);
 	CustomerListData getCustomerByCustomerCode(String customerCode,long idcompany,long idbranch);
+	List<CustomerListData> getListCustomerByIdProject(long idproject,long idcompany,long idbranch);
 }
