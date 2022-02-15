@@ -544,6 +544,8 @@ public class ProcessHandler implements ProcessService{
 					BodyReportMonitoring body = (BodyReportMonitoring) param.get("body");
 					if(body.getTypereport().equals("XLSX")) {
 						val.setData(reportService.getReportMonitoringData(body, auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
+					}else if(body.getTypereport().equals("PPT")) {
+						val.setData(reportService.getReportMonitoringDataPPT(auth.getIdcompany(), auth.getIdbranch()).getPpt());
 					}else {
 						val.setData(reportService.getReportMonitoringDataPDF(body, auth.getIdcompany(), auth.getIdbranch()));
 					}
