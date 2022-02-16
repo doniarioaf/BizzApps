@@ -1,6 +1,8 @@
 package com.servlet.report.handler;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -21,6 +23,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.apache.poi.sl.usermodel.PictureData;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -31,6 +34,16 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.util.Units;
+import org.apache.poi.xslf.usermodel.SlideLayout;
+import org.apache.poi.xslf.usermodel.XMLSlideShow;
+import org.apache.poi.xslf.usermodel.XSLFPictureData;
+import org.apache.poi.xslf.usermodel.XSLFPictureShape;
+import org.apache.poi.xslf.usermodel.XSLFSlide;
+import org.apache.poi.xslf.usermodel.XSLFSlideLayout;
+import org.apache.poi.xslf.usermodel.XSLFSlideMaster;
+import org.apache.poi.xslf.usermodel.XSLFTextParagraph;
+import org.apache.poi.xslf.usermodel.XSLFTextRun;
+import org.apache.poi.xslf.usermodel.XSLFTextShape;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -67,6 +80,7 @@ import com.servlet.report.entity.BodyGetMaps;
 import com.servlet.report.entity.BodyReportMonitoring;
 import com.servlet.report.entity.MonitoringData;
 import com.servlet.report.entity.ReportToPDF;
+import com.servlet.report.entity.ReportToPPT;
 import com.servlet.report.entity.ReportWorkBookExcel;
 import com.servlet.report.entity.TemplateMaps;
 import com.servlet.report.entity.TemplateReport;
@@ -440,6 +454,58 @@ public class ReportHandler implements ReportService {
 		return null;
 	}
 	
+	private XSLFPictureData decodeToImagePPT(String imageString,XMLSlideShow ppt){
+		if(imageString != null && !imageString.equals("")) {
+			try {
+			byte[] imagebyte = Base64.getDecoder().decode(imageString.getBytes(StandardCharsets.UTF_8));
+			
+			ByteArrayInputStream bis = new ByteArrayInputStream(imagebyte);
+			BufferedImage image = ImageIO.read(bis);
+			
+			int scaledWidth = 200;
+            int scaledHeight = 200;
+            
+			// creates output image
+	        BufferedImage outputImage = new BufferedImage(scaledWidth,
+	        		scaledHeight, image.getType());
+	        
+	     // scales the input image to the output image
+	        
+	        Graphics2D g2d = outputImage.createGraphics();
+	        g2d.drawImage(image, 0, 0, scaledWidth, scaledHeight, null);
+	        g2d.dispose();
+	        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	        
+	     // writes to output file
+	        ImageIO.write(outputImage, "png", baos);
+	        byte[] imagebytev2 = baos.toByteArray();
+	        
+			bis.close();
+			
+			// write the image to a file
+			File outputfile = new File("image.png");
+			try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(outputfile))) {
+//	            outputStream.write(imagebyte);
+				outputStream.write(imagebytev2);
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+			
+			InputStream is = new FileInputStream(outputfile);
+			byte[] bytes = IOUtils.toByteArray(is);
+//			PictureData.PictureType.PNG
+			XSLFPictureData pictureIdx = ppt.addPicture(bytes, PictureData.PictureType.PNG);
+			
+			return pictureIdx;
+			}catch (IOException e) {
+				// TODO: handle exception
+				return null;
+			} 
+		}
+		
+		return null;
+	}
+	
 	
 
 	@Override
@@ -772,6 +838,156 @@ public class ReportHandler implements ReportService {
 		data.setUserMobileOptions(userMobileService.getListAllUserMobileForMonitoring("ALL",idcompany, idbranch));
 		data.setProjectoptions(projectService.getAllListProject(idcompany, idbranch));
 		return data;
+	}
+
+	
+	@Override
+	public ReportToPPT getReportMonitoringDataPPT(BodyReportMonitoring body,long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		ReportToPPT reportToPPT = new ReportToPPT();
+		XMLSlideShow ppt = new XMLSlideShow();
+		List<UserMobileListData> listuser = userMobileService.getListAllUserMobileForMonitoring(body.getIdusermobile(), idcompany, idbranch);
+		for(UserMobileListData user : listuser) {
+			List<MonitoringData> list = getListMonitoringData(user.getId(),body,idcompany,idbranch);
+			if(list != null && list.size() > 0) {
+				for(MonitoringData monitor : list) {
+					XSLFSlideMaster slideMaster = ppt.getSlideMasters().get(0);
+		  
+					XSLFSlideLayout slidelayout = slideMaster.getLayout(SlideLayout.TITLE_AND_CONTENT);
+		  
+					XSLFSlide slide = ppt.createSlide(slidelayout);
+					
+					XSLFTextShape titleslide = slide.getPlaceholder(0);  
+					titleslide.setText(""); 
+		  
+					XSLFTextShape bodyslide = slide.getPlaceholder(1);
+		        
+					bodyslide.clearText();
+					
+					XSLFTextParagraph paragraph = bodyslide.addNewTextParagraph();
+					
+					XSLFTextRun line = paragraph.addNewTextRun();
+					line.setText("User : "+monitor.getNamauser());
+					line.setFontColor(Color.BLACK);
+					line.setFontSize(20.0);
+			        paragraph.addLineBreak();
+			        
+			        line = paragraph.addNewTextRun();
+					line.setText("Customer : "+monitor.getNamacustomer());
+					line.setFontColor(Color.BLACK);
+					line.setFontSize(20.0);
+			        paragraph.addLineBreak();
+			        
+			        line = paragraph.addNewTextRun();
+					line.setText("Project : "+callPlanService.getProjectNameByIdCallPlan(monitor.getIdcallplan(), idcompany, idbranch));
+					line.setFontColor(Color.BLACK);
+					line.setFontSize(20.0);
+			        paragraph.addLineBreak();
+			        
+			        line = paragraph.addNewTextRun();
+					line.setText("Contact Number : "+monitor.getPhone());
+					line.setFontColor(Color.BLACK);
+					line.setFontSize(20.0);
+			        paragraph.addLineBreak();
+			        
+			        line = paragraph.addNewTextRun();
+					line.setText("Contact Person : "+monitor.getContactperson());
+					line.setFontColor(Color.BLACK);
+					line.setFontSize(20.0);
+			        paragraph.addLineBreak();
+			        
+			        line = paragraph.addNewTextRun();
+					line.setText("Customer Code : "+monitor.getCustomercode());
+					line.setFontColor(Color.BLACK);
+					line.setFontSize(20.0);
+			        paragraph.addLineBreak();
+			        
+			        line = paragraph.addNewTextRun();
+					line.setText("Provinsi : "+monitor.getProvinsi());
+					line.setFontColor(Color.BLACK);
+					line.setFontSize(20.0);
+			        paragraph.addLineBreak();
+			        
+			        line = paragraph.addNewTextRun();
+					line.setText("City : "+monitor.getCity());
+					line.setFontColor(Color.BLACK);
+					line.setFontSize(20.0);
+			        paragraph.addLineBreak();
+			        
+			        line = paragraph.addNewTextRun();
+					line.setText("Area : "+monitor.getAreaname());
+					line.setFontColor(Color.BLACK);
+					line.setFontSize(20.0);
+			        paragraph.addLineBreak();
+			        
+			        line = paragraph.addNewTextRun();
+					line.setText("SubArea : "+monitor.getSubarename());
+					line.setFontColor(Color.BLACK);
+					line.setFontSize(20.0);
+			        paragraph.addLineBreak();
+			        
+			        int width = 130;
+			        int height = 130;
+			        int photoke = 1;
+			        if(monitor.getPhoto1() != null && !monitor.getPhoto1().equals("")) {
+			        	XSLFPictureData idx1 = decodeToImagePPT(monitor.getPhoto1(), ppt);
+			        	setPicturePPT(photoke,slide,idx1,width,height);
+			        	photoke++;
+			        }
+			        
+			        if(monitor.getPhoto2() != null && !monitor.getPhoto2().equals("")) {
+			        	XSLFPictureData idx1 = decodeToImagePPT(monitor.getPhoto2(), ppt);
+			        	setPicturePPT(photoke,slide,idx1,width,height);
+			        	photoke++;
+			        }
+			        
+			        if(monitor.getPhoto3() != null && !monitor.getPhoto3().equals("")) {
+			        	XSLFPictureData idx1 = decodeToImagePPT(monitor.getPhoto3(), ppt);
+			        	setPicturePPT(photoke,slide,idx1,width,height);
+			        	photoke++;
+			        }
+			        
+			        if(monitor.getPhoto4() != null && !monitor.getPhoto4().equals("")) {
+			        	XSLFPictureData idx1 = decodeToImagePPT(monitor.getPhoto4(), ppt);
+			        	setPicturePPT(photoke,slide,idx1,width,height);
+			        	photoke++;
+			        }
+			        
+			        if(monitor.getPhoto5() != null && !monitor.getPhoto5().equals("")) {
+			        	XSLFPictureData idx1 = decodeToImagePPT(monitor.getPhoto5(), ppt);
+			        	setPicturePPT(photoke,slide,idx1,width,height);
+			        	photoke++;
+			        }
+		  
+				}
+			}
+		}
+	      
+		reportToPPT.setPpt(ppt);
+		return reportToPPT;
+	}
+	
+	private void setPicturePPT(int photoke,XSLFSlide slide,XSLFPictureData idx1,int width,int height) {
+		//Recangle(x-corrdinate,y-coordinate,width, height);
+        //y cordinat = atas bawah
+        //x cordinat = kiri kanan
+		if(photoke == 1) {
+			XSLFPictureShape pic1 = slide.createPicture(idx1);
+	        pic1.setAnchor(new Rectangle(400, 120, width, height));
+		}else if(photoke == 2) {
+			XSLFPictureShape pic2 = slide.createPicture(idx1);
+	        pic2.setAnchor(new Rectangle(550, 120, width, height));
+		}else if(photoke == 3) {
+			XSLFPictureShape pic3 = slide.createPicture(idx1);
+	        pic3.setAnchor(new Rectangle(400, 260, width, height));
+		}else if(photoke == 4) {
+			XSLFPictureShape pic4 = slide.createPicture(idx1);
+	        pic4.setAnchor(new Rectangle(550, 260, width, height));
+		}else if(photoke == 5) {
+			XSLFPictureShape pic5 = slide.createPicture(idx1);
+	        pic5.setAnchor(new Rectangle(400, 400, width, height));
+		}
+		
 	}
 
 }

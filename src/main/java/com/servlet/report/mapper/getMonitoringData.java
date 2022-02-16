@@ -15,7 +15,9 @@ public class getMonitoringData implements RowMapper<MonitoringData>{
 	public getMonitoringData(){
 		final StringBuilder sqlBuilder = new StringBuilder(400);
 		sqlBuilder.append("monitor.*, usermobile.nama as namauser, ");
-		sqlBuilder.append("customer.nama as namacust ,  customertype.nama as namacusttype,customer.customercode as customercode ");
+		sqlBuilder.append("customer.nama as namacust ,  customertype.nama as namacusttype,customer.customercode as customercode, ");
+		sqlBuilder.append("customer.address as addresscust ,  customer.provinsi as provinsicust,customer.city as citycust, ");
+		sqlBuilder.append("customer.areaname as areanamecust ,  customer.subarename as subarenamecust,customer.phone as phonecust, customer.contactperson as contactpersoncust ");
 		sqlBuilder.append("from  m_monitor_user_mobile as monitor ");
 		sqlBuilder.append("join m_user_mobile as usermobile on usermobile.id = monitor.idusermobile ");
 		sqlBuilder.append("join m_customer as customer on customer.id = monitor.idcustomer ");
@@ -54,6 +56,13 @@ public class getMonitoringData implements RowMapper<MonitoringData>{
 		final String photo8 = rs.getString("photo8");
 		final String customercode = rs.getString("customercode");
 		final Long idcallplan = rs.getLong("idcallplan");
+		final String addresscust = rs.getString("addresscust");
+		final String provinsicust = rs.getString("provinsicust");
+		final String citycust = rs.getString("citycust");
+		final String areanamecust = rs.getString("areanamecust");
+		final String subarenamecust = rs.getString("subarenamecust");
+		final String phonecust = rs.getString("phonecust");
+		final String contactpersoncust = rs.getString("contactpersoncust");
 		
 		
 		MonitoringData data = new MonitoringData();
@@ -81,6 +90,13 @@ public class getMonitoringData implements RowMapper<MonitoringData>{
 		data.setProject("");
 		data.setCustomercode(customercode == null ?"":customercode);
 		data.setIdcallplan(idcallplan == null ?0:idcallplan.longValue());
+		data.setAddress(addresscust);
+		data.setProvinsi(provinsicust);
+		data.setCity(citycust);
+		data.setAreaname(areanamecust);
+		data.setSubarename(subarenamecust);
+		data.setPhone(phonecust);
+		data.setContactperson(contactpersoncust);
 		return data;
 	}
 

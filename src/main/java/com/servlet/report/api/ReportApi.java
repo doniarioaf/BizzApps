@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -102,21 +103,25 @@ public class ReportApi {
 			if(type.equals("XLSX")) {
 				XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
 				export(response, workbook);
-				return ResponseEntity.ok().build();
+//				return ResponseEntity.ok().build();
+			}else if(type.equals("PPT")){
+				XMLSlideShow ppt = (XMLSlideShow) response1.getData();
+				exportPPT(response,ppt);
 			}else {
+			
 				//PDF
 				ReportToPDF pdf = (ReportToPDF) response1.getData();
 				exportToPdf(response,pdf.getDocument(),pdf.getTable());
-				return ResponseEntity.ok().build();
+//				return ResponseEntity.ok().build();
 			}
-			
+			return ResponseEntity.ok().build();
 		}else {
 			return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
 		}
 		
 	}
 	
-	public void export(HttpServletResponse response,XSSFWorkbook workbook) throws IOException {
+	private void export(HttpServletResponse response,XSSFWorkbook workbook) throws IOException {
         ServletOutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);
         workbook.close();
@@ -125,7 +130,16 @@ public class ReportApi {
          
     }
 	
-	public void exportToPdf(HttpServletResponse response,Document document,PdfPTable table) throws IOException {
+	private void exportPPT(HttpServletResponse response,XMLSlideShow ppt) throws IOException {
+        ServletOutputStream outputStream = response.getOutputStream();
+        ppt.write(outputStream);
+        ppt.close();
+         
+        outputStream.close();
+         
+    }
+	
+	private void exportToPdf(HttpServletResponse response,Document document,PdfPTable table) throws IOException {
         ServletOutputStream outputStream = response.getOutputStream();
         try {
 			PdfWriter.getInstance(document, outputStream);
