@@ -234,4 +234,50 @@ public class CustomerHandler implements CustomerService{
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetCustomerList(), queryParameters);
 	}
 
+	@Override
+	public ReturnData updateCustomerImportExcel(long id, BodyCustomer customer, long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+			Timestamp ts = new Timestamp(new Date().getTime());
+			CustomerListData check = checkCustomerById(id,idcompany,idbranch);
+			List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
+			long idreturn = 0;
+			if(check != null) {
+				if(!customer.getCustomercode().equals("") && !customer.getCustomercode().equals(check.getCustomercode())) {
+					CustomerListData checkCustCode = getCustomerByCustomerCode(customer.getCustomercode(),idcompany,idbranch);
+					if(checkCustCode != null) {
+						ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CUSTOMERCODE_IS_EXIST,"Customer Code Sudah Terpakai");
+						validations.add(msg);
+					}
+				}
+				if(validations.size() == 0) {
+					Customer table = repository.getById(id);
+					table.setIdcustomertype(customer.getIdcustomertype());
+					table.setNama(customer.getNama());
+					table.setAddress(customer.getAddress());
+					table.setProvinsi(customer.getProvinsi());
+					table.setCity(customer.getCity());
+					table.setAreaname(customer.getAreaname());
+					table.setSubarename(customer.getSubarename());
+					table.setPhone(customer.getPhone());
+					table.setLatitude(customer.getLatitude());
+					table.setLongitude(customer.getLongitude());
+					table.setModified(ts);
+					if(table.getCustomercode() != null && !table.getCustomercode().equals("")) {
+					}else {
+						table.setCustomercode(customer.getCustomercode());
+					}
+					table.setContactperson(customer.getContactperson());
+					Customer returntable = repository.saveAndFlush(table);
+					idreturn = returntable.getId();
+				}
+				ReturnData data = new ReturnData();
+				data.setId(idreturn);
+				data.setSuccess(validations.size() > 0?false:true);
+				data.setValidations(validations);
+				return data;
+				
+			}
+			return null;
+	}
+
 }
