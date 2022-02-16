@@ -95,11 +95,11 @@ public class ImportFileHandler implements ImportFileService{
 				            
 				            List<Long> listCustIdToCallPlan = new ArrayList<Long>();
 				            for(DataColumnFileCustomerCallPlan datafile : listdataFile) {
-								System.out.println("Cust CallPlan "+datafile.getNama());
 								CustomerListData datacust = customerService.getCustomerByCustomerCode(datafile.getCustomerCode(), idcompany, idbranch);
 								long idcust = 0;
 								if(datacust != null) {
 									idcust = datacust.getId();
+									customerService.updateCustomerImportExcel(idcust,setBodyCust(datafile), idcompany, idbranch).getId();
 								}else {
 									idcust = customerService.saveCustomer(setBodyCust(datafile), idcompany, idbranch).getId();
 								}
@@ -316,6 +316,7 @@ public class ImportFileHandler implements ImportFileService{
         		String custCodeCheck = "";
         		String custNameCheck = "";
         		String callplanNameCheck = "";
+        		String callplanNameCheckValidasi = "";
         		String projectNumberCheck = "";
 	        	while (cellsInRow.hasNext()) {
 	        		Cell currentCell = cellsInRow.next();
@@ -326,6 +327,7 @@ public class ImportFileHandler implements ImportFileService{
 	        		case 0:
 	        			String callplanName = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 	        			callplanNameCheck = callplanName;
+	        			callplanNameCheckValidasi = callplanName;
 	        			String callplanNameNoSpace = callplanName.replaceAll(" ", "");
 	        			datafile.setCallplanName(callplanName);
 	        			if(callplanNameNoSpace.equals("")) {
@@ -353,10 +355,12 @@ public class ImportFileHandler implements ImportFileService{
 	                  case 2:
 	                	  String projectName = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 	                	  projectNameDistinct = projectName;
-	                	 String projectNameNoSpace = projectName.replaceAll(" ", "");
+	                	 String projectNameNoSpace = projectName.replaceAll(" ", "").toLowerCase();
 	                	 datafile.setProjectName(projectName);
 	                	 if(projectNameNoSpace.equals("")) {
 		        				message = "Project Name Tidak Boleh Kosong";
+	                	  }else if(!(projectNameNoSpace.equals("instore") || projectNameNoSpace.equals("outstore")) ) {
+	                		  message = "Project Hanya Boleh instore dan outstore";
 	                	  }
 	                    break;
 
@@ -367,26 +371,13 @@ public class ImportFileHandler implements ImportFileService{
 	                	  if(customerCodeNoSpace.equals("")) {
 //		        				message = "Customer Code Tidak Boleh Kosong";
 	                	  }else {
-//	                		  if(mapCustomerCode.get(customerCode) != null) {
-//	                			  message = "Cust Code Tidak Boleh Sama";
-//	                		  }else 
-	                		  if(mapCustomerCodeExistInDB.get(customerCode) != null){
-	                			  message = "Cust Code ("+customerCode+") Sudah Terdaftar";
-	                		  }else {
-	                			  custCodeCheck = customerCode;
-//	                			  CustomerListData custInDB = customerService.getCustomerByCustomerCode(customerCode, idcompany, idbranch);
-//	                			  boolean flagCustCodeNotExistInDB = custInDB == null?true:false;
-//	                			  if(flagCustCodeNotExistInDB) {
-//	                				  custCodeCheck = customerCode;
-////	                				  mapCustomerCode.put(customerCode, customerCode);
-//	                			  }else {
-//	                				  
-//	                				  //dimasukan ke hash, karena jika menemukan kode yg sama, tidak perlu cek ke db lagi
-//	                				  mapCustomerCodeExistInDB.put(customerCode, customerCode);
-//	                				  message = "Cust Code ("+customerCode+") Sudah Terdaftar Di Datababse";
-//	                			  }
-	                			  
-	                		  }
+	                		  custCodeCheck = customerCode;
+	                		  
+//	                		  if(mapCustomerCodeExistInDB.get(customerCode) != null){
+//	                			  message = "Cust Code ("+customerCode+") Sudah Terdaftar";
+//	                		  }else {
+//	                			  custCodeCheck = customerCode;
+//	                		  }
 	                	  }
 	                	  
 	                    break;
@@ -496,28 +487,27 @@ public class ImportFileHandler implements ImportFileService{
 		        	if(!custCodeCheck.equals("") && !custNameCheck.equals("")) {
 		        		String mapsCustGet = mapCustomerCode.get(custCodeCheck);
 		        		
-		        		if(mapCustomerCodeExistInDB.get(custCodeCheck) != null){
-	              			  message = "Cust Code ("+custCodeCheck+") Sudah Terdaftar";
-	              		  }else {
-	              			  
-	              			  CustomerListData custInDB = customerService.getCustomerByCustomerCode(custCodeCheck, idcompany, idbranch);
-	              			  boolean flagCustCodeNotExistInDB = custInDB == null?true:false;
-	              			  if(flagCustCodeNotExistInDB) {
-	              				  
-	//              				  mapCustomerCode.put(customerCode, customerCode);
-	              			  }else {
-	              				  
-	              				  //Cek Jika Cust Code Sama tapi Nama Cust Berbeda 
-	              				  if(!custInDB.getNama().toLowerCase().replaceAll(" ", "").equals(custNameCheck.toLowerCase().replaceAll(" ", ""))) {
-	              					  
-	              					//dimasukan ke hash, karena jika menemukan kode yg sama, tidak perlu cek ke db lagi
-	              					mapCustomerCodeExistInDB.put(custCodeCheck, custCodeCheck);
-		              				message = "Cust Code ("+custCodeCheck+") Sudah Terdaftar";
-	              				  }
-	              				  
-	              			  }
-	              			  
-	              		  }
+//		        		if(mapCustomerCodeExistInDB.get(custCodeCheck) != null){
+//	              			  message = "Cust Code ("+custCodeCheck+") Sudah Terdaftar";
+//	              		  }else {
+//	              			  
+//	              			  CustomerListData custInDB = customerService.getCustomerByCustomerCode(custCodeCheck, idcompany, idbranch);
+//	              			  boolean flagCustCodeNotExistInDB = custInDB == null?true:false;
+//	              			  if(flagCustCodeNotExistInDB) {	              				  
+//	              			  }else {
+//	              				  
+//	              				  //Cek Jika Cust Code Sama tapi Nama Cust Berbeda 
+//	              				  if(!custInDB.getNama().toLowerCase().replaceAll(" ", "").equals(custNameCheck.toLowerCase().replaceAll(" ", ""))) {
+//	              					  
+//	              					//dimasukan ke hash, karena jika menemukan kode yg sama, tidak perlu cek ke db lagi
+//	              					mapCustomerCodeExistInDB.put(custCodeCheck, custCodeCheck);
+//		              				message = "Cust Code ("+custCodeCheck+") Sudah Terdaftar";
+//	              				  }
+//	              				  
+//	              			  }
+//	              			  
+//	              		  }
+		        		
 		        		if(mapsCustGet != null) {
 		        			
 		        			//Cek Jika Cust Code Sama tapi Nama Cust Berbeda 
@@ -530,33 +520,47 @@ public class ImportFileHandler implements ImportFileService{
 		        		custCodeCheck = "";
 		        		custNameCheck = "";
 		        	}
+		        	
+		        	if(!callplanNameCheckValidasi.equals("") && !projectNumberCheck.equals("")) {
+		        		String callplanNameCheckNoSpace = callplanNameCheckValidasi.replaceAll(" ", "");
+		        		String mapTemp = mapDistinctCallPlanProject.get(callplanNameCheckNoSpace);
+		        		if(mapTemp != null) {
+		        			if(!mapTemp.equals(projectNumberCheck)) {
+		        				message = "1 CallPlan ("+callplanNameCheckValidasi+") untuk 1 Project";
+		        			}else {
+		        				ProjectData projectdata = callPlanService.getProjectNumberByIdCallPlanName(callplanNameCheckValidasi, idcompany, idbranch);
+		        				if(projectdata != null) {
+		        					if(!mapTemp.equals(projectdata.getProjectnumber())) {
+			        					message = "CallPlan ("+callplanNameCheckValidasi+") Sudah Terdaftar Untuk Project ("+projectdata.getNama()+")";
+			        				}
+		        				}
+		        				
+		        			}
+		        		}else {
+		        			ProjectData projectdata = callPlanService.getProjectNumberByIdCallPlanName(callplanNameCheckValidasi, idcompany, idbranch);
+	        				if(projectdata != null) {
+	        					if(!projectNumberCheck.equals(projectdata.getProjectnumber())) {
+		        					message = "CallPlan ("+callplanNameCheckValidasi+") Sudah Terdaftar Untuk Project ("+projectdata.getNama()+") ";
+		        				}else {
+		        					mapDistinctCallPlanProject.put(callplanNameCheckNoSpace, projectNumberCheck);
+		        				}
+	        				}else {
+	        					mapDistinctCallPlanProject.put(callplanNameCheckNoSpace, projectNumberCheck);
+	        				}
+		        			
+		        		}
+		        		
+		        		projectNumberCheck = "";
+		        		callplanNameCheckValidasi = "";
+		        	}
+		        	
 		        	if(!message.equals("")) {
 		        		ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.FILE_EXCEL_FAILED,message);
 						validations.add(msg);
 						break;
 		        	}
 	        	}
-	        	if(!callplanNameCheck.equals("") && !projectNumberCheck.equals("")) {
-	        		String callplanNameCheckNoSpace = callplanNameCheck.replaceAll(" ", "");
-	        		String mapTemp = mapDistinctCallPlanProject.get(callplanNameCheckNoSpace);
-	        		if(mapTemp != null) {
-	        			if(!mapTemp.equals(projectNumberCheck)) {
-	        				message = "1 CallPlan ("+callplanNameCheck+") untuk 1 Project";
-	        			}else {
-	        				ProjectData projectdata = callPlanService.getProjectNumberByIdCallPlanName(callplanNameCheck, idcompany, idbranch);
-	        				if(projectdata != null) {
-	        					if(!mapTemp.equals(projectdata.getProjectnumber())) {
-		        					message = "CallPlan ("+callplanNameCheck+") Sudah Terdaftar Untuk Project "+projectdata.getNama();
-		        				}
-	        				}
-	        				
-	        			}
-	        		}else {
-	        			mapDistinctCallPlanProject.put(callplanNameCheckNoSpace, projectNumberCheck);
-	        		}
-	        		
-	        		projectNumberCheck = "";
-	        	}
+	        	
 	        	if(!callplanNameCheck.equals("")) {
 	        		//List<DataColumnFileCustomerCallPlan>
 	        		listDataFile.add(datafile);
