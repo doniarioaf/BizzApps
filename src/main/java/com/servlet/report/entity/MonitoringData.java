@@ -27,6 +27,13 @@ public class MonitoringData {
 	private String project;
 	private String customercode;
 	private long idcallplan;
+	private String address;
+	private String provinsi;
+	private String city;
+	private String areaname;
+	private String subarename;
+	private String phone;
+	private String contactperson;
 	public long getIdcallplan() {
 		return idcallplan;
 	}
@@ -170,5 +177,47 @@ public class MonitoringData {
 	}
 	public void setCustomercode(String customercode) {
 		this.customercode = customercode;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getProvinsi() {
+		return provinsi;
+	}
+	public void setProvinsi(String provinsi) {
+		this.provinsi = provinsi;
+	}
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	public String getAreaname() {
+		return areaname;
+	}
+	public void setAreaname(String areaname) {
+		this.areaname = areaname;
+	}
+	public String getSubarename() {
+		return subarename;
+	}
+	public void setSubarename(String subarename) {
+		this.subarename = subarename;
+	}
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+	public String getContactperson() {
+		return contactperson;
+	}
+	public void setContactperson(String contactperson) {
+		this.contactperson = contactperson;
 	}
 }

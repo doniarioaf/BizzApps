@@ -17,5 +17,5 @@ public interface ReportService {
 	List<DataMonitorForMaps> getListDataMaps(BodyGetMaps body,long idcompany,long idbranch);
 	TemplateMaps getTemplateMaps(long idcompany,long idbranch);
 	TemplateReport getTemplateReport(long idcompany,long idbranch);
-	ReportToPPT getReportMonitoringDataPPT(long idcompany,long idbranch);
+	ReportToPPT getReportMonitoringDataPPT(BodyReportMonitoring body,long idcompany,long idbranch);
 }
