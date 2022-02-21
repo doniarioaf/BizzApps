@@ -50,6 +50,7 @@ public class GetDataIdMonitorUserMobile implements RowMapper<MonitorUserMobile> 
 		final String photo8 = rs.getString("photo8");
 		final Timestamp created = rs.getTimestamp("created");
 		final Timestamp modified = rs.getTimestamp("modified");
+		final Long idcallplan = rs.getLong("idcallplan");
 		
 		MonitorUserMobile data = new MonitorUserMobile();
 		data.setId(id);
@@ -75,6 +76,7 @@ public class GetDataIdMonitorUserMobile implements RowMapper<MonitorUserMobile> 
 		data.setPhoto8(photo8);
 		data.setCreated(created);
 		data.setModified(modified);
+		data.setIdcallplan(idcallplan);
 		return data;
 	}
 
