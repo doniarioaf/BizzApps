@@ -78,7 +78,6 @@ public class ImportFileHandler implements ImportFileService{
 						
 						for (Map.Entry<String, List<DataColumnFileCustomerCallPlan>> set : data.getMapGroupCustomerCallPlan().entrySet()) {
 							List<DataColumnFileCustomerCallPlan> listdataFile = set.getValue();
-				            System.out.println("CallPlan "+set.getKey());
 				            CallPlanListData callPlanData = null;
 				            String callPlanName = "";
 				            String projectNumber = "";
@@ -396,63 +395,63 @@ public class ImportFileHandler implements ImportFileService{
 	                	  String contactPerson = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 	                	  String contactPersonNoSpace = contactPerson.replaceAll(" ", "");
 	                	  datafile.setContactPerson(contactPerson);
-	                	  if(contactPersonNoSpace.equals("")) {
-		        				message = "Contact Person Tidak Boleh Kosong";
-	                	  }
+//	                	  if(contactPersonNoSpace.equals("")) {
+//		        				message = "Contact Person Tidak Boleh Kosong";
+//	                	  }
 	                   break;
 	                   
 	                  case 6:
 	                	  String contactNumber = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 	                	  String contactNumberNoSpace = contactNumber.replaceAll(" ", "");
 	                	  datafile.setContactNumber(contactNumber);
-	                	  if(contactNumberNoSpace.equals("")) {
-		        				message = "Contact Number Tidak Boleh Kosong";
-	                	  }
+//	                	  if(contactNumberNoSpace.equals("")) {
+//		        				message = "Contact Number Tidak Boleh Kosong";
+//	                	  }
 	                   break;
 	                   
 	                  case 7:
 	                	  String address = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 	                	  String addressNoSpace = address.replaceAll(" ", "");
 	                	  datafile.setAddress(address);
-	                	  if(addressNoSpace.equals("")) {
-		        				message = "Address Tidak Boleh Kosong";
-	                	  }
+//	                	  if(addressNoSpace.equals("")) {
+//		        				message = "Address Tidak Boleh Kosong";
+//	                	  }
 	                   break;
 	                   
 	                  case 8:
 	                	  String provinsi = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 	                	  String provinsiNoSpace = provinsi.replaceAll(" ", "");
 	                	  datafile.setProvinsi(provinsi);
-	                	  if(provinsiNoSpace.equals("")) {
-		        				message = "provinsi Tidak Boleh Kosong";
-	                	  }
+//	                	  if(provinsiNoSpace.equals("")) {
+//		        				message = "provinsi Tidak Boleh Kosong";
+//	                	  }
 	                   break;
 	                   
 	                  case 9:
 	                	  String city = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 	                	  String cityNoSpace = city.replaceAll(" ", "");
 	                	  datafile.setCity(city);
-	                	  if(cityNoSpace.equals("")) {
-		        				message = "city Tidak Boleh Kosong";
-	                	  }
+//	                	  if(cityNoSpace.equals("")) {
+//		        				message = "city Tidak Boleh Kosong";
+//	                	  }
 	                   break;
 	                   
 	                  case 10:
 	                	  String area = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 	                	  String areaNoSpace = area.replaceAll(" ", "");
 	                	  datafile.setArea(area);
-	                	  if(areaNoSpace.equals("")) {
-		        				message = "area Tidak Boleh Kosong";
-	                	  }
+//	                	  if(areaNoSpace.equals("")) {
+//		        				message = "area Tidak Boleh Kosong";
+//	                	  }
 	                   break;
 	                   
 	                  case 11:
 	                	  String subArea = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 	                	  String subAreaNoSpace = subArea.replaceAll(" ", "");
 	                	  datafile.setSubArea(subArea);
-	                	  if(subAreaNoSpace.equals("")) {
-		        				message = "subArea Tidak Boleh Kosong";
-	                	  }
+//	                	  if(subAreaNoSpace.equals("")) {
+//		        				message = "subArea Tidak Boleh Kosong";
+//	               	  }
 	                   break;
 	                   
 	                  case 12:
