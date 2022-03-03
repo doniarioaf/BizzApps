@@ -63,8 +63,17 @@ public class CustomerHandler implements CustomerService{
 			table.setAreaname(customer.getAreaname());
 			table.setSubarename(customer.getSubarename());
 			table.setPhone(customer.getPhone());
-			table.setLatitude(customer.getLatitude());
-			table.setLongitude(customer.getLongitude());
+			
+			String latitude = "0.0";
+			String longitude = "0.0";
+			if(customer.getLatitude() != null && !customer.getLatitude().equals("")) {
+				latitude = customer.getLatitude();
+			}
+			if(customer.getLongitude() != null && !customer.getLongitude().equals("")) {
+				longitude = customer.getLongitude();
+			}
+			table.setLatitude(latitude);
+			table.setLongitude(longitude);
 			table.setIsdelete(false);
 			table.setCreated(ts);
 			table.setModified(ts);
@@ -105,6 +114,18 @@ public class CustomerHandler implements CustomerService{
 				table.setAreaname(customer.getAreaname());
 				table.setSubarename(customer.getSubarename());
 				table.setPhone(customer.getPhone());
+				
+				String latitude = "0.0";
+				String longitude = "0.0";
+				if(customer.getLatitude() != null && !customer.getLatitude().equals("")) {
+					latitude = customer.getLatitude();
+				}
+				if(customer.getLongitude() != null && !customer.getLongitude().equals("")) {
+					longitude = customer.getLongitude();
+				}
+				table.setLatitude(latitude);
+				table.setLongitude(longitude);
+				
 				table.setLatitude(customer.getLatitude());
 				table.setLongitude(customer.getLongitude());
 				table.setModified(ts);
@@ -259,8 +280,17 @@ public class CustomerHandler implements CustomerService{
 					table.setAreaname(customer.getAreaname());
 					table.setSubarename(customer.getSubarename());
 					table.setPhone(customer.getPhone());
-					table.setLatitude(customer.getLatitude());
-					table.setLongitude(customer.getLongitude());
+					String latitude = "0.0";
+					String longitude = "0.0";
+					if(customer.getLatitude() != null && !customer.getLatitude().equals("")) {
+						latitude = customer.getLatitude();
+					}
+					if(customer.getLongitude() != null && !customer.getLongitude().equals("")) {
+						longitude = customer.getLongitude();
+					}
+					table.setLatitude(latitude);
+					table.setLongitude(longitude);
+					
 					table.setModified(ts);
 					if(table.getCustomercode() != null && !table.getCustomercode().equals("")) {
 					}else {
