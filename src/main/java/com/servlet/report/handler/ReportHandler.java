@@ -392,13 +392,18 @@ public class ReportHandler implements ReportService {
 	
 	private void createCell(Row row, int columnCount, Object value, CellStyle style,XSSFSheet sheet) {
         sheet.autoSizeColumn(columnCount);
+        
         Cell cell = row.createCell(columnCount);
         if (value instanceof Integer) {
             cell.setCellValue((Integer) value);
         } else if (value instanceof Boolean) {
             cell.setCellValue((Boolean) value);
         }else {
-            cell.setCellValue((String) value);
+        	String textval = (String) value;
+        	int numberOfLines = textval.split("\n").length;
+        	row.setHeightInPoints((2+numberOfLines) * sheet.getDefaultRowHeightInPoints());
+        	style.setWrapText(true);
+            cell.setCellValue(textval);
         }
         cell.setCellStyle(style);
     }
