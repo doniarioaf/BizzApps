@@ -148,12 +148,12 @@ public class ReportHandler implements ReportService {
 	        createCell(row, 7, "Photo 3", style,sheet);
 	        createCell(row, 8, "Photo 4", style,sheet);
 	        createCell(row, 9, "Photo 5", style,sheet);
-	        createCell(row, 10, "Is Photo 1", style,sheet);
-	        createCell(row, 11, "Is Photo 2", style,sheet);
-	        createCell(row, 12, "Is Photo 3", style,sheet);
-	        createCell(row, 13, "Is Photo 4", style,sheet);
-	        createCell(row, 14, "Is Photo 5", style,sheet);
-	        int rowHeader = 15;
+//	        createCell(row, 10, "Is Photo 1", style,sheet);
+//	        createCell(row, 11, "Is Photo 2", style,sheet);
+//	        createCell(row, 12, "Is Photo 3", style,sheet);
+//	        createCell(row, 13, "Is Photo 4", style,sheet);
+//	        createCell(row, 14, "Is Photo 5", style,sheet);
+	        int rowHeader = 10;
 	        
 			List<MonitoringData> list = getListMonitoringData(user.getId(),body,idcompany,idbranch);
 			List<Integer> listQuestionExistInMonitoring = new ArrayList<>();
@@ -314,11 +314,11 @@ public class ReportHandler implements ReportService {
 						createCell(rowMonitor, columnCount++, "", style,sheet);
 					}
 
-					createCell(rowMonitor, columnCount++, monitor.getPhoto1() != null && !monitor.getPhoto1().equals("")?"Y":"N", style,sheet);
-					createCell(rowMonitor, columnCount++, monitor.getPhoto2() != null && !monitor.getPhoto2().equals("")?"Y":"N", style,sheet);
-					createCell(rowMonitor, columnCount++, monitor.getPhoto3() != null && !monitor.getPhoto3().equals("")?"Y":"N", style,sheet);
-					createCell(rowMonitor, columnCount++, monitor.getPhoto4() != null && !monitor.getPhoto4().equals("")?"Y":"N", style,sheet);
-					createCell(rowMonitor, columnCount++, monitor.getPhoto5() != null && !monitor.getPhoto5().equals("")?"Y":"N", style,sheet);
+//					createCell(rowMonitor, columnCount++, monitor.getPhoto1() != null && !monitor.getPhoto1().equals("")?"Y":"N", style,sheet);
+//					createCell(rowMonitor, columnCount++, monitor.getPhoto2() != null && !monitor.getPhoto2().equals("")?"Y":"N", style,sheet);
+//					createCell(rowMonitor, columnCount++, monitor.getPhoto3() != null && !monitor.getPhoto3().equals("")?"Y":"N", style,sheet);
+//					createCell(rowMonitor, columnCount++, monitor.getPhoto4() != null && !monitor.getPhoto4().equals("")?"Y":"N", style,sheet);
+//					createCell(rowMonitor, columnCount++, monitor.getPhoto5() != null && !monitor.getPhoto5().equals("")?"Y":"N", style,sheet);
 					
 					//set Value Info
 //					List<Long> listInfo = hashMonitorUserMobileInfo.get(monitor.getIdmonitoring());
@@ -385,7 +385,7 @@ public class ReportHandler implements ReportService {
 			sqlBuilder.append(" and monitor.idcustomer in (select idcustomer from m_customer_project as mcp where mcp.idproject="+body.getIdproject()+" and mcp.idcompany="+idcompany+" and mcp.idbranch="+idbranch+" ) ");
 			sqlBuilder.append(" and monitor.idcallplan in ("+selectIdCallPlan+") ");
 		}
-		sqlBuilder.append(" order by monitor.idusermobile");
+		sqlBuilder.append(" order by monitor.idusermobile,monitor.idproject,monitor.tanggal desc ");
 		final Object[] queryParameters = new Object[] { idusermobile,idcompany,idbranch };
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new getMonitoringData(), queryParameters);
 	}
