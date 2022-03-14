@@ -317,14 +317,14 @@ public class ImportFileHandler implements ImportFileService{
         		String callplanNameCheck = "";
         		String callplanNameCheckValidasi = "";
         		String projectNumberCheck = "";
-	        	while (cellsInRow.hasNext()) {
-	        		Cell currentCell = cellsInRow.next();
+//	        	while (cellsInRow.hasNext()) {
+	        		cellIdx =0;
+	        		Cell currentCell = currentRow.getCell(cellIdx);//cellsInRow.next();
 	        		
 	        		message = "";
 	        		
-	        		switch (cellIdx) {
-	        		case 0:
-	        			String callplanName = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
+	        			
+	        			String callplanName = getValueColumn(currentRow.getCell(cellIdx));//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 	        			callplanNameCheck = callplanName;
 	        			callplanNameCheckValidasi = callplanName;
 	        			String callplanNameNoSpace = callplanName.replaceAll(" ", "");
@@ -336,10 +336,9 @@ public class ImportFileHandler implements ImportFileService{
 	        					mapDistinctCallPlan.put(callplanNameNoSpace, callplanName);
 	        				}
 	        			}
-	                    break;
-
-	                  case 1:
-	                	  String projectNumber = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
+	        			
+	        			cellIdx++;
+	        			String projectNumber = getValueColumn(currentRow.getCell(cellIdx));//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 	                	  projectNumberCheck = projectNumber;
 	                	  projectNumberDistinct = projectNumber;
 	                	  String projectNumberNoSpace = projectNumber.replaceAll(" ", "");
@@ -349,10 +348,9 @@ public class ImportFileHandler implements ImportFileService{
 	                	  }else {
 	                		  
 	                	  }
-	                    break;
-
-	                  case 2:
-	                	  String projectName = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
+	                	  
+	                	  cellIdx++;
+	                	  String projectName = getValueColumn(currentRow.getCell(cellIdx));//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 	                	  projectNameDistinct = projectName;
 	                	 String projectNameNoSpace = projectName.replaceAll(" ", "").toLowerCase();
 	                	 datafile.setProjectName(projectName);
@@ -361,10 +359,9 @@ public class ImportFileHandler implements ImportFileService{
 	                	  }else if(!(projectNameNoSpace.equals("instore") || projectNameNoSpace.equals("outstore")) ) {
 	                		  message = "Project Hanya Boleh instore dan outstore";
 	                	  }
-	                    break;
-
-	                  case 3:
-	                	  String customerCode = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
+	                	 
+	                	 cellIdx++;
+	                	  String customerCode = getValueColumn(currentRow.getCell(cellIdx));//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 	                	  String customerCodeNoSpace = customerCode.replaceAll(" ", "");
 	                	  datafile.setCustomerCode(customerCode);
 	                	  if(customerCodeNoSpace.equals("")) {
@@ -379,95 +376,81 @@ public class ImportFileHandler implements ImportFileService{
 //	                		  }
 	                	  }
 	                	  
-	                    break;
-	                    
-	                  case 4:
-	                	  String nama = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
+	                	  
+	                	  cellIdx++;
+	                	  String nama = getValueColumn(currentRow.getCell(cellIdx));//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 	                	  datafile.setNama(nama);
 	                	  String namaNoSpace = nama.replaceAll(" ", "");
 	                	  custNameCheck = nama;
 	                	  if(namaNoSpace.equals("")) {
 		        				message = "Nama Tidak Boleh Kosong";
 	                	  }
-	                   break;
-	                   
-	                  case 5:
-	                	  String contactPerson = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
+	                	  
+	                	  cellIdx++;
+	                	  String contactPerson = getValueColumn(currentRow.getCell(cellIdx));//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 	                	  String contactPersonNoSpace = contactPerson.replaceAll(" ", "");
 	                	  datafile.setContactPerson(contactPerson);
 //	                	  if(contactPersonNoSpace.equals("")) {
 //		        				message = "Contact Person Tidak Boleh Kosong";
 //	                	  }
-	                   break;
-	                   
-	                  case 6:
-	                	  String contactNumber = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
+	                	  
+	                	  cellIdx++;
+	                	  String contactNumber = getValueColumn(currentRow.getCell(cellIdx));//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 	                	  String contactNumberNoSpace = contactNumber.replaceAll(" ", "");
 	                	  datafile.setContactNumber(contactNumber);
 //	                	  if(contactNumberNoSpace.equals("")) {
 //		        				message = "Contact Number Tidak Boleh Kosong";
 //	                	  }
-	                   break;
-	                   
-	                  case 7:
-	                	  String address = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
+	                	  
+	                	  cellIdx++;
+	                	  String address = getValueColumn(currentRow.getCell(cellIdx));//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 	                	  String addressNoSpace = address.replaceAll(" ", "");
 	                	  datafile.setAddress(address);
 //	                	  if(addressNoSpace.equals("")) {
 //		        				message = "Address Tidak Boleh Kosong";
 //	                	  }
-	                   break;
 	                   
-	                  case 8:
-	                	  String provinsi = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
+	                	  cellIdx++;
+	                	  String provinsi = getValueColumn(currentRow.getCell(cellIdx));//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 	                	  String provinsiNoSpace = provinsi.replaceAll(" ", "");
 	                	  datafile.setProvinsi(provinsi);
 //	                	  if(provinsiNoSpace.equals("")) {
 //		        				message = "provinsi Tidak Boleh Kosong";
 //	                	  }
-	                   break;
-	                   
-	                  case 9:
-	                	  String city = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
+	                	  
+	                	  cellIdx++;
+	                	  String city = getValueColumn(currentRow.getCell(cellIdx));//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 	                	  String cityNoSpace = city.replaceAll(" ", "");
 	                	  datafile.setCity(city);
 //	                	  if(cityNoSpace.equals("")) {
 //		        				message = "city Tidak Boleh Kosong";
 //	                	  }
-	                   break;
-	                   
-	                  case 10:
-	                	  String area = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
+	                	  
+	                	  cellIdx++;
+	                	  String area = getValueColumn(currentRow.getCell(cellIdx));//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 	                	  String areaNoSpace = area.replaceAll(" ", "");
 	                	  datafile.setArea(area);
 //	                	  if(areaNoSpace.equals("")) {
 //		        				message = "area Tidak Boleh Kosong";
 //	                	  }
-	                   break;
-	                   
-	                  case 11:
-	                	  String subArea = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
+	                	  
+	                	  cellIdx++;
+	                	  String subArea = getValueColumn(currentRow.getCell(cellIdx));//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 	                	  String subAreaNoSpace = subArea.replaceAll(" ", "");
 	                	  datafile.setSubArea(subArea);
 //	                	  if(subAreaNoSpace.equals("")) {
 //		        				message = "subArea Tidak Boleh Kosong";
 //	               	  }
-	                   break;
-	                   
-	                  case 12:
-	                	  String latitude = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
+	                	  
+	                	  cellIdx++;
+	                	  String latitude = getValueColumn(currentRow.getCell(cellIdx));//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 	                	  datafile.setLatitude(latitude);
-	                   break;
-	                   
-	                  case 13:
-	                	  String longitude = getValueColumn(currentCell);//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
+	                	  
+	                	  cellIdx++;
+	                	  String longitude = getValueColumn(currentRow.getCell(cellIdx));//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 	                	  datafile.setLongitude(longitude);
-	                   break;
-
-		              default:
-		                break;
-		              }
-		        	cellIdx++;
+	                  
+		        	
 		        	
 		        	if(!projectNameDistinct.equals("") && !projectNumberDistinct.equals("")) {
 		        		String projectNumberDistinctNoSpace = projectNumberDistinct.replaceAll(" ", "");
@@ -558,13 +541,17 @@ public class ImportFileHandler implements ImportFileService{
 						validations.add(msg);
 						break;
 		        	}
-	        	}
+		        	
+		        	if(cellIdx == 14) {
+		        		continue;
+		        	}
+//	        	}
 	        	
 	        	if(!callplanNameCheck.equals("")) {
 	        		//List<DataColumnFileCustomerCallPlan>
 	        		listDataFile.add(datafile);
 	        		
-	        		String callplanNameNoSpace = datafile.getCallplanName().replaceAll(" ", "");
+	        		 callplanNameNoSpace = datafile.getCallplanName().replaceAll(" ", "");
 	        		List<DataColumnFileCustomerCallPlan> listTempData = mapGroupCustomerCallPlan.get(callplanNameNoSpace);
 	        		if(listTempData != null) {
 	        			listTempData.add(datafile);
@@ -575,7 +562,7 @@ public class ImportFileHandler implements ImportFileService{
 	        			mapGroupCustomerCallPlan.put(callplanNameNoSpace, listTempData);
 	        		}
 	        		
-	        		String projectNumberNoSpace = datafile.getProjectNumber().replaceAll(" ", "");
+	        		 projectNumberNoSpace = datafile.getProjectNumber().replaceAll(" ", "");
 	        		List<DataColumnFileCustomerCallPlan> listTempDataProject = mapGroupCustomerProject.get(projectNumberNoSpace);
 	        		if(listTempDataProject != null) {
 	        			listTempDataProject.add(datafile);
@@ -683,13 +670,30 @@ public class ImportFileHandler implements ImportFileService{
 	
 	private String getValueColumn(Cell currentCell){
 		String value = "";
-		//currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
-		if(currentCell.getCellType() == CellType.STRING) {
+		if(isCellEmpty(currentCell)) {
+			value = "";
+		}else if(currentCell.getCellType() == CellType.STRING) {
 			value = currentCell.getStringCellValue() != null?currentCell.getStringCellValue():"";
 		}else if(currentCell.getCellType() == CellType.NUMERIC) {
 			value = String.valueOf(currentCell.getNumericCellValue()) != null ?String.valueOf(currentCell.getNumericCellValue()):"";
 		}
 		return value;
+	}
+	
+	private static boolean isCellEmpty(Cell cell) {
+	    if (cell == null) { // use row.getCell(x, Row.CREATE_NULL_AS_BLANK) to avoid null cells
+	        return true;
+	    }
+
+	    if (cell.getCellType() == CellType.BLANK) {
+	        return true;
+	    }
+
+	    if (cell.getCellType() == CellType.STRING && cell.getStringCellValue().trim().isEmpty()) {
+	        return true;
+	    }
+
+	    return false;
 	}
 	
 	//Cell currentCell
