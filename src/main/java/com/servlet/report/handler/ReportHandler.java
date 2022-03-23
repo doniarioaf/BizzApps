@@ -225,8 +225,8 @@ public class ReportHandler implements ReportService {
 					anchor.setAnchorType( ClientAnchor.AnchorType.MOVE_AND_RESIZE );
 					
 					Integer objIntPhoto1 = decodeToImageExcel(monitor.getPhoto1(),workbook);
-					int widhtPhoto = 50;
-					int heightPhoto = 50;
+					int widhtPhoto = 200;
+					int heightPhoto = 200;
 					if(objIntPhoto1 != null) {
 						int kolom = columnCount++;
 						Cell celPhoto = rowMonitor.createCell(kolom);
@@ -416,8 +416,8 @@ public class ReportHandler implements ReportService {
 			ByteArrayInputStream bis = new ByteArrayInputStream(imagebyte);
 			BufferedImage image = ImageIO.read(bis);
 			
-			int scaledWidth = 200;
-            int scaledHeight = 200;
+			int scaledWidth = 1000;
+            int scaledHeight = 1000;
             
 			// creates output image
 	        BufferedImage outputImage = new BufferedImage(scaledWidth,
