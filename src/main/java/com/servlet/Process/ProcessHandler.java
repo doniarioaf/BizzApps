@@ -35,6 +35,7 @@ import com.servlet.admin.role.entity.BodyRole;
 import com.servlet.admin.role.service.RoleService;
 import com.servlet.admin.usermobile.entity.BodyUserMobile;
 import com.servlet.admin.usermobile.service.UserMobileService;
+import com.servlet.customermanggala.service.CustomerManggalaService;
 import com.servlet.mobile.callplan.entity.BodyCallPlan;
 import com.servlet.mobile.callplan.service.CallPlanService;
 import com.servlet.mobile.customercallplan.entity.DownloadCustomerCallPlan;
@@ -106,6 +107,8 @@ public class ProcessHandler implements ProcessService{
 	ReportService reportService;
 	@Autowired
 	ImportFileService importFileService;
+	@Autowired
+	CustomerManggalaService customerManggalaService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -560,6 +563,12 @@ public class ProcessHandler implements ProcessService{
 					BodyGetMaps body = (BodyGetMaps) param.get("body");
 					val.setData(reportService.getListDataMaps(body, auth.getIdcompany(), auth.getIdbranch()));
 				}
+			}else if(codepermission.equals(ConstansPermission.READ_CUSTOMER_MANGGALA)) {
+				String type = (String) data;
+				if(type.equals("TEMPLATE")) {
+					val.setData(customerManggalaService.customerManggalaTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}
+				
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
 			if(codepermission.equals(ConstansPermission.READ_INFO_MOBILE)) {
