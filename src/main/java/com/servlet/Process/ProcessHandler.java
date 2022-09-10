@@ -13,6 +13,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
 import com.servlet.BizzAppsBackEndApplication;
+import com.servlet.address.service.DistrictService;
+import com.servlet.address.service.PostalCodeService;
+import com.servlet.address.service.SubDistrictService;
 import com.servlet.admin.branch.entity.BodyBranch;
 import com.servlet.admin.branch.entity.Branch;
 import com.servlet.admin.branch.entity.BranchData;
@@ -35,6 +38,7 @@ import com.servlet.admin.role.entity.BodyRole;
 import com.servlet.admin.role.service.RoleService;
 import com.servlet.admin.usermobile.entity.BodyUserMobile;
 import com.servlet.admin.usermobile.service.UserMobileService;
+import com.servlet.customermanggala.service.CustomerManggalaService;
 import com.servlet.mobile.callplan.entity.BodyCallPlan;
 import com.servlet.mobile.callplan.service.CallPlanService;
 import com.servlet.mobile.customercallplan.entity.DownloadCustomerCallPlan;
@@ -106,6 +110,14 @@ public class ProcessHandler implements ProcessService{
 	ReportService reportService;
 	@Autowired
 	ImportFileService importFileService;
+	@Autowired
+	CustomerManggalaService customerManggalaService;
+	@Autowired
+	DistrictService districtService;
+	@Autowired
+	SubDistrictService subdistrictService;
+	@Autowired
+	PostalCodeService postalCodeService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -560,6 +572,35 @@ public class ProcessHandler implements ProcessService{
 					BodyGetMaps body = (BodyGetMaps) param.get("body");
 					val.setData(reportService.getListDataMaps(body, auth.getIdcompany(), auth.getIdbranch()));
 				}
+			}else if(codepermission.equals(ConstansPermission.READ_CUSTOMER_MANGGALA)) {
+				String type = (String) data;
+				if(type.equals("TEMPLATE")) {
+					val.setData(customerManggalaService.customerManggalaTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}
+				
+			}else if(codepermission.equals(ConstansPermission.READ_ADDRESS)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL_DISTRICT")) {
+					val.setData(districtService.getListDistrict());
+				}else if(type.equals("DISTRICT_BY_CITY")) {
+					long cityid = (long) param.get("cityid");
+					val.setData(districtService.getListDistrictByCity(cityid));
+				}else if(type.equals("ALL_SUBDISTRICT")) {
+					val.setData(subdistrictService.getListSubDistrict());
+				}else if(type.equals("SUBDISTRICT_BY_DISTRICT")) {
+					long districtid = (long) param.get("districtid");
+					val.setData(subdistrictService.getListSubDistrictByDistrictId(districtid));
+				}else if(type.equals("ALL_POSTAlCODE")) {
+					val.setData(postalCodeService.getListPostalCode());
+				}else if(type.equals("POSTALCODE_BY_POSTALCODE")) {
+					long postalcode = (long) param.get("postalcode");
+					val.setData(postalCodeService.getListPostalCodeByPostalCode(postalcode));
+				}else if(type.equals("POSTALCODE_BY_SUBDSTRICT")) {
+					long subdistrictid = (long) param.get("subdistrictid");
+					val.setData(postalCodeService.getListPostalCodeByPostalCodeBySubDistrictId(subdistrictid));
+				}
+				
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
 			if(codepermission.equals(ConstansPermission.READ_INFO_MOBILE)) {
