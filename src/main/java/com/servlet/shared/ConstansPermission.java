@@ -74,4 +74,5 @@ public class ConstansPermission {
 	public static final String CREATE_UPLOAD_CUSTOMER_CALLPLAN = "CREATE_UPLOAD_CUSTOMER_CALLPLAN";
 	
 	public static final String READ_CUSTOMER_MANGGALA = "READ_CUSTOMER_MANGGALA";
+	public static final String READ_ADDRESS = "READ_ADDRESS";
 }
