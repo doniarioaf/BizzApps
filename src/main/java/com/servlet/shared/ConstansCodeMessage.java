@@ -50,4 +50,12 @@ public class ConstansCodeMessage {
 	
 //	//sukses, tapi mengandung catatan, disarankan untuk menampilkan alert catatan tersebut
 //	public static final String SUCCESS_ALERT = "SUCCESS_ALERT";
+	
+	
+	public static final String VALIDASI_BANK_ACCOUNT_DATEOPEN_EMPTY = "validation.bankaccount.dateopen.empty";
+	public static final String VALIDASI_BANK_ACCOUNT_DATEOPEN_NOTVALID = "validation.bankaccount.dateopen.notvalid";
+	public static final String VALIDASI_BANK_ACCOUNT_NO_REK_EMPTY = "validation.bankaccount.norekening.empty";
+	public static final String VALIDASI_BANK_ACCOUNT_NO_REK_NOTNUMBER = "validation.bankaccount.norekening.notnumber";
+	public static final String VALIDASI_BANK_ACCOUNT_CABANG_EMPTY = "validation.bankaccount.cabang.empty";
+	
 }
