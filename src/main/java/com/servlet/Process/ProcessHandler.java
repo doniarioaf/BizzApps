@@ -389,7 +389,7 @@ public class ProcessHandler implements ProcessService{
 				}
 			}else if(codepermission.equals(ConstansPermission.CREATE_BANK_ACCOUNT)) {
 				BodyBankAccount param = (BodyBankAccount) data;
-				ReturnData valReturn = bankAccountService.saveBankAccount(auth.getIdcompany(),auth.getIdbranch(), param);
+				ReturnData valReturn = bankAccountService.saveBankAccount(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
 				if(valReturn.isSuccess()) {
 					val.setData(valReturn.getId());
 				}else {
@@ -402,7 +402,7 @@ public class ProcessHandler implements ProcessService{
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				long id  = (long) param.get("id");
 				BodyBankAccount body  = (BodyBankAccount) param.get("body");
-				ReturnData valReturn = bankAccountService.updateBankAccount(auth.getIdcompany(),auth.getIdbranch(),id, body);
+				ReturnData valReturn = bankAccountService.updateBankAccount(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
 				if(valReturn.isSuccess()) {
 					val.setData(valReturn.getId());
 				}else {
@@ -413,7 +413,7 @@ public class ProcessHandler implements ProcessService{
 				}
 			}else if(codepermission.equals(ConstansPermission.DELETE_BANK_ACCOUNT)) {
 				long id = (long) data;
-				ReturnData valReturn = bankAccountService.deleteBankAccount(auth.getIdcompany(),auth.getIdbranch(),id);
+				ReturnData valReturn = bankAccountService.deleteBankAccount(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
 				if(valReturn.isSuccess()) {
 					val.setData(valReturn.getId());
 				}else {

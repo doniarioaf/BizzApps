@@ -1,12 +1,13 @@
 package com.servlet.bankaccount.entity;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 public class BankAccountData {
 	private Long id;
 	private String cabang;
 	private String norekening;
-	private Timestamp dateopen;
+	private Date dateopen;
 	private String catatan1;
 	private String catatan2;
 	private boolean isactive;
@@ -29,10 +30,10 @@ public class BankAccountData {
 	public void setNorekening(String norekening) {
 		this.norekening = norekening;
 	}
-	public Timestamp getDateopen() {
+	public Date getDateopen() {
 		return dateopen;
 	}
-	public void setDateopen(Timestamp dateopen) {
+	public void setDateopen(Date dateopen) {
 		this.dateopen = dateopen;
 	}
 	public String getCatatan1() {

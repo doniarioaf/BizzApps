@@ -1,6 +1,7 @@
 package com.servlet.bankaccount.entity;
 
 import java.io.Serializable;
+import java.sql.Date;
 import java.sql.Timestamp;
 
 import javax.persistence.Entity;
@@ -19,7 +20,7 @@ public class BankAccount implements Serializable{
 	private Long id;
 	private String cabang;
 	private String norekening;
-	private Timestamp dateopen;
+	private Date dateopen;
 	private String catatan1;
 	private String catatan2;
 	private boolean isactive;
@@ -27,6 +28,13 @@ public class BankAccount implements Serializable{
 	private Long idcompany;
 	private Long idbranch;
 	private String namabank;
+	private String createdby;
+	private Timestamp createddate;
+	private String updateby;
+	private Timestamp updatedate;
+	private String deleteby;
+	private Timestamp deletedate;
+	
 	public Long getId() {
 		return id;
 	}
@@ -45,10 +53,10 @@ public class BankAccount implements Serializable{
 	public void setNorekening(String norekening) {
 		this.norekening = norekening;
 	}
-	public Timestamp getDateopen() {
+	public Date getDateopen() {
 		return dateopen;
 	}
-	public void setDateopen(Timestamp dateopen) {
+	public void setDateopen(Date dateopen) {
 		this.dateopen = dateopen;
 	}
 	public String getCatatan1() {
@@ -92,5 +100,41 @@ public class BankAccount implements Serializable{
 	}
 	public void setNamabank(String namabank) {
 		this.namabank = namabank;
+	}
+	public String getCreatedby() {
+		return createdby;
+	}
+	public void setCreatedby(String createdby) {
+		this.createdby = createdby;
+	}
+	public Timestamp getCreateddate() {
+		return createddate;
+	}
+	public void setCreateddate(Timestamp createddate) {
+		this.createddate = createddate;
+	}
+	public String getUpdateby() {
+		return updateby;
+	}
+	public void setUpdateby(String updateby) {
+		this.updateby = updateby;
+	}
+	public Timestamp getUpdatedate() {
+		return updatedate;
+	}
+	public void setUpdatedate(Timestamp updatedate) {
+		this.updatedate = updatedate;
+	}
+	public String getDeleteby() {
+		return deleteby;
+	}
+	public void setDeleteby(String deleteby) {
+		this.deleteby = deleteby;
+	}
+	public Timestamp getDeletedate() {
+		return deletedate;
+	}
+	public void setDeletedate(Timestamp deletedate) {
+		this.deletedate = deletedate;
 	}
 }

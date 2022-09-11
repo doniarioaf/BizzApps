@@ -1,5 +1,6 @@
 package com.servlet.bankaccount.mapper;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -32,7 +33,7 @@ public class GetDataBankAccount implements RowMapper<BankAccountData>{
 		final String cabang = rs.getString("cabang");
 		final String namabank = rs.getString("namabank");
 		final String norekening = rs.getString("norekening");
-		final Timestamp dateopen = rs.getTimestamp("dateopen");
+		final Date dateopen = rs.getDate("dateopen");
 		final String catatan1 = rs.getString("catatan1");
 		final String catatan2 = rs.getString("catatan2");
 		final boolean isactive = rs.getBoolean("isactive");

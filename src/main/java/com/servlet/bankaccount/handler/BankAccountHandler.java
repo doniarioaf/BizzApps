@@ -1,6 +1,7 @@
 package com.servlet.bankaccount.handler;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public class BankAccountHandler implements BankAccountService{
 	}
 
 	@Override
-	public ReturnData saveBankAccount(Long idcompany, Long idbranch, BodyBankAccount body) {
+	public ReturnData saveBankAccount(Long idcompany, Long idbranch,Long iduser, BodyBankAccount body) {
 		// TODO Auto-generated method stub
 		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
 		if(body.getDateopen() != null) {
@@ -84,17 +85,20 @@ public class BankAccountHandler implements BankAccountService{
 		long idsave = 0;
 		if(validations.size() == 0) {
 			try {
+				Timestamp ts = new Timestamp(new Date().getTime());
 				BankAccount table = new BankAccount();
 				table.setIdcompany(idcompany);
 				table.setIdbranch(idbranch);
 				table.setCabang(body.getCabang());
 				table.setNorekening(body.getNorekening());
-				table.setDateopen(new Timestamp(body.getDateopen()));
+				table.setDateopen(new java.sql.Date(body.getDateopen()));
 				table.setCatatan1(body.getCatatan1());
 				table.setCatatan2(body.getCatatan2());
 				table.setIsactive(body.isIsactive());
 				table.setNamabank(body.getNamabank());
 				table.setIsdelete(false);
+				table.setCreatedby(iduser.toString());
+				table.setCreateddate(ts);
 				idsave = repository.saveAndFlush(table).getId();
 			}catch (Exception e) {
 				// TODO: handle exception
@@ -112,7 +116,7 @@ public class BankAccountHandler implements BankAccountService{
 	}
 
 	@Override
-	public ReturnData updateBankAccount(Long idcompany, Long idbranch,Long id, BodyBankAccount body) {
+	public ReturnData updateBankAccount(Long idcompany, Long idbranch,Long iduser,Long id, BodyBankAccount body) {
 		// TODO Auto-generated method stub
 		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
 		if(body.getDateopen() != null) {
@@ -146,14 +150,17 @@ public class BankAccountHandler implements BankAccountService{
 		if(value != null) {
 			if(validations.size() == 0) {
 				try {
+				Timestamp ts = new Timestamp(new Date().getTime());
 				BankAccount table = repository.getById(id);
 				table.setCabang(body.getCabang());
 				table.setNorekening(body.getNorekening());
-				table.setDateopen(new Timestamp(body.getDateopen()));
+				table.setDateopen(new java.sql.Date(body.getDateopen()));
 				table.setCatatan1(body.getCatatan1());
 				table.setCatatan2(body.getCatatan2());
 				table.setIsactive(body.isIsactive());
 				table.setNamabank(body.getNamabank());
+				table.setUpdateby(iduser.toString());
+				table.setUpdatedate(ts);
 				idsave = repository.saveAndFlush(table).getId();
 				}catch (Exception e) {
 					// TODO: handle exception
@@ -170,14 +177,17 @@ public class BankAccountHandler implements BankAccountService{
 	}
 
 	@Override
-	public ReturnData deleteBankAccount(Long idcompany, Long idbranch, Long id) {
+	public ReturnData deleteBankAccount(Long idcompany, Long idbranch,Long iduser, Long id) {
 		// TODO Auto-generated method stub
 		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
 		long idsave = 0;
 		BankAccountData value = getById(idcompany,idbranch,id);
 		if(value != null) {
+			Timestamp ts = new Timestamp(new Date().getTime());
 			BankAccount table = repository.getById(id);
 			table.setIsdelete(true);
+			table.setDeleteby(iduser.toString());
+			table.setDeletedate(ts);
 			idsave = repository.saveAndFlush(table).getId();
 		}
 		ReturnData data = new ReturnData();
