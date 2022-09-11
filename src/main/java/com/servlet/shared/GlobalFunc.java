@@ -38,4 +38,38 @@ public class GlobalFunc {
 	     
 	     return new Timestamp(cal.getTime().getTime());
 	}
+	
+	public static boolean checkString(String value,boolean bolehkosong) {
+		if(value == null) {
+			return false;
+		}else if(value.trim().equals("") && !bolehkosong) {
+			return false;
+		}
+		return true;
+	}
+	
+	public static boolean isNumeric(String strNum) {
+	    if (strNum == null) {
+	        return false;
+	    }
+	    try {
+	        double d = Double.parseDouble(strNum);
+	    } catch (NumberFormatException nfe) {
+	        return false;
+	    }
+	    return true;
+	}
+	
+	public static boolean isDate(Long strNum) {
+		if (strNum == null) {
+	        return false;
+	    }
+		
+		try {
+	        new Timestamp(strNum);
+	    } catch (Exception nfe) {
+	        return false;
+	    }
+		return true;
+	}
 }

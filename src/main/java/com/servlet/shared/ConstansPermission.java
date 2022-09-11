@@ -75,4 +75,9 @@ public class ConstansPermission {
 	
 	public static final String READ_CUSTOMER_MANGGALA = "READ_CUSTOMER_MANGGALA";
 	public static final String READ_ADDRESS = "READ_ADDRESS";
+	
+	public static final String READ_BANK_ACCOUNT = "READ_BANK_ACCOUNT";
+	public static final String CREATE_BANK_ACCOUNT = "CREATE_BANK_ACCOUNT";
+	public static final String EDIT_BANK_ACCOUNT = "EDIT_BANK_ACCOUNT";
+	public static final String DELETE_BANK_ACCOUNT = "DELETE_BANK_ACCOUNT";
 }

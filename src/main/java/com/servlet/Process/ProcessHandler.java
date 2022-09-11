@@ -38,6 +38,8 @@ import com.servlet.admin.role.entity.BodyRole;
 import com.servlet.admin.role.service.RoleService;
 import com.servlet.admin.usermobile.entity.BodyUserMobile;
 import com.servlet.admin.usermobile.service.UserMobileService;
+import com.servlet.bankaccount.entity.BodyBankAccount;
+import com.servlet.bankaccount.service.BankAccountService;
 import com.servlet.customermanggala.service.CustomerManggalaService;
 import com.servlet.mobile.callplan.entity.BodyCallPlan;
 import com.servlet.mobile.callplan.service.CallPlanService;
@@ -118,6 +120,8 @@ public class ProcessHandler implements ProcessService{
 	SubDistrictService subdistrictService;
 	@Autowired
 	PostalCodeService postalCodeService;
+	@Autowired
+	BankAccountService bankAccountService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -383,7 +387,44 @@ public class ProcessHandler implements ProcessService{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_BANK_ACCOUNT)) {
+				BodyBankAccount param = (BodyBankAccount) data;
+				ReturnData valReturn = bankAccountService.saveBankAccount(auth.getIdcompany(),auth.getIdbranch(), param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}				
+			}else if(codepermission.equals(ConstansPermission.EDIT_BANK_ACCOUNT)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyBankAccount body  = (BodyBankAccount) param.get("body");
+				ReturnData valReturn = bankAccountService.updateBankAccount(auth.getIdcompany(),auth.getIdbranch(),id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_BANK_ACCOUNT)) {
+				long id = (long) data;
+				ReturnData valReturn = bankAccountService.deleteBankAccount(auth.getIdcompany(),auth.getIdbranch(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 			}
+			
+			
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
 			if(codepermission.equals(ConstansPermission.CREATE_MONITOR_USER_MOBILE) ) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
@@ -601,6 +642,15 @@ public class ProcessHandler implements ProcessService{
 					val.setData(postalCodeService.getListPostalCodeByPostalCodeBySubDistrictId(subdistrictid));
 				}
 				
+			}else if(codepermission.equals(ConstansPermission.READ_BANK_ACCOUNT)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(bankAccountService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(bankAccountService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
 			if(codepermission.equals(ConstansPermission.READ_INFO_MOBILE)) {
