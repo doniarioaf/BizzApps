@@ -12,4 +12,5 @@ public interface BankAccountService {
 	ReturnData saveBankAccount(Long idcompany,Long idbranch,Long iduser,BodyBankAccount body);
 	ReturnData updateBankAccount(Long idcompany,Long idbranch,Long iduser,Long id,BodyBankAccount body);
 	ReturnData deleteBankAccount(Long idcompany,Long idbranch,Long iduser,Long id);
+	List<BankAccountData> getListActiveBankAccount(Long idcompany,Long idbranch);
 }
