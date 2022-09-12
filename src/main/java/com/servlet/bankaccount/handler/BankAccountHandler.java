@@ -34,7 +34,7 @@ public class BankAccountHandler implements BankAccountService{
 	public List<BankAccountData> getListAll(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataBankAccount().schema());
-		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true and data.isdelete = false ");
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataBankAccount(), queryParameters);
 	}
@@ -43,7 +43,7 @@ public class BankAccountHandler implements BankAccountService{
 	public BankAccountData getById(Long idcompany, Long idbranch, Long id) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataBankAccount().schema());
-		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isactive = true and data.isdelete = false ");
+		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
 		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
 		List<BankAccountData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataBankAccount(), queryParameters);
 		if(list != null && list.size() > 0) {
@@ -195,6 +195,15 @@ public class BankAccountHandler implements BankAccountService{
 		data.setSuccess(validations.size() > 0?false:true);
 		data.setValidations(validations);
 		return data;
+	}
+
+	@Override
+	public List<BankAccountData> getListActiveBankAccount(Long idcompany, Long idbranch) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataBankAccount().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataBankAccount(), queryParameters);
 	}
 
 }
