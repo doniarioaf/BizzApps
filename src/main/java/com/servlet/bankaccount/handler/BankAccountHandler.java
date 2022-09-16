@@ -8,14 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import com.servlet.admin.usermobile.entity.UserMobile;
 import com.servlet.bankaccount.entity.BankAccount;
 import com.servlet.bankaccount.entity.BankAccountData;
 import com.servlet.bankaccount.entity.BodyBankAccount;
 import com.servlet.bankaccount.mapper.GetDataBankAccount;
 import com.servlet.bankaccount.repo.BankAccountRepo;
 import com.servlet.bankaccount.service.BankAccountService;
-import com.servlet.parameter.mapper.GetParameter;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.GlobalFunc;
 import com.servlet.shared.ReturnData;

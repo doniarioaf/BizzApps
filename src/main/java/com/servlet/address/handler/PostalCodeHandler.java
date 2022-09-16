@@ -1,17 +1,16 @@
 package com.servlet.address.handler;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.servlet.address.entity.PostalCode;
 import com.servlet.address.entity.PostalCodeData;
-import com.servlet.address.mapper.GetDataDistrict;
 import com.servlet.address.mapper.GetDataPostalCode;
-import com.servlet.address.repo.DistrictRepo;
 import com.servlet.address.repo.PostalCodeRepo;
-import com.servlet.address.service.DistrictService;
 import com.servlet.address.service.PostalCodeService;
 
 @Service
@@ -46,6 +45,16 @@ public class PostalCodeHandler implements PostalCodeService{
 		sqlBuilder.append(" where data.subdis_id = ? ");
 		final Object[] queryParameters = new Object[] {subdistrictid};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataPostalCode(), queryParameters);
+	}
+
+	@Override
+	public PostalCode getById(long id) {
+		// TODO Auto-generated method stub
+		Optional<PostalCode> obj = repository.findById(id);
+		if(obj.isPresent()) {
+			return obj.get();
+		}
+		return null;
 	}
 
 }

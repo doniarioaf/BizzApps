@@ -1,6 +1,7 @@
 package com.servlet.address.handler;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,13 +19,23 @@ public class ProvinceHandler implements ProvinceService{
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProvinceHandler.class);
 	@Autowired
 	private ProvinceRepo repository;
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
+//	@Autowired
+//	private JdbcTemplate jdbcTemplate;
 
 	@Override
 	public List<Province> getListProvince() {
 		// TODO Auto-generated method stub
 		return repository.findAll();
+	}
+
+	@Override
+	public Province getById(long id) {
+		// TODO Auto-generated method stub
+		Optional<Province> prov = repository.findById(id);
+		if(prov.isPresent()) {
+			return prov.get();
+		}
+		return null;
 	}
 
 }
