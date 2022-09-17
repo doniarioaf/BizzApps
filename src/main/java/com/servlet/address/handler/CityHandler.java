@@ -1,6 +1,7 @@
 package com.servlet.address.handler;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,13 +18,23 @@ public class CityHandler implements CityService{
 	private static final Logger LOGGER = LoggerFactory.getLogger(CityHandler.class);
 	@Autowired
 	private CityRepo repository;
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
+//	@Autowired
+//	private JdbcTemplate jdbcTemplate;
 
 	@Override
 	public List<City> getListCity() {
 		// TODO Auto-generated method stub
 		return repository.findAll();
+	}
+
+	@Override
+	public City getById(long id) {
+		// TODO Auto-generated method stub
+		Optional<City> obj = repository.findById(id);
+		if(obj.isPresent()) {
+			return obj.get();
+		}
+		return null;
 	}
 
 }

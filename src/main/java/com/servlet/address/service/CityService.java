@@ -6,4 +6,5 @@ import com.servlet.address.entity.City;
 
 public interface CityService {
 	List<City> getListCity();
+	City getById(long id);
 }

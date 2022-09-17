@@ -40,6 +40,7 @@ import com.servlet.admin.usermobile.entity.BodyUserMobile;
 import com.servlet.admin.usermobile.service.UserMobileService;
 import com.servlet.bankaccount.entity.BodyBankAccount;
 import com.servlet.bankaccount.service.BankAccountService;
+import com.servlet.customermanggala.entity.BodyCustomerManggala;
 import com.servlet.customermanggala.service.CustomerManggalaService;
 import com.servlet.mobile.callplan.entity.BodyCallPlan;
 import com.servlet.mobile.callplan.service.CallPlanService;
@@ -122,6 +123,7 @@ public class ProcessHandler implements ProcessService{
 	PostalCodeService postalCodeService;
 	@Autowired
 	BankAccountService bankAccountService;
+	
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -422,6 +424,41 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_CUSTOMER_MANGGALA)) {
+				BodyCustomerManggala param = (BodyCustomerManggala) data;
+				ReturnData valReturn = customerManggalaService.saveCustomerManggala(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_CUSTOMER_MANGGALA)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyCustomerManggala body  = (BodyCustomerManggala) param.get("body");
+				ReturnData valReturn = customerManggalaService.updateCustomerManggala(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_CUSTOMER_MANGGALA)) {
+				long id = (long) data;
+				ReturnData valReturn = customerManggalaService.deleteCustomerManggala(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 			}
 			
 			
@@ -614,9 +651,15 @@ public class ProcessHandler implements ProcessService{
 					val.setData(reportService.getListDataMaps(body, auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_CUSTOMER_MANGGALA)) {
-				String type = (String) data;
-				if(type.equals("TEMPLATE")) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(customerManggalaService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
 					val.setData(customerManggalaService.customerManggalaTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(customerManggalaService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
 				}
 				
 			}else if(codepermission.equals(ConstansPermission.READ_ADDRESS)) {
@@ -640,6 +683,10 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("POSTALCODE_BY_SUBDSTRICT")) {
 					long subdistrictid = (long) param.get("subdistrictid");
 					val.setData(postalCodeService.getListPostalCodeByPostalCodeBySubDistrictId(subdistrictid));
+				}else if(type.equals("POSTALCODE_BY_CITY_AND_PROVINCE")) {
+					long cityid = (long) param.get("cityid");
+					long provid = (long) param.get("provid");
+					val.setData(postalCodeService.getListPostalCodeByPostalCodeByCityAndProvince(cityid, provid));
 				}
 				
 			}else if(codepermission.equals(ConstansPermission.READ_BANK_ACCOUNT)) {

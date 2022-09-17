@@ -83,4 +83,14 @@ public class AddressApi {
 		Response response = securityService.response(ConstansPermission.READ_ADDRESS,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
+	
+	@GetMapping("/postalcodebycityandprovince")
+	ResponseEntity<Response> getListPostalCodeByCityAndProvince(@RequestHeader(ConstansKey.AUTH) String authorization,@RequestParam long cityid,@RequestParam long provid) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "POSTALCODE_BY_CITY_AND_PROVINCE");
+		param.put("cityid", cityid);
+		param.put("provid", provid);
+		Response response = securityService.response(ConstansPermission.READ_ADDRESS,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
 }
