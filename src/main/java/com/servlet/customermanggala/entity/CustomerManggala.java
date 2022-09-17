@@ -28,6 +28,7 @@ public class CustomerManggala implements Serializable{
 	private String kodepos;
 	private String npwp;
 	private String nib;
+	private String telpkantor;
 	private boolean isactive;
 	private boolean isdelete;
 	private String createdby;
@@ -155,6 +156,12 @@ public class CustomerManggala implements Serializable{
 	}
 	public void setProvinsi(String provinsi) {
 		this.provinsi = provinsi;
+	}
+	public String getTelpkantor() {
+		return telpkantor;
+	}
+	public void setTelpkantor(String telpkantor) {
+		this.telpkantor = telpkantor;
 	}
 	
 }

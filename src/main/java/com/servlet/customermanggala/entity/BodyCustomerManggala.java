@@ -10,6 +10,7 @@ public class BodyCustomerManggala {
 	private String kodepos;
 	private String npwp;
 	private String nib;
+	private String telpkantor;
 	private boolean isactive;
 	
 	public String getCustomertype() {
@@ -71,5 +72,11 @@ public class BodyCustomerManggala {
 	}
 	public void setIsactive(boolean isactive) {
 		this.isactive = isactive;
+	}
+	public String getTelpkantor() {
+		return telpkantor;
+	}
+	public void setTelpkantor(String telpkantor) {
+		this.telpkantor = telpkantor;
 	}
 }

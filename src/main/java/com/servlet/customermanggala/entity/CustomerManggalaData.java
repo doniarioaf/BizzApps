@@ -15,6 +15,8 @@ public class CustomerManggalaData {
 	private String npwp;
 	private String nib;
 	private boolean isactive;
+	private String telpkantor;
+	private CustomerManggalaTemplate template;
 	
 	public Long getId() {
 		return id;
@@ -99,5 +101,17 @@ public class CustomerManggalaData {
 	}
 	public void setKodeposname(String kodeposname) {
 		this.kodeposname = kodeposname;
+	}
+	public CustomerManggalaTemplate getTemplate() {
+		return template;
+	}
+	public void setTemplate(CustomerManggalaTemplate template) {
+		this.template = template;
+	}
+	public String getTelpkantor() {
+		return telpkantor;
+	}
+	public void setTelpkantor(String telpkantor) {
+		this.telpkantor = telpkantor;
 	}
 }

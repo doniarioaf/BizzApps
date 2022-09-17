@@ -45,12 +45,7 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 	@Override
 	public CustomerManggalaTemplate customerManggalaTemplate(long idcompany, long idbranch) {
 		// TODO Auto-generated method stub
-		CustomerManggalaTemplate data = new CustomerManggalaTemplate();
-		data.setCityOptions(cityService.getListCity());
-		data.setProvinceOptions(provinceService.getListProvince());
-		data.setPanggilanOptions(parameterService.getListParameterByGrup("PANGGILAN"));
-		data.setCustomertypeOptions(parameterService.getListParameterByGrup("LEVEL_PERUSAHAAN"));
-		return data;
+		return getCustomerTemplate(idcompany,idbranch);
 	}
 
 	@Override
@@ -82,16 +77,17 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 			CustomerManggalaData val = list.get(0);
 			Province prov = provinceService.getById(new Long(val.getProvinsi()).longValue());
 			City city = cityService.getById(new Long(val.getKota()).longValue());
-			PostalCode postalcode = postalCodeService.getById(new Long(val.getKodepos()).longValue());
+//			PostalCode postalcode = postalCodeService.getById(new Long(val.getKodepos()).longValue());
 			if(prov != null) {
 				val.setProvinsiname(prov.getProv_name());
 			}
 			if(city != null) {
 				val.setKotaname(city.getCity_name());
 			}
-			if(postalcode != null) {
-				val.setKodeposname(postalcode.getPostal_code().toString());
-			}
+			val.setTemplate(getCustomerTemplate(idcompany,idbranch));
+//			if(postalcode != null) {
+//				val.setKodeposname(postalcode.getPostal_code().toString());
+//			}
 			return val;
 		}
 		return null;
@@ -117,6 +113,7 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 				table.setKodepos(body.getKodepos());
 				table.setNpwp(body.getNpwp());
 				table.setNib(body.getNib());
+				table.setTelpkantor(body.getTelpkantor());
 				table.setIsactive(body.isIsactive());
 				table.setIsdelete(false);
 				table.setCreatedby(iduser.toString());
@@ -156,6 +153,7 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 					table.setKodepos(body.getKodepos());
 					table.setNpwp(body.getNpwp());
 					table.setNib(body.getNib());
+					table.setTelpkantor(body.getTelpkantor());
 					table.setIsactive(body.isIsactive());
 					table.setUpdateby(iduser.toString());
 					table.setUpdatedate(ts);
@@ -193,6 +191,15 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 		data.setId(idsave);
 		data.setSuccess(validations.size() > 0?false:true);
 		data.setValidations(validations);
+		return data;
+	}
+	
+	private CustomerManggalaTemplate getCustomerTemplate(long idcompany, long idbranch) {
+		CustomerManggalaTemplate data = new CustomerManggalaTemplate();
+		data.setCityOptions(cityService.getListCity());
+		data.setProvinceOptions(provinceService.getListProvince());
+		data.setPanggilanOptions(parameterService.getListParameterByGrup("PANGGILAN"));
+		data.setCustomertypeOptions(parameterService.getListParameterByGrup("LEVEL_PERUSAHAAN"));
 		return data;
 	}
 	

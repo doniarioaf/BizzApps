@@ -9,5 +9,6 @@ public interface PostalCodeService {
 	List<PostalCodeData> getListPostalCode();
 	List<PostalCodeData> getListPostalCodeByPostalCode(long postalcode);
 	List<PostalCodeData> getListPostalCodeByPostalCodeBySubDistrictId(long subdistrictid);
+	List<PostalCodeData> getListPostalCodeByPostalCodeByCityAndProvince(long cityid,long provid);
 	PostalCode getById(long id);
 }

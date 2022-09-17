@@ -57,4 +57,13 @@ public class PostalCodeHandler implements PostalCodeService{
 		return null;
 	}
 
+	@Override
+	public List<PostalCodeData> getListPostalCodeByPostalCodeByCityAndProvince(long cityid, long provid) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataPostalCode().schema());
+		sqlBuilder.append(" where data.city_id = ? and data.prov_id = ? ");
+		final Object[] queryParameters = new Object[] {cityid,provid};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataPostalCode(), queryParameters);
+	}
+
 }
