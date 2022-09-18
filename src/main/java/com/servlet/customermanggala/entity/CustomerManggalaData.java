@@ -1,5 +1,7 @@
 package com.servlet.customermanggala.entity;
 
+import java.util.List;
+
 public class CustomerManggalaData {
 	private Long id;
 	private String customertype;
@@ -17,6 +19,8 @@ public class CustomerManggalaData {
 	private boolean isactive;
 	private String telpkantor;
 	private CustomerManggalaTemplate template;
+	private List<DetailCustomerManggalaInfoKementerianData> detailsInfoKementerian;
+	private List<DetailCustomerManggalaInfoContactData> detailsInfoContact;
 	
 	public Long getId() {
 		return id;
@@ -113,5 +117,17 @@ public class CustomerManggalaData {
 	}
 	public void setTelpkantor(String telpkantor) {
 		this.telpkantor = telpkantor;
+	}
+	public List<DetailCustomerManggalaInfoKementerianData> getDetailsInfoKementerian() {
+		return detailsInfoKementerian;
+	}
+	public void setDetailsInfoKementerian(List<DetailCustomerManggalaInfoKementerianData> detailsInfoKementerian) {
+		this.detailsInfoKementerian = detailsInfoKementerian;
+	}
+	public List<DetailCustomerManggalaInfoContactData> getDetailsInfoContact() {
+		return detailsInfoContact;
+	}
+	public void setDetailsInfoContact(List<DetailCustomerManggalaInfoContactData> detailsInfoContact) {
+		this.detailsInfoContact = detailsInfoContact;
 	}
 }
