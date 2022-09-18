@@ -5,6 +5,8 @@ import java.util.List;
 import com.servlet.customermanggala.entity.BodyCustomerManggala;
 import com.servlet.customermanggala.entity.CustomerManggalaData;
 import com.servlet.customermanggala.entity.CustomerManggalaTemplate;
+import com.servlet.customermanggala.entity.DetailCustomerManggalaInfoContactData;
+import com.servlet.customermanggala.entity.DetailCustomerManggalaInfoKementerianData;
 import com.servlet.shared.ReturnData;
 
 public interface CustomerManggalaService {
@@ -15,4 +17,6 @@ public interface CustomerManggalaService {
 	ReturnData saveCustomerManggala(Long idcompany,Long idbranch,Long iduser,BodyCustomerManggala body);
 	ReturnData updateCustomerManggala(Long idcompany,Long idbranch,Long iduser,Long id,BodyCustomerManggala body);
 	ReturnData deleteCustomerManggala(Long idcompany,Long idbranch,Long iduser,Long id);
+	List<DetailCustomerManggalaInfoKementerianData> getListDetailInfoKementerian(Long idcompany,Long idbranch,Long idcust);
+	List<DetailCustomerManggalaInfoContactData> getListDetailInfoContact(Long idcompany,Long idbranch,Long idcust);
 }

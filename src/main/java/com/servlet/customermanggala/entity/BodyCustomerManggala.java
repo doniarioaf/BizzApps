@@ -12,6 +12,8 @@ public class BodyCustomerManggala {
 	private String nib;
 	private String telpkantor;
 	private boolean isactive;
+	private BodyCustomerManggalaInfoKementerian[] detailsinfokementerian;
+	private BodyCustomerManggalaInfoContact[] detailsinfocontact;
 	
 	public String getCustomertype() {
 		return customertype;
@@ -78,5 +80,17 @@ public class BodyCustomerManggala {
 	}
 	public void setTelpkantor(String telpkantor) {
 		this.telpkantor = telpkantor;
+	}
+	public BodyCustomerManggalaInfoKementerian[] getDetailsinfokementerian() {
+		return detailsinfokementerian;
+	}
+	public void setDetailsinfokementerian(BodyCustomerManggalaInfoKementerian[] detailsinfokementerian) {
+		this.detailsinfokementerian = detailsinfokementerian;
+	}
+	public BodyCustomerManggalaInfoContact[] getDetailsinfocontact() {
+		return detailsinfocontact;
+	}
+	public void setDetailsinfocontact(BodyCustomerManggalaInfoContact[] detailsinfocontact) {
+		this.detailsinfocontact = detailsinfocontact;
 	}
 }
