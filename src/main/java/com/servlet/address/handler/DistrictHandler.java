@@ -35,4 +35,13 @@ public class DistrictHandler implements DistrictService{
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataDistrict(), queryParameters);
 	}
 
+	@Override
+	public List<DistrictData> getListDistrictByPostalCode(long postalcode) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataDistrict().schema());
+		sqlBuilder.append(" where data.dis_id in ( select dis_id from subdistricts where subdis_id in (select subdis_id from postalcode where postal_code = ?) ) ");
+		final Object[] queryParameters = new Object[] {postalcode};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataDistrict(), queryParameters);
+	}
+
 }

@@ -7,4 +7,5 @@ import com.servlet.address.entity.DistrictData;
 public interface DistrictService {
 	List<DistrictData> getListDistrict();
 	List<DistrictData> getListDistrictByCity(long cityid);
+	List<DistrictData> getListDistrictByPostalCode(long postalcode);
 }

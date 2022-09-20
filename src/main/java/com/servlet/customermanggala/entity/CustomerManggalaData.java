@@ -2,6 +2,8 @@ package com.servlet.customermanggala.entity;
 
 import java.util.List;
 
+import com.servlet.address.entity.DistrictData;
+
 public class CustomerManggalaData {
 	private Long id;
 	private String customertype;
@@ -21,6 +23,8 @@ public class CustomerManggalaData {
 	private CustomerManggalaTemplate template;
 	private List<DetailCustomerManggalaInfoKementerianData> detailsInfoKementerian;
 	private List<DetailCustomerManggalaInfoContactData> detailsInfoContact;
+	private List<DetailCustomerManggalaInfoGudangData> detailsInfoGudang;
+	private List<DistrictData> districtOptions;
 	
 	public Long getId() {
 		return id;
@@ -129,5 +133,17 @@ public class CustomerManggalaData {
 	}
 	public void setDetailsInfoContact(List<DetailCustomerManggalaInfoContactData> detailsInfoContact) {
 		this.detailsInfoContact = detailsInfoContact;
+	}
+	public List<DetailCustomerManggalaInfoGudangData> getDetailsInfoGudang() {
+		return detailsInfoGudang;
+	}
+	public void setDetailsInfoGudang(List<DetailCustomerManggalaInfoGudangData> detailsInfoGudang) {
+		this.detailsInfoGudang = detailsInfoGudang;
+	}
+	public List<DistrictData> getDistrictOptions() {
+		return districtOptions;
+	}
+	public void setDistrictOptions(List<DistrictData> districtOptions) {
+		this.districtOptions = districtOptions;
 	}
 }

@@ -687,6 +687,9 @@ public class ProcessHandler implements ProcessService{
 					long cityid = (long) param.get("cityid");
 					long provid = (long) param.get("provid");
 					val.setData(postalCodeService.getListPostalCodeByPostalCodeByCityAndProvince(cityid, provid));
+				}else if(type.equals("DISTRICT_BY_POSTALCODE")) {
+					long postalcode = (long) param.get("postalcode");
+					val.setData(districtService.getListDistrictByPostalCode(postalcode));
 				}
 				
 			}else if(codepermission.equals(ConstansPermission.READ_BANK_ACCOUNT)) {
