@@ -14,6 +14,7 @@ public class BodyCustomerManggala {
 	private boolean isactive;
 	private BodyCustomerManggalaInfoKementerian[] detailsinfokementerian;
 	private BodyCustomerManggalaInfoContact[] detailsinfocontact;
+	private BodyCustomerManggalaInfoGudang[] detailsinfogudang;
 	
 	public String getCustomertype() {
 		return customertype;
@@ -92,5 +93,11 @@ public class BodyCustomerManggala {
 	}
 	public void setDetailsinfocontact(BodyCustomerManggalaInfoContact[] detailsinfocontact) {
 		this.detailsinfocontact = detailsinfocontact;
+	}
+	public BodyCustomerManggalaInfoGudang[] getDetailsinfogudang() {
+		return detailsinfogudang;
+	}
+	public void setDetailsinfogudang(BodyCustomerManggalaInfoGudang[] detailsinfogudang) {
+		this.detailsinfogudang = detailsinfogudang;
 	}
 }

@@ -10,13 +10,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.servlet.address.entity.City;
+import com.servlet.address.entity.DistrictData;
 import com.servlet.address.entity.PostalCode;
 import com.servlet.address.entity.Province;
 import com.servlet.address.service.CityService;
+import com.servlet.address.service.DistrictService;
 import com.servlet.address.service.PostalCodeService;
 import com.servlet.address.service.ProvinceService;
 import com.servlet.customermanggala.entity.BodyCustomerManggala;
 import com.servlet.customermanggala.entity.BodyCustomerManggalaInfoContact;
+import com.servlet.customermanggala.entity.BodyCustomerManggalaInfoGudang;
 import com.servlet.customermanggala.entity.BodyCustomerManggalaInfoKementerian;
 import com.servlet.customermanggala.entity.CustomerManggala;
 import com.servlet.customermanggala.entity.CustomerManggalaData;
@@ -24,18 +27,24 @@ import com.servlet.customermanggala.entity.CustomerManggalaTemplate;
 import com.servlet.customermanggala.entity.DetailCustomerManggalaInfoContact;
 import com.servlet.customermanggala.entity.DetailCustomerManggalaInfoContactData;
 import com.servlet.customermanggala.entity.DetailCustomerManggalaInfoContactPK;
+import com.servlet.customermanggala.entity.DetailCustomerManggalaInfoGudang;
+import com.servlet.customermanggala.entity.DetailCustomerManggalaInfoGudangData;
+import com.servlet.customermanggala.entity.DetailCustomerManggalaInfoGudangPK;
 import com.servlet.customermanggala.entity.DetailCustomerManggalaInfoKementerian;
 import com.servlet.customermanggala.entity.DetailCustomerManggalaInfoKementerianData;
 import com.servlet.customermanggala.entity.DetailCustomerManggalaInfoKementerianPK;
 import com.servlet.customermanggala.mapper.GetDataCustomerManggala;
 import com.servlet.customermanggala.mapper.GetDataDetailCustomerManggalaInfoContact;
+import com.servlet.customermanggala.mapper.GetDataDetailCustomerManggalaInfoGudang;
 import com.servlet.customermanggala.mapper.GetDataDetailCustomerManggalaKementerian;
 import com.servlet.customermanggala.repo.CustomerManggalaRepo;
 import com.servlet.customermanggala.repo.DetailCustomerManggalaInfoContactRepo;
+import com.servlet.customermanggala.repo.DetailCustomerManggalaInfoGudangRepo;
 import com.servlet.customermanggala.repo.DetailCustomerManggalaInfoKementerianRepo;
 import com.servlet.customermanggala.service.CustomerManggalaService;
 import com.servlet.parameter.service.ParameterService;
 import com.servlet.shared.ConstansCodeMessage;
+import com.servlet.shared.GlobalFunc;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 
@@ -57,6 +66,10 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 	private DetailCustomerManggalaInfoKementerianRepo detailCustomerManggalaInfoKementerianRepo;
 	@Autowired
 	private DetailCustomerManggalaInfoContactRepo detailCustomerManggalaInfoContactRepo;
+	@Autowired
+	private DetailCustomerManggalaInfoGudangRepo detailCustomerManggalaInfoGudangRepo;
+	@Autowired
+	private DistrictService districtService;
 	
 	@Override
 	public CustomerManggalaTemplate customerManggalaTemplate(long idcompany, long idbranch) {
@@ -103,13 +116,14 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 			val.setTemplate(getCustomerTemplate(idcompany,idbranch));
 			val.setDetailsInfoKementerian(getListDetailInfoKementerian(idcompany, idbranch, id));
 			val.setDetailsInfoContact(getListDetailInfoContact(idcompany, idbranch, id));
-//			if(postalcode != null) {
-//				val.setKodeposname(postalcode.getPostal_code().toString());
-//			}
+			val.setDetailsInfoGudang(getListDetailInfoGudang(idcompany, idbranch, id));
+			val.setDistrictOptions(districtService.getListDistrictByPostalCode(GlobalFunc.isNumeric(val.getKodepos())?new Long(val.getKodepos()).longValue():0 ));
 			return val;
 		}
 		return null;
 	}
+	
+
 
 	@Override
 	public ReturnData saveCustomerManggala(Long idcompany, Long idbranch, Long iduser, BodyCustomerManggala body) {
@@ -140,6 +154,7 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 				
 				putDetailInforKementrian(body.getDetailsinfokementerian(),idcompany,idbranch,idsave,"ADD");
 				putDetailInforContact(body.getDetailsinfocontact(),idcompany,idbranch,idsave,"ADD");
+				putDetailInfoGudang(body.getDetailsinfogudang(),idcompany,idbranch,idsave,"ADD");
 				
 			}catch (Exception e) {
 				// TODO: handle exception
@@ -156,6 +171,38 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 		return data;
 	}
 	
+	private String putDetailInfoGudang(BodyCustomerManggalaInfoGudang[] detailsinfogudang,Long idcompany, Long idbranch,long idsave,String action) {
+		if(action.equals("EDIT")) {
+			detailCustomerManggalaInfoGudangRepo.deleteAllInfoGudang(idsave, idcompany, idbranch);
+		}
+		if(detailsinfogudang != null) {
+			if(detailsinfogudang.length > 0) {
+				int counting = 1;
+				for(int i=0; i < detailsinfogudang.length; i++) {
+					BodyCustomerManggalaInfoGudang detail = detailsinfogudang[i];
+					
+					DetailCustomerManggalaInfoGudangPK detailCustomerManggalaInfoGudangPK = new DetailCustomerManggalaInfoGudangPK();
+					detailCustomerManggalaInfoGudangPK.setIdcustomermanggala(idsave);
+					detailCustomerManggalaInfoGudangPK.setCountdetail(counting);
+					detailCustomerManggalaInfoGudangPK.setIdcompany(idcompany);
+					detailCustomerManggalaInfoGudangPK.setIdbranch(idbranch);
+					
+					DetailCustomerManggalaInfoGudang detailCustomerManggalaInfoGudang = new DetailCustomerManggalaInfoGudang();
+					detailCustomerManggalaInfoGudang.setDetailCustomerManggalaInfoGudangPK(detailCustomerManggalaInfoGudangPK);
+					detailCustomerManggalaInfoGudang.setAlamatgudang(detail.getAlamatgudang());
+					detailCustomerManggalaInfoGudang.setAncerancer(detail.getAncerancer());
+					detailCustomerManggalaInfoGudang.setAreakirim(detail.getAreakirim());
+					detailCustomerManggalaInfoGudang.setHpkontakgudang(detail.getHpkontakgudang());
+					detailCustomerManggalaInfoGudang.setKontakgudang(detail.getKontakgudang());
+					detailCustomerManggalaInfoGudang.setNamagudang(detail.getNamagudang());
+					detailCustomerManggalaInfoGudang.setNote(detail.getNote());
+					detailCustomerManggalaInfoGudangRepo.saveAndFlush(detailCustomerManggalaInfoGudang);
+					counting++;
+				}
+			}
+		}
+		return "";
+	}
 	private String putDetailInforContact(BodyCustomerManggalaInfoContact[] detailsinfocontact,Long idcompany, Long idbranch,long idsave,String action) {
 		if(action.equals("EDIT")) {
 			detailCustomerManggalaInfoContactRepo.deleteAllInfoContact(idsave, idcompany, idbranch);
@@ -244,6 +291,7 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 					
 					putDetailInforKementrian(body.getDetailsinfokementerian(),idcompany,idbranch,idsave,"EDIT");
 					putDetailInforContact(body.getDetailsinfocontact(),idcompany,idbranch,idsave,"EDIT");
+					putDetailInfoGudang(body.getDetailsinfogudang(),idcompany,idbranch,idsave,"EDIT");
 				}catch (Exception e) {
 					// TODO: handle exception
 					ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
@@ -308,6 +356,16 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.idcustomermanggala = ? ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch,idcust};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataDetailCustomerManggalaInfoContact(), queryParameters);
+	}
+
+	@Override
+	public List<DetailCustomerManggalaInfoGudangData> getListDetailInfoGudang(Long idcompany, Long idbranch,
+			Long idcust) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataDetailCustomerManggalaInfoGudang().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.idcustomermanggala = ? ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch,idcust};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataDetailCustomerManggalaInfoGudang(), queryParameters);
 	}
 	
 }
