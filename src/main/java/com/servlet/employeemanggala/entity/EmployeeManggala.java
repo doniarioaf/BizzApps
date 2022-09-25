@@ -45,6 +45,7 @@ public class EmployeeManggala implements Serializable{
 	private Timestamp updatedate;
 	private String deleteby;
 	private Timestamp deletedate;
+	private String photo;
 	public Long getId() {
 		return id;
 	}
@@ -212,5 +213,11 @@ public class EmployeeManggala implements Serializable{
 	}
 	public void setDeletedate(Timestamp deletedate) {
 		this.deletedate = deletedate;
+	}
+	public String getPhoto() {
+		return photo;
+	}
+	public void setPhoto(String photo) {
+		this.photo = photo;
 	}
 }

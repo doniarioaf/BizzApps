@@ -42,6 +42,8 @@ import com.servlet.bankaccount.entity.BodyBankAccount;
 import com.servlet.bankaccount.service.BankAccountService;
 import com.servlet.customermanggala.entity.BodyCustomerManggala;
 import com.servlet.customermanggala.service.CustomerManggalaService;
+import com.servlet.employeemanggala.entity.BodyEmployeeManggala;
+import com.servlet.employeemanggala.service.EmployeeManggalaService;
 import com.servlet.mobile.callplan.entity.BodyCallPlan;
 import com.servlet.mobile.callplan.service.CallPlanService;
 import com.servlet.mobile.customercallplan.entity.DownloadCustomerCallPlan;
@@ -123,6 +125,8 @@ public class ProcessHandler implements ProcessService{
 	PostalCodeService postalCodeService;
 	@Autowired
 	BankAccountService bankAccountService;
+	@Autowired
+	EmployeeManggalaService employeeManggalaService;
 	
 	
 	@Override
@@ -459,6 +463,59 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_EMPLOYEE_MANGGALA)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				
+				if(type.equals("CREATE")) {
+					BodyEmployeeManggala body = (BodyEmployeeManggala) param.get("body");
+					ReturnData valReturn = employeeManggalaService.saveEmployeeManggala(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), body);
+					if(valReturn.isSuccess()) {
+						val.setData(valReturn.getId());
+					}else {
+						val.setSuccess(valReturn.isSuccess());
+						val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+						val.setValidations(valReturn.getValidations());
+						val.setData(null);
+					}
+				}else if(type.equals("UPLOADIMAGE")) {
+					MultipartFile file = (MultipartFile) param.get("body");
+					Long id = (Long) param.get("id");
+					ReturnData valReturn = employeeManggalaService.uploadImageEmployeeManggala(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, file);
+					if(valReturn.isSuccess()) {
+						val.setData(valReturn.getId());
+					}else {
+						val.setSuccess(valReturn.isSuccess());
+						val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+						val.setValidations(valReturn.getValidations());
+						val.setData(null);
+					}
+				}
+				
+			}else if(codepermission.equals(ConstansPermission.EDIT_EMPLOYEE_MANGGALA)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyEmployeeManggala body  = (BodyEmployeeManggala) param.get("body");
+				ReturnData valReturn = employeeManggalaService.updateEmployeeManggala(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_EMPLOYEE_MANGGALA)) {
+				long id = (long) data;
+				ReturnData valReturn = employeeManggalaService.deleteEmployeeManggala(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 			}
 			
 			
@@ -701,6 +758,18 @@ public class ProcessHandler implements ProcessService{
 					long id = (long) param.get("id");
 					val.setData(bankAccountService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
 				}
+			}else if(codepermission.equals(ConstansPermission.READ_EMPLOYEE_MANGGALA)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(employeeManggalaService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(employeeManggalaService.employeeManggalaTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(employeeManggalaService.getById(auth.getIdcompany(), auth.getIdbranch(),id,auth.getId()));
+				}
+				
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
 			if(codepermission.equals(ConstansPermission.READ_INFO_MOBILE)) {

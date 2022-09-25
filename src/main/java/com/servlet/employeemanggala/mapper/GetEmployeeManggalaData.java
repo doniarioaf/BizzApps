@@ -15,8 +15,8 @@ public class GetEmployeeManggalaData implements RowMapper<EmployeManggalaData>{
 	public GetEmployeeManggalaData() {
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
-		sqlBuilder.append("data.id as id, data.code as code, data.statuskaryawan as statuskaryawan, data.jabatan as jabatan, data.nama as nama, data.noidentitas as noidentitas, data.alamat as alamat, data.tanggallahir as tanggallahir, data.status as status, data.namapasangan as namapasangan, data.tanggallahirpasangan as tanggallahirpasangan, data.namabank as namabank ");
-		sqlBuilder.append("data.norekening as norekening, data.atasnama as atasnama, data.tanggalmulai as tanggalmulai, data.tanggalresign as tanggalresign, data.gaji as gaji, data.isactive as isactive, data.jeniskelamin as jeniskelamin ");
+		sqlBuilder.append("data.id as id, data.code as code, data.statuskaryawan as statuskaryawan, data.jabatan as jabatan, data.nama as nama, data.noidentitas as noidentitas, data.alamat as alamat, data.tanggallahir as tanggallahir, data.status as status, data.namapasangan as namapasangan, data.tanggallahirpasangan as tanggallahirpasangan, data.namabank as namabank, ");
+		sqlBuilder.append("data.norekening as norekening, data.atasnama as atasnama, data.tanggalmulai as tanggalmulai, data.tanggalresign as tanggalresign, data.gaji as gaji, data.isactive as isactive, data.jeniskelamin as jeniskelamin, data.photo as photo ");
 		sqlBuilder.append("from m_employee_manggala as data ");
 		
 		this.schemaSql = sqlBuilder.toString();
@@ -48,6 +48,7 @@ public class GetEmployeeManggalaData implements RowMapper<EmployeManggalaData>{
 		final String gaji = rs.getString("gaji");
 		final boolean isactive = rs.getBoolean("isactive");
 		final String jeniskelamin = rs.getString("jeniskelamin");
+		final String photo = rs.getString("photo");
 		
 		EmployeManggalaData data = new EmployeManggalaData();
 		data.setId(id);
@@ -69,6 +70,7 @@ public class GetEmployeeManggalaData implements RowMapper<EmployeManggalaData>{
 		data.setGaji(gaji);
 		data.setJeniskelamin(jeniskelamin);
 		data.setIsactive(isactive);
+		data.setPhoto(photo);
 		return data;
 	}
 

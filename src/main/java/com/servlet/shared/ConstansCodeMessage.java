@@ -58,4 +58,6 @@ public class ConstansCodeMessage {
 	public static final String VALIDASI_BANK_ACCOUNT_NO_REK_NOTNUMBER = "validation.bankaccount.norekening.notnumber";
 	public static final String VALIDASI_BANK_ACCOUNT_CABANG_EMPTY = "validation.bankaccount.cabang.empty";
 	
+	public static final String VALIDASI_EMPLOYEE_MANGGALA_NO_IDENTITAS_EXIST = "validation.employeemanggala.noidentitas.exist";
+	
 }

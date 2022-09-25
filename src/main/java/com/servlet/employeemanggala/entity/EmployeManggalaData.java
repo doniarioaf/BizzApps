@@ -27,6 +27,7 @@ public class EmployeManggalaData {
 	private boolean isactive;
 	private EmployeeManggalaTemplate template;
 	private List<DetailEmployeeManggalaInfoFamilyData> detailsFamily;
+	private String photo;
 	public Long getId() {
 		return id;
 	}
@@ -152,5 +153,11 @@ public class EmployeManggalaData {
 	}
 	public void setDetailsFamily(List<DetailEmployeeManggalaInfoFamilyData> detailsFamily) {
 		this.detailsFamily = detailsFamily;
+	}
+	public String getPhoto() {
+		return photo;
+	}
+	public void setPhoto(String photo) {
+		this.photo = photo;
 	}
 }

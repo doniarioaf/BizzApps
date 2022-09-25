@@ -83,4 +83,12 @@ public class ConstansPermission {
 	public static final String CREATE_BANK_ACCOUNT = "CREATE_BANK_ACCOUNT";
 	public static final String EDIT_BANK_ACCOUNT = "EDIT_BANK_ACCOUNT";
 	public static final String DELETE_BANK_ACCOUNT = "DELETE_BANK_ACCOUNT";
+	
+	public static final String READ_EMPLOYEE_MANGGALA = "READ_EMPLOYEE_MANGGALA";
+	public static final String CREATE_EMPLOYEE_MANGGALA = "CREATE_EMPLOYEE_MANGGALA";
+	public static final String EDIT_EMPLOYEE_MANGGALA = "EDIT_EMPLOYEE_MANGGALA";
+	public static final String DELETE_EMPLOYEE_MANGGALA = "DELETE_EMPLOYEE_MANGGALA";
+	public static final String READ_SALARY_EMPLOYEE_MANGGALA = "READ_SALARY_EMPLOYEE_MANGGALA";
+	public static final String CREATE_SALARY_EMPLOYEE_MANGGALA = "CREATE_SALARY_EMPLOYEE_MANGGALA";
+	public static final String EDIT_SALARY_EMPLOYEE_MANGGALA = "EDIT_SALARY_EMPLOYEE_MANGGALA";
 }
