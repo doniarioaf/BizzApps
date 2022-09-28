@@ -91,4 +91,10 @@ public class ConstansPermission {
 	public static final String READ_SALARY_EMPLOYEE_MANGGALA = "READ_SALARY_EMPLOYEE_MANGGALA";
 	public static final String CREATE_SALARY_EMPLOYEE_MANGGALA = "CREATE_SALARY_EMPLOYEE_MANGGALA";
 	public static final String EDIT_SALARY_EMPLOYEE_MANGGALA = "EDIT_SALARY_EMPLOYEE_MANGGALA";
+	
+	public static final String READ_VENDOR_CATEGORY = "READ_VENDOR_CATEGORY";
+	public static final String CREATE_VENDOR_CATEGORY = "CREATE_VENDOR_CATEGORY";
+	public static final String EDIT_VENDOR_CATEGORY = "EDIT_VENDOR_CATEGORY";
+	public static final String DELETE_VENDOR_CATEGORY = "DELETE_VENDOR_CATEGORY";
+	
 }

@@ -28,6 +28,8 @@ import com.servlet.employeemanggala.mapper.GetEmployeeManggalaDataList;
 import com.servlet.employeemanggala.repo.DetailEmployeeManggalaInfoFamilyRepo;
 import com.servlet.employeemanggala.repo.EmployeeManggalaRepo;
 import com.servlet.employeemanggala.service.EmployeeManggalaService;
+import com.servlet.historyemployeemanggala.entity.BodyHistoryEmployee;
+import com.servlet.historyemployeemanggala.service.HistoryEmployeeService;
 import com.servlet.parameter.service.ParameterService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstansPermission;
@@ -52,6 +54,8 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 	private UserAppsService userAppsService;
 	@Autowired
     private FileStorageService fileStorageService;
+	@Autowired
+	private HistoryEmployeeService historyEmployeeService;
 	
 	@Override
 	public EmployeeManggalaTemplate employeeManggalaTemplate(long idcompany, long idbranch) {
@@ -248,7 +252,8 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 					
 					
 					//Hanya Permission Tertentu yg boleh update gaji
-					if(checkInputGaji(iduser,"EDIT")) {
+					boolean gaji = checkInputGaji(iduser,"EDIT"); 
+					if(gaji) {
 						table.setGaji(body.getGaji());
 					}
 					
@@ -258,6 +263,7 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 					table.setUpdatedate(ts);
 					idsave = repository.saveAndFlush(table).getId();
 					
+					putHistory(table, body, idcompany, idbranch, iduser, id, gaji);
 					putDetailInforFamily(body.getDetailsInfoFamily(),idcompany,idbranch,idsave,"EDIT");
 				}catch (Exception e) {
 					// TODO: handle exception
@@ -272,6 +278,50 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 		data.setSuccess(validations.size() > 0?false:true);
 		data.setValidations(validations);
 		return data;
+	}
+	
+	private String putHistory(EmployeeManggala table,BodyEmployeeManggala bodyemp,Long idcompany, Long idbranch, Long iduser, Long id, boolean gaji) {
+		boolean flag = false;
+		String jabatan = "";
+		String statuskaryawan = "";
+		String gajiemp = "";
+		if(!table.getJabatan().equals(bodyemp.getJabatan())) {
+			flag = true;
+			jabatan = bodyemp.getJabatan();
+		}else {
+			jabatan = table.getJabatan();
+		}
+		
+		if(!table.getStatuskaryawan().equals(bodyemp.getStatuskaryawan())) {
+			flag = true;
+			statuskaryawan = bodyemp.getStatuskaryawan();
+		}else {
+			statuskaryawan = table.getStatuskaryawan();
+		}
+		
+		if(!table.getGaji().equals(bodyemp.getGaji())) {
+			if(gaji) {
+				flag = true;
+				gajiemp = bodyemp.getGaji();
+			}else {
+				gajiemp = table.getGaji();
+			}
+			
+		}else {
+			gajiemp = table.getGaji();
+		}
+		if(flag) {
+			BodyHistoryEmployee body = new BodyHistoryEmployee();
+			body.setIdcompany(idcompany);
+			body.setIdbranch(idbranch);
+			body.setIdemployee(id);
+			body.setIduser(iduser);
+			body.setJabatan(jabatan);
+			body.setStatusemployee(statuskaryawan);
+			body.setGaji(gajiemp);
+			historyEmployeeService.saveHistoryEmployeeManggala(body);
+		}
+		return "";
 	}
 	
 	private String putDetailInforFamily(BodyDetailEmployeeManggalaInfoFamily[] detailsinfofamily,Long idcompany, Long idbranch,long idsave,String action) {
