@@ -123,6 +123,19 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 		return null;
 	}
 	
+	public CustomerManggalaData getCheckById(Long idcompany, Long idbranch, Long id) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataCustomerManggala().schema());
+		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+		List<CustomerManggalaData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataCustomerManggala(), queryParameters);
+		if(list != null && list.size() > 0) {
+			CustomerManggalaData val = list.get(0);
+			return val;
+		}
+		return null;
+	}
+	
 
 
 	@Override
@@ -268,7 +281,7 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 			BodyCustomerManggala body) {
 		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
 		long idsave = 0;
-		CustomerManggalaData value = getById(idcompany,idbranch,id);
+		CustomerManggalaData value = getCheckById(idcompany,idbranch,id);
 		if(value != null) {
 			if(validations.size() == 0) {
 				try {
@@ -313,7 +326,7 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 		// TODO Auto-generated method stub
 		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
 		long idsave = 0;
-		CustomerManggalaData value = getById(idcompany,idbranch,id);
+		CustomerManggalaData value = getCheckById(idcompany,idbranch,id);
 		if(value != null) {
 			Timestamp ts = new Timestamp(new Date().getTime());
 			CustomerManggala table = repository.getById(id);
