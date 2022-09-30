@@ -97,4 +97,10 @@ public class ConstansPermission {
 	public static final String EDIT_VENDOR_CATEGORY = "EDIT_VENDOR_CATEGORY";
 	public static final String DELETE_VENDOR_CATEGORY = "DELETE_VENDOR_CATEGORY";
 	
+	public static final String READ_VENDOR = "READ_VENDOR";
+	public static final String CREATE_VENDOR = "CREATE_VENDOR";
+	public static final String EDIT_VENDOR = "EDIT_VENDOR";
+	public static final String DELETE_VENDOR = "DELETE_VENDOR";
+	
+	
 }

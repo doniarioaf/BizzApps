@@ -26,6 +26,7 @@ public class VendorCategoryHandler implements VendorCategoryService{
 	@Autowired
 	private VendorCategoryRepo repository;
 	
+	
 	@Override
 	public List<VendorCategoryData> getListAll(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub

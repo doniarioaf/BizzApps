@@ -71,6 +71,8 @@ import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 import com.servlet.user.entity.BodyUserApps;
 import com.servlet.user.service.UserAppsService;
+import com.servlet.vendor.entity.BodyVendor;
+import com.servlet.vendor.service.VendorService;
 import com.servlet.vendorcategory.entity.BodyVendorCategory;
 import com.servlet.vendorcategory.service.VendorCategoryService;
 
@@ -131,6 +133,8 @@ public class ProcessHandler implements ProcessService{
 	EmployeeManggalaService employeeManggalaService;
 	@Autowired
 	VendorCategoryService vendorCategoryService;
+	@Autowired
+	VendorService vendorService;
 	
 	
 	@Override
@@ -555,6 +559,41 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_VENDOR)) {
+				BodyVendor param = (BodyVendor) data;
+				ReturnData valReturn = vendorService.saveVendor(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_VENDOR)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyVendor body  = (BodyVendor) param.get("body");
+				ReturnData valReturn = vendorService.updateVendor(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_VENDOR)) {
+				long id = (long) data;
+				ReturnData valReturn = vendorService.deleteVendor(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 			}
 			
 			
@@ -818,6 +857,18 @@ public class ProcessHandler implements ProcessService{
 					long id = (long) param.get("id");
 					val.setData(vendorCategoryService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
 				}
+			}else if(codepermission.equals(ConstansPermission.READ_VENDOR)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(vendorService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(vendorService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(vendorService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}
+				
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
 			if(codepermission.equals(ConstansPermission.READ_INFO_MOBILE)) {
