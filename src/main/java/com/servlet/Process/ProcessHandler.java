@@ -75,6 +75,8 @@ import com.servlet.vendor.entity.BodyVendor;
 import com.servlet.vendor.service.VendorService;
 import com.servlet.vendorcategory.entity.BodyVendorCategory;
 import com.servlet.vendorcategory.service.VendorCategoryService;
+import com.servlet.workordertype.entity.BodyWorkOrderType;
+import com.servlet.workordertype.service.WorkOrderTypeService;
 
 
 @Service
@@ -135,6 +137,8 @@ public class ProcessHandler implements ProcessService{
 	VendorCategoryService vendorCategoryService;
 	@Autowired
 	VendorService vendorService;
+	@Autowired
+	WorkOrderTypeService workOrderTypeService;
 	
 	
 	@Override
@@ -594,6 +598,41 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_WORKORDERTYPE)) {
+				BodyWorkOrderType param = (BodyWorkOrderType) data;
+				ReturnData valReturn = workOrderTypeService.saveWorkOrderType(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_WORKORDERTYPE)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyWorkOrderType body  = (BodyWorkOrderType) param.get("body");
+				ReturnData valReturn = workOrderTypeService.updateWorkOrderType(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_WORKORDERTYPE)) {
+				long id = (long) data;
+				ReturnData valReturn = workOrderTypeService.deleteWorkOrderType(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 			}
 			
 			
@@ -869,6 +908,15 @@ public class ProcessHandler implements ProcessService{
 					val.setData(vendorService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
 				}
 				
+			}else if(codepermission.equals(ConstansPermission.READ_WORKORDERTYPE)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(workOrderTypeService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(workOrderTypeService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
 			if(codepermission.equals(ConstansPermission.READ_INFO_MOBILE)) {

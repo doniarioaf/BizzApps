@@ -102,5 +102,10 @@ public class ConstansPermission {
 	public static final String EDIT_VENDOR = "EDIT_VENDOR";
 	public static final String DELETE_VENDOR = "DELETE_VENDOR";
 	
+	public static final String READ_WORKORDERTYPE = "READ_WORKORDERTYPE";
+	public static final String CREATE_WORKORDERTYPE = "CREATE_WORKORDERTYPE";
+	public static final String EDIT_WORKORDERTYPE = "EDIT_WORKORDERTYPE";
+	public static final String DELETE_WORKORDERTYPE = "DELETE_WORKORDERTYPE";
+	
 	
 }
