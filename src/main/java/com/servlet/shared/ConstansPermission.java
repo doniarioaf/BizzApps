@@ -107,5 +107,10 @@ public class ConstansPermission {
 	public static final String EDIT_WORKORDERTYPE = "EDIT_WORKORDERTYPE";
 	public static final String DELETE_WORKORDERTYPE = "DELETE_WORKORDERTYPE";
 	
+	public static final String READ_PARTAI = "READ_PARTAI";
+	public static final String CREATE_PARTAI = "CREATE_PARTAI";
+	public static final String EDIT_PARTAI = "EDIT_PARTAI";
+	public static final String DELETE_PARTAI = "DELETE_PARTAI";
+	
 	
 }
