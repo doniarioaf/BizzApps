@@ -60,4 +60,6 @@ public class ConstansCodeMessage {
 	
 	public static final String VALIDASI_EMPLOYEE_MANGGALA_NO_IDENTITAS_EXIST = "validation.employeemanggala.noidentitas.exist";
 	
+	public static final String VALIDASI_WORKORDERTYPE_CODE_EXIST = "validation.workordertype.code.exist";
+	
 }
