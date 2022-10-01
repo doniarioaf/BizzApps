@@ -59,6 +59,8 @@ import com.servlet.mobile.project.service.ProjectService;
 import com.servlet.mobile.usermobilecallplan.entity.DownloadUserMobileCallPlan;
 import com.servlet.mobile.usermobilelocation.entity.BodyUserMobileLocation;
 import com.servlet.mobile.usermobilelocation.service.UserMobileLocationService;
+import com.servlet.partai.entity.BodyPartai;
+import com.servlet.partai.service.PartaiService;
 import com.servlet.report.entity.BodyGetMaps;
 import com.servlet.report.entity.BodyReportMonitoring;
 import com.servlet.report.service.ReportService;
@@ -139,6 +141,8 @@ public class ProcessHandler implements ProcessService{
 	VendorService vendorService;
 	@Autowired
 	WorkOrderTypeService workOrderTypeService;
+	@Autowired
+	PartaiService partaiService;
 	
 	
 	@Override
@@ -633,6 +637,41 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_PARTAI)) {
+				BodyPartai param = (BodyPartai) data;
+				ReturnData valReturn = partaiService.savePartai(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_PARTAI)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyPartai body  = (BodyPartai) param.get("body");
+				ReturnData valReturn = partaiService.updatePartai(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_PARTAI)) {
+				long id = (long) data;
+				ReturnData valReturn = partaiService.deletePartai(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 			}
 			
 			
@@ -916,6 +955,15 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
 					val.setData(workOrderTypeService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}
+			}else if(codepermission.equals(ConstansPermission.READ_PARTAI)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(partaiService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(partaiService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
 				}
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
