@@ -112,5 +112,10 @@ public class ConstansPermission {
 	public static final String EDIT_PARTAI = "EDIT_PARTAI";
 	public static final String DELETE_PARTAI = "DELETE_PARTAI";
 	
+	public static final String READ_PORT = "READ_PORT";
+	public static final String CREATE_PORT = "CREATE_PORT";
+	public static final String EDIT_PORT = "EDIT_PORT";
+	public static final String DELETE_PORT = "DELETE_PORT";
+	
 	
 }
