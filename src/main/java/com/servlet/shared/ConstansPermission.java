@@ -117,5 +117,13 @@ public class ConstansPermission {
 	public static final String EDIT_PORT = "EDIT_PORT";
 	public static final String DELETE_PORT = "DELETE_PORT";
 	
+	public static final String READ_PARAMETERMANGGALA = "READ_PARAMETERMANGGALA";
+	public static final String CREATE_PARAMETERMANGGALA = "CREATE_PARAMETERMANGGALA";
+	public static final String EDIT_PARAMETERMANGGALA = "EDIT_PARAMETERMANGGALA";
+	public static final String DELETE_PARAMETERMANGGALA = "DELETE_PARAMETERMANGGALA";
 	
+	public static final String READ_WAREHOUSE = "READ_WAREHOUSE";
+	public static final String CREATE_WAREHOUSE = "CREATE_WAREHOUSE";
+	public static final String EDIT_WAREHOUSE = "EDIT_WAREHOUSE";
+	public static final String DELETE_WAREHOUSE = "DELETE_WAREHOUSE";
 }
