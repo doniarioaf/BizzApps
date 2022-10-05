@@ -6,6 +6,10 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class DetailEmployeeManggalaInfoFamilyPK implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long idcompany;
     private long idbranch;
     private long idemployeemanggala;

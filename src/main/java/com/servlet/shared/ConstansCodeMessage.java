@@ -62,4 +62,6 @@ public class ConstansCodeMessage {
 	
 	public static final String VALIDASI_WORKORDERTYPE_CODE_EXIST = "validation.workordertype.code.exist";
 	
+	public static final String VALIDASI_PARAMETERMANGGALA_PARAMNAME_EXIST = "validation.parametermanggala.paramname.exist";
+	
 }

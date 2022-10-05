@@ -58,6 +58,8 @@ import com.servlet.mobile.project.service.ProjectService;
 import com.servlet.mobile.usermobilecallplan.entity.DownloadUserMobileCallPlan;
 import com.servlet.mobile.usermobilelocation.entity.BodyUserMobileLocation;
 import com.servlet.mobile.usermobilelocation.service.UserMobileLocationService;
+import com.servlet.parametermanggala.entity.BodyParameterManggala;
+import com.servlet.parametermanggala.service.ParameterManggalaService;
 import com.servlet.partai.entity.BodyPartai;
 import com.servlet.partai.service.PartaiService;
 import com.servlet.port.entity.BodyPort;
@@ -78,6 +80,8 @@ import com.servlet.vendor.entity.BodyVendor;
 import com.servlet.vendor.service.VendorService;
 import com.servlet.vendorcategory.entity.BodyVendorCategory;
 import com.servlet.vendorcategory.service.VendorCategoryService;
+import com.servlet.warehouse.entity.BodyWarehouse;
+import com.servlet.warehouse.service.WarehouseService;
 import com.servlet.workordertype.entity.BodyWorkOrderType;
 import com.servlet.workordertype.service.WorkOrderTypeService;
 
@@ -146,6 +150,10 @@ public class ProcessHandler implements ProcessService{
 	PartaiService partaiService;
 	@Autowired
 	PortService portService;
+	@Autowired
+	ParameterManggalaService parameterManggalaService;
+	@Autowired
+	WarehouseService warehouseService;
 	
 	
 	@Override
@@ -710,6 +718,76 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_PARAMETERMANGGALA)) {
+				BodyParameterManggala param = (BodyParameterManggala) data;
+				ReturnData valReturn = parameterManggalaService.saveParameterManggala(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_PARAMETERMANGGALA)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyParameterManggala body  = (BodyParameterManggala) param.get("body");
+				ReturnData valReturn = parameterManggalaService.updateParameterManggala(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_PARAMETERMANGGALA)) {
+				long id = (long) data;
+				ReturnData valReturn = parameterManggalaService.deleteParameterManggala(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_WAREHOUSE)) {
+				BodyWarehouse param = (BodyWarehouse) data;
+				ReturnData valReturn = warehouseService.saveWarehouse(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_WAREHOUSE)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyWarehouse body  = (BodyWarehouse) param.get("body");
+				ReturnData valReturn = warehouseService.updateWarehouse(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_WAREHOUSE)) {
+				long id = (long) data;
+				ReturnData valReturn = warehouseService.deleteWarehouse(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 			}
 			
 			
@@ -1011,6 +1089,29 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
 					val.setData(portService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}
+			}else if(codepermission.equals(ConstansPermission.READ_PARAMETERMANGGALA)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(parameterManggalaService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(parameterManggalaService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}
+			}else if(codepermission.equals(ConstansPermission.READ_WAREHOUSE)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(warehouseService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(warehouseService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("SEARCH")) {
+					String name = (String) param.get("name");
+					val.setData(warehouseService.getListSearchWarehouse(auth.getIdcompany(), auth.getIdbranch(),name));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(warehouseService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
