@@ -55,6 +55,15 @@ public class CustomerManggalaAPI {
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
+	@GetMapping("/template/{id}")
+	ResponseEntity<Response> getTemplateDataById(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "TEMPLATE_DATA");
+		param.put("id", id);
+		Response response = securityService.response(ConstansPermission.READ_CUSTOMER_MANGGALA,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
 	@PostMapping
 	ResponseEntity<Response> createObject(@RequestBody @Validated BodyCustomerManggala body, @RequestHeader(ConstansKey.AUTH) String authorization) {
 		Response response = securityService.response(ConstansPermission.CREATE_CUSTOMER_MANGGALA,body,authorization);

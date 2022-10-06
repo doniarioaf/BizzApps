@@ -15,6 +15,7 @@ public interface CustomerManggalaService {
 	List<CustomerManggalaData> getListAll(Long idcompany,Long idbranch);
 	List<CustomerManggalaData> getListActive(Long idcompany,Long idbranch);
 	CustomerManggalaData getById(Long idcompany,Long idbranch,Long id);
+	CustomerManggalaData getTemplateWithDataById(Long idcompany,Long idbranch,Long id);
 	ReturnData saveCustomerManggala(Long idcompany,Long idbranch,Long iduser,BodyCustomerManggala body);
 	ReturnData updateCustomerManggala(Long idcompany,Long idbranch,Long iduser,Long id,BodyCustomerManggala body);
 	ReturnData deleteCustomerManggala(Long idcompany,Long idbranch,Long iduser,Long id);

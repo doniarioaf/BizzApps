@@ -989,7 +989,12 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
 					val.setData(customerManggalaService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("TEMPLATE_DATA")) {
+					long id = (long) param.get("id");
+					val.setData(customerManggalaService.getTemplateWithDataById(auth.getIdcompany(), auth.getIdbranch(),id));
 				}
+				
+				
 				
 			}else if(codepermission.equals(ConstansPermission.READ_ADDRESS)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;

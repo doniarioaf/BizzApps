@@ -17,4 +17,6 @@ public interface WarehouseService {
 	ReturnData updateWarehouse(Long idcompany,Long idbranch,Long iduser,Long id,BodyWarehouse body);
 	ReturnData deleteWarehouse(Long idcompany,Long idbranch,Long iduser,Long id);
 	WarehouseTemplate getTemplate(Long idcompany,Long idbranch);
+	WarehouseData getByIdNotJoinQuery(Long idcompany,Long idbranch,Long id);
+	List<WarehouseData> getListForCustomer(Long idcompany,Long idbranch,long idcustomer);
 }
