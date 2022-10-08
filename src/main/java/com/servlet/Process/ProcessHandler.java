@@ -43,6 +43,8 @@ import com.servlet.customermanggala.entity.BodyCustomerManggala;
 import com.servlet.customermanggala.service.CustomerManggalaService;
 import com.servlet.employeemanggala.entity.BodyEmployeeManggala;
 import com.servlet.employeemanggala.service.EmployeeManggalaService;
+import com.servlet.invoicetype.entity.BodyInvoiceType;
+import com.servlet.invoicetype.service.InvoiceTypeService;
 import com.servlet.mobile.callplan.entity.BodyCallPlan;
 import com.servlet.mobile.callplan.service.CallPlanService;
 import com.servlet.mobile.customercallplan.entity.DownloadCustomerCallPlan;
@@ -154,6 +156,8 @@ public class ProcessHandler implements ProcessService{
 	ParameterManggalaService parameterManggalaService;
 	@Autowired
 	WarehouseService warehouseService;
+	@Autowired
+	InvoiceTypeService invoiceTypeService;
 	
 	
 	@Override
@@ -788,6 +792,41 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_INVOICETYPE)) {
+				BodyInvoiceType param = (BodyInvoiceType) data;
+				ReturnData valReturn =  invoiceTypeService.saveInvoiceType(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_INVOICETYPE)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyInvoiceType body  = (BodyInvoiceType) param.get("body");
+				ReturnData valReturn = invoiceTypeService.updateInvoiceType(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_INVOICETYPE)) {
+				long id = (long) data;
+				ReturnData valReturn = invoiceTypeService.deleteInvoiceType(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 			}
 			
 			
@@ -1118,6 +1157,18 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("TEMPLATE")) {
 					val.setData(warehouseService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}
+			}else if(codepermission.equals(ConstansPermission.READ_INVOICETYPE)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(invoiceTypeService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(invoiceTypeService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(invoiceTypeService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}
+				
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
 			if(codepermission.equals(ConstansPermission.READ_INFO_MOBILE)) {

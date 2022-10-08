@@ -70,4 +70,6 @@ public class ConstansCodeMessage {
 	public static final String VALIDASI_DELETE_WAREHOUSE_USING_OTHERCUSTOMER = "validation.delete.warehouse.using.othercustomer";
 	public static final String VALIDASI_ACTIVATION_WAREHOUSE_USING_OTHERCUSTOMER = "validation.activation.warehouse.using.othercustomer";
 	
+	public static final String VALIDASI_INVOICETYPE_NAME_EXISTS = "validation.invoicetype.name.exist";
+	
 }
