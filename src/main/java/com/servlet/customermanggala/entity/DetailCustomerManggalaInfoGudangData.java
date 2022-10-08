@@ -1,6 +1,7 @@
 package com.servlet.customermanggala.entity;
 
 public class DetailCustomerManggalaInfoGudangData {
+	private Long id;
 	private String namagudang;
 	private String areakirim;
 	private String alamatgudang;
@@ -8,6 +9,14 @@ public class DetailCustomerManggalaInfoGudangData {
 	private String kontakgudang;
 	private String hpkontakgudang;
 	private String note;
+	private String province;
+	private String kota;
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public String getNamagudang() {
 		return namagudang;
 	}
@@ -49,5 +58,17 @@ public class DetailCustomerManggalaInfoGudangData {
 	}
 	public void setNote(String note) {
 		this.note = note;
+	}
+	public String getProvince() {
+		return province;
+	}
+	public void setProvince(String province) {
+		this.province = province;
+	}
+	public String getKota() {
+		return kota;
+	}
+	public void setKota(String kota) {
+		this.kota = kota;
 	}
 }

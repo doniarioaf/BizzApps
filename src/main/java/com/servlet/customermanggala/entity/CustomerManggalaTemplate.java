@@ -5,12 +5,14 @@ import java.util.List;
 import com.servlet.address.entity.City;
 import com.servlet.address.entity.Province;
 import com.servlet.parameter.entity.ParameterData;
+import com.servlet.warehouse.entity.WarehouseData;
 
 public class CustomerManggalaTemplate {
 	private List<City> cityOptions;
 	private List<Province> provinceOptions;
 	private List<ParameterData> customertypeOptions;
 	private List<ParameterData> panggilanOptions;
+	private List<WarehouseData> warehouseOptions ;
 	public List<ParameterData> getCustomertypeOptions() {
 		return customertypeOptions;
 	}
@@ -34,5 +36,11 @@ public class CustomerManggalaTemplate {
 	}
 	public void setProvinceOptions(List<Province> provinceOptions) {
 		this.provinceOptions = provinceOptions;
+	}
+	public List<WarehouseData> getWarehouseOptions() {
+		return warehouseOptions;
+	}
+	public void setWarehouseOptions(List<WarehouseData> warehouseOptions) {
+		this.warehouseOptions = warehouseOptions;
 	}
 }

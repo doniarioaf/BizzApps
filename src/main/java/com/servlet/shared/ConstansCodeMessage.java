@@ -64,4 +64,12 @@ public class ConstansCodeMessage {
 	
 	public static final String VALIDASI_PARAMETERMANGGALA_PARAMNAME_EXIST = "validation.parametermanggala.paramname.exist";
 	
+	public static final String VALIDASI_WAREHOUSE_NOT_EXIST = "validation.warehouse.not.exist";
+	public static final String VALIDASI_WAREHOUSE_NOT_ACTIVE = "validation.warehouse.not.active";
+	public static final String VALIDASI_WAREHOUSE_USING_OTHERCUSTOMER = "validation.warehouse.using.othercustomer";
+	public static final String VALIDASI_DELETE_WAREHOUSE_USING_OTHERCUSTOMER = "validation.delete.warehouse.using.othercustomer";
+	public static final String VALIDASI_ACTIVATION_WAREHOUSE_USING_OTHERCUSTOMER = "validation.activation.warehouse.using.othercustomer";
+	
+	public static final String VALIDASI_INVOICETYPE_NAME_EXISTS = "validation.invoicetype.name.exist";
+	
 }

@@ -126,4 +126,9 @@ public class ConstansPermission {
 	public static final String CREATE_WAREHOUSE = "CREATE_WAREHOUSE";
 	public static final String EDIT_WAREHOUSE = "EDIT_WAREHOUSE";
 	public static final String DELETE_WAREHOUSE = "DELETE_WAREHOUSE";
+	
+	public static final String READ_INVOICETYPE = "READ_INVOICETYPE";
+	public static final String CREATE_INVOICETYPE = "CREATE_INVOICETYPE";
+	public static final String EDIT_INVOICETYPE = "EDIT_INVOICETYPE";
+	public static final String DELETE_INVOICETYPE = "DELETE_INVOICETYPE";
 }

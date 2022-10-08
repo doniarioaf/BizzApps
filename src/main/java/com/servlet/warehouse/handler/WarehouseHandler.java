@@ -139,6 +139,14 @@ public class WarehouseHandler implements WarehouseService{
 		long idsave = 0;
 		WarehouseData value = checkById(idcompany, idbranch, id);
 		if(value != null) {
+			if(value.isIsactive()) {
+				if(!body.isIsactive()) {
+					if(value.getIdcustomer() != null && value.getIdcustomer().longValue() > 0) {
+						ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_ACTIVATION_WAREHOUSE_USING_OTHERCUSTOMER,"Tidak Bisa Di NonAktifkan Sedang digunakan Customer Lain");
+						validations.add(msg);
+					}
+				}
+			}
 			if(validations.size() == 0) {
 				try {
 					Timestamp ts = new Timestamp(new Date().getTime());
@@ -179,12 +187,18 @@ public class WarehouseHandler implements WarehouseService{
 		
 		WarehouseData value = checkById(idcompany, idbranch, id);
 		if(value != null) {
-			Timestamp ts = new Timestamp(new Date().getTime());
-			Warehouse table = repository.getById(id);
-			table.setIsdelete(true);
-			table.setDeleteby(iduser.toString());
-			table.setDeletedate(ts);
-			idsave = repository.saveAndFlush(table).getId();
+			if(value.getIdcustomer() == null || value.getIdcustomer().longValue() == 0) {
+				Timestamp ts = new Timestamp(new Date().getTime());
+				Warehouse table = repository.getById(id);
+				table.setIsdelete(true);
+				table.setDeleteby(iduser.toString());
+				table.setDeletedate(ts);
+				idsave = repository.saveAndFlush(table).getId();
+			}else {
+				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_DELETE_WAREHOUSE_USING_OTHERCUSTOMER,"Tidak Bisa Delete Sedang digunakan Customer Lain");
+				validations.add(msg);
+			}
+			
 		}
 		ReturnData data = new ReturnData();
 		data.setId(idsave);
@@ -216,6 +230,33 @@ public class WarehouseHandler implements WarehouseService{
 		data.setCityOptions(cityService.getListCity());
 		data.setProvinceOptions(provinceService.getListProvince());
 		return data;
+	}
+
+	@Override
+	public WarehouseData getByIdNotJoinQuery(Long idcompany, Long idbranch, Long id) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetWarehouseListData().schema());
+		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+		List<WarehouseData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetWarehouseListData(), queryParameters);
+		if(list != null && list.size() > 0) {
+			return list.get(0);
+		}
+		return null;
+	}
+
+	@Override
+	public List<WarehouseData> getListForCustomer(Long idcompany, Long idbranch,long idcustomer) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetWarehouseData().schema());
+		if(idcustomer > 0) {
+			sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true and data.isdelete = false and (idcustomer isnull or idcustomer = 0 or idcustomer="+idcustomer+" ) ");
+		}else {
+			sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true and data.isdelete = false and (idcustomer isnull or idcustomer = 0 ) ");
+		}
+		
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetWarehouseData(), queryParameters);
 	}
 
 }
