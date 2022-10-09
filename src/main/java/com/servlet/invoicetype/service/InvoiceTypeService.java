@@ -15,4 +15,5 @@ public interface InvoiceTypeService {
 	ReturnData updateInvoiceType(Long idcompany,Long idbranch,Long iduser,Long id,BodyInvoiceType body);
 	ReturnData deleteInvoiceType(Long idcompany,Long idbranch,Long iduser,Long id);
 	InvoiceTypeTemplate getTemplate(Long idcompany,Long idbranch);
+	List<InvoiceTypeData> getListAllByInvoiceType(Long idcompany,Long idbranch,String invoicetype);
 }

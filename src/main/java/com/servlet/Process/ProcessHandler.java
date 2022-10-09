@@ -66,6 +66,8 @@ import com.servlet.partai.entity.BodyPartai;
 import com.servlet.partai.service.PartaiService;
 import com.servlet.port.entity.BodyPort;
 import com.servlet.port.service.PortService;
+import com.servlet.pricelist.entity.BodyPriceList;
+import com.servlet.pricelist.service.PriceListService;
 import com.servlet.report.entity.BodyGetMaps;
 import com.servlet.report.entity.BodyReportMonitoring;
 import com.servlet.report.service.ReportService;
@@ -158,6 +160,8 @@ public class ProcessHandler implements ProcessService{
 	WarehouseService warehouseService;
 	@Autowired
 	InvoiceTypeService invoiceTypeService;
+	@Autowired
+	PriceListService priceListService;
 	
 	
 	@Override
@@ -827,6 +831,41 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_PRICELIST)) {
+				BodyPriceList param = (BodyPriceList) data;
+				ReturnData valReturn =  priceListService.savePriceList(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_PRICELIST)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyPriceList body  = (BodyPriceList) param.get("body");
+				ReturnData valReturn = priceListService.updatePriceList(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_PRICELIST)) {
+				long id = (long) data;
+				ReturnData valReturn = priceListService.deletePriceList(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 			}
 			
 			
@@ -1031,6 +1070,9 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("TEMPLATE_DATA")) {
 					long id = (long) param.get("id");
 					val.setData(customerManggalaService.getTemplateWithDataById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("CUSTOMER_WAREHOUSE_DATA")) {
+					long id = (long) param.get("id");
+					val.setData(customerManggalaService.getListDetailInfoGudang(auth.getIdcompany(), auth.getIdbranch(),id));
 				}
 				
 				
@@ -1169,6 +1211,20 @@ public class ProcessHandler implements ProcessService{
 					val.setData(invoiceTypeService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
 				}
 				
+			}else if(codepermission.equals(ConstansPermission.READ_PRICELIST)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(priceListService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(priceListService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(priceListService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("TEMPLATE_DATA")) {
+					long id = (long) param.get("id");
+					val.setData(priceListService.getDataWithTemplateById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
 			if(codepermission.equals(ConstansPermission.READ_INFO_MOBILE)) {

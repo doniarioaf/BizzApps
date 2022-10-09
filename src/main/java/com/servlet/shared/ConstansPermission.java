@@ -131,4 +131,10 @@ public class ConstansPermission {
 	public static final String CREATE_INVOICETYPE = "CREATE_INVOICETYPE";
 	public static final String EDIT_INVOICETYPE = "EDIT_INVOICETYPE";
 	public static final String DELETE_INVOICETYPE = "DELETE_INVOICETYPE";
+	
+	public static final String READ_PRICELIST = "READ_PRICELIST";
+	public static final String CREATE_PRICELIST = "CREATE_PRICELIST";
+	public static final String EDIT_PRICELIST = "EDIT_PRICELIST";
+	public static final String DELETE_PRICELIST = "DELETE_PRICELIST";
+	
 }

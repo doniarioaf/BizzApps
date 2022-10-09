@@ -184,4 +184,13 @@ public class InvoiceTypeHandler implements InvoiceTypeService{
 		return data;
 	}
 
+	@Override
+	public List<InvoiceTypeData> getListAllByInvoiceType(Long idcompany, Long idbranch, String invoicetype) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetInvoiceTypeData().schema());
+		sqlBuilder.append(" where data.invoicetype = ? and data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {invoicetype,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceTypeData(), queryParameters);
+	}
+
 }

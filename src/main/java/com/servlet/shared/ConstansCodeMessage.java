@@ -51,6 +51,7 @@ public class ConstansCodeMessage {
 //	//sukses, tapi mengandung catatan, disarankan untuk menampilkan alert catatan tersebut
 //	public static final String SUCCESS_ALERT = "SUCCESS_ALERT";
 	
+	public static final String VALIDASI_GENERATE_DOC_NUMBER = "validation.generate.doc.number";
 	
 	public static final String VALIDASI_BANK_ACCOUNT_DATEOPEN_EMPTY = "validation.bankaccount.dateopen.empty";
 	public static final String VALIDASI_BANK_ACCOUNT_DATEOPEN_NOTVALID = "validation.bankaccount.dateopen.notvalid";
