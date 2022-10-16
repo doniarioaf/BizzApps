@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.servlet.pricelist.entity.BodyPriceList;
+import com.servlet.pricelist.entity.BodySearchPriceList;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConstansPermission;
@@ -59,6 +60,15 @@ public class PriceListApi {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("type", "TEMPLATE_DATA");
 		param.put("id", id);
+		Response response = securityService.response(ConstansPermission.READ_PRICELIST,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@PostMapping("/search")
+	ResponseEntity<Response> searchData(@RequestBody @Validated BodySearchPriceList body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "SEARCHDATA");
+		param.put("body", body);
 		Response response = securityService.response(ConstansPermission.READ_PRICELIST,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}

@@ -67,6 +67,7 @@ import com.servlet.partai.service.PartaiService;
 import com.servlet.port.entity.BodyPort;
 import com.servlet.port.service.PortService;
 import com.servlet.pricelist.entity.BodyPriceList;
+import com.servlet.pricelist.entity.BodySearchPriceList;
 import com.servlet.pricelist.service.PriceListService;
 import com.servlet.report.entity.BodyGetMaps;
 import com.servlet.report.entity.BodyReportMonitoring;
@@ -1224,7 +1225,11 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("TEMPLATE_DATA")) {
 					long id = (long) param.get("id");
 					val.setData(priceListService.getDataWithTemplateById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("SEARCHDATA")) {
+					BodySearchPriceList body = (BodySearchPriceList) param.get("body");
+					val.setData(priceListService.getListSearch(auth.getIdcompany(), auth.getIdbranch(), body));
 				}
+				
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
 			if(codepermission.equals(ConstansPermission.READ_INFO_MOBILE)) {

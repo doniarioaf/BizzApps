@@ -22,5 +22,5 @@ public interface CustomerManggalaService {
 	List<DetailCustomerManggalaInfoKementerianData> getListDetailInfoKementerian(Long idcompany,Long idbranch,Long idcust);
 	List<DetailCustomerManggalaInfoContactData> getListDetailInfoContact(Long idcompany,Long idbranch,Long idcust);
 	List<DetailCustomerManggalaInfoGudangData> getListDetailInfoGudang(Long idcompany,Long idbranch,Long idcust);
-	List<CustomerManggalaData> getListCustomerForPriceList(Long idcompany,Long idbranch);
+	List<CustomerManggalaData> getListCustomerForPriceList(Long idcompany,Long idbranch,Long idcustomer);
 }

@@ -12,6 +12,7 @@ import com.servlet.customermanggala.service.CustomerManggalaService;
 import com.servlet.invoicetype.service.InvoiceTypeService;
 import com.servlet.pricelist.entity.BodyDetailPriceList;
 import com.servlet.pricelist.entity.BodyPriceList;
+import com.servlet.pricelist.entity.BodySearchPriceList;
 import com.servlet.pricelist.entity.DetailPriceList;
 import com.servlet.pricelist.entity.DetailPriceListData;
 import com.servlet.pricelist.entity.DetailPriceListPK;
@@ -21,6 +22,7 @@ import com.servlet.pricelist.entity.PriceListTemplate;
 import com.servlet.pricelist.mapper.GetDetailPriceListDataJoinTable;
 import com.servlet.pricelist.mapper.GetPriceListData;
 import com.servlet.pricelist.mapper.GetPriceListNotJoinTable;
+import com.servlet.pricelist.mapper.GetPriceListSearchData;
 import com.servlet.pricelist.repo.DetailPriceListRepo;
 import com.servlet.pricelist.repo.PriceListRepo;
 import com.servlet.pricelist.service.PriceListService;
@@ -193,12 +195,12 @@ public class PriceListHandler implements PriceListService{
 	@Override
 	public PriceListTemplate getTemplate(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
-		return setTemplate(idcompany, idbranch);
+		return setTemplate(idcompany, idbranch,0L);
 	}
 	
-	private PriceListTemplate setTemplate(Long idcompany, Long idbranch) {
+	private PriceListTemplate setTemplate(Long idcompany, Long idbranch, Long idcustomer) {
 		PriceListTemplate data = new PriceListTemplate();
-		data.setCustomerOptions(customerManggalaService.getListCustomerForPriceList(idcompany, idbranch));
+		data.setCustomerOptions(customerManggalaService.getListCustomerForPriceList(idcompany, idbranch,idcustomer));
 		data.setBiayaJasaOptions(invoiceTypeService.getListAllByInvoiceType(idcompany, idbranch, "JASA"));
 		
 		return data;
@@ -209,7 +211,7 @@ public class PriceListHandler implements PriceListService{
 		// TODO Auto-generated method stub
 		PriceListData val = getById(idcompany,idbranch,id);
 		if(val != null) {
-			val.setTemplate(setTemplate(idcompany, idbranch));
+			val.setTemplate(setTemplate(idcompany, idbranch,val.getIdcustomer()));
 		}
 		return val;
 	}
@@ -272,6 +274,17 @@ public class PriceListHandler implements PriceListService{
 		sqlBuilder.append(" where data.idpricelist = ? and data.idcompany = ? and data.idbranch = ? ");
 		final Object[] queryParameters = new Object[] {idpricelist,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPriceListDataJoinTable(), queryParameters);
+	}
+
+	@Override
+	public List<PriceListData> getListSearch(Long idcompany, Long idbranch, BodySearchPriceList body) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPriceListSearchData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		sqlBuilder.append(" and lower(data.nodocument) = '"+body.getNodocument().toLowerCase()+"' or lower(cust.customername) like '%"+body.getNamacustomer().toLowerCase()+"%' ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		List<PriceListData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetPriceListSearchData(), queryParameters);
+		return list;
 	}
 	
 
