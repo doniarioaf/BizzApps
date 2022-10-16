@@ -393,6 +393,8 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 		
 		return validations;
 	}
+	
+	
 	private CustomerManggalaTemplate getCustomerTemplate(long idcompany, long idbranch,long idcustomer) {
 		CustomerManggalaTemplate data = new CustomerManggalaTemplate();
 		data.setCityOptions(cityService.getListCity());
@@ -460,5 +462,19 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 		}
 		return null;
 	}
+
+	@Override
+	public List<CustomerManggalaData> getListCustomerForPriceList(Long idcompany, Long idbranch,Long idcustomer) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataCustomerManggala().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		sqlBuilder.append(" and data.id not in (select idcustomer from m_price_list as mp where mp.idcompany="+idcompany+" and mp.idbranch="+idbranch+" and mp.isactive = true and mp.isdelete = false ) ");
+		if(idcustomer.longValue() > 0) {
+			sqlBuilder.append(" or data.id = "+idcustomer.longValue());
+		}
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataCustomerManggala(), queryParameters);
+	}
+	
 	
 }

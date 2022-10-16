@@ -3,7 +3,7 @@ package com.servlet.employeemanggala.entity;
 import java.sql.Date;
 import java.util.List;
 
-import com.servlet.customermanggala.entity.CustomerManggalaTemplate;
+import com.servlet.historyemployeemanggala.entity.HistoryEmployeeData;
 
 public class EmployeManggalaData {
 	private Long id;
@@ -27,6 +27,7 @@ public class EmployeManggalaData {
 	private boolean isactive;
 	private EmployeeManggalaTemplate template;
 	private List<DetailEmployeeManggalaInfoFamilyData> detailsFamily;
+	private List<HistoryEmployeeData> historyEmployee;
 	private String photo;
 	public Long getId() {
 		return id;
@@ -159,5 +160,11 @@ public class EmployeManggalaData {
 	}
 	public void setPhoto(String photo) {
 		this.photo = photo;
+	}
+	public List<HistoryEmployeeData> getHistoryEmployee() {
+		return historyEmployee;
+	}
+	public void setHistoryEmployee(List<HistoryEmployeeData> historyEmployee) {
+		this.historyEmployee = historyEmployee;
 	}
 }

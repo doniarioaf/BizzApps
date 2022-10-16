@@ -1,4 +1,4 @@
-package com.servlet.invoicetype.handler;
+package com.servlet.paymenttype.handler;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -8,55 +8,54 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-
-import com.servlet.invoicetype.entity.BodyInvoiceType;
-import com.servlet.invoicetype.entity.InvoiceType;
-import com.servlet.invoicetype.entity.InvoiceTypeData;
-import com.servlet.invoicetype.entity.InvoiceTypeTemplate;
-import com.servlet.invoicetype.mapper.GetInvoiceTypeData;
-import com.servlet.invoicetype.repo.InvoiceTypeRepo;
-import com.servlet.invoicetype.service.InvoiceTypeService;
 import com.servlet.parameter.service.ParameterService;
+import com.servlet.paymenttype.entity.BodyPaymentType;
+import com.servlet.paymenttype.entity.PaymentType;
+import com.servlet.paymenttype.entity.PaymentTypeData;
+import com.servlet.paymenttype.entity.PaymentTypeTemplate;
+import com.servlet.paymenttype.mapper.GetPaymentTypeData;
+import com.servlet.paymenttype.repo.PaymentTypeRepo;
+import com.servlet.paymenttype.service.PaymentTypeService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 
 @Service
-public class InvoiceTypeHandler implements InvoiceTypeService{
+public class PaymentTypeHandler implements PaymentTypeService{
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	@Autowired
-	private InvoiceTypeRepo repository;
+	private PaymentTypeRepo repository;
 	@Autowired
 	private ParameterService parameterService;
 	
 	@Override
-	public List<InvoiceTypeData> getListAll(Long idcompany, Long idbranch) {
+	public List<PaymentTypeData> getListAll(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
-		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetInvoiceTypeData().schema());
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPaymentTypeData().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
-		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceTypeData(), queryParameters);
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetPaymentTypeData(), queryParameters);
 	}
 
 	@Override
-	public List<InvoiceTypeData> getListActiveBankAccount(Long idcompany, Long idbranch) {
+	public List<PaymentTypeData> getListActive(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
-		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetInvoiceTypeData().schema());
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPaymentTypeData().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
-		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceTypeData(), queryParameters);
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetPaymentTypeData(), queryParameters);
 	}
 
 	@Override
-	public InvoiceTypeData getById(Long idcompany, Long idbranch, Long id) {
+	public PaymentTypeData getById(Long idcompany, Long idbranch, Long id) {
 		// TODO Auto-generated method stub
-		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetInvoiceTypeData().schema());
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPaymentTypeData().schema());
 		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
 		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
-		List<InvoiceTypeData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceTypeData(), queryParameters);
+		List<PaymentTypeData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetPaymentTypeData(), queryParameters);
 		if(list != null && list.size() > 0) {
-			InvoiceTypeData val = list.get(0);
+			PaymentTypeData val = list.get(0);
 			val.setTemplate(getTemplate(idcompany, idbranch));
 			return val;
 		}
@@ -64,22 +63,22 @@ public class InvoiceTypeHandler implements InvoiceTypeService{
 	}
 
 	@Override
-	public ReturnData saveInvoiceType(Long idcompany, Long idbranch, Long iduser, BodyInvoiceType body) {
+	public ReturnData savePaymentType(Long idcompany, Long idbranch, Long iduser, BodyPaymentType body) {
 		// TODO Auto-generated method stub
 		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
-		InvoiceTypeData checkName = getByName(idcompany, idbranch, body.getNama());
+		PaymentTypeData checkName = getByName(idcompany, idbranch, body.getNama());
 		if(checkName != null) {
-			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_INVOICETYPE_NAME_EXISTS,"Nama Sudah Dipakai");
+			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_PAYMENTTYPE_NAME_EXISTS,"Nama Sudah Dipakai");
 			validations.add(msg);
 		}
 		long idsave = 0;
 		if(validations.size() == 0) {
 			try {
 				Timestamp ts = new Timestamp(new Date().getTime());
-				InvoiceType table = new InvoiceType();
+				PaymentType table = new PaymentType();
 				table.setIdcompany(idcompany);
 				table.setIdbranch(idbranch);
-				table.setInvoicetype(body.getInvoicetype());
+				table.setPaymenttype(body.getPaymenttype());
 				table.setNama(body.getNama());
 				table.setIsactive(body.isIsactive());
 				table.setIsdelete(false);
@@ -101,25 +100,25 @@ public class InvoiceTypeHandler implements InvoiceTypeService{
 	}
 
 	@Override
-	public ReturnData updateInvoiceType(Long idcompany, Long idbranch, Long iduser, Long id, BodyInvoiceType body) {
+	public ReturnData updatePaymentType(Long idcompany, Long idbranch, Long iduser, Long id, BodyPaymentType body) {
 		// TODO Auto-generated method stub
 		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
 		long idsave = 0;
 		
-		InvoiceTypeData value = getById(idcompany,idbranch,id);
+		PaymentTypeData value = getById(idcompany,idbranch,id);
 		if(value != null) {
 			if(!value.getNama().toLowerCase().equals(body.getNama().toLowerCase())) {
-				InvoiceTypeData checkName = getByName(idcompany, idbranch, body.getNama());
+				PaymentTypeData checkName = getByName(idcompany, idbranch, body.getNama());
 				if(checkName != null) {
-					ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_INVOICETYPE_NAME_EXISTS,"Nama Sudah Dipakai");
+					ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_PAYMENTTYPE_NAME_EXISTS,"Nama Sudah Dipakai");
 					validations.add(msg);
 				}
 			}
 			if(validations.size() == 0) {
 				try {
 					Timestamp ts = new Timestamp(new Date().getTime());
-					InvoiceType table = repository.getById(id);
-					table.setInvoicetype(body.getInvoicetype());
+					PaymentType table = repository.getById(id);
+					table.setPaymenttype(body.getPaymenttype());
 					table.setNama(body.getNama());
 					table.setIsactive(body.isIsactive());
 					table.setUpdateby(iduser.toString());
@@ -140,14 +139,14 @@ public class InvoiceTypeHandler implements InvoiceTypeService{
 	}
 
 	@Override
-	public ReturnData deleteInvoiceType(Long idcompany, Long idbranch, Long iduser, Long id) {
+	public ReturnData deletePaymentType(Long idcompany, Long idbranch, Long iduser, Long id) {
 		// TODO Auto-generated method stub
 		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
 		long idsave = 0;
-		InvoiceTypeData value = getById(idcompany,idbranch,id);
+		PaymentTypeData value = getById(idcompany,idbranch,id);
 		if(value != null) {
 			Timestamp ts = new Timestamp(new Date().getTime());
-			InvoiceType table = repository.getById(id);
+			PaymentType table = repository.getById(id);
 			table.setIsdelete(true);
 			table.setDeleteby(iduser.toString());
 			table.setDeletedate(ts);
@@ -159,38 +158,35 @@ public class InvoiceTypeHandler implements InvoiceTypeService{
 		data.setValidations(validations);
 		return data;
 	}
-	
-	private InvoiceTypeData getByName(Long idcompany, Long idbranch, String nama) {
+
+	@Override
+	public PaymentTypeTemplate getTemplate(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
-		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetInvoiceTypeData().schema());
+		return getDataTemplate(idcompany, idbranch);
+	}
+
+	@Override
+	public List<PaymentTypeData> getListAllByPaymentType(Long idcompany, Long idbranch, String paymenttype) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	private PaymentTypeTemplate getDataTemplate(long idcompany, long idbranch) {
+		PaymentTypeTemplate data = new PaymentTypeTemplate();
+		data.setPaymentTypeOptions(parameterService.getListParameterByGrup("PAYMENTITEM_TYPE"));
+		return data;
+	}
+	
+	private PaymentTypeData getByName(Long idcompany, Long idbranch, String nama) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPaymentTypeData().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false and lower(data.nama) = '"+nama.toLowerCase()+"' ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
-		List<InvoiceTypeData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceTypeData(), queryParameters);
+		List<PaymentTypeData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetPaymentTypeData(), queryParameters);
 		if(list != null && list.size() > 0) {
 			return list.get(0);
 		}
 		return null;
-	}
-
-	@Override
-	public InvoiceTypeTemplate getTemplate(Long idcompany, Long idbranch) {
-		// TODO Auto-generated method stub
-		return getDataTemplate(idcompany,idbranch);
-	}
-	
-	private InvoiceTypeTemplate getDataTemplate(long idcompany, long idbranch) {
-		InvoiceTypeTemplate data = new InvoiceTypeTemplate();
-		data.setInvoiceTypeOptions(parameterService.getListParameterByGrup("INVOICETYPE"));
-		return data;
-	}
-
-	@Override
-	public List<InvoiceTypeData> getListAllByInvoiceType(Long idcompany, Long idbranch, String invoicetype) {
-		// TODO Auto-generated method stub
-		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetInvoiceTypeData().schema());
-		sqlBuilder.append(" where data.invoicetype = ? and data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
-		final Object[] queryParameters = new Object[] {invoicetype,idcompany,idbranch};
-		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceTypeData(), queryParameters);
 	}
 
 }

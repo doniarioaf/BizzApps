@@ -12,6 +12,7 @@ import com.servlet.customermanggala.service.CustomerManggalaService;
 import com.servlet.invoicetype.service.InvoiceTypeService;
 import com.servlet.pricelist.entity.BodyDetailPriceList;
 import com.servlet.pricelist.entity.BodyPriceList;
+import com.servlet.pricelist.entity.BodySearchPriceList;
 import com.servlet.pricelist.entity.DetailPriceList;
 import com.servlet.pricelist.entity.DetailPriceListData;
 import com.servlet.pricelist.entity.DetailPriceListPK;
@@ -20,6 +21,8 @@ import com.servlet.pricelist.entity.PriceListData;
 import com.servlet.pricelist.entity.PriceListTemplate;
 import com.servlet.pricelist.mapper.GetDetailPriceListDataJoinTable;
 import com.servlet.pricelist.mapper.GetPriceListData;
+import com.servlet.pricelist.mapper.GetPriceListNotJoinTable;
+import com.servlet.pricelist.mapper.GetPriceListSearchData;
 import com.servlet.pricelist.repo.DetailPriceListRepo;
 import com.servlet.pricelist.repo.PriceListRepo;
 import com.servlet.pricelist.service.PriceListService;
@@ -87,7 +90,15 @@ public class PriceListHandler implements PriceListService{
 		if(docNumber.equals("")) {
 			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_GENERATE_DOC_NUMBER,"Gagal Generate Document Number");
 			validations.add(msg);
+		}else {
+			PriceListData data = checkByIdCust(idcompany, idbranch, body.getIdcustomer());
+			if(data != null) {
+				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_PRICELIST_CUSTOMER_EXISTS,"Customer Sudah Ada");
+				validations.add(msg);
+			}
+			
 		}
+		
 		if(validations.size() == 0) {
 			try {
 				
@@ -126,6 +137,14 @@ public class PriceListHandler implements PriceListService{
 		long idsave = 0;
 		PriceListData value = checkById(idcompany, idbranch, id);
 		if(value != null) {
+			if(!body.getIdcustomer().equals(value.getIdcustomer())) {
+				PriceListData data = checkByIdCust(idcompany, idbranch, body.getIdcustomer());
+				if(data != null) {
+					ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_PRICELIST_CUSTOMER_EXISTS,"Customer Sudah Ada");
+					validations.add(msg);
+				}
+			}
+			
 			if(validations.size() == 0) {
 				try {
 					Timestamp ts = new Timestamp(new Date().getTime());
@@ -176,12 +195,12 @@ public class PriceListHandler implements PriceListService{
 	@Override
 	public PriceListTemplate getTemplate(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
-		return setTemplate(idcompany, idbranch);
+		return setTemplate(idcompany, idbranch,0L);
 	}
 	
-	private PriceListTemplate setTemplate(Long idcompany, Long idbranch) {
+	private PriceListTemplate setTemplate(Long idcompany, Long idbranch, Long idcustomer) {
 		PriceListTemplate data = new PriceListTemplate();
-		data.setCustomerOptions(customerManggalaService.getListActive(idcompany, idbranch));
+		data.setCustomerOptions(customerManggalaService.getListCustomerForPriceList(idcompany, idbranch,idcustomer));
 		data.setBiayaJasaOptions(invoiceTypeService.getListAllByInvoiceType(idcompany, idbranch, "JASA"));
 		
 		return data;
@@ -192,17 +211,29 @@ public class PriceListHandler implements PriceListService{
 		// TODO Auto-generated method stub
 		PriceListData val = getById(idcompany,idbranch,id);
 		if(val != null) {
-			val.setTemplate(setTemplate(idcompany, idbranch));
+			val.setTemplate(setTemplate(idcompany, idbranch,val.getIdcustomer()));
 		}
 		return val;
 	}
 	
-	public PriceListData checkById(Long idcompany, Long idbranch, Long id) {
+	private PriceListData checkById(Long idcompany, Long idbranch, Long id) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPriceListData().schema());
 		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
 		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
 		List<PriceListData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetPriceListData(), queryParameters);
+		if(list != null && list.size() > 0) {
+			return list.get(0);
+		}
+		return null;
+	}
+	
+	private PriceListData checkByIdCust(Long idcompany, Long idbranch, Long idCust) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPriceListNotJoinTable().schema());
+		sqlBuilder.append(" where data.idcustomer = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {idCust,idcompany,idbranch};
+		List<PriceListData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetPriceListNotJoinTable(), queryParameters);
 		if(list != null && list.size() > 0) {
 			return list.get(0);
 		}
@@ -244,5 +275,17 @@ public class PriceListHandler implements PriceListService{
 		final Object[] queryParameters = new Object[] {idpricelist,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPriceListDataJoinTable(), queryParameters);
 	}
+
+	@Override
+	public List<PriceListData> getListSearch(Long idcompany, Long idbranch, BodySearchPriceList body) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPriceListSearchData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		sqlBuilder.append(" and lower(data.nodocument) = '"+body.getNodocument().toLowerCase()+"' or lower(cust.customername) like '%"+body.getNamacustomer().toLowerCase()+"%' ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		List<PriceListData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetPriceListSearchData(), queryParameters);
+		return list;
+	}
+	
 
 }

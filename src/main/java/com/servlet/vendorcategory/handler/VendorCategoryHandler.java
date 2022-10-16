@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.vendor.entity.VendorData;
+import com.servlet.vendor.service.VendorService;
 import com.servlet.vendorcategory.entity.BodyVendorCategory;
 import com.servlet.vendorcategory.entity.VendorCategory;
 import com.servlet.vendorcategory.entity.VendorCategoryData;
@@ -25,6 +27,8 @@ public class VendorCategoryHandler implements VendorCategoryService{
 	private JdbcTemplate jdbcTemplate;
 	@Autowired
 	private VendorCategoryRepo repository;
+	@Autowired
+	private VendorService vendorService;
 	
 	
 	@Override
@@ -132,12 +136,19 @@ public class VendorCategoryHandler implements VendorCategoryService{
 		long idsave = 0;
 		VendorCategoryData value = getById(idcompany, idbranch, id);
 		if(value != null) {
-			Timestamp ts = new Timestamp(new Date().getTime());
-			VendorCategory table = repository.getById(id);
-			table.setIsdelete(true);
-			table.setDeleteby(iduser.toString());
-			table.setDeletedate(ts);
-			idsave = repository.saveAndFlush(table).getId();
+			List<VendorData> listvendor = vendorService.checkVendorCategory(idcompany, idbranch, id);
+			if(listvendor == null) {
+				Timestamp ts = new Timestamp(new Date().getTime());
+				VendorCategory table = repository.getById(id);
+				table.setIsdelete(true);
+				table.setDeleteby(iduser.toString());
+				table.setDeletedate(ts);
+				idsave = repository.saveAndFlush(table).getId();
+			}else {
+				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_VENDORCATEGORY_USINGVENDOR,"Tidak Bisa hapus, Sudah digunakan di vendor");
+				validations.add(msg);
+			}
+			
 		}
 		ReturnData data = new ReturnData();
 		data.setId(idsave);

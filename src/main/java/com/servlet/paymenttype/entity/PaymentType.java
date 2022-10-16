@@ -1,4 +1,4 @@
-package com.servlet.pricelist.entity;
+package com.servlet.paymenttype.entity;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -10,17 +10,18 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "m_price_list", schema = "public")
-public class PriceList implements Serializable{
+@Table(name = "m_payment_type", schema = "public")
+public class PaymentType implements Serializable{
+	
 private static final long serialVersionUID = 1L;
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO, generator="m_price_list_id_seq")
+	@GeneratedValue(strategy=GenerationType.AUTO, generator="m_payment_type_id_seq")
 	private Long id;
 	private Long idcompany;
 	private Long idbranch;
-	private Long idcustomer;
-	private String nodocument;
+	private String paymenttype;
+	private String nama;
 	private boolean isactive;
 	private boolean isdelete;
 	private String createdby;
@@ -47,17 +48,17 @@ private static final long serialVersionUID = 1L;
 	public void setIdbranch(Long idbranch) {
 		this.idbranch = idbranch;
 	}
-	public Long getIdcustomer() {
-		return idcustomer;
+	public String getPaymenttype() {
+		return paymenttype;
 	}
-	public void setIdcustomer(Long idcustomer) {
-		this.idcustomer = idcustomer;
+	public void setPaymenttype(String paymenttype) {
+		this.paymenttype = paymenttype;
 	}
-	public String getNodocument() {
-		return nodocument;
+	public String getNama() {
+		return nama;
 	}
-	public void setNodocument(String nodocument) {
-		this.nodocument = nodocument;
+	public void setNama(String nama) {
+		this.nama = nama;
 	}
 	public boolean isIsactive() {
 		return isactive;
@@ -107,6 +108,4 @@ private static final long serialVersionUID = 1L;
 	public void setDeletedate(Timestamp deletedate) {
 		this.deletedate = deletedate;
 	}
-	
-	
 }

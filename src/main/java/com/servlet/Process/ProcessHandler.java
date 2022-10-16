@@ -64,9 +64,12 @@ import com.servlet.parametermanggala.entity.BodyParameterManggala;
 import com.servlet.parametermanggala.service.ParameterManggalaService;
 import com.servlet.partai.entity.BodyPartai;
 import com.servlet.partai.service.PartaiService;
+import com.servlet.paymenttype.entity.BodyPaymentType;
+import com.servlet.paymenttype.service.PaymentTypeService;
 import com.servlet.port.entity.BodyPort;
 import com.servlet.port.service.PortService;
 import com.servlet.pricelist.entity.BodyPriceList;
+import com.servlet.pricelist.entity.BodySearchPriceList;
 import com.servlet.pricelist.service.PriceListService;
 import com.servlet.report.entity.BodyGetMaps;
 import com.servlet.report.entity.BodyReportMonitoring;
@@ -162,6 +165,8 @@ public class ProcessHandler implements ProcessService{
 	InvoiceTypeService invoiceTypeService;
 	@Autowired
 	PriceListService priceListService;
+	@Autowired
+	PaymentTypeService paymentTypeService;
 	
 	
 	@Override
@@ -866,6 +871,41 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_PAYMENTTYPE)) {
+				BodyPaymentType param = (BodyPaymentType) data;
+				ReturnData valReturn =  paymentTypeService.savePaymentType(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_PAYMENTTYPE)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyPaymentType body  = (BodyPaymentType) param.get("body");
+				ReturnData valReturn = paymentTypeService.updatePaymentType(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_PAYMENTTYPE)) {
+				long id = (long) data;
+				ReturnData valReturn = paymentTypeService.deletePaymentType(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 			}
 			
 			
@@ -1224,7 +1264,23 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("TEMPLATE_DATA")) {
 					long id = (long) param.get("id");
 					val.setData(priceListService.getDataWithTemplateById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("SEARCHDATA")) {
+					BodySearchPriceList body = (BodySearchPriceList) param.get("body");
+					val.setData(priceListService.getListSearch(auth.getIdcompany(), auth.getIdbranch(), body));
 				}
+				
+			}else if(codepermission.equals(ConstansPermission.READ_PAYMENTTYPE)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(paymentTypeService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(paymentTypeService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(paymentTypeService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}
+				
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
 			if(codepermission.equals(ConstansPermission.READ_INFO_MOBILE)) {

@@ -1,4 +1,4 @@
-package com.servlet.pricelist.api;
+package com.servlet.paymenttype.api;
 
 import java.util.HashMap;
 
@@ -16,17 +16,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.servlet.pricelist.entity.BodyPriceList;
-import com.servlet.pricelist.entity.BodySearchPriceList;
+
+import com.servlet.paymenttype.entity.BodyPaymentType;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConstansPermission;
 import com.servlet.shared.Response;
 
 @RestController
-@RequestMapping("/v1/pricelist")
+@RequestMapping("/v1/paymenttype")
 @CrossOrigin(origins = "${value.cross_origin}")
-public class PriceListApi {
+public class PaymentTypeApi {
 	@Autowired
 	SecurityService securityService;
 	
@@ -34,15 +34,7 @@ public class PriceListApi {
 	ResponseEntity<Response> getList(@RequestHeader(ConstansKey.AUTH) String authorization) {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("type", "ALL");
-		Response response = securityService.response(ConstansPermission.READ_PRICELIST,param,authorization);
-		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
-	}
-	
-	@GetMapping("/template")
-	ResponseEntity<Response> getListTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
-		HashMap<String, Object> param = new HashMap<String, Object>();
-		param.put("type", "TEMPLATE");
-		Response response = securityService.response(ConstansPermission.READ_PRICELIST,param,authorization);
+		Response response = securityService.response(ConstansPermission.READ_PAYMENTTYPE,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
@@ -51,46 +43,36 @@ public class PriceListApi {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("type", "DETAIL");
 		param.put("id", id);
-		Response response = securityService.response(ConstansPermission.READ_PRICELIST,param,authorization);
+		Response response = securityService.response(ConstansPermission.READ_PAYMENTTYPE,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
-	@GetMapping("/template/{id}")
-	ResponseEntity<Response> getTemplateDataById(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
+	@GetMapping("/template")
+	ResponseEntity<Response> getTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
 		HashMap<String, Object> param = new HashMap<String, Object>();
-		param.put("type", "TEMPLATE_DATA");
-		param.put("id", id);
-		Response response = securityService.response(ConstansPermission.READ_PRICELIST,param,authorization);
-		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
-	}
-	
-	@PostMapping("/search")
-	ResponseEntity<Response> searchData(@RequestBody @Validated BodySearchPriceList body, @RequestHeader(ConstansKey.AUTH) String authorization) {
-		HashMap<String, Object> param = new HashMap<String, Object>();
-		param.put("type", "SEARCHDATA");
-		param.put("body", body);
-		Response response = securityService.response(ConstansPermission.READ_PRICELIST,param,authorization);
+		param.put("type", "TEMPLATE");
+		Response response = securityService.response(ConstansPermission.READ_PAYMENTTYPE,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
 	@PostMapping
-	ResponseEntity<Response> createObject(@RequestBody @Validated BodyPriceList body, @RequestHeader(ConstansKey.AUTH) String authorization) {
-		Response response = securityService.response(ConstansPermission.CREATE_PRICELIST,body,authorization);
+	ResponseEntity<Response> createObject(@RequestBody @Validated BodyPaymentType body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		Response response = securityService.response(ConstansPermission.CREATE_PAYMENTTYPE,body,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
 	@PutMapping("{id}")
-	ResponseEntity<Response> updateObject(@PathVariable long id,@RequestBody @Validated BodyPriceList body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+	ResponseEntity<Response> updateObject(@PathVariable long id,@RequestBody @Validated BodyPaymentType body, @RequestHeader(ConstansKey.AUTH) String authorization) {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("id", id);
 		param.put("body", body);
-		Response response = securityService.response(ConstansPermission.EDIT_PRICELIST,param,authorization);
+		Response response = securityService.response(ConstansPermission.EDIT_PAYMENTTYPE,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
 	@DeleteMapping("{id}")
 	ResponseEntity<Response> deleteObject(@PathVariable long id, @RequestHeader(ConstansKey.AUTH) String authorization) {
-		Response response = securityService.response(ConstansPermission.DELETE_PRICELIST,id,authorization);
+		Response response = securityService.response(ConstansPermission.DELETE_PAYMENTTYPE,id,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 }
