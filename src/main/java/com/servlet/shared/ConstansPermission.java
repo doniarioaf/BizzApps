@@ -137,4 +137,9 @@ public class ConstansPermission {
 	public static final String EDIT_PRICELIST = "EDIT_PRICELIST";
 	public static final String DELETE_PRICELIST = "DELETE_PRICELIST";
 	
+	public static final String READ_PAYMENTTYPE = "READ_PAYMENTTYPE";
+	public static final String CREATE_PAYMENTTYPE = "CREATE_PAYMENTTYPE";
+	public static final String EDIT_PAYMENTTYPE = "EDIT_PAYMENTTYPE";
+	public static final String DELETE_PAYMENTTYPE = "DELETE_PAYMENTTYPE";
+	
 }

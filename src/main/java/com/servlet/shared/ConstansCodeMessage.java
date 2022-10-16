@@ -75,5 +75,6 @@ public class ConstansCodeMessage {
 	public static final String VALIDASI_PRICELIST_CUSTOMER_EXISTS = "validation.pricelist.customer.exist";
 	
 	public static final String VALIDASI_VENDORCATEGORY_USINGVENDOR = "validation.vendorcategory.usingvendor";
+	public static final String VALIDASI_PAYMENTTYPE_NAME_EXISTS = "validation.paymenttype.name.exist";
 	
 }
