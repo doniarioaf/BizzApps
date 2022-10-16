@@ -315,4 +315,17 @@ public class VendorHandler implements VendorService{
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailVendorContactData(), queryParameters);
 	}
 
+	@Override
+	public List<VendorData> checkVendorCategory(Long idcompany, Long idbranch, Long idvendorcategory) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetVendorData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.idvendorcategory = ? and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch,idvendorcategory};
+		List<VendorData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetVendorData(), queryParameters);
+		if(list != null && list.size() > 0) {
+			return list;
+		}
+		return null;
+	}
+
 }

@@ -16,4 +16,5 @@ public interface VendorService {
 	ReturnData saveVendor(Long idcompany,Long idbranch,Long iduser,BodyVendor body);
 	ReturnData updateVendor(Long idcompany,Long idbranch,Long iduser,Long id,BodyVendor body);
 	ReturnData deleteVendor(Long idcompany,Long idbranch,Long iduser,Long id);
+	List<VendorData> checkVendorCategory(Long idcompany,Long idbranch,Long idvendorcategory);
 }

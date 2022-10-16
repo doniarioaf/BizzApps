@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.servlet.employeemanggala.entity.BodyDetailEmployeeManggalaInfoFamily;
 import com.servlet.employeemanggala.entity.BodyEmployeeManggala;
@@ -36,7 +35,6 @@ import com.servlet.shared.ConstansPermission;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 import com.servlet.upload.image.FileStorageService;
-import com.servlet.upload.image.UploadFileResponse;
 import com.servlet.user.entity.UserPermissionData;
 import com.servlet.user.service.UserAppsService;
 
@@ -102,7 +100,10 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 			val.setTemplate(getEmployeeTemplate(idcompany,idbranch));
 			if(!checkInputGaji(iduser,"")) {
 				val.setGaji("");
+			}else {
+				val.setHistoryEmployee(historyEmployeeService.listHistoryEmployeeManggala(idcompany, idbranch, id));
 			}
+			
 			return val;
 		}
 		return null;
@@ -224,6 +225,11 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 				try {
 					Timestamp ts = new Timestamp(new Date().getTime());
 					EmployeeManggala table = repository.getById(id);
+					BodyEmployeeManggala tabletemp = new BodyEmployeeManggala();
+					tabletemp.setJabatan(table.getJabatan());
+					tabletemp.setStatuskaryawan(table.getStatuskaryawan());
+					tabletemp.setGaji(table.getGaji());
+					
 					table.setStatuskaryawan(body.getStatuskaryawan());
 					table.setJabatan(body.getJabatan());
 					table.setNama(body.getNama());
@@ -263,7 +269,7 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 					table.setUpdatedate(ts);
 					idsave = repository.saveAndFlush(table).getId();
 					
-					putHistory(table, body, idcompany, idbranch, iduser, id, gaji);
+					putHistory(tabletemp, body, idcompany, idbranch, iduser, id, gaji);
 					putDetailInforFamily(body.getDetailsInfoFamily(),idcompany,idbranch,idsave,"EDIT");
 				}catch (Exception e) {
 					// TODO: handle exception
@@ -280,21 +286,21 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 		return data;
 	}
 	
-	private String putHistory(EmployeeManggala table,BodyEmployeeManggala bodyemp,Long idcompany, Long idbranch, Long iduser, Long id, boolean gaji) {
+	private String putHistory(BodyEmployeeManggala table,BodyEmployeeManggala bodyemp,Long idcompany, Long idbranch, Long iduser, Long id, boolean gaji) {
 		boolean flag = false;
 		String jabatan = "";
 		String statuskaryawan = "";
 		String gajiemp = "";
 		if(!table.getJabatan().equals(bodyemp.getJabatan())) {
 			flag = true;
-			jabatan = bodyemp.getJabatan();
+			jabatan = table.getJabatan();
 		}else {
 			jabatan = table.getJabatan();
 		}
 		
 		if(!table.getStatuskaryawan().equals(bodyemp.getStatuskaryawan())) {
 			flag = true;
-			statuskaryawan = bodyemp.getStatuskaryawan();
+			statuskaryawan = table.getStatuskaryawan();
 		}else {
 			statuskaryawan = table.getStatuskaryawan();
 		}
@@ -302,7 +308,7 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 		if(!table.getGaji().equals(bodyemp.getGaji())) {
 			if(gaji) {
 				flag = true;
-				gajiemp = bodyemp.getGaji();
+				gajiemp = table.getGaji();//bodyemp.getGaji();
 			}else {
 				gajiemp = table.getGaji();
 			}
