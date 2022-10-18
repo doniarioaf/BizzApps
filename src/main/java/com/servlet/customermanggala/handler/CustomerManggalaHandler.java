@@ -18,6 +18,7 @@ import com.servlet.customermanggala.entity.BodyCustomerManggala;
 import com.servlet.customermanggala.entity.BodyCustomerManggalaInfoContact;
 import com.servlet.customermanggala.entity.BodyCustomerManggalaInfoGudang;
 import com.servlet.customermanggala.entity.BodyCustomerManggalaInfoKementerian;
+import com.servlet.customermanggala.entity.BodySearch;
 import com.servlet.customermanggala.entity.CustomerManggala;
 import com.servlet.customermanggala.entity.CustomerManggalaData;
 import com.servlet.customermanggala.entity.CustomerManggalaTemplate;
@@ -34,6 +35,7 @@ import com.servlet.customermanggala.mapper.GetDataCustomerManggala;
 import com.servlet.customermanggala.mapper.GetDataDetailCustomerManggalaInfoContact;
 import com.servlet.customermanggala.mapper.GetDataDetailCustomerManggalaInfoGudang;
 import com.servlet.customermanggala.mapper.GetDataDetailCustomerManggalaKementerian;
+import com.servlet.customermanggala.mapper.GetSearchDataCustomerManggala;
 import com.servlet.customermanggala.repo.CustomerManggalaRepo;
 import com.servlet.customermanggala.repo.DetailCustomerManggalaInfoContactRepo;
 import com.servlet.customermanggala.repo.DetailCustomerManggalaInfoGudangRepo;
@@ -474,6 +476,16 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 		}
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataCustomerManggala(), queryParameters);
+	}
+
+	@Override
+	public List<CustomerManggalaData> getListSearchCustomer(Long idcompany, Long idbranch, BodySearch body) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetSearchDataCustomerManggala().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		sqlBuilder.append(" and lower(data.customername) like '%"+body.getNama().toLowerCase()+"%' ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetSearchDataCustomerManggala(), queryParameters);
 	}
 	
 	
