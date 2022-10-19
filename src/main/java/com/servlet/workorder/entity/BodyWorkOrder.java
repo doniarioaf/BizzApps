@@ -2,7 +2,6 @@ package com.servlet.workorder.entity;
 
 
 public class BodyWorkOrder {
-	private String nodocument;
 	private Long tanggal;
 	private Long idcustomer;
 	private String namacargo;
@@ -28,12 +27,8 @@ public class BodyWorkOrder {
 	private String depo;
 	private String invoiceno;
 	private boolean isactive;
-	public String getNodocument() {
-		return nodocument;
-	}
-	public void setNodocument(String nodocument) {
-		this.nodocument = nodocument;
-	}
+	private BodyDetailWorkOrder[] details;
+	
 	public Long getTanggal() {
 		return tanggal;
 	}
@@ -183,5 +178,11 @@ public class BodyWorkOrder {
 	}
 	public void setIsactive(boolean isactive) {
 		this.isactive = isactive;
+	}
+	public BodyDetailWorkOrder[] getDetails() {
+		return details;
+	}
+	public void setDetails(BodyDetailWorkOrder[] details) {
+		this.details = details;
 	}
 }

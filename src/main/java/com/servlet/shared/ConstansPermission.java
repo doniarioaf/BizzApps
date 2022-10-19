@@ -142,4 +142,10 @@ public class ConstansPermission {
 	public static final String EDIT_PAYMENTTYPE = "EDIT_PAYMENTTYPE";
 	public static final String DELETE_PAYMENTTYPE = "DELETE_PAYMENTTYPE";
 	
+	public static final String READ_WORKORDER = "READ_WORKORDER";
+	public static final String CREATE_WORKORDER = "CREATE_WORKORDER";
+	public static final String EDIT_WORKORDER = "EDIT_WORKORDER";
+	public static final String DELETE_WORKORDER = "DELETE_WORKORDER";
+	
+	
 }

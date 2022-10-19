@@ -8,8 +8,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-
-import com.servlet.customermanggala.service.CustomerManggalaService;
 import com.servlet.parameter.service.ParameterService;
 import com.servlet.partai.service.PartaiService;
 import com.servlet.port.service.PortService;
@@ -19,12 +17,18 @@ import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 import com.servlet.vendor.service.VendorService;
+import com.servlet.workorder.entity.BodyDetailWorkOrder;
 import com.servlet.workorder.entity.BodyWorkOrder;
+import com.servlet.workorder.entity.DetailWorkOrder;
+import com.servlet.workorder.entity.DetailWorkOrderData;
+import com.servlet.workorder.entity.DetailWorkOrderPK;
 import com.servlet.workorder.entity.WorkOrder;
 import com.servlet.workorder.entity.WorkOrderData;
 import com.servlet.workorder.entity.WorkOrderTemplate;
+import com.servlet.workorder.mapper.GetDetailWorkOrderJoinTable;
 import com.servlet.workorder.mapper.GetWorkOrderJoinTableData;
 import com.servlet.workorder.mapper.GetWorkOrderNotJoinTableData;
+import com.servlet.workorder.repo.DetailWorkOrderRepo;
 import com.servlet.workorder.repo.WorkOrderRepo;
 import com.servlet.workorder.service.WorkOrderService;
 
@@ -44,6 +48,8 @@ public class WorkOrderHandler implements WorkOrderService{
 	private PartaiService partaiService;
 	@Autowired
 	private RunningNumberService runningNumberService;
+	@Autowired
+	private DetailWorkOrderRepo detailWorkOrderRepo;
 	
 	@Override
 	public List<WorkOrderData> getListAll(Long idcompany, Long idbranch) {
@@ -72,6 +78,7 @@ public class WorkOrderHandler implements WorkOrderService{
 		List<WorkOrderData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderJoinTableData(), queryParameters);
 		if(list != null && list.size() > 0) {
 			WorkOrderData val = list.get(0);
+			val.setDetails(getListDetailWorkOrder(id, idcompany, idbranch));
 			return val;
 		}
 		return null;
@@ -87,6 +94,7 @@ public class WorkOrderHandler implements WorkOrderService{
 		if(list != null && list.size() > 0) {
 			WorkOrderData val = list.get(0);
 			val.setTemplates(setTemplate(idcompany, idbranch));
+			val.setDetails(getListDetailWorkOrder(id, idcompany, idbranch));
 			return val;
 		}
 		return null;
@@ -144,6 +152,8 @@ public class WorkOrderHandler implements WorkOrderService{
 				table.setCreateddate(ts);
 				
 				idsave = repository.saveAndFlush(table).getId();
+				
+				putDetail(body.getDetails(), idcompany, idbranch, idsave, "ADD");
 			}catch (Exception e) {
 				// TODO: handle exception
 				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
@@ -201,6 +211,8 @@ public class WorkOrderHandler implements WorkOrderService{
 				table.setUpdateby(iduser.toString());
 				table.setUpdatedate(ts);
 				idsave = repository.saveAndFlush(table).getId();
+				
+				putDetail(body.getDetails(), idcompany, idbranch, idsave, "EDIT");
 			}catch (Exception e) {
 				// TODO: handle exception
 				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
@@ -281,5 +293,41 @@ public class WorkOrderHandler implements WorkOrderService{
 		return null;
 	}
 	
+	private String putDetail(BodyDetailWorkOrder[] details,Long idcompany, Long idbranch,long idsave,String action) {
+		if(action.equals("EDIT")) {
+			detailWorkOrderRepo.deleteAllDetail(idsave, idcompany, idbranch);
+		}
+		if(details != null) {
+			if(details.length > 0) {
+				for(int i=0; i < details.length; i++) {
+					BodyDetailWorkOrder detail = details[i];
+					
+					DetailWorkOrderPK detailWorkOrderPK = new DetailWorkOrderPK();
+					detailWorkOrderPK.setIdcompany(idcompany);
+					detailWorkOrderPK.setIdbranch(idbranch);
+					detailWorkOrderPK.setIdworkorder(idsave);
+					detailWorkOrderPK.setIdpartai(detail.getIdpartai());
+					
+					DetailWorkOrder detailWorkOrder = new DetailWorkOrder();
+					detailWorkOrder.setDetailWorkOrderPK(detailWorkOrderPK);
+					detailWorkOrder.setBarang(detail.getBarang());
+					detailWorkOrder.setJumlahkg(detail.getJumlahkg());
+					detailWorkOrder.setJumlahkoli(detail.getJumlahkoli());
+					detailWorkOrder.setNocontainer(detail.getNocontainer());
+					detailWorkOrder.setNoseal(detail.getNoseal());
+					detailWorkOrderRepo.saveAndFlush(detailWorkOrder);
+				}
+			}
+		}
+		return "";
+	}
+	
+	public List<DetailWorkOrderData> getListDetailWorkOrder(Long idworkorder,Long idcompany, Long idbranch) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailWorkOrderJoinTable().schema());
+		sqlBuilder.append(" where data.idworkorder = ? and data.idcompany = ? and data.idbranch = ? ");
+		final Object[] queryParameters = new Object[] {idworkorder,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailWorkOrderJoinTable(), queryParameters);
+	}
 
 }

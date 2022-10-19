@@ -1,6 +1,7 @@
 package com.servlet.workorder.entity;
 
 import java.sql.Date;
+import java.util.List;
 
 public class WorkOrderData {
 	private Long id;
@@ -42,6 +43,13 @@ public class WorkOrderData {
 	private String invoiceno;
 	private boolean isactive;
 	private WorkOrderTemplate templates;
+	private List<DetailWorkOrderData> details;
+	public List<DetailWorkOrderData> getDetails() {
+		return details;
+	}
+	public void setDetails(List<DetailWorkOrderData> details) {
+		this.details = details;
+	}
 	public String getStatusCodeName() {
 		return statusCodeName;
 	}

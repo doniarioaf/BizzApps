@@ -40,6 +40,7 @@ import com.servlet.admin.usermobile.service.UserMobileService;
 import com.servlet.bankaccount.entity.BodyBankAccount;
 import com.servlet.bankaccount.service.BankAccountService;
 import com.servlet.customermanggala.entity.BodyCustomerManggala;
+import com.servlet.customermanggala.entity.BodySearch;
 import com.servlet.customermanggala.service.CustomerManggalaService;
 import com.servlet.employeemanggala.entity.BodyEmployeeManggala;
 import com.servlet.employeemanggala.service.EmployeeManggalaService;
@@ -89,6 +90,8 @@ import com.servlet.vendorcategory.entity.BodyVendorCategory;
 import com.servlet.vendorcategory.service.VendorCategoryService;
 import com.servlet.warehouse.entity.BodyWarehouse;
 import com.servlet.warehouse.service.WarehouseService;
+import com.servlet.workorder.entity.BodyWorkOrder;
+import com.servlet.workorder.service.WorkOrderService;
 import com.servlet.workordertype.entity.BodyWorkOrderType;
 import com.servlet.workordertype.service.WorkOrderTypeService;
 
@@ -167,6 +170,8 @@ public class ProcessHandler implements ProcessService{
 	PriceListService priceListService;
 	@Autowired
 	PaymentTypeService paymentTypeService;
+	@Autowired
+	WorkOrderService workOrderService;
 	
 	
 	@Override
@@ -906,6 +911,41 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_WORKORDER)) {
+				BodyWorkOrder param = (BodyWorkOrder) data;
+				ReturnData valReturn =  workOrderService.saveWorkOrder(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_WORKORDER)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyWorkOrder body  = (BodyWorkOrder) param.get("body");
+				ReturnData valReturn = workOrderService.updateWorkOrder(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_WORKORDER)) {
+				long id = (long) data;
+				ReturnData valReturn = workOrderService.deleteWorkOrder(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 			}
 			
 			
@@ -1279,6 +1319,24 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
 					val.setData(paymentTypeService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}
+				
+			}else if(codepermission.equals(ConstansPermission.READ_WORKORDER)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(workOrderService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(workOrderService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(workOrderService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("TEMPLATE_DATA")) {
+					long id = (long) param.get("id");
+					val.setData(workOrderService.getByIdForEdit(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("SEARCHDATACUSTOMER")) {
+					BodySearch body = (BodySearch) param.get("body");
+					val.setData(customerManggalaService.getListSearchCustomer(auth.getIdcompany(), auth.getIdbranch(), body));
 				}
 				
 			}
