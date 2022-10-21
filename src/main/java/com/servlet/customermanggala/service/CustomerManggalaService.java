@@ -25,4 +25,5 @@ public interface CustomerManggalaService {
 	List<DetailCustomerManggalaInfoGudangData> getListDetailInfoGudang(Long idcompany,Long idbranch,Long idcust);
 	List<CustomerManggalaData> getListCustomerForPriceList(Long idcompany,Long idbranch,Long idcustomer);
 	List<CustomerManggalaData> getListSearchCustomer(Long idcompany,Long idbranch,BodySearch body);
+	CustomerManggalaData getDataCustomerNotFilter(Long idcompany,Long idbranch,Long id);
 }

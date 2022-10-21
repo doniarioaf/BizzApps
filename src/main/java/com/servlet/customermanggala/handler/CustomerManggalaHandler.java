@@ -487,6 +487,20 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetSearchDataCustomerManggala(), queryParameters);
 	}
+
+	@Override
+	public CustomerManggalaData getDataCustomerNotFilter(Long idcompany, Long idbranch, Long id) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataCustomerManggala().schema());
+		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? ");
+		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+		List<CustomerManggalaData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataCustomerManggala(), queryParameters);
+		if(list != null && list.size() > 0) {
+			CustomerManggalaData val = list.get(0);
+			return val;
+		}
+		return null;
+	}
 	
 	
 }

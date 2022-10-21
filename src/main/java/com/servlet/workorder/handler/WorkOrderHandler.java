@@ -8,6 +8,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import com.servlet.customermanggala.entity.CustomerManggalaData;
+import com.servlet.customermanggala.service.CustomerManggalaService;
 import com.servlet.parameter.service.ParameterService;
 import com.servlet.partai.service.PartaiService;
 import com.servlet.port.service.PortService;
@@ -26,6 +29,7 @@ import com.servlet.workorder.entity.WorkOrder;
 import com.servlet.workorder.entity.WorkOrderData;
 import com.servlet.workorder.entity.WorkOrderTemplate;
 import com.servlet.workorder.mapper.GetDetailWorkOrderJoinTable;
+import com.servlet.workorder.mapper.GetWorkOrderJoinCustomerData;
 import com.servlet.workorder.mapper.GetWorkOrderJoinTableData;
 import com.servlet.workorder.mapper.GetWorkOrderNotJoinTableData;
 import com.servlet.workorder.repo.DetailWorkOrderRepo;
@@ -50,14 +54,17 @@ public class WorkOrderHandler implements WorkOrderService{
 	private RunningNumberService runningNumberService;
 	@Autowired
 	private DetailWorkOrderRepo detailWorkOrderRepo;
+	@Autowired
+	private CustomerManggalaService customerManggalaService;
 	
 	@Override
 	public List<WorkOrderData> getListAll(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
-		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetWorkOrderNotJoinTableData().schema());
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetWorkOrderJoinCustomerData().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false ");
+		sqlBuilder.append("order by data.id desc ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
-		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderNotJoinTableData(), queryParameters);
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderJoinCustomerData(), queryParameters);
 	}
 
 	@Override
@@ -93,6 +100,12 @@ public class WorkOrderHandler implements WorkOrderService{
 		List<WorkOrderData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderNotJoinTableData(), queryParameters);
 		if(list != null && list.size() > 0) {
 			WorkOrderData val = list.get(0);
+			String customername = "";
+			CustomerManggalaData custData = customerManggalaService.getDataCustomerNotFilter(idcompany, idbranch, val.getIdcustomer());
+			if(custData != null) {
+				customername = custData.getCustomername();
+			}
+			val.setNamaCustomer(customername);
 			val.setTemplates(setTemplate(idcompany, idbranch));
 			val.setDetails(getListDetailWorkOrder(id, idcompany, idbranch));
 			return val;
@@ -135,15 +148,15 @@ public class WorkOrderHandler implements WorkOrderService{
 				table.setJalur(body.getJalur());
 				table.setNoaju(body.getNoaju());
 				table.setNopen(body.getNopen());
-				table.setTanggalnopen(new java.sql.Date(body.getTanggalnopen()));
+				table.setTanggalnopen(body.getTanggalnopen().longValue() > 0? new java.sql.Date(body.getTanggalnopen()):null);
 				table.setNobl(body.getNobl());
-				table.setTanggalbl(new java.sql.Date(body.getTanggalbl()));
+				table.setTanggalbl(body.getTanggalbl().longValue() > 0? new java.sql.Date(body.getTanggalbl()):null);
 				table.setPelayaran(body.getPelayaran());
 				table.setImportir(body.getImportir());
 				table.setEksportir(body.getEksportir());
 				table.setQq(body.getQq());
 				table.setVoyagenumber(body.getVoyagenumber());
-				table.setTanggalsppb_npe(new java.sql.Date(body.getTanggalsppb_npe()));
+				table.setTanggalsppb_npe(body.getTanggalsppb_npe().longValue() > 0? new java.sql.Date(body.getTanggalsppb_npe()):null);
 				table.setDepo(body.getDepo());
 				table.setInvoiceno("");
 				table.setIsactive(body.isIsactive());
@@ -197,15 +210,15 @@ public class WorkOrderHandler implements WorkOrderService{
 				table.setJalur(body.getJalur());
 				table.setNoaju(body.getNoaju());
 				table.setNopen(body.getNopen());
-				table.setTanggalnopen(new java.sql.Date(body.getTanggalnopen()));
+				table.setTanggalnopen(body.getTanggalnopen().longValue() > 0 ?new java.sql.Date(body.getTanggalnopen()):null);
 				table.setNobl(body.getNobl());
-				table.setTanggalbl(new java.sql.Date(body.getTanggalbl()));
+				table.setTanggalbl(body.getTanggalbl().longValue() > 0? new java.sql.Date(body.getTanggalbl()):null);
 				table.setPelayaran(body.getPelayaran());
 				table.setImportir(body.getImportir());
 				table.setEksportir(body.getEksportir());
 				table.setQq(body.getQq());
 				table.setVoyagenumber(body.getVoyagenumber());
-				table.setTanggalsppb_npe(new java.sql.Date(body.getTanggalsppb_npe()));
+				table.setTanggalsppb_npe(body.getTanggalsppb_npe().longValue() > 0? new java.sql.Date(body.getTanggalsppb_npe()):null);
 				table.setDepo(body.getDepo());
 				table.setIsactive(body.isIsactive());
 				table.setUpdateby(iduser.toString());
