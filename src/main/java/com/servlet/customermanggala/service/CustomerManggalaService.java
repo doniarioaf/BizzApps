@@ -3,6 +3,7 @@ package com.servlet.customermanggala.service;
 import java.util.List;
 
 import com.servlet.customermanggala.entity.BodyCustomerManggala;
+import com.servlet.customermanggala.entity.BodySearch;
 import com.servlet.customermanggala.entity.CustomerManggalaData;
 import com.servlet.customermanggala.entity.CustomerManggalaTemplate;
 import com.servlet.customermanggala.entity.DetailCustomerManggalaInfoContactData;
@@ -23,4 +24,6 @@ public interface CustomerManggalaService {
 	List<DetailCustomerManggalaInfoContactData> getListDetailInfoContact(Long idcompany,Long idbranch,Long idcust);
 	List<DetailCustomerManggalaInfoGudangData> getListDetailInfoGudang(Long idcompany,Long idbranch,Long idcust);
 	List<CustomerManggalaData> getListCustomerForPriceList(Long idcompany,Long idbranch,Long idcustomer);
+	List<CustomerManggalaData> getListSearchCustomer(Long idcompany,Long idbranch,BodySearch body);
+	CustomerManggalaData getDataCustomerNotFilter(Long idcompany,Long idbranch,Long id);
 }
