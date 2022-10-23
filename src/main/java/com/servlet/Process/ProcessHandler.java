@@ -82,6 +82,9 @@ import com.servlet.shared.ConstansPermission;
 import com.servlet.shared.ProcessReturn;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.suratjalan.entity.BodyStatusSuratJalan;
+import com.servlet.suratjalan.entity.BodySuratJalan;
+import com.servlet.suratjalan.service.SuratJalanService;
 import com.servlet.user.entity.BodyUserApps;
 import com.servlet.user.service.UserAppsService;
 import com.servlet.vendor.entity.BodyVendor;
@@ -172,6 +175,8 @@ public class ProcessHandler implements ProcessService{
 	PaymentTypeService paymentTypeService;
 	@Autowired
 	WorkOrderService workOrderService;
+	@Autowired
+	SuratJalanService suratJalanService;
 	
 	
 	@Override
@@ -946,6 +951,54 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_SURATJALAN)) {
+				BodySuratJalan param = (BodySuratJalan) data;
+				ReturnData valReturn =  suratJalanService.saveObject(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_SURATJALAN)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodySuratJalan body  = (BodySuratJalan) param.get("body");
+				ReturnData valReturn = suratJalanService.updateObject(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_SURATJALAN)) {
+				long id = (long) data;
+				ReturnData valReturn = suratJalanService.deleteObject(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_STATUS_SURATJALAN)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyStatusSuratJalan body  = (BodyStatusSuratJalan) param.get("body");
+				ReturnData valReturn = suratJalanService.updateStatus(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 			}
 			
 			
@@ -1337,6 +1390,24 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("SEARCHDATACUSTOMER")) {
 					BodySearch body = (BodySearch) param.get("body");
 					val.setData(customerManggalaService.getListSearchCustomer(auth.getIdcompany(), auth.getIdbranch(), body));
+				}else if(type.equals("GET_LIST_CONTAINER")) {
+					long id = (long) param.get("id");
+					val.setData(workOrderService.getListContainerByIdWorkOrder(auth.getIdcompany(), auth.getIdbranch(),id));
+				}
+				
+			}else if(codepermission.equals(ConstansPermission.READ_SURATJALAN)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(suratJalanService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(suratJalanService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(suratJalanService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("TEMPLATE_WITH_ID")) {
+					long id = (long) param.get("id");
+					val.setData(suratJalanService.getTemplateWithDataById(auth.getIdcompany(), auth.getIdbranch(),id));
 				}
 				
 			}

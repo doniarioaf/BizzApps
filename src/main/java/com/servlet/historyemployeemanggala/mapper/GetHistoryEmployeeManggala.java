@@ -36,7 +36,7 @@ public class GetHistoryEmployeeManggala implements RowMapper<HistoryEmployeeData
 //		final String statusemployee = rs.getString("statusemployee");
 		final String gaji = rs.getString("gaji");
 		final Timestamp tanggal = rs.getTimestamp("tanggal");
-		final String statusname = rs.getString("statusname");
+		final String statusname = rs.getString("statusemployee");
 		
 		data.setId(id);
 		data.setIdemployee(idemployee);

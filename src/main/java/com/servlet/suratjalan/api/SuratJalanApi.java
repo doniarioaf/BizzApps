@@ -1,4 +1,4 @@
-package com.servlet.workorder.api;
+package com.servlet.suratjalan.api;
 
 import java.util.HashMap;
 
@@ -17,17 +17,17 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.servlet.customermanggala.entity.BodySearch;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConstansPermission;
 import com.servlet.shared.Response;
-import com.servlet.workorder.entity.BodyWorkOrder;
+import com.servlet.suratjalan.entity.BodyStatusSuratJalan;
+import com.servlet.suratjalan.entity.BodySuratJalan;
 
 @RestController
-@RequestMapping("/v1/workorder")
+@RequestMapping("/v1/suratjalan")
 @CrossOrigin(origins = "${value.cross_origin}")
-public class WorkOrderApi {
+public class SuratJalanApi {
 	@Autowired
 	SecurityService securityService;
 	
@@ -35,15 +35,7 @@ public class WorkOrderApi {
 	ResponseEntity<Response> getList(@RequestHeader(ConstansKey.AUTH) String authorization) {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("type", "ALL");
-		Response response = securityService.response(ConstansPermission.READ_WORKORDER,param,authorization);
-		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
-	}
-	
-	@GetMapping("/template")
-	ResponseEntity<Response> getListTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
-		HashMap<String, Object> param = new HashMap<String, Object>();
-		param.put("type", "TEMPLATE");
-		Response response = securityService.response(ConstansPermission.READ_WORKORDER,param,authorization);
+		Response response = securityService.response(ConstansPermission.READ_SURATJALAN,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
@@ -52,55 +44,54 @@ public class WorkOrderApi {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("type", "DETAIL");
 		param.put("id", id);
-		Response response = securityService.response(ConstansPermission.READ_WORKORDER,param,authorization);
+		Response response = securityService.response(ConstansPermission.READ_SURATJALAN,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
 	@GetMapping("/template/{id}")
-	ResponseEntity<Response> getTemplateDataById(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
+	ResponseEntity<Response> getTemplateById(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
 		HashMap<String, Object> param = new HashMap<String, Object>();
-		param.put("type", "TEMPLATE_DATA");
+		param.put("type", "TEMPLATE_WITH_ID");
 		param.put("id", id);
-		Response response = securityService.response(ConstansPermission.READ_WORKORDER,param,authorization);
+		Response response = securityService.response(ConstansPermission.READ_SURATJALAN,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
-	@GetMapping("/listcontainer/{id}")
-	ResponseEntity<Response> getListContainerById(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
+	@GetMapping("/template")
+	ResponseEntity<Response> getListTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
 		HashMap<String, Object> param = new HashMap<String, Object>();
-		param.put("type", "GET_LIST_CONTAINER");
-		param.put("id", id);
-		Response response = securityService.response(ConstansPermission.READ_WORKORDER,param,authorization);
-		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
-	}
-	
-	@PostMapping("/searchcustomer")
-	ResponseEntity<Response> searchData(@RequestBody @Validated BodySearch body, @RequestHeader(ConstansKey.AUTH) String authorization) {
-		HashMap<String, Object> param = new HashMap<String, Object>();
-		param.put("type", "SEARCHDATACUSTOMER");
-		param.put("body", body);
-		Response response = securityService.response(ConstansPermission.READ_WORKORDER,param,authorization);
+		param.put("type", "TEMPLATE");
+		Response response = securityService.response(ConstansPermission.READ_SURATJALAN,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
 	@PostMapping
-	ResponseEntity<Response> createObject(@RequestBody @Validated BodyWorkOrder body, @RequestHeader(ConstansKey.AUTH) String authorization) {
-		Response response = securityService.response(ConstansPermission.CREATE_WORKORDER,body,authorization);
+	ResponseEntity<Response> createObject(@RequestBody @Validated BodySuratJalan body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		Response response = securityService.response(ConstansPermission.CREATE_SURATJALAN,body,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@PostMapping("/status/{id}")
+	ResponseEntity<Response> updateStatus(@PathVariable long id,@RequestBody @Validated BodyStatusSuratJalan body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("id", id);
+		param.put("body", body);
+		Response response = securityService.response(ConstansPermission.EDIT_STATUS_SURATJALAN,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
 	@PutMapping("{id}")
-	ResponseEntity<Response> updateObject(@PathVariable long id,@RequestBody @Validated BodyWorkOrder body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+	ResponseEntity<Response> updateObject(@PathVariable long id,@RequestBody @Validated BodySuratJalan body, @RequestHeader(ConstansKey.AUTH) String authorization) {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("id", id);
 		param.put("body", body);
-		Response response = securityService.response(ConstansPermission.EDIT_WORKORDER,param,authorization);
+		Response response = securityService.response(ConstansPermission.EDIT_SURATJALAN,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
 	@DeleteMapping("{id}")
 	ResponseEntity<Response> deleteObject(@PathVariable long id, @RequestHeader(ConstansKey.AUTH) String authorization) {
-		Response response = securityService.response(ConstansPermission.DELETE_WORKORDER,id,authorization);
+		Response response = securityService.response(ConstansPermission.DELETE_SURATJALAN,id,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 }

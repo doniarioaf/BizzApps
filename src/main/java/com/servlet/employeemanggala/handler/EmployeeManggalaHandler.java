@@ -34,7 +34,7 @@ import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstansPermission;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
-import com.servlet.upload.image.FileStorageService;
+//import com.servlet.upload.image.FileStorageService;
 import com.servlet.user.entity.UserPermissionData;
 import com.servlet.user.service.UserAppsService;
 
@@ -50,8 +50,8 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 	private DetailEmployeeManggalaInfoFamilyRepo detailEmployeeManggalaInfoFamilyRepo;
 	@Autowired
 	private UserAppsService userAppsService;
-	@Autowired
-    private FileStorageService fileStorageService;
+//	@Autowired
+//    private FileStorageService fileStorageService;
 	@Autowired
 	private HistoryEmployeeService historyEmployeeService;
 	
@@ -65,7 +65,7 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 	public EmployeManggalaDataListParam getListAll(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetEmployeeManggalaDataList().schema());
-		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false ");
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false order by data.id ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		List<EmployeManggalaDataList> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetEmployeeManggalaDataList(), queryParameters);
 		EmployeManggalaDataListParam data = new EmployeManggalaDataListParam();
@@ -78,7 +78,7 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 	public EmployeManggalaDataListParam getListActive(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetEmployeeManggalaDataList().schema());
-		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false order by data.id ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		List<EmployeManggalaDataList> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetEmployeeManggalaDataList(), queryParameters);
 		EmployeManggalaDataListParam data = new EmployeManggalaDataListParam();
@@ -254,6 +254,8 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 					table.setTanggalmulai(new java.sql.Date(body.getTanggalmulai()));
 					if(body.getTanggalresign() != null) {
 						table.setTanggalresign(new java.sql.Date(body.getTanggalresign()));
+					}else {
+						table.setTanggalresign(null);
 					}
 					
 					
@@ -291,16 +293,17 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 		String jabatan = "";
 		String statuskaryawan = "";
 		String gajiemp = "";
+		//Old > New
 		if(!table.getJabatan().equals(bodyemp.getJabatan())) {
 			flag = true;
-			jabatan = table.getJabatan();
+			jabatan = table.getJabatan()+"|"+bodyemp.getJabatan();
 		}else {
 			jabatan = table.getJabatan();
 		}
 		
 		if(!table.getStatuskaryawan().equals(bodyemp.getStatuskaryawan())) {
 			flag = true;
-			statuskaryawan = table.getStatuskaryawan();
+			statuskaryawan = table.getStatuskaryawan()+"|"+bodyemp.getStatuskaryawan();
 		}else {
 			statuskaryawan = table.getStatuskaryawan();
 		}
@@ -308,7 +311,7 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 		if(!table.getGaji().equals(bodyemp.getGaji())) {
 			if(gaji) {
 				flag = true;
-				gajiemp = table.getGaji();//bodyemp.getGaji();
+				gajiemp = table.getGaji()+"|"+bodyemp.getGaji();//bodyemp.getGaji();
 			}else {
 				gajiemp = table.getGaji();
 			}
@@ -433,7 +436,7 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 					byte[] image = Base64.encodeBase64(file.getBytes());
 			        String result = new String(image);
 			        
-					Timestamp ts = new Timestamp(new Date().getTime());
+//					Timestamp ts = new Timestamp(new Date().getTime());
 					EmployeeManggala table = repository.getById(id);
 					table.setPhoto(result);
 					idsave = repository.saveAndFlush(table).getId();

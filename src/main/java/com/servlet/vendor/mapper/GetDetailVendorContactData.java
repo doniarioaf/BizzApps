@@ -5,7 +5,6 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
 
-import com.servlet.vendor.entity.DetailVendorBankData;
 import com.servlet.vendor.entity.DetailVendorContactData;
 
 public class GetDetailVendorContactData implements RowMapper<DetailVendorContactData>{
