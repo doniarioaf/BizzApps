@@ -65,11 +65,12 @@ public class WorkOrderApi {
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
-	@GetMapping("/listcontainer/{id}")
-	ResponseEntity<Response> getListContainerById(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
+	@GetMapping("/listcontainer/{id}/{nocontainer}")
+	ResponseEntity<Response> getListContainerById(@PathVariable long id,@PathVariable String nocontainer,@RequestHeader(ConstansKey.AUTH) String authorization) {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("type", "GET_LIST_CONTAINER");
 		param.put("id", id);
+		param.put("nocontainer", nocontainer);
 		Response response = securityService.response(ConstansPermission.READ_WORKORDER,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}

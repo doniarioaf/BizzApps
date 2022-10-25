@@ -18,8 +18,8 @@ public class GetDataFullSuratJalan implements RowMapper<SuratJalanData>{
 		sqlBuilder.append("data.idworkorder as idworkorder, data.idcustomer as idcustomer, data.keterangan as keterangan, ");
 		sqlBuilder.append("data.idwarehouse as idwarehouse, data.catatan as catatan, data.nocantainer as nocantainer, data.status as status, ");
 		sqlBuilder.append("wo.nodocument as nodocumentwo, wo.nobl as nobl, wo.noaju as noaju,wo.namacargo as namacargo, ");
-		sqlBuilder.append("cust.customername as customername, ");
-		sqlBuilder.append("warehouse.contactnumber as contactname, warehouse.contacthp as contacthp, warehouse.alamat as alamat, ");
+		sqlBuilder.append("cust.customername as customername, paramstatus.codename as statusname, ");
+		sqlBuilder.append("warehouse.nama as warehousename, warehouse.contactnumber as contactname, warehouse.contacthp as contacthp, warehouse.alamat as alamat, ");
 		sqlBuilder.append("partai.name as partainame, detailworkorder.jumlahkoli as jumlahkoli, detailworkorder.jumlahkg as jumlahkg ");
 		
 		sqlBuilder.append("from t_surat_jalan as data ");
@@ -28,6 +28,7 @@ public class GetDataFullSuratJalan implements RowMapper<SuratJalanData>{
 		sqlBuilder.append("left join m_warehouse as warehouse on warehouse.id = data.idwarehouse ");
 		sqlBuilder.append("left join detail_work_order as detailworkorder on detailworkorder.idworkorder = data.idworkorder and detailworkorder.nocontainer = data.nocantainer  ");
 		sqlBuilder.append("left join m_partai as partai on partai.id = detailworkorder.idpartai ");
+		sqlBuilder.append("left join m_parameter as paramstatus on paramstatus.code = data.status and paramstatus.grup ='STATUS_SURATJALAN' ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}
@@ -60,7 +61,8 @@ public class GetDataFullSuratJalan implements RowMapper<SuratJalanData>{
 		final String jumlahkoli = rs.getString("jumlahkoli");
 		final String jumlahkg = rs.getString("jumlahkg");
 		final String status = rs.getString("status");
-		
+		final String warehousename = rs.getString("warehousename");
+		final String statusname = rs.getString("statusname");
 		
 		SuratJalanData data = new SuratJalanData();
 		data.setId(id);
@@ -84,6 +86,8 @@ public class GetDataFullSuratJalan implements RowMapper<SuratJalanData>{
 		data.setContainerjumlahkoli(jumlahkoli);
 		data.setContainerjumlahkg(jumlahkg);
 		data.setStatus(status);
+		data.setStatusname(statusname);
+		data.setWarehousename(warehousename);
 		
 		return data;
 	}

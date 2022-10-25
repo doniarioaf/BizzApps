@@ -1392,7 +1392,8 @@ public class ProcessHandler implements ProcessService{
 					val.setData(customerManggalaService.getListSearchCustomer(auth.getIdcompany(), auth.getIdbranch(), body));
 				}else if(type.equals("GET_LIST_CONTAINER")) {
 					long id = (long) param.get("id");
-					val.setData(workOrderService.getListContainerByIdWorkOrder(auth.getIdcompany(), auth.getIdbranch(),id));
+					String nocontainer = (String) param.get("nocontainer");
+					val.setData(workOrderService.getListContainerByIdWorkOrder(auth.getIdcompany(), auth.getIdbranch(),id,nocontainer));
 				}
 				
 			}else if(codepermission.equals(ConstansPermission.READ_SURATJALAN)) {

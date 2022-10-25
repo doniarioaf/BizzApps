@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.servlet.parameter.service.ParameterService;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
@@ -16,12 +17,16 @@ import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 import com.servlet.suratjalan.entity.BodyStatusSuratJalan;
 import com.servlet.suratjalan.entity.BodySuratJalan;
+import com.servlet.suratjalan.entity.HistorySuratJalan;
+import com.servlet.suratjalan.entity.HistorySuratJalanData;
 import com.servlet.suratjalan.entity.SuratJalan;
 import com.servlet.suratjalan.entity.SuratJalanData;
 import com.servlet.suratjalan.entity.SuratJalanTemplate;
 import com.servlet.suratjalan.mapper.GetDataFullSuratJalan;
+import com.servlet.suratjalan.mapper.GetHistorySuratJalan;
 import com.servlet.suratjalan.mapper.GetSuratJalanList;
 import com.servlet.suratjalan.mapper.GetSuratJalanNotJoin;
+import com.servlet.suratjalan.repo.HistorySuratJalanRepo;
 import com.servlet.suratjalan.repo.SuratJalanRepo;
 import com.servlet.suratjalan.service.SuratJalanService;
 import com.servlet.workorder.service.WorkOrderService;
@@ -36,6 +41,10 @@ public class SuratJalanHandler implements SuratJalanService{
 	private WorkOrderService workOrderService;
 	@Autowired
 	private RunningNumberService runningNumberService;
+	@Autowired
+	private ParameterService parameterService;
+	@Autowired
+	private HistorySuratJalanRepo historySuratJalanRepo;
 	
 	@Override
 	public SuratJalanTemplate suratJalanTemplate(long idcompany, long idbranch) {
@@ -69,7 +78,12 @@ public class SuratJalanHandler implements SuratJalanService{
 		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
 		List<SuratJalanData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataFullSuratJalan(), queryParameters);
 		if(list != null && list.size() > 0) {
+			SuratJalanTemplate datatempalte = new SuratJalanTemplate();
+			datatempalte.setStatusSJOptions(parameterService.getListParameterByGrup("STATUS_SURATJALAN"));
+			
 			SuratJalanData val = list.get(0);
+			val.setHistory(getListHistory(idcompany,idbranch,id));
+			val.setTemplate(datatempalte);
 			return val;
 		}
 		return null;
@@ -207,6 +221,7 @@ public class SuratJalanHandler implements SuratJalanService{
 	private SuratJalanTemplate setTemplate(long idcompany, long idbranch) {
 		SuratJalanTemplate data = new SuratJalanTemplate();
 		data.setWoOptions(workOrderService.getListDropDown(idcompany, idbranch));
+		data.setStatusSJOptions(parameterService.getListParameterByGrup("STATUS_SURATJALAN"));
 		return data;	
 	}
 
@@ -221,11 +236,16 @@ public class SuratJalanHandler implements SuratJalanService{
 				try {
 					Timestamp ts = new Timestamp(new Date().getTime());
 					SuratJalan table = repository.getById(id);
+					
+					BodyStatusSuratJalan bodytable = new BodyStatusSuratJalan();
+					bodytable.setStatus(table.getStatus());
+					
 					table.setStatus(body.getStatus());
 					table.setUpdateby(iduser.toString());
 					table.setUpdatedate(ts);
 					idsave = repository.saveAndFlush(table).getId();
 					
+					putHistory(bodytable,body,idcompany,idbranch,iduser,id,ts);
 				}catch (Exception e) {
 					// TODO: handle exception
 					ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
@@ -258,6 +278,36 @@ public class SuratJalanHandler implements SuratJalanService{
 	public SuratJalanTemplate getTemplate(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
 		return setTemplate(idcompany,idbranch);
+	}
+	
+	private String putHistory(BodyStatusSuratJalan table,BodyStatusSuratJalan bodyemp,Long idcompany, Long idbranch, Long iduser, Long id,Timestamp ts) {
+		boolean flag = false;
+		String status = table.getStatus();
+		
+		if(!table.getStatus().equals(bodyemp.getStatus())) {
+			flag = true;
+			status = table.getStatus()+"|"+bodyemp.getStatus();
+		}
+		if(flag) {
+			HistorySuratJalan tablehistory = new HistorySuratJalan();
+			tablehistory.setIdcompany(idcompany);
+			tablehistory.setIdbranch(idbranch);
+			tablehistory.setIdsuratjalan(id);
+			tablehistory.setIduser(iduser);
+			tablehistory.setStatus(status);
+			tablehistory.setTanggal(ts);
+			historySuratJalanRepo.saveAndFlush(tablehistory);
+		}
+		return "";
+	}
+	
+	
+	private List<HistorySuratJalanData> getListHistory(Long idcompany, Long idbranch,Long idsuratjalan) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetHistorySuratJalan().schema());
+		sqlBuilder.append(" where data.idsuratjalan = ? and data.idcompany = ? and data.idbranch = ? order by data.tanggal desc ");
+		final Object[] queryParameters = new Object[] {idsuratjalan,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetHistorySuratJalan(), queryParameters);
 	}
 
 }

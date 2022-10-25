@@ -19,5 +19,5 @@ public interface WorkOrderService {
 	ReturnData deleteWorkOrder(Long idcompany,Long idbranch,Long iduser,Long id);
 	WorkOrderTemplate getTemplate(Long idcompany,Long idbranch);
 	List<WorkOrderDropDownData> getListDropDown(Long idcompany,Long idbranch);
-	List<DetailWorkOrderData> getListContainerByIdWorkOrder(Long idcompany,Long idbranch,Long idworkorder);
+	List<DetailWorkOrderData> getListContainerByIdWorkOrder(Long idcompany,Long idbranch,Long idworkorder,String nocaontainer);
 }

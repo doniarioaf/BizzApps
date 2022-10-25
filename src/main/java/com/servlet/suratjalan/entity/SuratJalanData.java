@@ -1,6 +1,7 @@
 package com.servlet.suratjalan.entity;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 public class SuratJalanData {
 	private Long id;
@@ -15,6 +16,7 @@ public class SuratJalanData {
 	private String namacustomer;
 	private String keterangan;
 	private Long idwarehouse;
+	private String warehousename;
 	private String warehousecontactname;
 	private String warehousecontactno;
 	private String warehouseaddress;
@@ -26,6 +28,7 @@ public class SuratJalanData {
 	private String status;
 	private String statusname;
 	private SuratJalanTemplate template;
+	private List<HistorySuratJalanData> history;
 	public SuratJalanTemplate getTemplate() {
 		return template;
 	}
@@ -163,5 +166,17 @@ public class SuratJalanData {
 	}
 	public void setStatusname(String statusname) {
 		this.statusname = statusname;
+	}
+	public String getWarehousename() {
+		return warehousename;
+	}
+	public void setWarehousename(String warehousename) {
+		this.warehousename = warehousename;
+	}
+	public List<HistorySuratJalanData> getHistory() {
+		return history;
+	}
+	public void setHistory(List<HistorySuratJalanData> history) {
+		this.history = history;
 	}
 }

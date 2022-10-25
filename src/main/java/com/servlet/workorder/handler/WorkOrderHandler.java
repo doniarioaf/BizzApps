@@ -355,22 +355,23 @@ public class WorkOrderHandler implements WorkOrderService{
 	}
 
 	@Override
-	public List<DetailWorkOrderData> getListContainerByIdWorkOrder(Long idcompany, Long idbranch, Long idworkorder) {
+	public List<DetailWorkOrderData> getListContainerByIdWorkOrder(Long idcompany, Long idbranch, Long idworkorder,String nocaontainer) {
 		// TODO Auto-generated method stub
 		WorkOrderData data = checkById(idcompany, idbranch, idworkorder);
 		if(data != null) {
 			if(data.isIsactive()) {
-				return getListDetailWorkOrder(idworkorder,idcompany,idbranch);
+				return getListDetailWorkOrderForSuratJalan(idcompany,idbranch,idworkorder,nocaontainer);
 			}
 		}
 		return new ArrayList<DetailWorkOrderData>();
 	}
 	
-	private List<DetailWorkOrderData> getListDetailWorkOrderForSuratJalan(Long idworkorder,Long idcompany, Long idbranch) {
+	private List<DetailWorkOrderData> getListDetailWorkOrderForSuratJalan(Long idcompany, Long idbranch,Long idworkorder,String nocaontainer) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailWorkOrderJoinTable().schema());
 		sqlBuilder.append(" where data.idworkorder = ? and data.idcompany = ? and data.idbranch = ? ");
-		sqlBuilder.append(" and data.nocontainer not in (select sj.nocantainer from t_surat_jalan as sj where sj.status in ('OPEN_SJ') and sj.isdelete = false  ) ");
+		sqlBuilder.append(" and data.nocontainer not in (select sj.nocantainer from t_surat_jalan as sj where sj.status in ('OPEN_SJ') and sj.isdelete = false and sj.nocantainer != '"+nocaontainer+"' ) ");
+		
 		final Object[] queryParameters = new Object[] {idworkorder,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailWorkOrderJoinTable(), queryParameters);
 	}
