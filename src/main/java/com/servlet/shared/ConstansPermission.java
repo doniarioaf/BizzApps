@@ -147,5 +147,12 @@ public class ConstansPermission {
 	public static final String EDIT_WORKORDER = "EDIT_WORKORDER";
 	public static final String DELETE_WORKORDER = "DELETE_WORKORDER";
 	
+	public static final String READ_SURATJALAN = "READ_SURATJALAN";
+	public static final String CREATE_SURATJALAN = "CREATE_SURATJALAN";
+	public static final String EDIT_SURATJALAN = "EDIT_SURATJALAN";
+	public static final String DELETE_SURATJALAN = "DELETE_SURATJALAN";
+	public static final String EDIT_STATUS_SURATJALAN = "EDIT_STATUS_SURATJALAN";
+	public static final String READ_PRINT_SURATJALAN = "READ_PRINT_SURATJALAN";
+	
 	
 }

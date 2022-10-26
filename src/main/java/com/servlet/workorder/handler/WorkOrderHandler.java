@@ -27,8 +27,10 @@ import com.servlet.workorder.entity.DetailWorkOrderData;
 import com.servlet.workorder.entity.DetailWorkOrderPK;
 import com.servlet.workorder.entity.WorkOrder;
 import com.servlet.workorder.entity.WorkOrderData;
+import com.servlet.workorder.entity.WorkOrderDropDownData;
 import com.servlet.workorder.entity.WorkOrderTemplate;
 import com.servlet.workorder.mapper.GetDetailWorkOrderJoinTable;
+import com.servlet.workorder.mapper.GetWorkOrderDropdownData;
 import com.servlet.workorder.mapper.GetWorkOrderJoinCustomerData;
 import com.servlet.workorder.mapper.GetWorkOrderJoinTableData;
 import com.servlet.workorder.mapper.GetWorkOrderNotJoinTableData;
@@ -335,10 +337,41 @@ public class WorkOrderHandler implements WorkOrderService{
 		return "";
 	}
 	
-	public List<DetailWorkOrderData> getListDetailWorkOrder(Long idworkorder,Long idcompany, Long idbranch) {
+	private List<DetailWorkOrderData> getListDetailWorkOrder(Long idworkorder,Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailWorkOrderJoinTable().schema());
 		sqlBuilder.append(" where data.idworkorder = ? and data.idcompany = ? and data.idbranch = ? ");
+		final Object[] queryParameters = new Object[] {idworkorder,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailWorkOrderJoinTable(), queryParameters);
+	}
+
+	@Override
+	public List<WorkOrderDropDownData> getListDropDown(Long idcompany, Long idbranch) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetWorkOrderDropdownData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false and data.jeniswo != 'JS' and data.status = 'OPEN' order by cust.customername ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderDropdownData(), queryParameters);
+	}
+
+	@Override
+	public List<DetailWorkOrderData> getListContainerByIdWorkOrder(Long idcompany, Long idbranch, Long idworkorder,String nocaontainer) {
+		// TODO Auto-generated method stub
+		WorkOrderData data = checkById(idcompany, idbranch, idworkorder);
+		if(data != null) {
+			if(data.isIsactive()) {
+				return getListDetailWorkOrderForSuratJalan(idcompany,idbranch,idworkorder,nocaontainer);
+			}
+		}
+		return new ArrayList<DetailWorkOrderData>();
+	}
+	
+	private List<DetailWorkOrderData> getListDetailWorkOrderForSuratJalan(Long idcompany, Long idbranch,Long idworkorder,String nocaontainer) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailWorkOrderJoinTable().schema());
+		sqlBuilder.append(" where data.idworkorder = ? and data.idcompany = ? and data.idbranch = ? ");
+		sqlBuilder.append(" and data.nocontainer not in (select sj.nocantainer from t_surat_jalan as sj where sj.status in ('OPEN_SJ') and sj.isdelete = false and sj.nocantainer != '"+nocaontainer+"' ) ");
+		
 		final Object[] queryParameters = new Object[] {idworkorder,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailWorkOrderJoinTable(), queryParameters);
 	}
