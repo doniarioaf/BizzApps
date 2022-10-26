@@ -1411,6 +1411,13 @@ public class ProcessHandler implements ProcessService{
 					val.setData(suratJalanService.getTemplateWithDataById(auth.getIdcompany(), auth.getIdbranch(),id));
 				}
 				
+			}else if(codepermission.equals(ConstansPermission.READ_PRINT_SURATJALAN)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("PRINT")) {
+					long id = (long) param.get("id");
+					val.setData(suratJalanService.printById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
 			if(codepermission.equals(ConstansPermission.READ_INFO_MOBILE)) {

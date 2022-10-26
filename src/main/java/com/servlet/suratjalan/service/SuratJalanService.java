@@ -5,6 +5,7 @@ import java.util.List;
 import com.servlet.shared.ReturnData;
 import com.servlet.suratjalan.entity.BodyStatusSuratJalan;
 import com.servlet.suratjalan.entity.BodySuratJalan;
+import com.servlet.suratjalan.entity.PrintData;
 import com.servlet.suratjalan.entity.SuratJalanData;
 import com.servlet.suratjalan.entity.SuratJalanTemplate;
 
@@ -19,4 +20,5 @@ public interface SuratJalanService {
 	ReturnData deleteObject(Long idcompany,Long idbranch,Long iduser,Long id);
 	ReturnData updateStatus(Long idcompany,Long idbranch,Long iduser,Long id,BodyStatusSuratJalan body);
 	SuratJalanTemplate getTemplate(Long idcompany,Long idbranch);
+	PrintData printById(Long idcompany,Long idbranch,Long id);
 }

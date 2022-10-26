@@ -152,6 +152,7 @@ public class ConstansPermission {
 	public static final String EDIT_SURATJALAN = "EDIT_SURATJALAN";
 	public static final String DELETE_SURATJALAN = "DELETE_SURATJALAN";
 	public static final String EDIT_STATUS_SURATJALAN = "EDIT_STATUS_SURATJALAN";
+	public static final String READ_PRINT_SURATJALAN = "READ_PRINT_SURATJALAN";
 	
 	
 }

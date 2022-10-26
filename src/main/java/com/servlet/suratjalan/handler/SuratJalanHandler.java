@@ -9,6 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.servlet.address.entity.City;
+import com.servlet.address.entity.DistrictData;
+import com.servlet.address.entity.PostalCodeData;
+import com.servlet.address.entity.Province;
+import com.servlet.address.service.CityService;
+import com.servlet.address.service.DistrictService;
+import com.servlet.address.service.PostalCodeService;
+import com.servlet.address.service.ProvinceService;
 import com.servlet.parameter.service.ParameterService;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
@@ -19,11 +27,13 @@ import com.servlet.suratjalan.entity.BodyStatusSuratJalan;
 import com.servlet.suratjalan.entity.BodySuratJalan;
 import com.servlet.suratjalan.entity.HistorySuratJalan;
 import com.servlet.suratjalan.entity.HistorySuratJalanData;
+import com.servlet.suratjalan.entity.PrintData;
 import com.servlet.suratjalan.entity.SuratJalan;
 import com.servlet.suratjalan.entity.SuratJalanData;
 import com.servlet.suratjalan.entity.SuratJalanTemplate;
 import com.servlet.suratjalan.mapper.GetDataFullSuratJalan;
 import com.servlet.suratjalan.mapper.GetHistorySuratJalan;
+import com.servlet.suratjalan.mapper.GetPrintDataSuratJalan;
 import com.servlet.suratjalan.mapper.GetSuratJalanList;
 import com.servlet.suratjalan.mapper.GetSuratJalanNotJoin;
 import com.servlet.suratjalan.repo.HistorySuratJalanRepo;
@@ -45,6 +55,14 @@ public class SuratJalanHandler implements SuratJalanService{
 	private ParameterService parameterService;
 	@Autowired
 	private HistorySuratJalanRepo historySuratJalanRepo;
+	@Autowired
+	private ProvinceService provinceService;
+	@Autowired
+	private CityService cityService;
+	@Autowired
+	private PostalCodeService postalCodeService;
+	@Autowired
+	private DistrictService districtService;
 	
 	@Override
 	public SuratJalanTemplate suratJalanTemplate(long idcompany, long idbranch) {
@@ -308,6 +326,48 @@ public class SuratJalanHandler implements SuratJalanService{
 		sqlBuilder.append(" where data.idsuratjalan = ? and data.idcompany = ? and data.idbranch = ? order by data.tanggal desc ");
 		final Object[] queryParameters = new Object[] {idsuratjalan,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetHistorySuratJalan(), queryParameters);
+	}
+
+	@Override
+	public PrintData printById(Long idcompany, Long idbranch, Long id) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPrintDataSuratJalan().schema());
+		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+		List<PrintData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetPrintDataSuratJalan(), queryParameters);
+		if(list != null && list.size() > 0) {
+			PrintData val = list.get(0);
+			String provName = "";
+			if(val.getCustomerProvince() != null) {
+				Province prov = provinceService.getById(new Long(val.getCustomerProvince()).longValue());
+				if(prov != null) {
+					provName = prov.getProv_name();
+				}
+			}
+			val.setCustomerProvince(provName);
+			
+			String cityName = "";
+			if(val.getCustomerCity() != null) {
+				City city = cityService.getById(new Long(val.getCustomerCity()).longValue());
+				if(city != null) {
+					cityName = city.getCity_name();
+				}
+			}
+			val.setCustomerCity(cityName);
+			
+			String districtName = "";
+			if(val.getCustomerKodePos() != null) {
+				List<DistrictData> listDistrict = districtService.getListDistrictByPostalCode(new Long(val.getCustomerKodePos()).longValue());
+				if(listDistrict.size() > 0) {
+					districtName = listDistrict.get(0).getDis_name();
+				}
+			}
+			val.setCustomerDistrict(districtName);
+			
+			
+			return val;
+		}
+		return null;
 	}
 
 }
