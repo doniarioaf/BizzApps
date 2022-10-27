@@ -44,6 +44,14 @@ public class WorkOrderData {
 	private boolean isactive;
 	private WorkOrderTemplate templates;
 	private List<DetailWorkOrderData> details;
+	private List<ListDocumentWorkOrderData> documents;
+	
+	public List<ListDocumentWorkOrderData> getDocuments() {
+		return documents;
+	}
+	public void setDocuments(List<ListDocumentWorkOrderData> documents) {
+		this.documents = documents;
+	}
 	public List<DetailWorkOrderData> getDetails() {
 		return details;
 	}

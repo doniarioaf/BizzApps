@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.servlet.customermanggala.entity.CustomerManggalaData;
 import com.servlet.customermanggala.service.CustomerManggalaService;
@@ -19,22 +21,27 @@ import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.upload.image.FileStorageService;
 import com.servlet.vendor.service.VendorService;
 import com.servlet.workorder.entity.BodyDetailWorkOrder;
 import com.servlet.workorder.entity.BodyWorkOrder;
 import com.servlet.workorder.entity.DetailWorkOrder;
 import com.servlet.workorder.entity.DetailWorkOrderData;
 import com.servlet.workorder.entity.DetailWorkOrderPK;
+import com.servlet.workorder.entity.ListDocumentWorkOrder;
+import com.servlet.workorder.entity.ListDocumentWorkOrderData;
 import com.servlet.workorder.entity.WorkOrder;
 import com.servlet.workorder.entity.WorkOrderData;
 import com.servlet.workorder.entity.WorkOrderDropDownData;
 import com.servlet.workorder.entity.WorkOrderTemplate;
 import com.servlet.workorder.mapper.GetDetailWorkOrderJoinTable;
+import com.servlet.workorder.mapper.GetListDocumentWorkOrderData;
 import com.servlet.workorder.mapper.GetWorkOrderDropdownData;
 import com.servlet.workorder.mapper.GetWorkOrderJoinCustomerData;
 import com.servlet.workorder.mapper.GetWorkOrderJoinTableData;
 import com.servlet.workorder.mapper.GetWorkOrderNotJoinTableData;
 import com.servlet.workorder.repo.DetailWorkOrderRepo;
+import com.servlet.workorder.repo.DocumentWorkOrderRepo;
 import com.servlet.workorder.repo.WorkOrderRepo;
 import com.servlet.workorder.service.WorkOrderService;
 
@@ -58,6 +65,10 @@ public class WorkOrderHandler implements WorkOrderService{
 	private DetailWorkOrderRepo detailWorkOrderRepo;
 	@Autowired
 	private CustomerManggalaService customerManggalaService;
+	@Autowired
+	private FileStorageService fileStorageService;
+	@Autowired
+	private DocumentWorkOrderRepo documentWorkOrderRepo ;
 	
 	@Override
 	public List<WorkOrderData> getListAll(Long idcompany, Long idbranch) {
@@ -88,6 +99,7 @@ public class WorkOrderHandler implements WorkOrderService{
 		if(list != null && list.size() > 0) {
 			WorkOrderData val = list.get(0);
 			val.setDetails(getListDetailWorkOrder(id, idcompany, idbranch));
+			val.setDocuments(getListDocument(idcompany,idbranch,id));
 			return val;
 		}
 		return null;
@@ -374,6 +386,106 @@ public class WorkOrderHandler implements WorkOrderService{
 		
 		final Object[] queryParameters = new Object[] {idworkorder,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailWorkOrderJoinTable(), queryParameters);
+	}
+	
+	private List<ListDocumentWorkOrderData> getListDocument(Long idcompany, Long idbranch,Long idworkorder) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListDocumentWorkOrderData().schema());
+		sqlBuilder.append(" where data.idworkorder = ? and data.idcompany = ? and data.idbranch = ?  ");
+		sqlBuilder.append("order by data.id desc ");
+		final Object[] queryParameters = new Object[] {idworkorder,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListDocumentWorkOrderData(), queryParameters);
+	}
+	
+	private ListDocumentWorkOrderData getDocumentById(Long idcompany, Long idbranch,Long id) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListDocumentWorkOrderData().schema());
+		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ?  ");
+		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+		List<ListDocumentWorkOrderData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetListDocumentWorkOrderData(), queryParameters);
+		if(list != null && list.size() > 0) {
+			return list.get(0);
+		}
+		return null;
+	}
+
+	@Override
+	public ReturnData uploadDocumentWorkOrder(Long idcompany, Long idbranch, Long iduser, Long idworkorder, MultipartFile file) {
+		// TODO Auto-generated method stub
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
+		long idsave = 0;
+		WorkOrderData value = checkById(idcompany,idbranch,idworkorder);
+		if(value != null) {
+			if(validations.size() == 0) {
+				try {
+					byte[] fileencode = Base64.encodeBase64(file.getBytes());
+			        String result = new String(fileencode);
+			        
+			        String fileName = fileStorageService.storeFile(file);
+			        String contentType = fileStorageService.getContentType(file);
+			        
+			        Timestamp ts = new Timestamp(new Date().getTime());
+			        
+			        ListDocumentWorkOrder table = new ListDocumentWorkOrder();
+					table.setIdcompany(idcompany);
+					table.setIdbranch(idbranch);
+					table.setIdworkorder(idworkorder);
+					table.setFilename(fileName);
+					table.setFiledocument(result);
+					table.setContenttype(contentType);
+					table.setTanggal(ts);
+					idsave = documentWorkOrderRepo.saveAndFlush(table).getId();
+			        
+				}catch (Exception e) {
+					// TODO: handle exception
+					ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
+					validations.add(msg);
+					e.printStackTrace();
+				}
+			}
+		}
+		ReturnData data = new ReturnData();
+		data.setId(idsave);
+		data.setSuccess(validations.size() > 0?false:true);
+		data.setValidations(validations);
+		return data;
+	}
+
+	@Override
+	public ReturnData deleteDocumentWorkOrder(Long idcompany, Long idbranch, Long iduser, Long id) {
+		// TODO Auto-generated method stub
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
+		long idsave = 0;
+		ListDocumentWorkOrderData value = getDocumentById(idcompany, idbranch, id);
+		if(value != null) {
+			if(validations.size() == 0) {
+				try {
+					documentWorkOrderRepo.deleteById(id);
+				}catch (Exception e) {
+					// TODO: handle exception
+					ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
+					validations.add(msg);
+					e.printStackTrace();
+				}
+			}
+		}
+		ReturnData data = new ReturnData();
+		data.setId(idsave);
+		data.setSuccess(validations.size() > 0?false:true);
+		data.setValidations(validations);
+		return data;
+	}
+
+	@Override
+	public ListDocumentWorkOrderData getDocumentWorkOrder(Long idcompany, Long idbranch, Long id) {
+		// TODO Auto-generated method stub
+		ListDocumentWorkOrderData value = getDocumentById(idcompany,idbranch,id);
+		if(value != null) {
+			ListDocumentWorkOrder table = documentWorkOrderRepo.getById(id);
+			
+			value.setFiledocument(table.getFiledocument());
+		}
+		return value;
 	}
 
 }

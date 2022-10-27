@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.servlet.customermanggala.entity.BodySearch;
 import com.servlet.security.service.SecurityService;
@@ -75,6 +77,25 @@ public class WorkOrderApi {
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
+	@GetMapping("/document/{id}")
+	ResponseEntity<Response> getDocumentById(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "DOCUMENT_DATA");
+		param.put("id", id);
+		Response response = securityService.response(ConstansPermission.READ_DOCUMENT_WORKORDER,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@PostMapping("/document/{idworkorder}")
+	ResponseEntity<Response> uploadDocument(@RequestParam("file") MultipartFile file,@PathVariable long idworkorder, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "UPLOADDOCUMENT");
+		param.put("body", file);
+		param.put("id", idworkorder);
+		Response response = securityService.response(ConstansPermission.CREATE_DOCUMENT_WORKORDER,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
 	@PostMapping("/searchcustomer")
 	ResponseEntity<Response> searchData(@RequestBody @Validated BodySearch body, @RequestHeader(ConstansKey.AUTH) String authorization) {
 		HashMap<String, Object> param = new HashMap<String, Object>();
@@ -102,6 +123,12 @@ public class WorkOrderApi {
 	@DeleteMapping("{id}")
 	ResponseEntity<Response> deleteObject(@PathVariable long id, @RequestHeader(ConstansKey.AUTH) String authorization) {
 		Response response = securityService.response(ConstansPermission.DELETE_WORKORDER,id,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@DeleteMapping("/document/{id}")
+	ResponseEntity<Response> deleteDocument(@PathVariable long id, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		Response response = securityService.response(ConstansPermission.DELETE_DOCUMENT_WORKORDER,id,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 }

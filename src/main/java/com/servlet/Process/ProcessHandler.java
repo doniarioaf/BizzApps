@@ -999,6 +999,33 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_DOCUMENT_WORKORDER)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("UPLOADDOCUMENT")) {
+					MultipartFile file = (MultipartFile) param.get("body");
+					Long id = (Long) param.get("id");
+					ReturnData valReturn = workOrderService.uploadDocumentWorkOrder(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, file);
+					if(valReturn.isSuccess()) {
+						val.setData(valReturn.getId());
+					}else {
+						val.setSuccess(valReturn.isSuccess());
+						val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+						val.setValidations(valReturn.getValidations());
+						val.setData(null);
+					}
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_DOCUMENT_WORKORDER)) {
+				long id = (long) data;
+				ReturnData valReturn = workOrderService.deleteDocumentWorkOrder(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 			}
 			
 			
@@ -1417,6 +1444,14 @@ public class ProcessHandler implements ProcessService{
 				if(type.equals("PRINT")) {
 					long id = (long) param.get("id");
 					val.setData(suratJalanService.printById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}
+			}else if(codepermission.equals(ConstansPermission.READ_DOCUMENT_WORKORDER)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				
+				if(type.equals("DOCUMENT_DATA")) {
+					long id = (long) param.get("id");
+					val.setData(workOrderService.getDocumentWorkOrder(auth.getIdcompany(), auth.getIdbranch(),id));
 				}
 			}
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
