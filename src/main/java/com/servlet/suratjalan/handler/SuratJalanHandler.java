@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service;
 
 import com.servlet.address.entity.City;
 import com.servlet.address.entity.DistrictData;
-import com.servlet.address.entity.PostalCodeData;
 import com.servlet.address.entity.Province;
 import com.servlet.address.service.CityService;
 import com.servlet.address.service.DistrictService;
-import com.servlet.address.service.PostalCodeService;
+//import com.servlet.address.service.PostalCodeService;
 import com.servlet.address.service.ProvinceService;
+import com.servlet.employeemanggala.service.EmployeeManggalaService;
 import com.servlet.parameter.service.ParameterService;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
@@ -27,6 +27,7 @@ import com.servlet.suratjalan.entity.BodyStatusSuratJalan;
 import com.servlet.suratjalan.entity.BodySuratJalan;
 import com.servlet.suratjalan.entity.HistorySuratJalan;
 import com.servlet.suratjalan.entity.HistorySuratJalanData;
+import com.servlet.suratjalan.entity.PenandaanSuratJalanTemplate;
 import com.servlet.suratjalan.entity.PrintData;
 import com.servlet.suratjalan.entity.SuratJalan;
 import com.servlet.suratjalan.entity.SuratJalanData;
@@ -39,6 +40,7 @@ import com.servlet.suratjalan.mapper.GetSuratJalanNotJoin;
 import com.servlet.suratjalan.repo.HistorySuratJalanRepo;
 import com.servlet.suratjalan.repo.SuratJalanRepo;
 import com.servlet.suratjalan.service.SuratJalanService;
+import com.servlet.vendor.service.VendorService;
 import com.servlet.workorder.service.WorkOrderService;
 
 @Service
@@ -59,10 +61,14 @@ public class SuratJalanHandler implements SuratJalanService{
 	private ProvinceService provinceService;
 	@Autowired
 	private CityService cityService;
-	@Autowired
-	private PostalCodeService postalCodeService;
+//	@Autowired
+//	private PostalCodeService postalCodeService;
 	@Autowired
 	private DistrictService districtService;
+	@Autowired
+	private EmployeeManggalaService employeeManggalaService;
+	@Autowired
+	private VendorService vendorService;
 	
 	@Override
 	public SuratJalanTemplate suratJalanTemplate(long idcompany, long idbranch) {
@@ -242,6 +248,18 @@ public class SuratJalanHandler implements SuratJalanService{
 		data.setStatusSJOptions(parameterService.getListParameterByGrup("STATUS_SURATJALAN"));
 		return data;	
 	}
+	
+	private PenandaanSuratJalanTemplate setPenandaanSuratJalanTemplate(long idcompany, long idbranch) {
+		PenandaanSuratJalanTemplate data = new PenandaanSuratJalanTemplate();
+		data.setStatusSJOptions(parameterService.getListParameterByGrup("STATUS_SURATJALAN"));
+		data.setChooseYesNoOptions(parameterService.getListParameterByGrup("CHOOSE_YES_NO"));
+		data.setKepimilikanMobilOptions(parameterService.getListParameterByGrup("KEPEMILIKAN_MOBIL_SURAT_JALAN"));
+		data.setSupirOptions(employeeManggalaService.getListEmployeeSupir(idcompany, idbranch));
+		data.setVendorOptions(vendorService.getListActive(idcompany, idbranch));
+		return data;	
+	}
+	
+	
 
 	@Override
 	public ReturnData updateStatus(Long idcompany, Long idbranch, Long iduser, Long id, BodyStatusSuratJalan body) {
@@ -259,6 +277,17 @@ public class SuratJalanHandler implements SuratJalanService{
 					bodytable.setStatus(table.getStatus());
 					
 					table.setStatus(body.getStatus());
+					table.setKepemilikanmobil(body.getKepemilikanmobil());
+					table.setIdemployee_supir(body.getIdemployee_supir());
+					table.setIdasset(body.getIdasset());
+					table.setIdvendormobil(body.getIdvendormobil());
+					table.setLembur(body.getLembur());
+					if(body.getTanggalkembali() != null) {
+						table.setTanggalkembali(new java.sql.Date(body.getTanggalkembali()));
+					}else {
+						table.setTanggalkembali(null);
+					}
+					
 					table.setUpdateby(iduser.toString());
 					table.setUpdatedate(ts);
 					idsave = repository.saveAndFlush(table).getId();
@@ -368,6 +397,12 @@ public class SuratJalanHandler implements SuratJalanService{
 			return val;
 		}
 		return null;
+	}
+
+	@Override
+	public PenandaanSuratJalanTemplate getPenandaanSuratJalanTemplate(Long idcompany, Long idbranch) {
+		// TODO Auto-generated method stub
+		return setPenandaanSuratJalanTemplate(idcompany,idbranch);
 	}
 
 }

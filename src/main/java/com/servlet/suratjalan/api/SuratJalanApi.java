@@ -74,6 +74,14 @@ public class SuratJalanApi {
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
+	@GetMapping("/penandaansuratjalantemplate")
+	ResponseEntity<Response> getListPenandaanSuratJalanTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "PENANDAAN_SJ_TEMPLATE");
+		Response response = securityService.response(ConstansPermission.READ_SURATJALAN,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
 	@PostMapping
 	ResponseEntity<Response> createObject(@RequestBody @Validated BodySuratJalan body, @RequestHeader(ConstansKey.AUTH) String authorization) {
 		Response response = securityService.response(ConstansPermission.CREATE_SURATJALAN,body,authorization);

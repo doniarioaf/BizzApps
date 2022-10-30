@@ -1436,6 +1436,8 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("TEMPLATE_WITH_ID")) {
 					long id = (long) param.get("id");
 					val.setData(suratJalanService.getTemplateWithDataById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("PENANDAAN_SJ_TEMPLATE")) {
+					val.setData(suratJalanService.getPenandaanSuratJalanTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}
 				
 			}else if(codepermission.equals(ConstansPermission.READ_PRINT_SURATJALAN)) {

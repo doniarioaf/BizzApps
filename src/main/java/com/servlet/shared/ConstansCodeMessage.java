@@ -78,5 +78,7 @@ public class ConstansCodeMessage {
 	public static final String VALIDASI_PAYMENTTYPE_NAME_EXISTS = "validation.paymenttype.name.exist";
 	
 	public static final String VALIDASI_WORK_ORDER_INVOICENO_NOT_EMPTY = "validation.workorder.invoiceno.not.empty";
+	public static final String VALIDASI_DOCUMENT_INCORRECT_FORMAT = "validation.document.incorrect.format";
+	public static final String VALIDASI_DOCUMENT_MAX_SIZE_OVER_LIMIT = "validation.document.max.size.overlimit";
 	
 }

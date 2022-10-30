@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.servlet.customermanggala.entity.CustomerManggalaData;
 import com.servlet.customermanggala.service.CustomerManggalaService;
+import com.servlet.parameter.entity.ParameterData;
 import com.servlet.parameter.service.ParameterService;
 import com.servlet.partai.service.PartaiService;
 import com.servlet.port.service.PortService;
@@ -22,6 +23,7 @@ import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 import com.servlet.upload.image.FileStorageService;
+import com.servlet.upload.image.InfoFile;
 import com.servlet.vendor.service.VendorService;
 import com.servlet.workorder.entity.BodyDetailWorkOrder;
 import com.servlet.workorder.entity.BodyWorkOrder;
@@ -420,21 +422,43 @@ public class WorkOrderHandler implements WorkOrderService{
 				try {
 					byte[] fileencode = Base64.encodeBase64(file.getBytes());
 			        String result = new String(fileencode);
+			        InfoFile infofile = fileStorageService.getInfoFile(file);
 			        
-			        String fileName = fileStorageService.storeFile(file);
-			        String contentType = fileStorageService.getContentType(file);
+			        String fileName = infofile.getNamaFile();//fileStorageService.storeFile(file);
+			        String contentType = infofile.getContectType();//fileStorageService.getContentType(file);
 			        
-			        Timestamp ts = new Timestamp(new Date().getTime());
+			        double sizeInKb = infofile.getSizeFile().longValue() / 1024;
+			        double sizeInMb =  sizeInKb / 1024;
+			        System.out.println("infofile.getSizeFile() "+infofile.getSizeFile().longValue());
+			        System.out.println("sizeInMb "+sizeInMb);
+			        List<ParameterData> arrmaxSize = parameterService.getListParameterByGrup("MAX_SIZE_DOCUMENT_IN_MB");
+			        if(arrmaxSize != null && arrmaxSize.size() > 0) {
+			        	double maxSize = new Double(arrmaxSize.get(0).getCode()).doubleValue();
+			        	if(sizeInMb > maxSize) {
+			        		ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_DOCUMENT_MAX_SIZE_OVER_LIMIT,"Ukuran Melebihi Batas, Max= "+maxSize+" MB");
+							validations.add(msg);
+			        	}
+			        }
 			        
-			        ListDocumentWorkOrder table = new ListDocumentWorkOrder();
-					table.setIdcompany(idcompany);
-					table.setIdbranch(idbranch);
-					table.setIdworkorder(idworkorder);
-					table.setFilename(fileName);
-					table.setFiledocument(result);
-					table.setContenttype(contentType);
-					table.setTanggal(ts);
-					idsave = documentWorkOrderRepo.saveAndFlush(table).getId();
+			        if(contentType.equals("application/pdf") || contentType.equals("image/jpeg") || contentType.equals("image/jpg") || contentType.equals("image/png")) {
+			        	
+			        }else {
+			        	ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_DOCUMENT_INCORRECT_FORMAT,"Format Tidak Sesuai");
+						validations.add(msg);
+			        }
+			        if(validations.size() == 0) {
+				        Timestamp ts = new Timestamp(new Date().getTime());
+				        
+				        ListDocumentWorkOrder table = new ListDocumentWorkOrder();
+						table.setIdcompany(idcompany);
+						table.setIdbranch(idbranch);
+						table.setIdworkorder(idworkorder);
+						table.setFilename(fileName);
+						table.setFiledocument(result);
+						table.setContenttype(contentType);
+						table.setTanggal(ts);
+						idsave = documentWorkOrderRepo.saveAndFlush(table).getId();
+			        }
 			        
 				}catch (Exception e) {
 					// TODO: handle exception

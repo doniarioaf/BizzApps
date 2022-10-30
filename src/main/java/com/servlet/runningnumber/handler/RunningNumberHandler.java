@@ -56,12 +56,14 @@ public class RunningNumberHandler implements RunningNumberService{
 			runningNumber = "0"+number;
 		}else if(number > 99999 && number < 1000000) {
 			runningNumber = number+"";
+		}else {
+			runningNumber = number+"";
 		}
 		
 		String valNumber = "";
 		if(!runningNumber.equals("")) {
 			String s = new SimpleDateFormat("yyMMdd").format(currDate);
-			valNumber = code+"-"+runningNumber+"-"+s;
+			valNumber = code+"-"+runningNumber;//+"-"+s;
 		}
 		return valNumber;
 	}

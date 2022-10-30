@@ -94,4 +94,26 @@ public class FileStorageService {
             throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
         }
     }
+    
+    public InfoFile getInfoFile(MultipartFile file) {
+        // Normalize file name
+    	InfoFile info = new InfoFile();
+    	
+        String contectType = StringUtils.cleanPath(file.getContentType());
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        
+        info.setContectType(contectType);
+        info.setNamaFile(fileName);
+        info.setSizeFile(file.getSize());
+        try {
+            // Check if the file's name contains invalid characters
+            if(fileName.contains("..")) {
+                throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
+            }
+
+            return info;
+        } catch (Exception ex) {
+            throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
+        }
+    }
 }
