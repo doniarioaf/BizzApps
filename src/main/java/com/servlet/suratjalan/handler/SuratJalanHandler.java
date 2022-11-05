@@ -18,6 +18,8 @@ import com.servlet.address.service.DistrictService;
 import com.servlet.address.service.ProvinceService;
 import com.servlet.employeemanggala.service.EmployeeManggalaService;
 import com.servlet.parameter.service.ParameterService;
+import com.servlet.parametermanggala.entity.ParameterManggalaData;
+import com.servlet.parametermanggala.service.ParameterManggalaService;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
@@ -69,6 +71,8 @@ public class SuratJalanHandler implements SuratJalanService{
 	private EmployeeManggalaService employeeManggalaService;
 	@Autowired
 	private VendorService vendorService;
+	@Autowired
+	private ParameterManggalaService parameterManggalaService;
 	
 	@Override
 	public SuratJalanTemplate suratJalanTemplate(long idcompany, long idbranch) {
@@ -393,7 +397,12 @@ public class SuratJalanHandler implements SuratJalanService{
 			}
 			val.setCustomerDistrict(districtName);
 			
-			
+			String companyName = "";
+			ParameterManggalaData parameter = parameterManggalaService.getByParamName(idcompany, idbranch, "COMPANYNAME");
+			if(parameter != null) {
+				companyName = parameter.getParamvalue();
+			}
+			val.setCompanyname(companyName);
 			return val;
 		}
 		return null;

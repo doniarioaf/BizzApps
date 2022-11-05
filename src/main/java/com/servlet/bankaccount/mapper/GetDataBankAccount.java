@@ -15,7 +15,7 @@ public class GetDataBankAccount implements RowMapper<BankAccountData>{
 	public GetDataBankAccount() {
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
-		sqlBuilder.append("data.id as id, data.cabang as cabang, data.norekening as norekening, data.dateopen as dateopen, data.catatan1 as catatan1, data.catatan2 as catatan2, data.isactive as isactive, data.namabank as namabank ");
+		sqlBuilder.append("data.id as id, data.cabang as cabang, data.norekening as norekening, data.dateopen as dateopen, data.catatan1 as catatan1, data.catatan2 as catatan2, data.isactive as isactive, data.namabank as namabank, data.saldoawal as saldoawal ");
 		sqlBuilder.append("from m_bank_account as data ");
 		
 		this.schemaSql = sqlBuilder.toString();
@@ -36,6 +36,7 @@ public class GetDataBankAccount implements RowMapper<BankAccountData>{
 		final String catatan1 = rs.getString("catatan1");
 		final String catatan2 = rs.getString("catatan2");
 		final boolean isactive = rs.getBoolean("isactive");
+		final Double saldoawal = rs.getDouble("saldoawal");
 		
 		BankAccountData data = new BankAccountData();
 		data.setId(id);
@@ -46,6 +47,7 @@ public class GetDataBankAccount implements RowMapper<BankAccountData>{
 		data.setCatatan1(catatan1);
 		data.setCatatan2(catatan2);
 		data.setIsactive(isactive);
+		data.setSaldoawal(0.00);
 		return data;
 	}
 

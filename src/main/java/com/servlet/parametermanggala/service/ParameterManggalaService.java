@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.servlet.parametermanggala.entity.BodyParameterManggala;
 import com.servlet.parametermanggala.entity.ParameterManggalaData;
+import com.servlet.parametermanggala.entity.ParameterManggalaTemplate;
 import com.servlet.shared.ReturnData;
 
 public interface ParameterManggalaService {
@@ -14,4 +15,5 @@ public interface ParameterManggalaService {
 	ReturnData saveParameterManggala(Long idcompany,Long idbranch,Long iduser,BodyParameterManggala body);
 	ReturnData updateParameterManggala(Long idcompany,Long idbranch,Long iduser,Long id,BodyParameterManggala body);
 	ReturnData deleteParameterManggala(Long idcompany,Long idbranch,Long iduser,Long id);
+	ParameterManggalaTemplate getTemplate(Long idcompany,Long idbranch);
 }

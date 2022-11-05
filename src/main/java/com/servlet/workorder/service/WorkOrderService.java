@@ -8,6 +8,7 @@ import com.servlet.shared.ReturnData;
 import com.servlet.workorder.entity.BodyWorkOrder;
 import com.servlet.workorder.entity.DetailWorkOrderData;
 import com.servlet.workorder.entity.ListDocumentWorkOrderData;
+import com.servlet.workorder.entity.ParamWoReport;
 import com.servlet.workorder.entity.WorkOrderData;
 import com.servlet.workorder.entity.WorkOrderDropDownData;
 import com.servlet.workorder.entity.WorkOrderTemplate;
@@ -26,4 +27,7 @@ public interface WorkOrderService {
 	ReturnData uploadDocumentWorkOrder(Long idcompany,Long idbranch,Long iduser,Long idworkorder,MultipartFile file);
 	ReturnData deleteDocumentWorkOrder(Long idcompany,Long idbranch,Long iduser,Long id);
 	ListDocumentWorkOrderData getDocumentWorkOrder(Long idcompany,Long idbranch,Long id);
+	List<WorkOrderData> getListDataWoForReport(ParamWoReport param);
+	List<DetailWorkOrderData> getListContainerByIdWorkOrderForReport(Long idcompany,Long idbranch,Long idworkorder);
+	
 }

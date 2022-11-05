@@ -20,6 +20,7 @@ import com.servlet.port.service.PortService;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
+import com.servlet.shared.ConstantReportName;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 import com.servlet.upload.image.FileStorageService;
@@ -32,11 +33,13 @@ import com.servlet.workorder.entity.DetailWorkOrderData;
 import com.servlet.workorder.entity.DetailWorkOrderPK;
 import com.servlet.workorder.entity.ListDocumentWorkOrder;
 import com.servlet.workorder.entity.ListDocumentWorkOrderData;
+import com.servlet.workorder.entity.ParamWoReport;
 import com.servlet.workorder.entity.WorkOrder;
 import com.servlet.workorder.entity.WorkOrderData;
 import com.servlet.workorder.entity.WorkOrderDropDownData;
 import com.servlet.workorder.entity.WorkOrderTemplate;
 import com.servlet.workorder.mapper.GetDetailWorkOrderJoinTable;
+import com.servlet.workorder.mapper.GetDetailWorkOrderJoinTableWithSuratJalan;
 import com.servlet.workorder.mapper.GetListDocumentWorkOrderData;
 import com.servlet.workorder.mapper.GetWorkOrderDropdownData;
 import com.servlet.workorder.mapper.GetWorkOrderJoinCustomerData;
@@ -510,6 +513,29 @@ public class WorkOrderHandler implements WorkOrderService{
 			value.setFiledocument(table.getFiledocument());
 		}
 		return value;
+	}
+
+	@Override
+	public List<WorkOrderData> getListDataWoForReport(ParamWoReport param) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetWorkOrderJoinTableData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		if(param.equals(ConstantReportName.BONGKARMUATDEPO)) {
+			//new java.sql.Date(body.getTanggalnopen())
+			sqlBuilder.append(" and data.tanggal >= '"+new java.sql.Date(param.getFromDate())+"'  and data.tanggal <= '"+new java.sql.Date(param.getToDate())+"' ");
+		}
+		final Object[] queryParameters = new Object[] {param.getIdcompany(),param.getIdbranch()};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderJoinTableData(), queryParameters);
+	}
+
+	@Override
+	public List<DetailWorkOrderData> getListContainerByIdWorkOrderForReport(Long idcompany, Long idbranch,
+			Long idworkorder) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailWorkOrderJoinTableWithSuratJalan().schema());
+		sqlBuilder.append(" where data.idworkorder = ? and data.idcompany = ? and data.idbranch = ? ");
+		final Object[] queryParameters = new Object[] {idworkorder,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailWorkOrderJoinTableWithSuratJalan(), queryParameters);
 	}
 
 }

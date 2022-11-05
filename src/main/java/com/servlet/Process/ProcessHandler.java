@@ -74,7 +74,9 @@ import com.servlet.pricelist.entity.BodySearchPriceList;
 import com.servlet.pricelist.service.PriceListService;
 import com.servlet.report.entity.BodyGetMaps;
 import com.servlet.report.entity.BodyReportMonitoring;
+import com.servlet.report.entity.Manggala_BodyReportBongkarMuatDanDepo;
 import com.servlet.report.service.ReportService;
+import com.servlet.report.service.ReportServiceManggala;
 import com.servlet.security.entity.AuthorizationData;
 import com.servlet.shared.AESEncryptionDecryption;
 import com.servlet.shared.ConstansKey;
@@ -177,6 +179,8 @@ public class ProcessHandler implements ProcessService{
 	WorkOrderService workOrderService;
 	@Autowired
 	SuratJalanService suratJalanService;
+	@Autowired
+	ReportServiceManggala reportServiceManggala;
 	
 	
 	@Override
@@ -1274,7 +1278,7 @@ public class ProcessHandler implements ProcessService{
 					val.setData(bankAccountService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
-					val.setData(bankAccountService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+					val.setData(bankAccountService.getById(auth.getIdcompany(), auth.getIdbranch(),id,auth.getId()));
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_EMPLOYEE_MANGGALA)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
@@ -1344,6 +1348,8 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
 					val.setData(parameterManggalaService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}if(type.equals("TEMPLATE")) {
+					val.setData(parameterManggalaService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_WAREHOUSE)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
@@ -1455,7 +1461,23 @@ public class ProcessHandler implements ProcessService{
 					long id = (long) param.get("id");
 					val.setData(workOrderService.getDocumentWorkOrder(auth.getIdcompany(), auth.getIdbranch(),id));
 				}
+			}else if(codepermission.equals(ConstansPermission.READ_REPORT_BONGKARMUATDEPO)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("REPORT")) {
+					Manggala_BodyReportBongkarMuatDanDepo body = (Manggala_BodyReportBongkarMuatDanDepo) param.get("body");
+					if(body.getTypeReport().equals("XLSX")) {
+						val.setData(reportServiceManggala.getReportBongkarMuatDanDepo(body, auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
+					}
+//					else if(body.getTypereport().equals("PPT")) {
+//						val.setData(reportService.getReportMonitoringDataPPT(body,auth.getIdcompany(), auth.getIdbranch()).getPpt());
+//					}else {
+//						val.setData(reportService.getReportMonitoringDataPDF(body, auth.getIdcompany(), auth.getIdbranch()));
+//					}
+					
+				}
 			}
+			
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
 			if(codepermission.equals(ConstansPermission.READ_INFO_MOBILE)) {
 				String type = (String) data;

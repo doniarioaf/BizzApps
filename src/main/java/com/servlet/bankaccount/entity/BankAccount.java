@@ -34,6 +34,7 @@ public class BankAccount implements Serializable{
 	private Timestamp updatedate;
 	private String deleteby;
 	private Timestamp deletedate;
+	private Double saldoawal;
 	
 	public Long getId() {
 		return id;
@@ -136,5 +137,11 @@ public class BankAccount implements Serializable{
 	}
 	public void setDeletedate(Timestamp deletedate) {
 		this.deletedate = deletedate;
+	}
+	public Double getSaldoawal() {
+		return saldoawal;
+	}
+	public void setSaldoawal(Double saldoawal) {
+		this.saldoawal = saldoawal;
 	}
 }

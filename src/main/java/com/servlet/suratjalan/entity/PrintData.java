@@ -8,6 +8,7 @@ public class PrintData {
 	private Timestamp tanggal;
 	private Long idworkorder;
 	private String nodocumentWO;
+	private String woType;
 	private String noblWO;
 	private String noajuWO;
 	private String namacargoWO;
@@ -33,6 +34,7 @@ public class PrintData {
 	private String containerjumlahkg;
 	private String status;
 	private String statusname;
+	private String companyname;
 	public Long getId() {
 		return id;
 	}
@@ -212,5 +214,17 @@ public class PrintData {
 	}
 	public void setDepoWO(String depoWO) {
 		this.depoWO = depoWO;
+	}
+	public String getCompanyname() {
+		return companyname;
+	}
+	public void setCompanyname(String companyname) {
+		this.companyname = companyname;
+	}
+	public String getWoType() {
+		return woType;
+	}
+	public void setWoType(String woType) {
+		this.woType = woType;
 	}
 }

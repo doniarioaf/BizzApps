@@ -9,6 +9,7 @@ public class DetailWorkOrderData {
 	private String nocontainer;
 	private String noseal;
 	private String barang;
+	private WorkOrderSuratJalan woSuratJalan;
 	public Long getIdworkorder() {
 		return idworkorder;
 	}
@@ -56,5 +57,11 @@ public class DetailWorkOrderData {
 	}
 	public void setBarang(String barang) {
 		this.barang = barang;
+	}
+	public WorkOrderSuratJalan getWoSuratJalan() {
+		return woSuratJalan;
+	}
+	public void setWoSuratJalan(WorkOrderSuratJalan woSuratJalan) {
+		this.woSuratJalan = woSuratJalan;
 	}
 }

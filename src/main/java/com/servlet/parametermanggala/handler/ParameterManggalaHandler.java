@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.servlet.parameter.service.ParameterService;
 import com.servlet.parametermanggala.entity.BodyParameterManggala;
 import com.servlet.parametermanggala.entity.ParameterManggala;
 import com.servlet.parametermanggala.entity.ParameterManggalaData;
+import com.servlet.parametermanggala.entity.ParameterManggalaTemplate;
 import com.servlet.parametermanggala.mapper.GetParameterManggalaData;
 import com.servlet.parametermanggala.repo.ParameterManggalaRepo;
 import com.servlet.parametermanggala.service.ParameterManggalaService;
@@ -25,6 +27,8 @@ public class ParameterManggalaHandler implements ParameterManggalaService{
 	private JdbcTemplate jdbcTemplate;
 	@Autowired
 	private ParameterManggalaRepo repository;
+	@Autowired
+	private ParameterService parameterService;
 	
 	@Override
 	public List<ParameterManggalaData> getListAll(Long idcompany, Long idbranch) {
@@ -52,7 +56,9 @@ public class ParameterManggalaHandler implements ParameterManggalaService{
 		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
 		List<ParameterManggalaData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetParameterManggalaData(), queryParameters);
 		if(list != null && list.size() > 0) {
-			return list.get(0);
+			ParameterManggalaData val = list.get(0);
+			val.setTemplate(setTemplate(idcompany, idbranch));
+			return val;
 		}
 		return null;
 	}
@@ -89,6 +95,8 @@ public class ParameterManggalaHandler implements ParameterManggalaService{
 				table.setIdbranch(idbranch);
 				table.setParamname(body.getParamname().toUpperCase().replaceAll(" ", ""));
 				table.setParamvalue(body.getParamvalue());
+				table.setParamtype(body.getParamtype());
+				table.setParamdate(body.getParamdate() != null?new java.sql.Date(body.getParamdate()):null);
 				table.setIsactive(body.isIsactive());
 				table.setIsdelete(false);
 				table.setCreatedby(iduser.toString());
@@ -135,6 +143,8 @@ public class ParameterManggalaHandler implements ParameterManggalaService{
 //					table.setParamname(body.getParamname());
 					table.setParamvalue(body.getParamvalue());
 					table.setIsactive(body.isIsactive());
+					table.setParamtype(body.getParamtype());
+					table.setParamdate(body.getParamdate() != null?new java.sql.Date(body.getParamdate()):null);
 					table.setIsdelete(false);
 					table.setUpdateby(iduser.toString());
 					table.setUpdatedate(ts);
@@ -188,6 +198,19 @@ public class ParameterManggalaHandler implements ParameterManggalaService{
 			return list.get(0);
 		}
 		return null;
+	}
+	
+	private ParameterManggalaTemplate setTemplate(long idcompany, long idbranch) {
+		ParameterManggalaTemplate template = new ParameterManggalaTemplate();
+		template.setParameterTypeOptions(parameterService.getListParameterByGrup("PARAMETER_TYPE"));
+		return template;
+		
+	}
+
+	@Override
+	public ParameterManggalaTemplate getTemplate(Long idcompany, Long idbranch) {
+		// TODO Auto-generated method stub
+		return setTemplate(idcompany,idbranch);
 	}
 
 }

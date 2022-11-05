@@ -10,6 +10,7 @@ public class BodyBankAccount {
 	private String catatan2;
 	private boolean isactive;
 	private String namabank;
+	private Double saldoawal;
 	public String getCabang() {
 		return cabang;
 	}
@@ -51,5 +52,11 @@ public class BodyBankAccount {
 	}
 	public void setNamabank(String namabank) {
 		this.namabank = namabank;
+	}
+	public Double getSaldoawal() {
+		return saldoawal;
+	}
+	public void setSaldoawal(Double saldoawal) {
+		this.saldoawal = saldoawal;
 	}
 }

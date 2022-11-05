@@ -83,6 +83,7 @@ public class ConstansPermission {
 	public static final String CREATE_BANK_ACCOUNT = "CREATE_BANK_ACCOUNT";
 	public static final String EDIT_BANK_ACCOUNT = "EDIT_BANK_ACCOUNT";
 	public static final String DELETE_BANK_ACCOUNT = "DELETE_BANK_ACCOUNT";
+	public static final String CREATE_SALDO_AWAL = "CREATE_SALDO_AWAL";
 	
 	public static final String READ_EMPLOYEE_MANGGALA = "READ_EMPLOYEE_MANGGALA";
 	public static final String CREATE_EMPLOYEE_MANGGALA = "CREATE_EMPLOYEE_MANGGALA";
@@ -157,6 +158,8 @@ public class ConstansPermission {
 	public static final String READ_DOCUMENT_WORKORDER = "READ_DOCUMENT_WORKORDER";
 	public static final String CREATE_DOCUMENT_WORKORDER = "CREATE_DOCUMENT_WORKORDER";
 	public static final String DELETE_DOCUMENT_WORKORDER = "DELETE_DOCUMENT_WORKORDER";
+	
+	public static final String READ_REPORT_BONGKARMUATDEPO = "READ_REPORT_BONGKARMUATDEPO";
 	
 	
 }

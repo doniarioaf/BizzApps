@@ -12,6 +12,7 @@ public class BankAccountData {
 	private String catatan2;
 	private boolean isactive;
 	private String namabank;
+	private Double saldoawal;
 	public Long getId() {
 		return id;
 	}
@@ -59,5 +60,11 @@ public class BankAccountData {
 	}
 	public void setNamabank(String namabank) {
 		this.namabank = namabank;
+	}
+	public Double getSaldoawal() {
+		return saldoawal;
+	}
+	public void setSaldoawal(Double saldoawal) {
+		this.saldoawal = saldoawal;
 	}
 }

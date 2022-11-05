@@ -39,6 +39,7 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.servlet.report.entity.BodyGetMaps;
 import com.servlet.report.entity.BodyReportMonitoring;
+import com.servlet.report.entity.Manggala_BodyReportBongkarMuatDanDepo;
 import com.servlet.report.entity.ReportToPDF;
 import com.servlet.report.service.ReportService;
 import com.servlet.security.service.SecurityService;
@@ -99,6 +100,40 @@ public class ReportApi {
 		param.put("body", body);
 		
 		Response response1 = securityService.response(ConstansPermission.READ_REPORT_MONITORING,param,authorization);
+		if(response1.getHttpcode() == HttpStatus.OK.value()) {
+			if(type.equals("XLSX")) {
+				XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+				export(response, workbook);
+//				return ResponseEntity.ok().build();
+			}else if(type.equals("PPT")){
+				XMLSlideShow ppt = (XMLSlideShow) response1.getData();
+				exportPPT(response,ppt);
+			}else {
+			
+				//PDF
+				ReportToPDF pdf = (ReportToPDF) response1.getData();
+				exportToPdf(response,pdf.getDocument(),pdf.getTable());
+//				return ResponseEntity.ok().build();
+			}
+			return ResponseEntity.ok().build();
+		}else {
+			return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
+		}
+		
+	}
+	
+	@GetMapping("/manggala/bongkarmuatdepo")
+	ResponseEntity<Response> getReportBongkarMuatDepo(HttpServletResponse response,@RequestHeader(ConstansKey.AUTH) String authorization,@RequestParam long from,@RequestParam long thru,@RequestParam String type) throws IOException {
+		Manggala_BodyReportBongkarMuatDanDepo body = new Manggala_BodyReportBongkarMuatDanDepo();
+		body.setFromDate(from);
+		body.setToDate(thru);
+		body.setTypeReport(type);
+		
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "REPORT");
+		param.put("body", body);
+		
+		Response response1 = securityService.response(ConstansPermission.READ_REPORT_BONGKARMUATDEPO,param,authorization);
 		if(response1.getHttpcode() == HttpStatus.OK.value()) {
 			if(type.equals("XLSX")) {
 				XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
