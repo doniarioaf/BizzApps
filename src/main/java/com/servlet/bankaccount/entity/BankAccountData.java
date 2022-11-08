@@ -1,7 +1,6 @@
 package com.servlet.bankaccount.entity;
 
 import java.sql.Date;
-import java.sql.Timestamp;
 
 public class BankAccountData {
 	private Long id;

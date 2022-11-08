@@ -2,7 +2,6 @@ package com.servlet.paymenttype.service;
 
 import java.util.List;
 
-import com.servlet.invoicetype.entity.BodyInvoiceType;
 import com.servlet.paymenttype.entity.BodyPaymentType;
 import com.servlet.paymenttype.entity.PaymentTypeData;
 import com.servlet.paymenttype.entity.PaymentTypeTemplate;

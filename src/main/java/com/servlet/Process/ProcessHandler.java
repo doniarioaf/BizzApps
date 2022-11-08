@@ -39,6 +39,7 @@ import com.servlet.admin.usermobile.entity.BodyUserMobile;
 import com.servlet.admin.usermobile.service.UserMobileService;
 import com.servlet.bankaccount.entity.BodyBankAccount;
 import com.servlet.bankaccount.service.BankAccountService;
+import com.servlet.coa.service.CoaService;
 import com.servlet.customermanggala.entity.BodyCustomerManggala;
 import com.servlet.customermanggala.entity.BodySearch;
 import com.servlet.customermanggala.service.CustomerManggalaService;
@@ -181,6 +182,8 @@ public class ProcessHandler implements ProcessService{
 	SuratJalanService suratJalanService;
 	@Autowired
 	ReportServiceManggala reportServiceManggala;
+	@Autowired
+	CoaService coaService;
 	
 	
 	@Override

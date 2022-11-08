@@ -216,35 +216,37 @@ public class WorkOrderHandler implements WorkOrderService{
 		
 		if(validations.size() == 0) {
 			try {
-				Timestamp ts = new Timestamp(new Date().getTime());
-				WorkOrder table = repository.getById(id);
-				table.setNamacargo(body.getNamacargo());
-				table.setStatus(body.getStatus());
-				table.setJeniswo(body.getJeniswo());
-				table.setModatransportasi(body.getModatransportasi());
-				table.setEtd(new java.sql.Date(body.getEtd()));
-				table.setEta(new java.sql.Date(body.getEta()));
-				table.setPortasal(body.getPortasal());
-				table.setPorttujuan(body.getPorttujuan());
-				table.setJalur(body.getJalur());
-				table.setNoaju(body.getNoaju());
-				table.setNopen(body.getNopen());
-				table.setTanggalnopen(body.getTanggalnopen().longValue() > 0 ?new java.sql.Date(body.getTanggalnopen()):null);
-				table.setNobl(body.getNobl());
-				table.setTanggalbl(body.getTanggalbl().longValue() > 0? new java.sql.Date(body.getTanggalbl()):null);
-				table.setPelayaran(body.getPelayaran());
-				table.setImportir(body.getImportir());
-				table.setEksportir(body.getEksportir());
-				table.setQq(body.getQq());
-				table.setVoyagenumber(body.getVoyagenumber());
-				table.setTanggalsppb_npe(body.getTanggalsppb_npe().longValue() > 0? new java.sql.Date(body.getTanggalsppb_npe()):null);
-				table.setDepo(body.getDepo());
-				table.setIsactive(body.isIsactive());
-				table.setUpdateby(iduser.toString());
-				table.setUpdatedate(ts);
-				idsave = repository.saveAndFlush(table).getId();
-				
-				putDetail(body.getDetails(), idcompany, idbranch, idsave, "EDIT");
+				if(value != null) {
+					Timestamp ts = new Timestamp(new Date().getTime());
+					WorkOrder table = repository.getById(id);
+					table.setNamacargo(body.getNamacargo());
+					table.setStatus(body.getStatus());
+					table.setJeniswo(body.getJeniswo());
+					table.setModatransportasi(body.getModatransportasi());
+					table.setEtd(new java.sql.Date(body.getEtd()));
+					table.setEta(new java.sql.Date(body.getEta()));
+					table.setPortasal(body.getPortasal());
+					table.setPorttujuan(body.getPorttujuan());
+					table.setJalur(body.getJalur());
+					table.setNoaju(body.getNoaju());
+					table.setNopen(body.getNopen());
+					table.setTanggalnopen(body.getTanggalnopen().longValue() > 0 ?new java.sql.Date(body.getTanggalnopen()):null);
+					table.setNobl(body.getNobl());
+					table.setTanggalbl(body.getTanggalbl().longValue() > 0? new java.sql.Date(body.getTanggalbl()):null);
+					table.setPelayaran(body.getPelayaran());
+					table.setImportir(body.getImportir());
+					table.setEksportir(body.getEksportir());
+					table.setQq(body.getQq());
+					table.setVoyagenumber(body.getVoyagenumber());
+					table.setTanggalsppb_npe(body.getTanggalsppb_npe().longValue() > 0? new java.sql.Date(body.getTanggalsppb_npe()):null);
+					table.setDepo(body.getDepo());
+					table.setIsactive(body.isIsactive());
+					table.setUpdateby(iduser.toString());
+					table.setUpdatedate(ts);
+					idsave = repository.saveAndFlush(table).getId();
+					
+					putDetail(body.getDetails(), idcompany, idbranch, idsave, "EDIT");
+				}
 			}catch (Exception e) {
 				// TODO: handle exception
 				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
