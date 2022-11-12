@@ -3,6 +3,7 @@ package com.servlet.workorder.handler;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -538,6 +539,36 @@ public class WorkOrderHandler implements WorkOrderService{
 		sqlBuilder.append(" where data.idworkorder = ? and data.idcompany = ? and data.idbranch = ? ");
 		final Object[] queryParameters = new Object[] {idworkorder,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailWorkOrderJoinTableWithSuratJalan(), queryParameters);
+	}
+
+	@Override
+	public List<WorkOrderDropDownData> getListWOByStatus(Long idcompany, Long idbranch, String status, Object param) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetWorkOrderDropdownData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.status = ? and data.isactive = true  and data.isdelete = false ");
+		if(param != null) {
+			HashMap<String, Object> mapParam = (HashMap<String, Object>) param;
+			String type = (String) mapParam.get("type");
+			if(type.equals("PENERIMAANKASBANK")) {
+				Long idpenerimaankasbank = (Long) mapParam.get("idpenerimaankasbank");
+				sqlBuilder.append(" or data.id in (select idworkorder from detail_penerimaan_kas_bank as p where p.idpenerimaankasbank = "+idpenerimaankasbank+" ) ");
+			}
+		}
+		final Object[] queryParameters = new Object[] {idcompany,idbranch,status};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderDropdownData(), queryParameters);
+	}
+
+	@Override
+	public WorkOrderData getByIdNotJoin(Long idcompany, Long idbranch, Long id) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetWorkOrderNotJoinTableData().schema());
+		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+		List<WorkOrderData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderNotJoinTableData(), queryParameters);
+		if(list != null && list.size() > 0) {
+			return list.get(0);
+		}
+		return null;
 	}
 
 }

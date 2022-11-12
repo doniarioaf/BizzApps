@@ -81,4 +81,7 @@ public class ConstansCodeMessage {
 	public static final String VALIDASI_DOCUMENT_INCORRECT_FORMAT = "validation.document.incorrect.format";
 	public static final String VALIDASI_DOCUMENT_MAX_SIZE_OVER_LIMIT = "validation.document.max.size.overlimit";
 	
+	public static final String VALIDASI_PENERIMAANKASBANK_WO_STATUS_NOT_OPEN = "validation.penerimaankasbank.wo.status.not.open";
+	public static final String VALIDASI_PENERIMAANKASBANK_WO_NOT_ACTIVE = "validation.penerimaankasbank.wo.not.active";
+	
 }

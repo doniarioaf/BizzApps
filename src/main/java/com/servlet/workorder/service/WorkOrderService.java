@@ -29,5 +29,6 @@ public interface WorkOrderService {
 	ListDocumentWorkOrderData getDocumentWorkOrder(Long idcompany,Long idbranch,Long id);
 	List<WorkOrderData> getListDataWoForReport(ParamWoReport param);
 	List<DetailWorkOrderData> getListContainerByIdWorkOrderForReport(Long idcompany,Long idbranch,Long idworkorder);
-	
+	List<WorkOrderDropDownData> getListWOByStatus(Long idcompany,Long idbranch,String status,Object param);
+	WorkOrderData getByIdNotJoin(Long idcompany,Long idbranch,Long id);
 }

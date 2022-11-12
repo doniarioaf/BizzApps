@@ -15,6 +15,7 @@ public class PenerimaanKasBankData {
 	private String keterangan;
 	private boolean isactive;
 	private List<DetailPenerimaanKasBankData> details;
+	private PenerimaanKasBankTemplate template;
 	public Long getId() {
 		return id;
 	}
@@ -80,5 +81,11 @@ public class PenerimaanKasBankData {
 	}
 	public void setDetails(List<DetailPenerimaanKasBankData> details) {
 		this.details = details;
+	}
+	public PenerimaanKasBankTemplate getTemplate() {
+		return template;
+	}
+	public void setTemplate(PenerimaanKasBankTemplate template) {
+		this.template = template;
 	}
 }

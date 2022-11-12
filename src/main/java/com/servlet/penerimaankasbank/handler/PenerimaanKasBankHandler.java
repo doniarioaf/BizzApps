@@ -3,12 +3,16 @@ package com.servlet.penerimaankasbank.handler;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.servlet.bankaccount.service.BankAccountService;
+import com.servlet.coa.service.CoaService;
 import com.servlet.penerimaankasbank.entity.BodyDetailPenerimaanKasBank;
 import com.servlet.penerimaankasbank.entity.BodyPenerimaanKasBank;
 import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBank;
@@ -16,7 +20,10 @@ import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBankData;
 import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBankPK;
 import com.servlet.penerimaankasbank.entity.PenerimaanKasBank;
 import com.servlet.penerimaankasbank.entity.PenerimaanKasBankData;
+import com.servlet.penerimaankasbank.entity.PenerimaanKasBankTemplate;
 import com.servlet.penerimaankasbank.mapper.GetDetailPenerimaanKasBankData;
+import com.servlet.penerimaankasbank.mapper.GetDetailPenerimaanKasBankJoinTable;
+import com.servlet.penerimaankasbank.mapper.GetPenerimaanKasBankJoinTable;
 import com.servlet.penerimaankasbank.mapper.GetPenerimaanKasBankNotJoinTable;
 import com.servlet.penerimaankasbank.repo.DetailPenerimaanKasBankRepo;
 import com.servlet.penerimaankasbank.repo.PenerimaanKasBankRepo;
@@ -26,6 +33,10 @@ import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.workorder.entity.WorkOrder;
+import com.servlet.workorder.entity.WorkOrderData;
+import com.servlet.workorder.repo.WorkOrderRepo;
+import com.servlet.workorder.service.WorkOrderService;
 
 @Service
 public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
@@ -36,7 +47,15 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 	@Autowired
 	private RunningNumberService runningNumberService;
 	@Autowired
-	private DetailPenerimaanKasBankRepo detailPenerimaanKasBankRepo ;
+	private DetailPenerimaanKasBankRepo detailPenerimaanKasBankRepo;
+	@Autowired
+	private WorkOrderService workOrderService;
+	@Autowired
+	private CoaService coaService;
+	@Autowired
+	private BankAccountService bankAccountService;
+	@Autowired
+	private WorkOrderRepo workOrderRepo;
 	
 	@Override
 	public List<PenerimaanKasBankData> getListAll(Long idcompany, Long idbranch) {
@@ -59,10 +78,10 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 	@Override
 	public PenerimaanKasBankData getById(Long idcompany, Long idbranch, Long id) {
 		// TODO Auto-generated method stub
-		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPenerimaanKasBankNotJoinTable().schema());
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPenerimaanKasBankJoinTable().schema());
 		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
 		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
-		List<PenerimaanKasBankData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetPenerimaanKasBankNotJoinTable(), queryParameters);
+		List<PenerimaanKasBankData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetPenerimaanKasBankJoinTable(), queryParameters);
 		if(list != null && list.size() > 0) {
 			PenerimaanKasBankData val = list.get(0);
 			val.setDetails(getDetails(idcompany, idbranch, id));
@@ -85,7 +104,10 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 			validations.add(msg);
 		}
 		
-		if(validations.size() == 0) {
+		List<ValidationDataMessage> validationsDetails = checkDetail(body.getDetails(), idcompany, idbranch,null,"ADD");
+		validations.addAll(validationsDetails);
+		
+		if(validations.size() == 0 && validationsDetails.size() == 0) {
 			try {
 			PenerimaanKasBank table = new PenerimaanKasBank();
 			table.setIdcompany(idcompany);
@@ -126,7 +148,10 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 		long idsave = 0;
 		PenerimaanKasBankData value = checkById(idcompany,idbranch,id);
 		if(value != null) {
-			if(validations.size() == 0) {
+			List<ValidationDataMessage> validationsDetails = checkDetail(body.getDetails(), idcompany, idbranch,id,"EDIT");
+			validations.addAll(validationsDetails);
+			
+			if(validations.size() == 0 && validationsDetails.size() == 0) {
 				try {
 					Timestamp ts = new Timestamp(new Date().getTime());
 					PenerimaanKasBank table = repository.getById(id);
@@ -201,6 +226,51 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 		return null;
 	}
 	
+	private List<ValidationDataMessage> checkDetail(BodyDetailPenerimaanKasBank[] details,Long idcompany, Long idbranch,Long id,String action) {
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
+		if(details != null) {
+			if(details.length > 0) {
+				for(int i=0; i < details.length; i++) {
+					BodyDetailPenerimaanKasBank detail = details[i];
+					boolean isNext = true;
+					if(action.equals("EDIT")) {
+						HashMap<String, Object> param = new HashMap<String, Object>();
+						param.put("type", "WO");
+						param.put("idwo", detail.getIdworkorder());
+						List<DetailPenerimaanKasBankData> list = getDetailsForCheck(idcompany,idbranch,id,param);
+						if(list != null) {
+							isNext = false;
+							continue;
+						}
+					}
+					if(isNext) {
+						if(detail.getIdworkorder() != null) {
+							WorkOrderData woData = workOrderService.getByIdNotJoin(idcompany, idbranch, detail.getIdworkorder());
+							if(woData != null) {
+								if(!woData.getStatus().equals("OPEN")) {
+									ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_PENERIMAANKASBANK_WO_STATUS_NOT_OPEN,"Check status WO "+woData.getNodocument());
+									validations.add(msg);
+								}
+							}else {
+								Optional<WorkOrder> opWo =  workOrderRepo.findById(detail.getIdworkorder());
+								if(opWo.isPresent()) {
+									if(!opWo.get().isIsactive() || opWo.get().isIsdelete()) {
+										ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_PENERIMAANKASBANK_WO_NOT_ACTIVE,"WO "+opWo.get().getNodocument()+" tidak ditemukan");
+										validations.add(msg);
+									}
+								}else {
+									ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_PENERIMAANKASBANK_WO_NOT_ACTIVE,"WO "+detail.getIdworkorder());
+									validations.add(msg);
+								}
+								
+							}
+						}
+					}
+				}
+			}
+		}
+		return validations;
+	}
 	private String putDetail(BodyDetailPenerimaanKasBank[] details,Long idcompany, Long idbranch,long idsave,String action) {
 		if(action.equals("EDIT")) {
 			detailPenerimaanKasBankRepo.deleteAllDetail(idsave, idcompany, idbranch);
@@ -234,12 +304,69 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 		return "";
 	}
 	
+	private PenerimaanKasBankTemplate getTemplate(Long idcompany, Long idbranch, Long id) {
+		PenerimaanKasBankTemplate template = new PenerimaanKasBankTemplate();
+		template.setBankOptions(bankAccountService.getListActiveBankAccount(idcompany, idbranch));
+		template.setCoaOptions(coaService.getListActiveCOA(idcompany, idbranch));
+		if(id != null) {
+			HashMap<String, Object> mapParam = new HashMap<String, Object>();
+			mapParam.put("type", "PENERIMAANKASBANK");
+			mapParam.put("idpenerimaankasbank", id);
+			template.setWoOptions(workOrderService.getListWOByStatus(idcompany, idbranch, "OPEN",mapParam));
+		}else {
+			template.setWoOptions(workOrderService.getListWOByStatus(idcompany, idbranch, "OPEN",null));
+		}
+		
+		return template;
+	}
+	
 	private List<DetailPenerimaanKasBankData> getDetails(Long idcompany, Long idbranch,Long idpenerimaankasbank) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailPenerimaanKasBankJoinTable().schema());
+		sqlBuilder.append(" where data.idpenerimaankasbank = ? and data.idcompany = ? and data.idbranch = ? ");
+		final Object[] queryParameters = new Object[] {idpenerimaankasbank,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPenerimaanKasBankJoinTable(), queryParameters);
+	}
+	
+	private List<DetailPenerimaanKasBankData> getDetailsForCheck(Long idcompany, Long idbranch,Long idpenerimaankasbank,HashMap<String, Object> param) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailPenerimaanKasBankData().schema());
 		sqlBuilder.append(" where data.idpenerimaankasbank = ? and data.idcompany = ? and data.idbranch = ? ");
+		if(param != null) {
+			String type = (String) param.get("type");
+			if(type.equals("WO")) {
+				Long idwo = (Long) param.get("idwo");
+				sqlBuilder.append(" and data.idworkorder = "+idwo+" ");
+			}
+		}
 		final Object[] queryParameters = new Object[] {idpenerimaankasbank,idcompany,idbranch};
-		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPenerimaanKasBankData(), queryParameters);
+		List<DetailPenerimaanKasBankData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPenerimaanKasBankData(), queryParameters);
+		if(list != null && list.size() > 0) {
+			return list;
+		}
+		return null;
+	}
+
+	@Override
+	public PenerimaanKasBankTemplate getTemplate(Long idcompany, Long idbranch) {
+		// TODO Auto-generated method stub
+		return getTemplate(idcompany,idbranch,null);
+	}
+
+	@Override
+	public PenerimaanKasBankData getByIdWithTemplate(Long idcompany, Long idbranch, Long id) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPenerimaanKasBankNotJoinTable().schema());
+		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+		List<PenerimaanKasBankData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetPenerimaanKasBankNotJoinTable(), queryParameters);
+		if(list != null && list.size() > 0) {
+			PenerimaanKasBankData val = list.get(0);
+			val.setDetails(getDetails(idcompany, idbranch, id));
+			val.setTemplate(getTemplate(idcompany, idbranch, id));
+			return val;
+		}
+		return null;
 	}
 
 }

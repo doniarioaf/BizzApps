@@ -39,7 +39,7 @@ import com.servlet.admin.usermobile.entity.BodyUserMobile;
 import com.servlet.admin.usermobile.service.UserMobileService;
 import com.servlet.bankaccount.entity.BodyBankAccount;
 import com.servlet.bankaccount.service.BankAccountService;
-import com.servlet.coa.service.CoaService;
+//import com.servlet.coa.service.CoaService;
 import com.servlet.customermanggala.entity.BodyCustomerManggala;
 import com.servlet.customermanggala.entity.BodySearch;
 import com.servlet.customermanggala.service.CustomerManggalaService;
@@ -68,6 +68,8 @@ import com.servlet.partai.entity.BodyPartai;
 import com.servlet.partai.service.PartaiService;
 import com.servlet.paymenttype.entity.BodyPaymentType;
 import com.servlet.paymenttype.service.PaymentTypeService;
+import com.servlet.penerimaankasbank.entity.BodyPenerimaanKasBank;
+import com.servlet.penerimaankasbank.service.PenerimaanKasBankService;
 import com.servlet.port.entity.BodyPort;
 import com.servlet.port.service.PortService;
 import com.servlet.pricelist.entity.BodyPriceList;
@@ -183,8 +185,7 @@ public class ProcessHandler implements ProcessService{
 	@Autowired
 	ReportServiceManggala reportServiceManggala;
 	@Autowired
-	CoaService coaService;
-	
+	PenerimaanKasBankService penerimaanKasBankService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -1033,6 +1034,41 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_PENERIMAAN_KASBANK)) {
+				BodyPenerimaanKasBank param = (BodyPenerimaanKasBank) data;
+				ReturnData valReturn =  penerimaanKasBankService.saveData(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_PENERIMAAN_KASBANK)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyPenerimaanKasBank body  = (BodyPenerimaanKasBank) param.get("body");
+				ReturnData valReturn = penerimaanKasBankService.updateData(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_SURATJALAN)) {
+				long id = (long) data;
+				ReturnData valReturn = penerimaanKasBankService.deleteData(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 			}
 			
 			
@@ -1479,6 +1515,21 @@ public class ProcessHandler implements ProcessService{
 //					}
 					
 				}
+			}else if(codepermission.equals(ConstansPermission.READ_PENERIMAAN_KASBANK)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(penerimaanKasBankService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(penerimaanKasBankService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(penerimaanKasBankService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("TEMPLATE_ID")) {
+					long id = (long) param.get("id");
+					val.setData(penerimaanKasBankService.getByIdWithTemplate(auth.getIdcompany(), auth.getIdbranch(),id));
+				}
+				
 			}
 			
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {

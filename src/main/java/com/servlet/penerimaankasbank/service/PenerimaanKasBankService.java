@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.servlet.penerimaankasbank.entity.BodyPenerimaanKasBank;
 import com.servlet.penerimaankasbank.entity.PenerimaanKasBankData;
+import com.servlet.penerimaankasbank.entity.PenerimaanKasBankTemplate;
 import com.servlet.shared.ReturnData;
 
 public interface PenerimaanKasBankService {
@@ -13,4 +14,6 @@ public interface PenerimaanKasBankService {
 	ReturnData saveData(Long idcompany,Long idbranch,Long iduser,BodyPenerimaanKasBank body);
 	ReturnData updateData(Long idcompany,Long idbranch,Long iduser,Long id,BodyPenerimaanKasBank body);
 	ReturnData deleteData(Long idcompany,Long idbranch,Long iduser,Long id);
+	PenerimaanKasBankTemplate getTemplate(Long idcompany,Long idbranch);
+	PenerimaanKasBankData getByIdWithTemplate(Long idcompany,Long idbranch,Long id);
 }
