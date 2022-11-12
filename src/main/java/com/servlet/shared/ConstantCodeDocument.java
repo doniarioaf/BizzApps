@@ -6,4 +6,5 @@ public class ConstantCodeDocument {
 	public static final String DOC_PRICELIST = "PRC";
 	public static final String DOC_SURATJALAN = "SJ";
 	public static final String DOC_PENERIMAANKASBANK = "KBM";
+	public static final String DOC_PENGELUARANKASBANK = "KBK";
 }

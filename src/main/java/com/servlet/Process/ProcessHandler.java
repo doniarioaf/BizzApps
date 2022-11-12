@@ -70,6 +70,8 @@ import com.servlet.paymenttype.entity.BodyPaymentType;
 import com.servlet.paymenttype.service.PaymentTypeService;
 import com.servlet.penerimaankasbank.entity.BodyPenerimaanKasBank;
 import com.servlet.penerimaankasbank.service.PenerimaanKasBankService;
+import com.servlet.pengluarankasbank.entity.BodyPengeluaranKasBank;
+import com.servlet.pengluarankasbank.service.PengeluaranKasBankService;
 import com.servlet.port.entity.BodyPort;
 import com.servlet.port.service.PortService;
 import com.servlet.pricelist.entity.BodyPriceList;
@@ -186,6 +188,8 @@ public class ProcessHandler implements ProcessService{
 	ReportServiceManggala reportServiceManggala;
 	@Autowired
 	PenerimaanKasBankService penerimaanKasBankService;
+	@Autowired
+	PengeluaranKasBankService pengeluaranKasBankService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -1058,9 +1062,47 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
-			}else if(codepermission.equals(ConstansPermission.DELETE_SURATJALAN)) {
+			}else if(codepermission.equals(ConstansPermission.DELETE_PENERIMAAN_KASBANK)) {
 				long id = (long) data;
 				ReturnData valReturn = penerimaanKasBankService.deleteData(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}
+			
+			
+			else if(codepermission.equals(ConstansPermission.CREATE_PENGELUARAN_KASBANK)) {
+				BodyPengeluaranKasBank param = (BodyPengeluaranKasBank) data;
+				ReturnData valReturn =  pengeluaranKasBankService.saveData(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_PENGELUARAN_KASBANK)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyPengeluaranKasBank body  = (BodyPengeluaranKasBank) param.get("body");
+				ReturnData valReturn = pengeluaranKasBankService.updateData(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_PENGELUARAN_KASBANK)) {
+				long id = (long) data;
+				ReturnData valReturn = pengeluaranKasBankService.deleteData(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
 				if(valReturn.isSuccess()) {
 					val.setData(valReturn.getId());
 				}else {
@@ -1528,6 +1570,21 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("TEMPLATE_ID")) {
 					long id = (long) param.get("id");
 					val.setData(penerimaanKasBankService.getByIdWithTemplate(auth.getIdcompany(), auth.getIdbranch(),id));
+				}
+				
+			}else if(codepermission.equals(ConstansPermission.READ_PENGELUARAN_KASBANK)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(pengeluaranKasBankService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(pengeluaranKasBankService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(pengeluaranKasBankService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("TEMPLATE_ID")) {
+					long id = (long) param.get("id");
+					val.setData(pengeluaranKasBankService.getByIdWithTemplate(auth.getIdcompany(), auth.getIdbranch(),id));
 				}
 				
 			}

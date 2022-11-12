@@ -166,5 +166,10 @@ public class ConstansPermission {
 	public static final String EDIT_PENERIMAAN_KASBANK = "EDIT_PENERIMAAN_KASBANK";
 	public static final String DELETE_PENERIMAAN_KASBANK = "DELETE_PENERIMAAN_KASBANK";
 	
+	public static final String READ_PENGELUARAN_KASBANK = "READ_PENGELUARAN_KASBANK";
+	public static final String CREATE_PENGELUARAN_KASBANK = "CREATE_PENGELUARAN_KASBANK";
+	public static final String EDIT_PENGELUARAN_KASBANK = "EDIT_PENGELUARAN_KASBANK";
+	public static final String DELETE_PENGELUARAN_KASBANK = "DELETE_PENGELUARAN_KASBANK";
+	
 	
 }
