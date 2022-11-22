@@ -94,6 +94,7 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		
 		if(validations.size() == 0) {
 			try {
+				try {
 				PengluaranKasBank table = new PengluaranKasBank();
 				table.setIdcompany(idcompany);
 				table.setIdbranch(idbranch);
@@ -109,8 +110,17 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 				table.setCreateddate(ts);
 				
 				idsave = repository.saveAndFlush(table).getId();
+				}catch (Exception e) {
+					// TODO: handle exception
+					runningNumberService.rollBackDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_PENGELUARANKASBANK);
+					ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
+					validations.add(msg);
+					e.printStackTrace();
+				}
+				if(idsave > 0) {
+					putDetail(body.getDetails(), idcompany, idbranch, idsave, "ADD");
+				}
 				
-				putDetail(body.getDetails(), idcompany, idbranch, idsave, "ADD");
 			}catch (Exception e) {
 				// TODO: handle exception
 				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");

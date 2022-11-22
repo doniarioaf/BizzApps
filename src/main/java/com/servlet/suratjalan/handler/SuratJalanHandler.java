@@ -3,7 +3,9 @@ package com.servlet.suratjalan.handler;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -33,10 +35,12 @@ import com.servlet.suratjalan.entity.PenandaanSuratJalanTemplate;
 import com.servlet.suratjalan.entity.PrintData;
 import com.servlet.suratjalan.entity.SuratJalan;
 import com.servlet.suratjalan.entity.SuratJalanData;
+import com.servlet.suratjalan.entity.SuratJalanDropDown;
 import com.servlet.suratjalan.entity.SuratJalanTemplate;
 import com.servlet.suratjalan.mapper.GetDataFullSuratJalan;
 import com.servlet.suratjalan.mapper.GetHistorySuratJalan;
 import com.servlet.suratjalan.mapper.GetPrintDataSuratJalan;
+import com.servlet.suratjalan.mapper.GetSuraJalanDropDownData;
 import com.servlet.suratjalan.mapper.GetSuratJalanList;
 import com.servlet.suratjalan.mapper.GetSuratJalanNotJoin;
 import com.servlet.suratjalan.repo.HistorySuratJalanRepo;
@@ -166,6 +170,7 @@ public class SuratJalanHandler implements SuratJalanService{
 				
 			}catch (Exception e) {
 				// TODO: handle exception
+				runningNumberService.rollBackDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_SURATJALAN);
 				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
 				validations.add(msg);
 				e.printStackTrace();
@@ -412,6 +417,42 @@ public class SuratJalanHandler implements SuratJalanService{
 	public PenandaanSuratJalanTemplate getPenandaanSuratJalanTemplate(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
 		return setPenandaanSuratJalanTemplate(idcompany,idbranch);
+	}
+
+	@Override
+	public HashMap<String, Object> checkSuratjalan(Long idcompany, Long idbranch, Long id) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> result = new HashMap<String, Object>();
+		Optional<SuratJalan> opt = repository.findById(id.longValue());
+		boolean isFound = true;
+		boolean isActive = true;
+		boolean isStatusAvailable = true;
+		if(opt.isPresent()) {
+			SuratJalan obj = opt.get();
+			if(obj.isIsdelete()) {
+				isFound = false;
+			}else if(!obj.isIsactive()) {
+				isActive = false;
+			}
+			
+			if(obj.getStatus().equals("CLOSE_SJ") || obj.getStatus().equals("CANCEL_SJ")) {
+				isStatusAvailable = false;
+			}
+		}
+		result.put("ISFOUND", isFound);
+		result.put("ISACTIVE", isActive);
+		result.put("ISSTATUSAVAILABLE", isStatusAvailable);
+		return result;
+	}
+
+	@Override
+	public List<SuratJalanDropDown> getListByIdWO(Long idcompany, Long idbranch, Long idwo) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetSuraJalanDropDownData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.idworkorder = ? and data.isactive = true  and data.isdelete = false ");
+		sqlBuilder.append(" order by data.tanggal ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch,idwo};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetSuraJalanDropDownData(), queryParameters);
 	}
 
 }

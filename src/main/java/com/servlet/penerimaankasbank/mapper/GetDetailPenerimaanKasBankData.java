@@ -13,7 +13,7 @@ public class GetDetailPenerimaanKasBankData implements RowMapper<DetailPenerimaa
 	public GetDetailPenerimaanKasBankData() {
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
-		sqlBuilder.append("data.idpenerimaankasbank as idpenerimaankasbank, data.idcoa as idcoa, data.catatan as catatan, data.amount as amount, data.isdownpayment as isdownpayment, ");
+		sqlBuilder.append("data.counter as counter, data.idpenerimaankasbank as idpenerimaankasbank, data.idcoa as idcoa, data.catatan as catatan, data.amount as amount, data.isdownpayment as isdownpayment, ");
 		sqlBuilder.append("data.idinvoice as idinvoice, data.idworkorder as idworkorder ");
 		sqlBuilder.append("from detail_penerimaan_kas_bank as data ");
 		
@@ -27,7 +27,8 @@ public class GetDetailPenerimaanKasBankData implements RowMapper<DetailPenerimaa
 	@Override
 	public DetailPenerimaanKasBankData mapRow(ResultSet rs, int rowNum) throws SQLException {
 		// TODO Auto-generated method stub
-//		final Long idpenerimaankasbank = rs.getLong("idpenerimaankasbank");
+		final Long idpenerimaankasbank = rs.getLong("idpenerimaankasbank");
+		final Long counter = rs.getLong("counter");
 		final Long idcoa = rs.getLong("idcoa");
 		final String catatan = rs.getString("catatan");
 		final Double amount = rs.getDouble("amount");
@@ -36,12 +37,14 @@ public class GetDetailPenerimaanKasBankData implements RowMapper<DetailPenerimaa
 		final Long idworkorder = rs.getLong("idworkorder");
 		
 		DetailPenerimaanKasBankData data = new DetailPenerimaanKasBankData();
+		data.setIdpenerimaankasbank(idpenerimaankasbank);
 		data.setIdcoa(idcoa);
 		data.setCatatan(catatan);
 		data.setAmount(amount);
 		data.setIsdownpayment(isdownpayment);
 		data.setIdinvoice(idinvoice);
 		data.setIdworkorder(idworkorder);
+		data.setCounter(counter);
 		return data;
 	}
 

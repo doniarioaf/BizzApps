@@ -109,23 +109,34 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 		
 		if(validations.size() == 0 && validationsDetails.size() == 0) {
 			try {
-			PenerimaanKasBank table = new PenerimaanKasBank();
-			table.setIdcompany(idcompany);
-			table.setIdbranch(idbranch);
-			table.setNodocument(docNumber);
-			table.setReceivedate(new java.sql.Date(body.getReceivedate()));
-			table.setReceivefrom(body.getReceivefrom());
-			table.setIdcoa(body.getIdcoa());
-			table.setIdbank(body.getIdbank());
-			table.setKeterangan(body.getKeterangan());
-			table.setIsactive(body.isIsactive());
-			table.setIsdelete(false);
-			table.setCreatedby(iduser.toString());
-			table.setCreateddate(ts);
 			
-			idsave = repository.saveAndFlush(table).getId();
+			try {
+				PenerimaanKasBank table = new PenerimaanKasBank();
+				table.setIdcompany(idcompany);
+				table.setIdbranch(idbranch);
+				table.setNodocument(docNumber);
+				table.setReceivedate(new java.sql.Date(body.getReceivedate()));
+				table.setReceivefrom(body.getReceivefrom());
+				table.setIdcoa(body.getIdcoa());
+				table.setIdbank(body.getIdbank());
+				table.setKeterangan(body.getKeterangan());
+				table.setIsactive(body.isIsactive());
+				table.setIsdelete(false);
+				table.setCreatedby(iduser.toString());
+				table.setCreateddate(ts);
+				
+				idsave = repository.saveAndFlush(table).getId();
+			}catch (Exception e) {
+				// TODO: handle exception
+				runningNumberService.rollBackDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_PENERIMAANKASBANK);
+				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
+				validations.add(msg);
+				e.printStackTrace();
+			}
+			if(idsave > 0) {
+				putDetail(body.getDetails(), idcompany, idbranch, idsave, "ADD");
+			}
 			
-			putDetail(body.getDetails(), idcompany, idbranch, idsave, "ADD");
 			}catch (Exception e) {
 				// TODO: handle exception
 				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
@@ -367,6 +378,34 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 			return val;
 		}
 		return null;
+	}
+
+	@Override
+	public List<DetailPenerimaanKasBankData> getListDetailByIdInvoice(Long idcompany, Long idbranch, Long idInvoice) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailPenerimaanKasBankData().schema());
+		sqlBuilder.append(" where data.idinvoice = ? and data.idcompany = ? and data.idbranch = ? ");
+		final Object[] queryParameters = new Object[] {idInvoice,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPenerimaanKasBankData(), queryParameters);
+	}
+
+	@Override
+	public List<PenerimaanKasBankData> getListByDetailIdInvoice(Long idcompany, Long idbranch, Long idinvoice) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPenerimaanKasBankNotJoinTable().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false ");
+		sqlBuilder.append(" and data.id in (select detail.idpenerimaankasbank from detail_penerimaan_kas_bank as detail where detail.idinvoice = "+idinvoice+" ) ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetPenerimaanKasBankNotJoinTable(), queryParameters);
+	}
+
+	@Override
+	public List<DetailPenerimaanKasBankData> getListDetailByIdWO(Long idcompany, Long idbranch, Long idWo) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailPenerimaanKasBankData().schema());
+		sqlBuilder.append(" where data.idworkorder = ? and data.idcompany = ? and data.idbranch = ? and (data.idinvoice isnull or data.idinvoice = 0) order by data.amount asc");
+		final Object[] queryParameters = new Object[] {idWo,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPenerimaanKasBankData(), queryParameters);
 	}
 
 }

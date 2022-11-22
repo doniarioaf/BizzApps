@@ -171,5 +171,11 @@ public class ConstansPermission {
 	public static final String EDIT_PENGELUARAN_KASBANK = "EDIT_PENGELUARAN_KASBANK";
 	public static final String DELETE_PENGELUARAN_KASBANK = "DELETE_PENGELUARAN_KASBANK";
 	
+	public static final String READ_INVOICE = "READ_INVOICE";
+	public static final String CREATE_INVOICE = "CREATE_INVOICE";
+	public static final String EDIT_INVOICE = "EDIT_INVOICE";
+	public static final String DELETE_INVOICE = "DELETE_INVOICE";
+
+	
 	
 }

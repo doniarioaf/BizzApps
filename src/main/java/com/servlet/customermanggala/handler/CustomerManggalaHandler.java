@@ -3,7 +3,9 @@ package com.servlet.customermanggala.handler;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -500,6 +502,26 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 			return val;
 		}
 		return null;
+	}
+
+	@Override
+	public HashMap<String, Object> checkCustomerById(Long idcompany, Long idbranch, Long id) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> result = new HashMap<String, Object>();
+		Optional<CustomerManggala> custOpt = repository.findById(id.longValue());
+		boolean isFound = true;
+		boolean isActive = true;
+		if(custOpt.isPresent()) {
+			CustomerManggala cust = custOpt.get();
+			if(cust.isIsdelete()) {
+				isFound = false;
+			}else if(!cust.isIsactive()) {
+				isActive = false;
+			}
+		}
+		result.put("ISFOUND", isFound);
+		result.put("ISACTIVE", isActive);
+		return result;
 	}
 	
 	

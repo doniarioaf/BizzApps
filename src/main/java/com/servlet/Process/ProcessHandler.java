@@ -3,6 +3,7 @@ package com.servlet.Process;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,9 @@ import com.servlet.customermanggala.entity.BodySearch;
 import com.servlet.customermanggala.service.CustomerManggalaService;
 import com.servlet.employeemanggala.entity.BodyEmployeeManggala;
 import com.servlet.employeemanggala.service.EmployeeManggalaService;
+import com.servlet.invoice.entity.BodyInvoice;
+import com.servlet.invoice.entity.BodySearchInvoicePriceList;
+import com.servlet.invoice.service.InvoiceService;
 import com.servlet.invoicetype.entity.BodyInvoiceType;
 import com.servlet.invoicetype.service.InvoiceTypeService;
 import com.servlet.mobile.callplan.entity.BodyCallPlan;
@@ -76,6 +80,7 @@ import com.servlet.port.entity.BodyPort;
 import com.servlet.port.service.PortService;
 import com.servlet.pricelist.entity.BodyPriceList;
 import com.servlet.pricelist.entity.BodySearchPriceList;
+import com.servlet.pricelist.entity.PriceListData;
 import com.servlet.pricelist.service.PriceListService;
 import com.servlet.report.entity.BodyGetMaps;
 import com.servlet.report.entity.BodyReportMonitoring;
@@ -190,6 +195,8 @@ public class ProcessHandler implements ProcessService{
 	PenerimaanKasBankService penerimaanKasBankService;
 	@Autowired
 	PengeluaranKasBankService pengeluaranKasBankService;
+	@Autowired
+	InvoiceService invoiceService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -1073,10 +1080,7 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
-			}
-			
-			
-			else if(codepermission.equals(ConstansPermission.CREATE_PENGELUARAN_KASBANK)) {
+			}else if(codepermission.equals(ConstansPermission.CREATE_PENGELUARAN_KASBANK)) {
 				BodyPengeluaranKasBank param = (BodyPengeluaranKasBank) data;
 				ReturnData valReturn =  pengeluaranKasBankService.saveData(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
 				if(valReturn.isSuccess()) {
@@ -1103,6 +1107,41 @@ public class ProcessHandler implements ProcessService{
 			}else if(codepermission.equals(ConstansPermission.DELETE_PENGELUARAN_KASBANK)) {
 				long id = (long) data;
 				ReturnData valReturn = pengeluaranKasBankService.deleteData(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_INVOICE)) {
+				BodyInvoice param = (BodyInvoice) data;
+				ReturnData valReturn =  invoiceService.saveInvoice(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_INVOICE)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyInvoice body  = (BodyInvoice) param.get("body");
+				ReturnData valReturn = invoiceService.updateInvoice(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_INVOICE)) {
+				long id = (long) data;
+				ReturnData valReturn = invoiceService.deleteInvoice(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
 				if(valReturn.isSuccess()) {
 					val.setData(valReturn.getId());
 				}else {
@@ -1585,6 +1624,41 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("TEMPLATE_ID")) {
 					long id = (long) param.get("id");
 					val.setData(pengeluaranKasBankService.getByIdWithTemplate(auth.getIdcompany(), auth.getIdbranch(),id));
+				}
+				
+			}else if(codepermission.equals(ConstansPermission.READ_INVOICE)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(invoiceService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(invoiceService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(invoiceService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("DETAIL_TEMPLATE")) {
+					long id = (long) param.get("id");
+					val.setData(invoiceService.getByIdWithTemplate(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("SEARCHDATACUSTOMER")) {
+					BodySearch body = (BodySearch) param.get("body");
+					val.setData(customerManggalaService.getListSearchCustomer(auth.getIdcompany(), auth.getIdbranch(), body));
+				}else if(type.equals("SEACRHWO")) {
+					long idcustomer = (long) param.get("idcustomer");
+					
+					HashMap<String, Object> mapParam = new HashMap<String, Object>();
+					mapParam.put("type", "INVOICE");
+					mapParam.put("idcustomer", idcustomer);
+					
+					val.setData(workOrderService.getListWOByStatus(auth.getIdcompany(), auth.getIdbranch(),"OPEN", mapParam));
+				}else if(type.equals("SEACRH_SURATJALAN")) {
+					long idwo = (long) param.get("idwo");
+					val.setData(suratJalanService.getListByIdWO(auth.getIdcompany(), auth.getIdbranch(),idwo));
+				}else if(type.equals("SEACRH_PRICELIST")) {
+					BodySearchInvoicePriceList body = (BodySearchInvoicePriceList) param.get("body");
+					long idcustomer = body.getIdcustomer() == null?0:body.getIdcustomer();
+					long idwarehouse = body.getIdwarehouse() == null?0:body.getIdwarehouse();
+					long idinvoicetype = body.getIdinvoicetype() == null?0:body.getIdinvoicetype();
+					val.setData(priceListService.getListPriceListByIdCustomer(auth.getIdcompany(), auth.getIdbranch(),idcustomer,idwarehouse,idinvoicetype,body.getJalur()));
 				}
 				
 			}

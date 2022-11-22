@@ -1,6 +1,8 @@
 package com.servlet.penerimaankasbank.entity;
 
 public class DetailPenerimaanKasBankData {
+	private Long idpenerimaankasbank;
+	private Long counter;
 	private Long idcoa;
 	private String coaname;
 	private String catatan;
@@ -63,5 +65,17 @@ public class DetailPenerimaanKasBankData {
 	}
 	public void setNodocworkorder(String nodocworkorder) {
 		this.nodocworkorder = nodocworkorder;
+	}
+	public Long getCounter() {
+		return counter;
+	}
+	public void setCounter(Long counter) {
+		this.counter = counter;
+	}
+	public Long getIdpenerimaankasbank() {
+		return idpenerimaankasbank;
+	}
+	public void setIdpenerimaankasbank(Long idpenerimaankasbank) {
+		this.idpenerimaankasbank = idpenerimaankasbank;
 	}
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -151,42 +152,52 @@ public class WorkOrderHandler implements WorkOrderService{
 		
 		if(validations.size() == 0) {
 			try {
-				WorkOrder table = new WorkOrder();
-				table.setIdcompany(idcompany);
-				table.setIdbranch(idbranch);
-				table.setNodocument(docNumber);
-				table.setTanggal(new java.sql.Date(body.getTanggal()));
-				table.setIdcustomer(body.getIdcustomer());
-				table.setNamacargo(body.getNamacargo());
-				table.setStatus(body.getStatus());
-				table.setJeniswo(body.getJeniswo());
-				table.setModatransportasi(body.getModatransportasi());
-				table.setEtd(new java.sql.Date(body.getEtd()));
-				table.setEta(new java.sql.Date(body.getEta()));
-				table.setPortasal(body.getPortasal());
-				table.setPorttujuan(body.getPorttujuan());
-				table.setJalur(body.getJalur());
-				table.setNoaju(body.getNoaju());
-				table.setNopen(body.getNopen());
-				table.setTanggalnopen(body.getTanggalnopen().longValue() > 0? new java.sql.Date(body.getTanggalnopen()):null);
-				table.setNobl(body.getNobl());
-				table.setTanggalbl(body.getTanggalbl().longValue() > 0? new java.sql.Date(body.getTanggalbl()):null);
-				table.setPelayaran(body.getPelayaran());
-				table.setImportir(body.getImportir());
-				table.setEksportir(body.getEksportir());
-				table.setQq(body.getQq());
-				table.setVoyagenumber(body.getVoyagenumber());
-				table.setTanggalsppb_npe(body.getTanggalsppb_npe().longValue() > 0? new java.sql.Date(body.getTanggalsppb_npe()):null);
-				table.setDepo(body.getDepo());
-				table.setInvoiceno("");
-				table.setIsactive(body.isIsactive());
-				table.setIsdelete(false);
-				table.setCreatedby(iduser.toString());
-				table.setCreateddate(ts);
+				try {
+					WorkOrder table = new WorkOrder();
+					table.setIdcompany(idcompany);
+					table.setIdbranch(idbranch);
+					table.setNodocument(docNumber);
+					table.setTanggal(new java.sql.Date(body.getTanggal()));
+					table.setIdcustomer(body.getIdcustomer());
+					table.setNamacargo(body.getNamacargo());
+					table.setStatus(body.getStatus());
+					table.setJeniswo(body.getJeniswo());
+					table.setModatransportasi(body.getModatransportasi());
+					table.setEtd(new java.sql.Date(body.getEtd()));
+					table.setEta(new java.sql.Date(body.getEta()));
+					table.setPortasal(body.getPortasal());
+					table.setPorttujuan(body.getPorttujuan());
+					table.setJalur(body.getJalur());
+					table.setNoaju(body.getNoaju());
+					table.setNopen(body.getNopen());
+					table.setTanggalnopen(body.getTanggalnopen().longValue() > 0? new java.sql.Date(body.getTanggalnopen()):null);
+					table.setNobl(body.getNobl());
+					table.setTanggalbl(body.getTanggalbl().longValue() > 0? new java.sql.Date(body.getTanggalbl()):null);
+					table.setPelayaran(body.getPelayaran());
+					table.setImportir(body.getImportir());
+					table.setEksportir(body.getEksportir());
+					table.setQq(body.getQq());
+					table.setVoyagenumber(body.getVoyagenumber());
+					table.setTanggalsppb_npe(body.getTanggalsppb_npe().longValue() > 0? new java.sql.Date(body.getTanggalsppb_npe()):null);
+					table.setDepo(body.getDepo());
+					table.setInvoiceno("");
+					table.setIsactive(body.isIsactive());
+					table.setIsdelete(false);
+					table.setCreatedby(iduser.toString());
+					table.setCreateddate(ts);
+					
+					idsave = repository.saveAndFlush(table).getId();
+				}catch (Exception e) {
+					// TODO: handle exception
+					runningNumberService.rollBackDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_WORKINGORDER);
+					ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
+					validations.add(msg);
+					e.printStackTrace();
+				}
+				if(idsave > 0) {
+					putDetail(body.getDetails(), idcompany, idbranch, idsave, "ADD");
+				}
 				
-				idsave = repository.saveAndFlush(table).getId();
-				
-				putDetail(body.getDetails(), idcompany, idbranch, idsave, "ADD");
 			}catch (Exception e) {
 				// TODO: handle exception
 				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
@@ -552,6 +563,9 @@ public class WorkOrderHandler implements WorkOrderService{
 			if(type.equals("PENERIMAANKASBANK")) {
 				Long idpenerimaankasbank = (Long) mapParam.get("idpenerimaankasbank");
 				sqlBuilder.append(" or data.id in (select idworkorder from detail_penerimaan_kas_bank as p where p.idpenerimaankasbank = "+idpenerimaankasbank+" ) ");
+			}else if(type.equals("INVOICE")) {
+				Long idcustomer = (Long) mapParam.get("idcustomer");
+				sqlBuilder.append(" and data.idcustomer = "+idcustomer+" ");
 			}
 		}
 		final Object[] queryParameters = new Object[] {idcompany,idbranch,status};
@@ -569,6 +583,32 @@ public class WorkOrderHandler implements WorkOrderService{
 			return list.get(0);
 		}
 		return null;
+	}
+
+	@Override
+	public HashMap<String, Object> checkWO(Long idcompany, Long idbranch, Long id) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> result = new HashMap<String, Object>();
+		Optional<WorkOrder> opt = repository.findById(id.longValue());
+		boolean isFound = true;
+		boolean isActive = true;
+		boolean isStatusAvailable = true;
+		if(opt.isPresent()) {
+			WorkOrder obj = opt.get();
+			if(obj.isIsdelete()) {
+				isFound = false;
+			}else if(!obj.isIsactive()) {
+				isActive = false;
+			}
+			
+			if(obj.getStatus().equals("CLOSE") || obj.getStatus().equals("CANCEL")) {
+				isStatusAvailable = false;
+			}
+		}
+		result.put("ISFOUND", isFound);
+		result.put("ISACTIVE", isActive);
+		result.put("ISSTATUSAVAILABLE", isStatusAvailable);
+		return result;
 	}
 
 }

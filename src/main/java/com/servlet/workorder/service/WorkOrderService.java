@@ -1,5 +1,6 @@
 package com.servlet.workorder.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -31,4 +32,5 @@ public interface WorkOrderService {
 	List<DetailWorkOrderData> getListContainerByIdWorkOrderForReport(Long idcompany,Long idbranch,Long idworkorder);
 	List<WorkOrderDropDownData> getListWOByStatus(Long idcompany,Long idbranch,String status,Object param);
 	WorkOrderData getByIdNotJoin(Long idcompany,Long idbranch,Long id);
+	HashMap<String, Object> checkWO(Long idcompany,Long idbranch,Long id);
 }

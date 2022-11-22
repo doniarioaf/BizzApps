@@ -84,4 +84,16 @@ public class ConstansCodeMessage {
 	public static final String VALIDASI_PENERIMAANKASBANK_WO_STATUS_NOT_OPEN = "validation.penerimaankasbank.wo.status.not.open";
 	public static final String VALIDASI_PENERIMAANKASBANK_WO_NOT_ACTIVE = "validation.penerimaankasbank.wo.not.active";
 	
+	public static final String VALIDASI_CUSTOMER_NOT_FOUND = "validation.customer.not.found";
+	public static final String VALIDASI_CUSTOMER_NOT_ACTIVE = "validation.customer.not.active";
+	public static final String VALIDASI_WO_NOT_FOUND = "validation.wo.not.found";
+	public static final String VALIDASI_WO_NOT_ACTIVE = "validation.wo.not.active";
+	public static final String VALIDASI_WO_NOT_AVAILABLE = "validation.wo.status.not.available";
+	public static final String VALIDASI_SJ_NOT_FOUND = "validation.sj.not.found";
+	public static final String VALIDASI_SJ_NOT_ACTIVE = "validation.sj.not.active";
+	public static final String VALIDASI_SJ_NOT_AVAILABLE = "validation.sj.status.not.available";
+	
+	public static final String VALIDASI_INVOICE_ALREADY_PAYMENT_EDIT = "validation.invoice.already.payment.edit";
+	public static final String VALIDASI_INVOICE_ALREADY_PAYMENT_DELETE = "validation.invoice.already.payment.delete";
+	
 }

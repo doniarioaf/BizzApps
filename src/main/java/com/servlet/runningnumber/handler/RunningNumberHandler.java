@@ -68,4 +68,30 @@ public class RunningNumberHandler implements RunningNumberService{
 		return valNumber;
 	}
 
+	@Override
+	public String rollBackDocNumber(Long idcompany, Long idbranch, String code) {
+		// TODO Auto-generated method stub
+		RunningNumberPK pk = new RunningNumberPK();
+		pk.setIdcompany(idcompany);
+		pk.setIdbranch(idbranch);
+		pk.setCode(code);
+		
+		Optional<RunningNumber> tableOpt = repository.findById(pk);
+		if(tableOpt.isPresent()) {
+			try {
+			RunningNumber table = tableOpt.get();
+			int runningNumber = table.getValue().intValue();
+			table.setValue(table.getValue().longValue() - 1);
+			repository.saveAndFlush(table);
+			return "RollBack";
+			}catch (Exception e) {
+				return "";
+			}
+			
+			
+			
+		}
+		return "";
+	}
+
 }

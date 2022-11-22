@@ -18,4 +18,5 @@ public interface PriceListService {
 	ReturnData updatePriceList(Long idcompany,Long idbranch,Long iduser,Long id,BodyPriceList body);
 	ReturnData deletePriceList(Long idcompany,Long idbranch,Long iduser,Long id);
 	List<PriceListData> getListSearch(Long idcompany,Long idbranch,BodySearchPriceList body);
+	List<PriceListData> getListPriceListByIdCustomer(Long idcompany,Long idbranch,Long idcustomer,Long idwarehouse,Long idinvoicetype,String jalur);
 }
