@@ -29,6 +29,7 @@ import com.servlet.upload.image.FileStorageService;
 import com.servlet.upload.image.InfoFile;
 import com.servlet.vendor.service.VendorService;
 import com.servlet.workorder.entity.BodyDetailWorkOrder;
+import com.servlet.workorder.entity.BodySearch;
 import com.servlet.workorder.entity.BodyWorkOrder;
 import com.servlet.workorder.entity.DetailWorkOrder;
 import com.servlet.workorder.entity.DetailWorkOrderData;
@@ -609,6 +610,26 @@ public class WorkOrderHandler implements WorkOrderService{
 		result.put("ISACTIVE", isActive);
 		result.put("ISSTATUSAVAILABLE", isStatusAvailable);
 		return result;
+	}
+
+	@Override
+	public List<WorkOrderData> getListSearchWO(Long idcompany, Long idbranch, BodySearch body) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetWorkOrderJoinCustomerData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		sqlBuilder.append(" and ");
+		if(body.getIdwo().intValue() == 0) {
+			sqlBuilder.append(" ( ");
+			sqlBuilder.append(" lower(data.nodocument) like '%"+body.getNodocument().toLowerCase()+"%' ");
+			sqlBuilder.append(" or lower(data.namacargo) like '%"+body.getNamacargo().toLowerCase()+"%' ");
+			sqlBuilder.append(" or data.idcustomer in (select id from m_customer_manggala as cust where lower(cust.customername) like '%"+body.getNamacustomer().toLowerCase()+"%' )  ");
+			sqlBuilder.append(" ) ");
+		}else {
+			sqlBuilder.append(" data.id = "+body.getIdwo()+" ");
+		}
+		
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderJoinCustomerData(), queryParameters);
 	}
 
 }

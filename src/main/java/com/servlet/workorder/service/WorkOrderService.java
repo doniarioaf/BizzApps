@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.servlet.shared.ReturnData;
+import com.servlet.workorder.entity.BodySearch;
 import com.servlet.workorder.entity.BodyWorkOrder;
 import com.servlet.workorder.entity.DetailWorkOrderData;
 import com.servlet.workorder.entity.ListDocumentWorkOrderData;
@@ -33,4 +34,5 @@ public interface WorkOrderService {
 	List<WorkOrderDropDownData> getListWOByStatus(Long idcompany,Long idbranch,String status,Object param);
 	WorkOrderData getByIdNotJoin(Long idcompany,Long idbranch,Long id);
 	HashMap<String, Object> checkWO(Long idcompany,Long idbranch,Long id);
+	List<WorkOrderData> getListSearchWO(Long idcompany,Long idbranch,BodySearch body);
 }

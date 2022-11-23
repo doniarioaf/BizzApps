@@ -1046,16 +1046,27 @@ public class ProcessHandler implements ProcessService{
 					val.setData(null);
 				}
 			}else if(codepermission.equals(ConstansPermission.CREATE_PENERIMAAN_KASBANK)) {
-				BodyPenerimaanKasBank param = (BodyPenerimaanKasBank) data;
-				ReturnData valReturn =  penerimaanKasBankService.saveData(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
-				if(valReturn.isSuccess()) {
-					val.setData(valReturn.getId());
-				}else {
-					val.setSuccess(valReturn.isSuccess());
-					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
-					val.setValidations(valReturn.getValidations());
-					val.setData(null);
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("CREATE")) {
+					BodyPenerimaanKasBank body = (BodyPenerimaanKasBank) param.get("body");
+					ReturnData valReturn =  penerimaanKasBankService.saveData(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), body);
+					if(valReturn.isSuccess()) {
+						val.setData(valReturn.getId());
+					}else {
+						val.setSuccess(valReturn.isSuccess());
+						val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+						val.setValidations(valReturn.getValidations());
+						val.setData(null);
+					}
+				}else if(type.equals("SEARCHINVOICE")) {
+					com.servlet.invoice.entity.BodySearch body = (com.servlet.invoice.entity.BodySearch) param.get("body");
+					val.setData(invoiceService.getListSearchInvoice(auth.getIdcompany(),auth.getIdbranch(), body));
+				}else if(type.equals("SEARCHWO")) {
+					com.servlet.workorder.entity.BodySearch body = (com.servlet.workorder.entity.BodySearch) param.get("body");
+					val.setData(workOrderService.getListSearchWO(auth.getIdcompany(),auth.getIdbranch(), body));
 				}
+				
 			}else if(codepermission.equals(ConstansPermission.EDIT_PENERIMAAN_KASBANK)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				long id  = (long) param.get("id");

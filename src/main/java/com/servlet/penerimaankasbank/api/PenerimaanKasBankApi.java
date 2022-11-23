@@ -21,6 +21,7 @@ import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConstansPermission;
 import com.servlet.shared.Response;
+import com.servlet.workorder.entity.BodySearch;
 
 @RestController
 @RequestMapping("/v1/penerimaankasbank")
@@ -63,9 +64,30 @@ public class PenerimaanKasBankApi {
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
+	@PostMapping("/searchwo")
+	ResponseEntity<Response> searchWO(@RequestBody @Validated BodySearch body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "SEARCHWO");
+		param.put("body", body);
+		Response response = securityService.response(ConstansPermission.CREATE_PENERIMAAN_KASBANK,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@PostMapping("/searchinvoice")
+	ResponseEntity<Response> searchInvoice(@RequestBody @Validated com.servlet.invoice.entity.BodySearch body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "SEARCHINVOICE");
+		param.put("body", body);
+		Response response = securityService.response(ConstansPermission.CREATE_PENERIMAAN_KASBANK,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
 	@PostMapping
 	ResponseEntity<Response> createObject(@RequestBody @Validated BodyPenerimaanKasBank body, @RequestHeader(ConstansKey.AUTH) String authorization) {
-		Response response = securityService.response(ConstansPermission.CREATE_PENERIMAAN_KASBANK,body,authorization);
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "CREATE");
+		param.put("body", body);
+		Response response = securityService.response(ConstansPermission.CREATE_PENERIMAAN_KASBANK,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	

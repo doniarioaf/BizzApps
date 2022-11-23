@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.servlet.customermanggala.service.CustomerManggalaService;
 import com.servlet.invoice.entity.BodyDetailInvoicePrice;
 import com.servlet.invoice.entity.BodyInvoice;
+import com.servlet.invoice.entity.BodySearch;
 import com.servlet.invoice.entity.DetailInvoicePrice;
 import com.servlet.invoice.entity.DetailInvoicePriceData;
 import com.servlet.invoice.entity.DetailInvoicePricePK;
@@ -21,6 +22,7 @@ import com.servlet.invoice.entity.InvoiceTemplate;
 import com.servlet.invoice.mapper.GetDetailInvoicePriceJoinTableData;
 import com.servlet.invoice.mapper.GetInvoiceData;
 import com.servlet.invoice.mapper.GetInvoiceDataJoinTable;
+import com.servlet.invoice.mapper.GetInvoiceDataJoinWorkOrder;
 import com.servlet.invoice.mapper.GetInvoiceJoinCustomerData;
 import com.servlet.invoice.repo.DetailInvoicePriceRepo;
 import com.servlet.invoice.repo.InvoiceRepo;
@@ -392,5 +394,25 @@ public class InvoiceHandler implements InvoiceService{
 			return val;
 		}
 		return null;
+	}
+
+	@Override
+	public List<InvoiceData> getListSearchInvoice(Long idcompany, Long idbranch, BodySearch body) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetInvoiceDataJoinWorkOrder().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		if(body.getType().equals("PENERIMAAN")) {
+			sqlBuilder.append(" and ");
+			sqlBuilder.append(" ( ");
+			sqlBuilder.append(" lower(data.nodocument) like '%"+body.getNodocument().toLowerCase()+"%' ");
+			sqlBuilder.append(" or data.idcustomer in (select id from m_customer_manggala as cust where lower(cust.customername) like '%"+body.getNamacustomer().toLowerCase()+"%' )  ");
+			sqlBuilder.append(" ) ");
+			if(body.getIdwo().intValue() > 0) {
+				sqlBuilder.append(" and data.idwo = "+body.getIdwo()+" ");
+			}
+			sqlBuilder.append(" and data.id not in (select dpk.idinvoice from detail_penerimaan_kas_bank as dpk where dpk.idcompany = "+idcompany+" and dpk.idbranch = "+idbranch+" ) ");
+		}
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceDataJoinWorkOrder(), queryParameters);
 	}
 }

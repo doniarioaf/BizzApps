@@ -3,6 +3,7 @@ package com.servlet.invoice.service;
 import java.util.List;
 
 import com.servlet.invoice.entity.BodyInvoice;
+import com.servlet.invoice.entity.BodySearch;
 import com.servlet.invoice.entity.InvoiceData;
 import com.servlet.invoice.entity.InvoiceTemplate;
 import com.servlet.shared.ReturnData;
@@ -16,4 +17,5 @@ public interface InvoiceService {
 	ReturnData deleteInvoice(Long idcompany,Long idbranch,Long iduser,Long id);
 	InvoiceTemplate getTemplate(Long idcompany,Long idbranch);
 	InvoiceData getByIdWithTemplate(Long idcompany,Long idbranch,Long id);
+	List<InvoiceData> getListSearchInvoice(Long idcompany,Long idbranch,BodySearch body);
 }
