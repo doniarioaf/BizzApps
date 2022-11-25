@@ -38,7 +38,7 @@ public class GetInvoiceData implements RowMapper<InvoiceData>{
 		final Date deliverydate = rs.getDate("deliverydate");
 		final Long idwo = rs.getLong("idwo");
 		final Long idsuratjalan = rs.getLong("idsuratjalan");
-		final Long idinvoicetype = rs.getLong("idinvoicetype");
+		final String idinvoicetype = rs.getString("idinvoicetype");
 		final Double totalinvoice = rs.getDouble("totalinvoice");
 		final boolean isactive = rs.getBoolean("isactive");
 		final Double diskonnota = rs.getDouble("diskonnota");

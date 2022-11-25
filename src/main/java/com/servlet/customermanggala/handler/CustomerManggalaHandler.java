@@ -523,6 +523,31 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 		result.put("ISACTIVE", isActive);
 		return result;
 	}
+
+	@Override
+	public CustomerManggalaData getDataCustomerForPrintInvoice(Long idcompany, Long idbranch, Long id) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataCustomerManggala().schema());
+		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+		List<CustomerManggalaData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataCustomerManggala(), queryParameters);
+		if(list != null && list.size() > 0) {
+			CustomerManggalaData val = list.get(0);
+			val.setDetailsInfoContact(getListDetailInfoContact(idcompany, idbranch, id));
+			Province prov = provinceService.getById(new Long(val.getProvinsi()).longValue());
+			City city = cityService.getById(new Long(val.getKota()).longValue());
+//			PostalCode postalcode = postalCodeService.getById(new Long(val.getKodepos()).longValue());
+			if(prov != null) {
+				val.setProvinsiname(prov.getProv_name());
+			}
+			if(city != null) {
+				val.setKotaname(city.getCity_name());
+			}
+			
+			return val;
+		}
+		return null;
+	}
 	
 	
 }

@@ -14,6 +14,7 @@ import com.servlet.parametermanggala.entity.BodyParameterManggala;
 import com.servlet.parametermanggala.entity.ParameterManggala;
 import com.servlet.parametermanggala.entity.ParameterManggalaData;
 import com.servlet.parametermanggala.entity.ParameterManggalaTemplate;
+import com.servlet.parametermanggala.entity.ValueParameter;
 import com.servlet.parametermanggala.mapper.GetParameterManggalaData;
 import com.servlet.parametermanggala.repo.ParameterManggalaRepo;
 import com.servlet.parametermanggala.service.ParameterManggalaService;
@@ -211,6 +212,38 @@ public class ParameterManggalaHandler implements ParameterManggalaService{
 	public ParameterManggalaTemplate getTemplate(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
 		return setTemplate(idcompany,idbranch);
+	}
+
+	@Override
+	public ValueParameter getValueByParamName(Long idcompany, Long idbranch, String paramName, String type) {
+		// TODO Auto-generated method stub
+		ParameterManggalaData val = getByParamName(idcompany, idbranch, paramName);
+		ValueParameter value = new ValueParameter();
+		if(val != null) {
+			if(type.equals("TEXT") && val.getParamtype().equals("TEXT")) {
+				value.setDateValue(null);
+				value.setDoubleValue(null);
+				value.setStrValue(val.getParamvalue());
+			}else if(type.equals("NUMBER") && val.getParamtype().equals("NUMBER")) {
+				value.setDateValue(null);
+				value.setDoubleValue(new Double(val.getParamvalue()));
+				value.setStrValue("");
+			}else if(type.equals("DATE") && val.getParamtype().equals("DATE")) {
+				value.setDateValue(val.getParamdate());
+				value.setDoubleValue(null);
+				value.setStrValue("");
+			}else {
+				value.setDateValue(null);
+				value.setDoubleValue(null);
+				value.setStrValue("");
+			}
+		}else {
+			value.setDateValue(null);
+			value.setDoubleValue(null);
+			value.setStrValue("");
+		}
+		
+		return value;
 	}
 
 }

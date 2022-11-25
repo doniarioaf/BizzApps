@@ -1668,8 +1668,11 @@ public class ProcessHandler implements ProcessService{
 					BodySearchInvoicePriceList body = (BodySearchInvoicePriceList) param.get("body");
 					long idcustomer = body.getIdcustomer() == null?0:body.getIdcustomer();
 					long idwarehouse = body.getIdwarehouse() == null?0:body.getIdwarehouse();
-					long idinvoicetype = body.getIdinvoicetype() == null?0:body.getIdinvoicetype();
+					String idinvoicetype = body.getIdinvoicetype();
 					val.setData(priceListService.getListPriceListByIdCustomer(auth.getIdcompany(), auth.getIdbranch(),idcustomer,idwarehouse,idinvoicetype,body.getJalur()));
+				}else if(type.equals("PRINTINVOICE")) {
+					long id = (long) param.get("id");
+					val.setData(invoiceService.printInvoice(auth.getIdcompany(), auth.getIdbranch(),id));
 				}
 				
 			}

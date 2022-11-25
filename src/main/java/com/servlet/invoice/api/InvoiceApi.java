@@ -57,6 +57,15 @@ public class InvoiceApi {
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
+	@GetMapping("/printinvoice/{id}")
+	ResponseEntity<Response> printInvoice(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "PRINTINVOICE");
+		param.put("id", id);
+		Response response = securityService.response(ConstansPermission.READ_INVOICE,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
 	@GetMapping("/searchwo/{idcustomer}")
 	ResponseEntity<Response> searchWorkOrderByCustomer(@PathVariable long idcustomer,@RequestHeader(ConstansKey.AUTH) String authorization) {
 		HashMap<String, Object> param = new HashMap<String, Object>();

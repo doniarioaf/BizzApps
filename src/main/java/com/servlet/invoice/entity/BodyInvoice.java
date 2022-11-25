@@ -9,7 +9,7 @@ public class BodyInvoice {
 	private Long deliverydate;
 	private Long idwo;
 	private Long idsuratjalan;
-	private Long idinvoicetype;
+	private String idinvoicetype;
 	private Double totalinvoice;
 	private Double diskonnota;
 	private boolean isactive;
@@ -56,10 +56,10 @@ public class BodyInvoice {
 	public void setIdsuratjalan(Long idsuratjalan) {
 		this.idsuratjalan = idsuratjalan;
 	}
-	public Long getIdinvoicetype() {
+	public String getIdinvoicetype() {
 		return idinvoicetype;
 	}
-	public void setIdinvoicetype(Long idinvoicetype) {
+	public void setIdinvoicetype(String idinvoicetype) {
 		this.idinvoicetype = idinvoicetype;
 	}
 	public Double getTotalinvoice() {

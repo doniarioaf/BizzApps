@@ -3,33 +3,29 @@ package com.servlet.invoice.entity;
 import java.sql.Date;
 import java.util.List;
 
+import com.servlet.customermanggala.entity.CustomerManggalaData;
 import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBankData;
 import com.servlet.penerimaankasbank.entity.PenerimaanKasBankData;
 
-public class InvoiceData {
+public class PrintInvoiceData {
 	private Long id;
 	private String nodocument;
 	private Date tanggal;
 	private Long idcustomer;
-	private String namaCustomer;
 	private String refno;
 	private String deliveredto;
-	private Date deliverydate;
-	private Long idwo;
-	private String noocumentwo;
-	private String jalurwo;
-	private Long idsuratjalan;
-	private String noocumentsuratjalan;
-	private Long idwarehousesuratjalan;
 	private String idinvoicetype;
-	private String namainvoicetype;
+	private Date deliverydate;
 	private Double totalinvoice;
 	private Double diskonnota;
-	private boolean isactive;
-	private InvoiceTemplate template;
+	private CustomerManggalaData customer;
 	private List<DetailInvoicePriceData> detailsprice;
 	private List<PenerimaanKasBankData> listpenerimaan;
 	private List<DetailPenerimaanKasBankData> detailspenerimaan;
+	private String keteranganinvoice1;
+	private String keteranganinvoice2;
+	private String keteranganinvoice3;
+	private String namapenagih;
 	public Long getId() {
 		return id;
 	}
@@ -54,12 +50,6 @@ public class InvoiceData {
 	public void setIdcustomer(Long idcustomer) {
 		this.idcustomer = idcustomer;
 	}
-	public String getNamaCustomer() {
-		return namaCustomer;
-	}
-	public void setNamaCustomer(String namaCustomer) {
-		this.namaCustomer = namaCustomer;
-	}
 	public String getRefno() {
 		return refno;
 	}
@@ -78,71 +68,29 @@ public class InvoiceData {
 	public void setDeliverydate(Date deliverydate) {
 		this.deliverydate = deliverydate;
 	}
-	public Long getIdwo() {
-		return idwo;
-	}
-	public void setIdwo(Long idwo) {
-		this.idwo = idwo;
-	}
-	public String getNoocumentwo() {
-		return noocumentwo;
-	}
-	public void setNoocumentwo(String noocumentwo) {
-		this.noocumentwo = noocumentwo;
-	}
-	public Long getIdsuratjalan() {
-		return idsuratjalan;
-	}
-	public void setIdsuratjalan(Long idsuratjalan) {
-		this.idsuratjalan = idsuratjalan;
-	}
-	public String getNoocumentsuratjalan() {
-		return noocumentsuratjalan;
-	}
-	public void setNoocumentsuratjalan(String noocumentsuratjalan) {
-		this.noocumentsuratjalan = noocumentsuratjalan;
-	}
-	public String getIdinvoicetype() {
-		return idinvoicetype;
-	}
-	public void setIdinvoicetype(String idinvoicetype) {
-		this.idinvoicetype = idinvoicetype;
-	}
-	public String getNamainvoicetype() {
-		return namainvoicetype;
-	}
-	public void setNamainvoicetype(String namainvoicetype) {
-		this.namainvoicetype = namainvoicetype;
-	}
 	public Double getTotalinvoice() {
 		return totalinvoice;
 	}
 	public void setTotalinvoice(Double totalinvoice) {
 		this.totalinvoice = totalinvoice;
 	}
-	public boolean isIsactive() {
-		return isactive;
+	public Double getDiskonnota() {
+		return diskonnota;
 	}
-	public void setIsactive(boolean isactive) {
-		this.isactive = isactive;
+	public void setDiskonnota(Double diskonnota) {
+		this.diskonnota = diskonnota;
 	}
-	public InvoiceTemplate getTemplate() {
-		return template;
+	public CustomerManggalaData getCustomer() {
+		return customer;
 	}
-	public void setTemplate(InvoiceTemplate template) {
-		this.template = template;
+	public void setCustomer(CustomerManggalaData customer) {
+		this.customer = customer;
 	}
 	public List<DetailInvoicePriceData> getDetailsprice() {
 		return detailsprice;
 	}
 	public void setDetailsprice(List<DetailInvoicePriceData> detailsprice) {
 		this.detailsprice = detailsprice;
-	}
-	public Double getDiskonnota() {
-		return diskonnota;
-	}
-	public void setDiskonnota(Double diskonnota) {
-		this.diskonnota = diskonnota;
 	}
 	public List<PenerimaanKasBankData> getListpenerimaan() {
 		return listpenerimaan;
@@ -156,16 +104,35 @@ public class InvoiceData {
 	public void setDetailspenerimaan(List<DetailPenerimaanKasBankData> detailspenerimaan) {
 		this.detailspenerimaan = detailspenerimaan;
 	}
-	public String getJalurwo() {
-		return jalurwo;
+	public String getKeteranganinvoice1() {
+		return keteranganinvoice1;
 	}
-	public void setJalurwo(String jalurwo) {
-		this.jalurwo = jalurwo;
+	public void setKeteranganinvoice1(String keteranganinvoice1) {
+		this.keteranganinvoice1 = keteranganinvoice1;
 	}
-	public Long getIdwarehousesuratjalan() {
-		return idwarehousesuratjalan;
+	public String getKeteranganinvoice2() {
+		return keteranganinvoice2;
 	}
-	public void setIdwarehousesuratjalan(Long idwarehousesuratjalan) {
-		this.idwarehousesuratjalan = idwarehousesuratjalan;
+	public void setKeteranganinvoice2(String keteranganinvoice2) {
+		this.keteranganinvoice2 = keteranganinvoice2;
 	}
+	public String getKeteranganinvoice3() {
+		return keteranganinvoice3;
+	}
+	public void setKeteranganinvoice3(String keteranganinvoice3) {
+		this.keteranganinvoice3 = keteranganinvoice3;
+	}
+	public String getNamapenagih() {
+		return namapenagih;
+	}
+	public void setNamapenagih(String namapenagih) {
+		this.namapenagih = namapenagih;
+	}
+	public String getIdinvoicetype() {
+		return idinvoicetype;
+	}
+	public void setIdinvoicetype(String idinvoicetype) {
+		this.idinvoicetype = idinvoicetype;
+	}
+	
 }

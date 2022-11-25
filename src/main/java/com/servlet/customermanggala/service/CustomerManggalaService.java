@@ -28,4 +28,5 @@ public interface CustomerManggalaService {
 	List<CustomerManggalaData> getListSearchCustomer(Long idcompany,Long idbranch,BodySearch body);
 	CustomerManggalaData getDataCustomerNotFilter(Long idcompany,Long idbranch,Long id);
 	HashMap<String, Object> checkCustomerById(Long idcompany,Long idbranch,Long id);
+	CustomerManggalaData getDataCustomerForPrintInvoice(Long idcompany,Long idbranch,Long id);
 }

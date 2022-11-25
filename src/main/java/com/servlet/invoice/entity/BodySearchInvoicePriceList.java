@@ -3,7 +3,7 @@ package com.servlet.invoice.entity;
 public class BodySearchInvoicePriceList {
 	private Long idcustomer;
 	private Long idwarehouse;
-	private Long idinvoicetype;
+	private String idinvoicetype;
 	private String jalur;
 	public Long getIdcustomer() {
 		return idcustomer;
@@ -17,10 +17,10 @@ public class BodySearchInvoicePriceList {
 	public void setIdwarehouse(Long idwarehouse) {
 		this.idwarehouse = idwarehouse;
 	}
-	public Long getIdinvoicetype() {
+	public String getIdinvoicetype() {
 		return idinvoicetype;
 	}
-	public void setIdinvoicetype(Long idinvoicetype) {
+	public void setIdinvoicetype(String idinvoicetype) {
 		this.idinvoicetype = idinvoicetype;
 	}
 	public String getJalur() {

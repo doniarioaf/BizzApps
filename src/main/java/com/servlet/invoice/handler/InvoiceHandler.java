@@ -19,15 +19,19 @@ import com.servlet.invoice.entity.DetailInvoicePricePK;
 import com.servlet.invoice.entity.Invoice;
 import com.servlet.invoice.entity.InvoiceData;
 import com.servlet.invoice.entity.InvoiceTemplate;
+import com.servlet.invoice.entity.PrintInvoiceData;
 import com.servlet.invoice.mapper.GetDetailInvoicePriceJoinTableData;
 import com.servlet.invoice.mapper.GetInvoiceData;
 import com.servlet.invoice.mapper.GetInvoiceDataJoinTable;
 import com.servlet.invoice.mapper.GetInvoiceDataJoinWorkOrder;
 import com.servlet.invoice.mapper.GetInvoiceJoinCustomerData;
+import com.servlet.invoice.mapper.GetPrintInvoiceData;
 import com.servlet.invoice.repo.DetailInvoicePriceRepo;
 import com.servlet.invoice.repo.InvoiceRepo;
 import com.servlet.invoice.service.InvoiceService;
-import com.servlet.invoicetype.service.InvoiceTypeService;
+//import com.servlet.invoicetype.service.InvoiceTypeService;
+import com.servlet.parameter.service.ParameterService;
+import com.servlet.parametermanggala.service.ParameterManggalaService;
 import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBank;
 import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBankData;
 import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBankPK;
@@ -55,14 +59,18 @@ public class InvoiceHandler implements InvoiceService{
 	private SuratJalanService suratJalanService;
 	@Autowired
 	private RunningNumberService runningNumberService;
-	@Autowired
-	private InvoiceTypeService invoiceTypeService;
+//	@Autowired
+//	private InvoiceTypeService invoiceTypeService;
 	@Autowired
 	private DetailInvoicePriceRepo detailInvoicePriceRepo;
 	@Autowired
 	private PenerimaanKasBankService penerimaanKasBankService;
 	@Autowired
 	private DetailPenerimaanKasBankRepo detailPenerimaanKasBankRepo;
+	@Autowired
+	private ParameterService parameterService;
+	@Autowired
+	private ParameterManggalaService parameterManggalaService;
 	
 	@Override
 	public List<InvoiceData> getListAll(Long idcompany, Long idbranch) {
@@ -307,7 +315,7 @@ public class InvoiceHandler implements InvoiceService{
 	
 	private InvoiceTemplate setTemplate(long idcompany, long idbranch) {
 		InvoiceTemplate data = new InvoiceTemplate();
-		data.setInvoiceTypeOptions(invoiceTypeService.getListActiveBankAccount(idcompany, idbranch));
+		data.setInvoiceTypeOptions(parameterService.getListParameterByGrup("INVOICETYPE"));
 		return data;
 	}
 	
@@ -414,5 +422,28 @@ public class InvoiceHandler implements InvoiceService{
 		}
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceDataJoinWorkOrder(), queryParameters);
+	}
+
+	@Override
+	public PrintInvoiceData printInvoice(Long idcompany, Long idbranch, Long id) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPrintInvoiceData().schema());
+		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+		List<PrintInvoiceData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetPrintInvoiceData(), queryParameters);
+		if(list != null && list.size() > 0) {
+			PrintInvoiceData val = list.get(0);
+			val.setCustomer(customerManggalaService.getDataCustomerForPrintInvoice(idcompany, idbranch, val.getIdcustomer()));
+			val.setDetailsprice(getDetailsInvoicePrice(idcompany, idbranch, id));
+			val.setListpenerimaan(penerimaanKasBankService.getListByDetailIdInvoice(idcompany, idbranch, id));
+			val.setDetailspenerimaan(penerimaanKasBankService.getListDetailByIdInvoice(idcompany, idbranch, id));
+			val.setKeteranganinvoice1(parameterManggalaService.getValueByParamName(idcompany,idbranch,"KETERANGANINVOICE1","TEXT").getStrValue());
+			val.setKeteranganinvoice2(parameterManggalaService.getValueByParamName(idcompany,idbranch,"KETERANGANINVOICE2","TEXT").getStrValue());
+			val.setKeteranganinvoice3(parameterManggalaService.getValueByParamName(idcompany,idbranch,"KETERANGANINVOICE3","TEXT").getStrValue());
+			val.setNamapenagih(parameterManggalaService.getValueByParamName(idcompany,idbranch,"NAMAPENAGIH","TEXT").getStrValue());
+			
+			return val;
+		}
+		return null;
 	}
 }

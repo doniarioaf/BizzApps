@@ -18,13 +18,13 @@ public class GetInvoiceDataJoinTable implements RowMapper<InvoiceData>{
 		sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.tanggal as tanggal, data.idcustomer as idcustomer, data.refno as refno, ");
 		sqlBuilder.append("data.deliveredto as deliveredto, data.deliverydate as deliverydate, data.idwo as idwo, data.idsuratjalan as idsuratjalan, ");
 		sqlBuilder.append("data.idinvoicetype as idinvoicetype, data.totalinvoice as totalinvoice, data.isactive as isactive,data.diskonnota as diskonnota, ");
-		sqlBuilder.append("cust.customername as customername, wo.nodocument as nodocumentwo, sj.nodocument as nodocumentsj, invtype.nama as invtypename, ");
+		sqlBuilder.append("cust.customername as customername, wo.nodocument as nodocumentwo, sj.nodocument as nodocumentsj, invtype.codename as invtypename, ");
 		sqlBuilder.append("wo.jalur as jalurwo, sj.idwarehouse as idwarehousesj ");
 		sqlBuilder.append("from m_invoice as data ");
 		sqlBuilder.append("left join m_customer_manggala as cust on cust.id = data.idcustomer ");
 		sqlBuilder.append("left join m_workorder as wo on wo.id = data.idwo ");
 		sqlBuilder.append("left join t_surat_jalan as sj on sj.id = data.idsuratjalan ");
-		sqlBuilder.append("left join m_invoice_type as invtype on invtype.id = data.idinvoicetype ");
+		sqlBuilder.append("left join m_parameter as invtype on invtype.code = data.idinvoicetype and invtype.grup = 'INVOICETYPE' ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}
@@ -48,7 +48,7 @@ public class GetInvoiceDataJoinTable implements RowMapper<InvoiceData>{
 		final String nodocumentwo = rs.getString("nodocumentwo");
 		final Long idsuratjalan = rs.getLong("idsuratjalan");
 		final String nodocumentsj = rs.getString("nodocumentsj");
-		final Long idinvoicetype = rs.getLong("idinvoicetype");
+		final String idinvoicetype = rs.getString("idinvoicetype");
 		final String invtypename = rs.getString("invtypename");
 		final Double totalinvoice = rs.getDouble("totalinvoice");
 		final boolean isactive = rs.getBoolean("isactive");

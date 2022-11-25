@@ -209,7 +209,8 @@ public class PriceListHandler implements PriceListService{
 	private PriceListTemplate setTemplate(Long idcompany, Long idbranch, Long idcustomer) {
 		PriceListTemplate data = new PriceListTemplate();
 		data.setCustomerOptions(customerManggalaService.getListCustomerForPriceList(idcompany, idbranch,idcustomer));
-		data.setBiayaJasaOptions(invoiceTypeService.getListAllByInvoiceType(idcompany, idbranch, "JASA"));
+//		data.setBiayaJasaOptions(invoiceTypeService.getListAllByInvoiceType(idcompany, idbranch, "JASA"));
+		data.setBiayaJasaOptions(invoiceTypeService.getListActiveBankAccount(idcompany, idbranch));
 		
 		return data;
 	}
@@ -296,26 +297,28 @@ public class PriceListHandler implements PriceListService{
 	}
 
 	@Override
-	public List<PriceListData> getListPriceListByIdCustomer(Long idcompany, Long idbranch, Long idcustomer,Long idwarehouse,Long idinvoicetype,String jalur) {
+	public List<PriceListData> getListPriceListByIdCustomer(Long idcompany, Long idbranch, Long idcustomer,Long idwarehouse,String idinvoicetype,String jalur) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPriceListData().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.idcustomer = ? and data.isactive = true  and data.isdelete = false ");
 		if(!jalur.equals("") && idwarehouse.intValue() > 0) {
 			if(jalur.equals("HIJAU")) {
-				sqlBuilder.append(" and data.id in (select detail.idpricelist from detail_price_list as detail where detail.jalur = '"+jalur+"' and detail.idwarehouse = "+idwarehouse+" and detail.idinvoicetype = "+idinvoicetype+" ) ");
+				sqlBuilder.append(" and data.id in (select detail.idpricelist from detail_price_list as detail where detail.jalur = '"+jalur+"' and detail.idwarehouse = "+idwarehouse+" and detail.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ) ");
 			}else {
-				sqlBuilder.append(" and data.id in (select detail.idpricelist from detail_price_list as detail where detail.idwarehouse = "+idwarehouse+" and detail.idinvoicetype = "+idinvoicetype+" ) ");
+				sqlBuilder.append(" and data.id in (select detail.idpricelist from detail_price_list as detail where detail.idwarehouse = "+idwarehouse+" and detail.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ) ");
 			}
 			
 		}else if(!jalur.equals("")) {
 			if(jalur.equals("HIJAU")) {
-				sqlBuilder.append(" and data.id in (select detail.idpricelist from detail_price_list as detail where detail.jalur = '"+jalur+"' and detail.idinvoicetype = "+idinvoicetype+" ) ");
+				sqlBuilder.append(" and data.id in (select detail.idpricelist from detail_price_list as detail where detail.jalur = '"+jalur+"' and detail.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ) ");
 			}else{
-				sqlBuilder.append(" and data.id in (select detail.idpricelist from detail_price_list as detail where detail.idinvoicetype = "+idinvoicetype+" ) ");
+				sqlBuilder.append(" and data.id in (select detail.idpricelist from detail_price_list as detail where detail.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ) ");
 			}
 			
 		}else if(idwarehouse.intValue() > 0) {
-			sqlBuilder.append(" and data.id in (select detail.idpricelist from detail_price_list as detail where detail.idwarehouse = "+idwarehouse+" and detail.idinvoicetype = "+idinvoicetype+" ) ");
+			sqlBuilder.append(" and data.id in (select detail.idpricelist from detail_price_list as detail where detail.idwarehouse = "+idwarehouse+" and detail.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ) ");
+		}else {
+			sqlBuilder.append(" and data.id in (select detail.idpricelist from detail_price_list as detail where detail.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ) ");
 		}
 		
 		final Object[] queryParameters = new Object[] {idcompany,idbranch,idcustomer};
@@ -331,28 +334,29 @@ public class PriceListHandler implements PriceListService{
 		return listVal;
 	}
 	
-	private List<DetailPriceListData> getDetailsByWarehouse(Long idcompany, Long idbranch,Long idpricelist,Long idwarehouse,Long idinvoicetype,String jalur) {
+	private List<DetailPriceListData> getDetailsByWarehouse(Long idcompany, Long idbranch,Long idpricelist,Long idwarehouse,String idinvoicetype,String jalur) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailPriceListDataJoinTable().schema());
 		sqlBuilder.append(" where data.idpricelist = ? and data.idcompany = ? and data.idbranch = ? ");
 		if(!jalur.equals("") && idwarehouse.intValue() > 0) {
 			if(jalur.equals("HIJAU")) {
-				sqlBuilder.append(" and data.idwarehouse = "+idwarehouse+" and data.jalur = '"+jalur+"' and data.idinvoicetype = "+idinvoicetype+" ");
+				sqlBuilder.append(" and data.idwarehouse = "+idwarehouse+" and data.jalur = '"+jalur+"' and data.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ");
 			}else {
-				sqlBuilder.append(" and data.idwarehouse = "+idwarehouse+" and data.idinvoicetype = "+idinvoicetype+" ");
+				sqlBuilder.append(" and data.idwarehouse = "+idwarehouse+" and data.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ");
 			}
 			
 		}else if(!jalur.equals("")) {
 			if(jalur.equals("HIJAU")) {
-				sqlBuilder.append(" and data.jalur = '"+jalur+"' and data.idinvoicetype = "+idinvoicetype+" ");
+				sqlBuilder.append(" and data.jalur = '"+jalur+"' and data.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ");
 			}else {
-				sqlBuilder.append(" and data.idinvoicetype = "+idinvoicetype+" ");
+				sqlBuilder.append(" and data.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ");
 			}
 			
 		}else if(idwarehouse.intValue() > 0) {
-			sqlBuilder.append(" and data.idwarehouse = "+idwarehouse+" and data.idinvoicetype = "+idinvoicetype+" ");
+			sqlBuilder.append(" and data.idwarehouse = "+idwarehouse+" and data.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ");
+		}else {
+			sqlBuilder.append(" and data.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ");
 		}
-		
 		final Object[] queryParameters = new Object[] {idpricelist,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPriceListDataJoinTable(), queryParameters);
 	}

@@ -6,6 +6,7 @@ import com.servlet.invoice.entity.BodyInvoice;
 import com.servlet.invoice.entity.BodySearch;
 import com.servlet.invoice.entity.InvoiceData;
 import com.servlet.invoice.entity.InvoiceTemplate;
+import com.servlet.invoice.entity.PrintInvoiceData;
 import com.servlet.shared.ReturnData;
 
 public interface InvoiceService {
@@ -18,4 +19,5 @@ public interface InvoiceService {
 	InvoiceTemplate getTemplate(Long idcompany,Long idbranch);
 	InvoiceData getByIdWithTemplate(Long idcompany,Long idbranch,Long id);
 	List<InvoiceData> getListSearchInvoice(Long idcompany,Long idbranch,BodySearch body);
+	PrintInvoiceData printInvoice(Long idcompany,Long idbranch,Long id);
 }
