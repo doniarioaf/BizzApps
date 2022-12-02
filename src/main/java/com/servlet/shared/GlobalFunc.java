@@ -7,6 +7,14 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class GlobalFunc {
+	public static String getDateLongToString(Long date,String format) throws ParseException {
+		//dd-MMM-yyyy
+		Timestamp currentts = new Timestamp(date);
+        SimpleDateFormat formatter = new SimpleDateFormat(format);
+        String s = new SimpleDateFormat(format).format(currentts);
+		return s;
+	}
+	
 	public static Timestamp setFormatDate(Timestamp ts,String format) throws ParseException {
 		//yyyy-MM-dd
 		SimpleDateFormat formatter = new SimpleDateFormat(format);

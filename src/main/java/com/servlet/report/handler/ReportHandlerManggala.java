@@ -2,6 +2,7 @@ package com.servlet.report.handler;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +22,7 @@ import com.servlet.report.entity.Manggala_BodyReportBongkarMuatDanDepo;
 import com.servlet.report.entity.ReportWorkBookExcel;
 import com.servlet.report.service.ReportServiceManggala;
 import com.servlet.shared.ConstantReportName;
+import com.servlet.shared.GlobalFunc;
 import com.servlet.workorder.entity.DetailWorkOrderData;
 import com.servlet.workorder.entity.ParamWoReport;
 import com.servlet.workorder.entity.WorkOrderData;
@@ -56,7 +58,28 @@ public class ReportHandlerManggala implements ReportServiceManggala{
         font.setFontHeight(12);
         style.setFont(font);
         
-        int rowcount = 1;
+        String dateFrom = "";
+		try {
+			dateFrom = GlobalFunc.getDateLongToString(body.getFromDate(), "dd-MMM-yyyy");
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        String dateThru = "";
+		try {
+			dateThru = GlobalFunc.getDateLongToString(body.getToDate(), "dd-MMM-yyyy");
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        Row rowTitle = sheet.createRow(1);
+        createCell(rowTitle, 0, "Laporan Bongkar Muat Dan Depo", style,sheet);
+        Row rowPeriode = sheet.createRow(2);
+        createCell(rowPeriode, 0, "Periode", style,sheet);
+        createCell(rowPeriode, 1, dateFrom+" s/d "+dateThru, style,sheet);
+        
+        int rowcount = 4;
         Row row = sheet.createRow(rowcount);
         
         createCell(row, 0, "No. WO", style,sheet);
@@ -87,9 +110,9 @@ public class ReportHandlerManggala implements ReportServiceManggala{
         
 		HashMap<String, String> kodeposMappingKecamatan = new HashMap<String, String>();
 		if(listWO != null && listWO.size() > 0) {
-			rowcount = 2;
+			rowcount = 5;
 			font.setBold(false);
-			font.setFontHeight(10);
+			font.setFontHeight(9);
 			
 //			CellStyle styleData = workbook.createCellStyle();
 //	        XSSFFont fontData = workbook.createFont();
@@ -125,7 +148,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, checkNull(wodata.getImportirname(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(wodata.getJeniswoCodeName(),wodata.getJeniswo()), style,sheet);
 						createCell(rowData, columnCount++, checkNull(wodata.getPortasalname(),""), style,sheet);
-						createCell(rowData, columnCount++, checkNull(wodata.getPorttujuan(),""), style,sheet);
+						createCell(rowData, columnCount++, checkNull(wodata.getPorttujuanname(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNullDate(wodata.getEtd(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNullDate(wodata.getEta(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(wodata.getVoyagenumber(),""), style,sheet);
