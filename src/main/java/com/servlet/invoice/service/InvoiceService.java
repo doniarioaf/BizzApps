@@ -20,4 +20,5 @@ public interface InvoiceService {
 	InvoiceData getByIdWithTemplate(Long idcompany,Long idbranch,Long id);
 	List<InvoiceData> getListSearchInvoice(Long idcompany,Long idbranch,BodySearch body);
 	PrintInvoiceData printInvoice(Long idcompany,Long idbranch,Long id);
+	List<InvoiceData> getListInvoiceByIdWo(Long idcompany,Long idbranch,Long idwo);
 }

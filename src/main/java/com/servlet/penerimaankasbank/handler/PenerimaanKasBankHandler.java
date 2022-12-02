@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import com.servlet.bankaccount.service.BankAccountService;
 import com.servlet.coa.service.CoaService;
+import com.servlet.invoice.entity.InvoiceData;
+import com.servlet.invoice.service.InvoiceService;
 import com.servlet.penerimaankasbank.entity.BodyDetailPenerimaanKasBank;
 import com.servlet.penerimaankasbank.entity.BodyPenerimaanKasBank;
 import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBank;
@@ -56,6 +58,8 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 	private BankAccountService bankAccountService;
 	@Autowired
 	private WorkOrderRepo workOrderRepo;
+	@Autowired
+	private InvoiceService invoiceService;
 	
 	@Override
 	public List<PenerimaanKasBankData> getListAll(Long idcompany, Long idbranch) {
@@ -286,6 +290,7 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 		if(action.equals("EDIT")) {
 			detailPenerimaanKasBankRepo.deleteAllDetail(idsave, idcompany, idbranch);
 		}
+		List<Long> listIdWo = new ArrayList<Long>();
 		if(details != null) {
 			if(details.length > 0) {
 				long count = 1;
@@ -309,8 +314,44 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 					
 					detailPenerimaanKasBankRepo.saveAndFlush(detailPenerimaanKasBank);
 					count++;
+					
+					if(detail.getIdworkorder() != null) {
+						if(detail.getIdworkorder().longValue() > 0) {
+							listIdWo.add(detail.getIdworkorder());
+						}
+					}
 				}
 			}
+			
+			if(listIdWo.size() > 0) {
+				for(Long idwo : listIdWo) {
+					double amountPenerimaan = 0.0;
+					double amountInvoice = 0.0;
+					
+					List<InvoiceData> listInv = invoiceService.getListInvoiceByIdWo(idcompany, idbranch, idwo);
+					if(listInv != null && listInv.size() > 0) {
+						for(InvoiceData invData : listInv) {
+							amountInvoice += invData.getTotalinvoice().doubleValue();
+						}
+					}
+					
+					List<DetailPenerimaanKasBankData> listPenerimaan = getDetailsByIdWo(idcompany, idbranch, idwo);
+					if(listPenerimaan != null && listPenerimaan.size() > 0) {
+						for(DetailPenerimaanKasBankData data : listPenerimaan) {
+							amountPenerimaan += data.getAmount().doubleValue();
+						}
+					}
+					
+					if(amountPenerimaan >= amountInvoice) {
+						workOrderService.changeStatusWO(idcompany, idbranch, idwo, "CLOSE");
+					}else{
+						workOrderService.changeStatusWO(idcompany, idbranch, idwo, "OPEN");
+					}
+					
+				}
+			}
+			
+			
 		}
 		return "";
 	}
@@ -405,6 +446,14 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailPenerimaanKasBankData().schema());
 		sqlBuilder.append(" where data.idworkorder = ? and data.idcompany = ? and data.idbranch = ? and (data.idinvoice isnull or data.idinvoice = 0) order by data.amount asc");
 		final Object[] queryParameters = new Object[] {idWo,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPenerimaanKasBankData(), queryParameters);
+	}
+	
+	private List<DetailPenerimaanKasBankData> getDetailsByIdWo(Long idcompany, Long idbranch,Long idworkorder) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailPenerimaanKasBankData().schema());
+		sqlBuilder.append(" where data.idworkorder = ? and data.idcompany = ? and data.idbranch = ? ");
+		final Object[] queryParameters = new Object[] {idworkorder,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPenerimaanKasBankData(), queryParameters);
 	}
 

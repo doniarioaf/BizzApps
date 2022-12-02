@@ -446,4 +446,13 @@ public class InvoiceHandler implements InvoiceService{
 		}
 		return null;
 	}
+
+	@Override
+	public List<InvoiceData> getListInvoiceByIdWo(Long idcompany, Long idbranch, Long idwo) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetInvoiceData().schema());
+		sqlBuilder.append(" where data.idwo = ? and data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {idwo,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceData(), queryParameters);
+	}
 }

@@ -35,4 +35,5 @@ public interface WorkOrderService {
 	WorkOrderData getByIdNotJoin(Long idcompany,Long idbranch,Long id);
 	HashMap<String, Object> checkWO(Long idcompany,Long idbranch,Long id);
 	List<WorkOrderData> getListSearchWO(Long idcompany,Long idbranch,BodySearch body);
+	ReturnData changeStatusWO(Long idcompany,Long idbranch,Long id,String Status);
 }

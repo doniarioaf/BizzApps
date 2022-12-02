@@ -632,4 +632,34 @@ public class WorkOrderHandler implements WorkOrderService{
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderJoinCustomerData(), queryParameters);
 	}
 
+	@Override
+	public ReturnData changeStatusWO(Long idcompany, Long idbranch, Long id,String status) {
+		// TODO Auto-generated method stub
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
+		long idsave = 0;
+		WorkOrderData value = checkById(idcompany,idbranch,id);
+		
+		if(validations.size() == 0) {
+			try {
+				if(value != null) {
+					Timestamp ts = new Timestamp(new Date().getTime());
+					WorkOrder table = repository.getById(id);
+					table.setStatus(status);
+					idsave = repository.saveAndFlush(table).getId();					
+				}
+			}catch (Exception e) {
+				// TODO: handle exception
+				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
+				validations.add(msg);
+				e.printStackTrace();
+			}
+			
+		}
+		ReturnData data = new ReturnData();
+		data.setId(idsave);
+		data.setSuccess(validations.size() > 0?false:true);
+		data.setValidations(validations);
+		return data;
+	}
+
 }
