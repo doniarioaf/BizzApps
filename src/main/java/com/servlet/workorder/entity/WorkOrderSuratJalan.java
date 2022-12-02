@@ -11,6 +11,7 @@ public class WorkOrderSuratJalan {
 	private String lembur;
 	private String namaSupir;
 	private String kepemilikanmobil;
+	private String noPolisi;
 	public Long getIdSuratJalan() {
 		return idSuratJalan;
 	}
@@ -52,6 +53,12 @@ public class WorkOrderSuratJalan {
 	}
 	public void setKepemilikanmobil(String kepemilikanmobil) {
 		this.kepemilikanmobil = kepemilikanmobil;
+	}
+	public String getNoPolisi() {
+		return noPolisi;
+	}
+	public void setNoPolisi(String noPolisi) {
+		this.noPolisi = noPolisi;
 	}
 	
 }

@@ -2,6 +2,7 @@ package com.servlet.suratjalan.entity;
 
 import java.util.List;
 
+import com.servlet.asset.entity.AssetData;
 import com.servlet.employeemanggala.entity.EmployeManggalaDataList;
 import com.servlet.parameter.entity.ParameterData;
 import com.servlet.vendor.entity.VendorListData;
@@ -12,6 +13,13 @@ public class PenandaanSuratJalanTemplate {
 	private List<ParameterData> chooseYesNoOptions;
 	private List<EmployeManggalaDataList> supirOptions;
 	private List<VendorListData> vendorOptions ;
+	private List<AssetData> assetOptions ;
+	public List<AssetData> getAssetOptions() {
+		return assetOptions;
+	}
+	public void setAssetOptions(List<AssetData> assetOptions) {
+		this.assetOptions = assetOptions;
+	}
 	public List<ParameterData> getStatusSJOptions() {
 		return statusSJOptions;
 	}

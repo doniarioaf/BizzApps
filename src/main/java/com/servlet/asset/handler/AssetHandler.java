@@ -639,13 +639,11 @@ public class AssetHandler implements AssetService{
 	}
 
 	@Override
-	public List<AssetData> getListAssetForPenandaanSuratJalan(Long idcompany, Long idbranch,Long idsuratjalan) {
+	public List<AssetData> getListAssetForPenandaanSuratJalan(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetAssetData().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false and data.isactive = true ");
 		sqlBuilder.append(" and data.assettype = 'KEPALA' ");
-		sqlBuilder.append(" and ( data.id not in (select sj.idasset from t_surat_jalan as sj where sj.idcompany ="+idcompany+" and sj.idbranch="+idbranch+" and sj.status in ('OPEN_SJ'))  )");
-		
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetAssetData(), queryParameters);
 	}

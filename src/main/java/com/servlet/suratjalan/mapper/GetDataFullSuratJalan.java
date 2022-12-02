@@ -48,6 +48,7 @@ public class GetDataFullSuratJalan implements RowMapper<SuratJalanData>{
 	public SuratJalanData mapRow(ResultSet rs, int rowNum) throws SQLException {
 		// TODO Auto-generated method stub
 		final Long id = rs.getLong("id");
+		final Long idasset = rs.getLong("idasset");
 		final String nodocument = rs.getString("nodocument");
 		final Timestamp tanggal = rs.getTimestamp("tanggal");
 		final Long idworkorder = rs.getLong("idworkorder");
@@ -82,6 +83,7 @@ public class GetDataFullSuratJalan implements RowMapper<SuratJalanData>{
 		
 		SuratJalanData data = new SuratJalanData();
 		data.setId(id);
+		data.setIdasset(idasset);
 		data.setNodocument(nodocument);
 		data.setTanggal(tanggal);
 		data.setIdworkorder(idworkorder);

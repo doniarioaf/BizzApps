@@ -18,6 +18,7 @@ import com.servlet.address.service.CityService;
 import com.servlet.address.service.DistrictService;
 //import com.servlet.address.service.PostalCodeService;
 import com.servlet.address.service.ProvinceService;
+import com.servlet.asset.service.AssetService;
 import com.servlet.employeemanggala.service.EmployeeManggalaService;
 import com.servlet.parameter.service.ParameterService;
 import com.servlet.parametermanggala.entity.ParameterManggalaData;
@@ -77,6 +78,8 @@ public class SuratJalanHandler implements SuratJalanService{
 	private VendorService vendorService;
 	@Autowired
 	private ParameterManggalaService parameterManggalaService;
+	@Autowired
+	private AssetService assetService;
 	
 	@Override
 	public SuratJalanTemplate suratJalanTemplate(long idcompany, long idbranch) {
@@ -265,6 +268,7 @@ public class SuratJalanHandler implements SuratJalanService{
 		data.setKepimilikanMobilOptions(parameterService.getListParameterByGrup("KEPEMILIKAN_MOBIL_SURAT_JALAN"));
 		data.setSupirOptions(employeeManggalaService.getListEmployeeSupir(idcompany, idbranch));
 		data.setVendorOptions(vendorService.getListActive(idcompany, idbranch));
+		data.setAssetOptions(assetService.getListAssetForPenandaanSuratJalan(idcompany, idbranch));
 		return data;	
 	}
 	

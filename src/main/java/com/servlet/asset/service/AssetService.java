@@ -19,7 +19,7 @@ public interface AssetService {
 	AssetTemplate getTemplate(Long idcompany,Long idbranch);
 	ReturnData saveAssetMapping(Long idcompany,Long idbranch,Long iduser,BodyAssetMapping body);
 	ReturnData deleteHistoryAssetMapping(Long idcompany,Long idbranch,Long id);
-	List<AssetData> getListAssetForPenandaanSuratJalan(Long idcompany,Long idbranch,Long idsuratjalan);
+	List<AssetData> getListAssetForPenandaanSuratJalan(Long idcompany,Long idbranch);
 	List<AssetData> getListAssetForMapping(Long idcompany,Long idbranch,Long id,String jenisasset);
 	List<HistoryAssetMappingData> getListHistoryMapping(Long idcompany,Long idbranch, Long id);
 }

@@ -100,7 +100,6 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 				String districtName = "";
 				if(wodata.getKodeposCustomer() != null) {
 					String mapKodepos = kodeposMappingKecamatan.get(wodata.getKodeposCustomer());
-					System.out.println("mapKodepos "+mapKodepos);
 					if(mapKodepos == null) {
 						List<DistrictData> listDistrict = districtService.getListDistrictByPostalCode(new Long(wodata.getKodeposCustomer()).longValue());
 						if(listDistrict.size() > 0) {
@@ -138,7 +137,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, checkNull(wodata.getDepo(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNullDate(detailWO.getWoSuratJalan().getTanggalkembali(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(detailWO.getWoSuratJalan().getLembur(),""), style,sheet);
-						createCell(rowData, columnCount++, checkNull("No Mobil",""), style,sheet);
+						createCell(rowData, columnCount++, checkNull(detailWO.getWoSuratJalan().getNoPolisi(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(detailWO.getWoSuratJalan().getNamaSupir(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(detailWO.getWoSuratJalan().getKepemilikanmobil(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(wodata.getStatusCodeName(),""), style,sheet);

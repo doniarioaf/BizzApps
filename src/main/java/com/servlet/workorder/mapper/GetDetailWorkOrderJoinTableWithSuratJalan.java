@@ -19,12 +19,13 @@ public class GetDetailWorkOrderJoinTableWithSuratJalan implements RowMapper<Deta
 		sqlBuilder.append("data.idworkorder as idworkorder, data.idpartai as idpartai, data.jumlahkoli as jumlahkoli, data.jumlahkg as jumlahkg,data.nocontainer as nocontainer, data.noseal as noseal, ");
 		sqlBuilder.append("data.barang as barang, partai.name as partainame, ");
 		sqlBuilder.append("sj.id as idsuratjalan , sj.nodocument as nodocumentsj, sj.tanggal as tanggalsj, sj.tanggalkembali as tanggalkembalisj, sj.lembur as lembursj, emp.nama as namasupir, ");
-		sqlBuilder.append("param.codename as kepemilikanmobil ");
+		sqlBuilder.append("param.codename as kepemilikanmobil, asset.kepala_nopolisi as kepala_nopolisi ");
 		sqlBuilder.append("from detail_work_order as data ");
 		sqlBuilder.append("left join m_partai as partai on partai.id = data.idpartai ");
 		sqlBuilder.append("left join t_surat_jalan as sj on sj.idworkorder = data.idworkorder and sj.nocantainer = data.nocontainer ");
 		sqlBuilder.append("left join m_employee_manggala as emp on emp.id = sj.idemployee_supir ");
 		sqlBuilder.append("left join m_parameter as param on param.code = sj.kepemilikanmobil and param.grup = 'KEPEMILIKAN_MOBIL_SURAT_JALAN' ");
+		sqlBuilder.append("left join m_asset as asset on asset.id = sj.idasset ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}
@@ -52,6 +53,8 @@ public class GetDetailWorkOrderJoinTableWithSuratJalan implements RowMapper<Deta
 		final String lembursj = rs.getString("lembursj");
 		final String namasupir = rs.getString("namasupir");
 		final String kepemilikanmobil = rs.getString("kepemilikanmobil");
+		final String kepala_nopolisi = rs.getString("kepala_nopolisi");
+		
 		
 		WorkOrderSuratJalan woSuratJalan = new WorkOrderSuratJalan();
 		woSuratJalan.setIdSuratJalan(idsuratjalan);
@@ -61,6 +64,7 @@ public class GetDetailWorkOrderJoinTableWithSuratJalan implements RowMapper<Deta
 		woSuratJalan.setLembur(lembursj);
 		woSuratJalan.setNamaSupir(namasupir);
 		woSuratJalan.setKepemilikanmobil(kepemilikanmobil);
+		woSuratJalan.setNoPolisi(kepala_nopolisi);
 		
 		DetailWorkOrderData data = new DetailWorkOrderData();
 		data.setIdworkorder(idworkorder);
