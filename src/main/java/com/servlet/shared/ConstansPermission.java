@@ -175,6 +175,13 @@ public class ConstansPermission {
 	public static final String CREATE_INVOICE = "CREATE_INVOICE";
 	public static final String EDIT_INVOICE = "EDIT_INVOICE";
 	public static final String DELETE_INVOICE = "DELETE_INVOICE";
+	
+	public static final String READ_ASSET = "READ_ASSET";
+	public static final String CREATE_ASSET = "CREATE_ASSET";
+	public static final String EDIT_ASSET = "EDIT_ASSET";
+	public static final String DELETE_ASSET = "DELETE_ASSET";
+	public static final String CREATE_ASSET_MAPPING = "CREATE_ASSET_MAPPING";
+	public static final String DELETE_HISTORY_ASSET_MAPPING = "DELETE_HISTORY_ASSET_MAPPING";
 
 	
 	

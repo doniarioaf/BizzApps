@@ -38,6 +38,9 @@ import com.servlet.admin.role.entity.BodyRole;
 import com.servlet.admin.role.service.RoleService;
 import com.servlet.admin.usermobile.entity.BodyUserMobile;
 import com.servlet.admin.usermobile.service.UserMobileService;
+import com.servlet.asset.entity.BodyAsset;
+import com.servlet.asset.entity.BodyAssetMapping;
+import com.servlet.asset.service.AssetService;
 import com.servlet.bankaccount.entity.BodyBankAccount;
 import com.servlet.bankaccount.service.BankAccountService;
 //import com.servlet.coa.service.CoaService;
@@ -197,6 +200,8 @@ public class ProcessHandler implements ProcessService{
 	PengeluaranKasBankService pengeluaranKasBankService;
 	@Autowired
 	InvoiceService invoiceService;
+	@Autowired
+	AssetService assetService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -1161,6 +1166,63 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_ASSET)) {
+				BodyAsset param = (BodyAsset) data;
+				ReturnData valReturn =  assetService.saveAsset(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_ASSET)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyAsset body  = (BodyAsset) param.get("body");
+				ReturnData valReturn = assetService.updateAsset(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_ASSET)) {
+				long id = (long) data;
+				ReturnData valReturn = assetService.deleteAsset(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_ASSET_MAPPING)) {
+				BodyAssetMapping param = (BodyAssetMapping) data;
+				ReturnData valReturn =  assetService.saveAssetMapping(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_HISTORY_ASSET_MAPPING)) {
+				long id = (long) data;
+				ReturnData valReturn = assetService.deleteHistoryAssetMapping(auth.getIdcompany(),auth.getIdbranch(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 			}
 			
 			
@@ -1675,6 +1737,21 @@ public class ProcessHandler implements ProcessService{
 					val.setData(invoiceService.printInvoice(auth.getIdcompany(), auth.getIdbranch(),id));
 				}
 				
+			}else if(codepermission.equals(ConstansPermission.READ_ASSET)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(assetService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(assetService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(assetService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("LISTMAPPING")) {
+					long id = (long) param.get("id");
+					String jenisasset = (String) param.get("jenisasset");
+					val.setData(assetService.getListAssetForMapping(auth.getIdcompany(), auth.getIdbranch(),id,jenisasset));
+				}
 			}
 			
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
