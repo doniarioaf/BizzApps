@@ -6,6 +6,13 @@ public class ParamWoReport {
 	private Long idcompany;
 	private Long idbranch;
 	private String reportName;
+	private String status;
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
 	public Long getFromDate() {
 		return fromDate;
 	}

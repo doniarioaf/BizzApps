@@ -87,6 +87,7 @@ import com.servlet.pricelist.entity.PriceListData;
 import com.servlet.pricelist.service.PriceListService;
 import com.servlet.report.entity.BodyGetMaps;
 import com.servlet.report.entity.BodyReportMonitoring;
+import com.servlet.report.entity.ManggalaStatusInvoice;
 import com.servlet.report.entity.Manggala_BodyReportBongkarMuatDanDepo;
 import com.servlet.report.service.ReportService;
 import com.servlet.report.service.ReportServiceManggala;
@@ -1751,6 +1752,21 @@ public class ProcessHandler implements ProcessService{
 					long id = (long) param.get("id");
 					String jenisasset = (String) param.get("jenisasset");
 					val.setData(assetService.getListAssetForMapping(auth.getIdcompany(), auth.getIdbranch(),id,jenisasset));
+				}
+			}else if(codepermission.equals(ConstansPermission.READ_REPORT_STATUS_INVOICE)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("REPORT")) {
+					ManggalaStatusInvoice body = (ManggalaStatusInvoice) param.get("body");
+					if(body.getTypeReport().equals("XLSX")) {
+						val.setData(reportServiceManggala.getReportStatusInvoice(body, auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
+					}
+//					else if(body.getTypereport().equals("PPT")) {
+//						val.setData(reportService.getReportMonitoringDataPPT(body,auth.getIdcompany(), auth.getIdbranch()).getPpt());
+//					}else {
+//						val.setData(reportService.getReportMonitoringDataPDF(body, auth.getIdcompany(), auth.getIdbranch()));
+//					}
+					
 				}
 			}
 			

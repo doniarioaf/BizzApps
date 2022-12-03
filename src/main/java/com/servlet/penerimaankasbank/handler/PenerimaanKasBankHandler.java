@@ -25,6 +25,7 @@ import com.servlet.penerimaankasbank.entity.PenerimaanKasBankData;
 import com.servlet.penerimaankasbank.entity.PenerimaanKasBankTemplate;
 import com.servlet.penerimaankasbank.mapper.GetDetailPenerimaanKasBankData;
 import com.servlet.penerimaankasbank.mapper.GetDetailPenerimaanKasBankJoinTable;
+import com.servlet.penerimaankasbank.mapper.GetPenerimaanKasBankJoinBank;
 import com.servlet.penerimaankasbank.mapper.GetPenerimaanKasBankJoinTable;
 import com.servlet.penerimaankasbank.mapper.GetPenerimaanKasBankNotJoinTable;
 import com.servlet.penerimaankasbank.repo.DetailPenerimaanKasBankRepo;
@@ -455,6 +456,16 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 		sqlBuilder.append(" where data.idworkorder = ? and data.idcompany = ? and data.idbranch = ? ");
 		final Object[] queryParameters = new Object[] {idworkorder,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPenerimaanKasBankData(), queryParameters);
+	}
+
+	@Override
+	public List<PenerimaanKasBankData> getListByDetailIdInvoiceJoinBank(Long idcompany, Long idbranch, Long idinvoice) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPenerimaanKasBankJoinBank().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false ");
+		sqlBuilder.append(" and data.id in (select detail.idpenerimaankasbank from detail_penerimaan_kas_bank as detail where detail.idinvoice = "+idinvoice+" ) ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetPenerimaanKasBankJoinBank(), queryParameters);
 	}
 
 }

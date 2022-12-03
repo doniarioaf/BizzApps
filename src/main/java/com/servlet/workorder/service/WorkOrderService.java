@@ -36,4 +36,5 @@ public interface WorkOrderService {
 	HashMap<String, Object> checkWO(Long idcompany,Long idbranch,Long id);
 	List<WorkOrderData> getListSearchWO(Long idcompany,Long idbranch,BodySearch body);
 	ReturnData changeStatusWO(Long idcompany,Long idbranch,Long id,String Status);
+	List<DetailWorkOrderData> getListContainerByIdWorkOrderForReportStatusInvoice(Long idcompany,Long idbranch,Long idworkorder);
 }

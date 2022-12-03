@@ -5,8 +5,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public class GlobalFunc {
+	public static long getDiffDate(Long datefrom,Long dateto) {
+		long diffInMillies = Math.abs(dateto - datefrom);
+        long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+		return diff;
+	}
+	
 	public static String getDateLongToString(Long date,String format) throws ParseException {
 		//dd-MMM-yyyy
 		Timestamp currentts = new Timestamp(date);

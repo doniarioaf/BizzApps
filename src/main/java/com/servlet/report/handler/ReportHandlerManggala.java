@@ -1,5 +1,8 @@
 package com.servlet.report.handler;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -10,6 +13,7 @@ import java.util.List;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFDataFormat;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -18,6 +22,11 @@ import org.springframework.stereotype.Service;
 
 import com.servlet.address.entity.DistrictData;
 import com.servlet.address.service.DistrictService;
+import com.servlet.invoice.entity.InvoiceData;
+import com.servlet.invoice.service.InvoiceService;
+import com.servlet.penerimaankasbank.entity.PenerimaanKasBankData;
+import com.servlet.penerimaankasbank.service.PenerimaanKasBankService;
+import com.servlet.report.entity.ManggalaStatusInvoice;
 import com.servlet.report.entity.Manggala_BodyReportBongkarMuatDanDepo;
 import com.servlet.report.entity.ReportWorkBookExcel;
 import com.servlet.report.service.ReportServiceManggala;
@@ -33,7 +42,11 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 	@Autowired
 	private WorkOrderService workOrderService;
 	@Autowired
+	private PenerimaanKasBankService penerimaanKasBankService;
+	@Autowired
 	private DistrictService districtService;
+	@Autowired
+	private InvoiceService invoiceService;
 	
 	@Override
 	public ReportWorkBookExcel getReportBongkarMuatDanDepo(Manggala_BodyReportBongkarMuatDanDepo body, long idcompany,
@@ -49,6 +62,8 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 		param.setReportName(ConstantReportName.BONGKARMUATDEPO);
 		List<WorkOrderData> listWO = workOrderService.getListDataWoForReport(param);
 		
+		
+		
 		XSSFSheet sheet = workbook.createSheet("Bongkar Muat Dan Depo");
 		sheet.setDefaultColumnWidth(1000);
 		
@@ -57,6 +72,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
         font.setBold(true);
         font.setFontHeight(12);
         style.setFont(font);
+        
         
         String dateFrom = "";
 		try {
@@ -202,14 +218,217 @@ public class ReportHandlerManggala implements ReportServiceManggala{
             cell.setCellValue((Timestamp) value);
         }else if (value instanceof Long) {
             cell.setCellValue((Long) value);
+        }else if (value instanceof Double) {
+            cell.setCellValue((Double) value);
         }else {
         	String textval = (String) value;
-        	int numberOfLines = textval.split("\n").length;
-        	row.setHeightInPoints((2+numberOfLines) * sheet.getDefaultRowHeightInPoints());
-        	style.setWrapText(true);
+//        	int numberOfLines = textval.split("\n").length;
+//        	row.setHeightInPoints((2+numberOfLines) * sheet.getDefaultRowHeightInPoints());
+//        	style.setWrapText(true);
             cell.setCellValue(textval);
         }
         cell.setCellStyle(style);
     }
+
+	@Override
+	public ReportWorkBookExcel getReportStatusInvoice(ManggalaStatusInvoice body, long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		ReportWorkBookExcel data = new ReportWorkBookExcel();
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		
+		ParamWoReport param = new ParamWoReport();
+		param.setIdcompany(idcompany);
+		param.setIdbranch(idbranch);
+		param.setFromDate(body.getFromDate());
+		param.setToDate(body.getToDate());
+		param.setStatus(body.getStatus() != null?body.getStatus():"");
+		param.setReportName(ConstantReportName.STATUSINVOICE);
+		List<WorkOrderData> listWO = workOrderService.getListDataWoForReport(param);
+		
+		XSSFDataFormat format = workbook.createDataFormat();
+//		format.getFormat("#,###.##");
+		XSSFSheet sheet = workbook.createSheet("Laporan Status Invoice");
+		sheet.setDefaultColumnWidth(1000);
+		
+		CellStyle style = workbook.createCellStyle();
+		CellStyle styleAmount = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setBold(true);
+        font.setFontHeight(12);
+        style.setFont(font);
+        styleAmount.setFont(font);
+		
+        String dateFrom = "";
+		try {
+			dateFrom = GlobalFunc.getDateLongToString(body.getFromDate(), "dd-MMM-yyyy");
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        String dateThru = "";
+		try {
+			dateThru = GlobalFunc.getDateLongToString(body.getToDate(), "dd-MMM-yyyy");
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        Row rowTitle = sheet.createRow(1);
+        createCell(rowTitle, 0, "Laporan Status Invoice", style,sheet);
+        Row rowPeriode = sheet.createRow(2);
+        createCell(rowPeriode, 0, "Periode", style,sheet);
+        createCell(rowPeriode, 1, dateFrom+" s/d "+dateThru, style,sheet);
+        Row rowStatus = sheet.createRow(3);
+        createCell(rowStatus, 0, "Status", style,sheet);
+        createCell(rowStatus, 1, body.getStatus(), style,sheet);
+        
+        int rowcount = 5;
+        Row row = sheet.createRow(rowcount);
+        
+        createCell(row, 0, "No. WO", style,sheet);
+        createCell(row, 1, "Tanggal WO", style,sheet);
+        createCell(row, 2, "Nomor AJU", style,sheet);
+        createCell(row, 3, "Nama Customer", style,sheet);
+        createCell(row, 4, "Jenis WO", style,sheet);
+        createCell(row, 5, "Origin Port", style,sheet);
+        createCell(row, 6, "Destination Port", style,sheet);
+        createCell(row, 7, "ETD", style,sheet);
+        createCell(row, 8, "ETA", style,sheet);
+        createCell(row, 9, "No. BL", style,sheet);
+        createCell(row, 10, "Tanggal NPE/SPPB", style,sheet);
+        createCell(row, 11, "Jumlah Partai", style,sheet);
+        createCell(row, 12, "Lembur/Tidak", style,sheet);
+        createCell(row, 13, "Status WO", style,sheet);
+        createCell(row, 14, "No. Invoice", style,sheet);
+        createCell(row, 15, "Tanggal Invoice", style,sheet);
+        createCell(row, 16, "Invoice Value", style,sheet);
+        createCell(row, 17, "Tanggal Bayar", style,sheet);
+        createCell(row, 18, "Bank", style,sheet);
+        createCell(row, 19, "No Voucher", style,sheet);
+        createCell(row, 20, "Lama Pembayaran", style,sheet);
+        
+        if(listWO != null && listWO.size() > 0) {
+        	rowcount = 6;
+			font.setBold(false);
+			font.setFontHeight(9);
+			
+			for(WorkOrderData wodata : listWO) {
+				List<DetailWorkOrderData> listDetailWO = workOrderService.getListContainerByIdWorkOrderForReportStatusInvoice(idcompany, idbranch, wodata.getId());
+				List<InvoiceData> listinv = invoiceService.getListInvoiceByIdWo(idcompany, idbranch, wodata.getId());
+				if(listinv != null && listinv.size() > 0) {
+					for(InvoiceData inv : listinv) {
+						Row rowData = sheet.createRow(rowcount++);
+						int columnCount = 0;
+						createCell(rowData, columnCount++, wodata.getNodocument(), style,sheet);
+						createCell(rowData, columnCount++, checkNullDate(wodata.getTanggal(),""), style,sheet);
+						createCell(rowData, columnCount++, wodata.getNoaju(), style,sheet);
+						createCell(rowData, columnCount++, wodata.getNamaCustomer(), style,sheet);
+						createCell(rowData, columnCount++, wodata.getJeniswo(), style,sheet);
+						createCell(rowData, columnCount++, wodata.getPortasalname(), style,sheet);
+						createCell(rowData, columnCount++, wodata.getPorttujuanname(), style,sheet);
+						createCell(rowData, columnCount++, checkNullDate(wodata.getEtd(),""), style,sheet);
+						createCell(rowData, columnCount++, checkNullDate(wodata.getEta(),""), style,sheet);
+						createCell(rowData, columnCount++, wodata.getNobl(), style,sheet);
+						createCell(rowData, columnCount++, checkNullDate(wodata.getTanggalsppb_npe(),""), style,sheet);
+						createCell(rowData, columnCount++, listDetailWO.size(), style,sheet);
+						if(listDetailWO != null && listDetailWO.size() > 0) {
+							//lembur
+							String lembur = "-";
+							if(listDetailWO.get(0).getWoSuratJalan().getLembur() != null) {
+								if(listDetailWO.get(0).getWoSuratJalan().getLembur().equals("Y")) {
+									lembur = "Yes";
+								}else {
+									lembur = "No";
+								}
+							}
+							createCell(rowData, columnCount++, lembur, style,sheet);
+						}else {
+							//lembur
+							createCell(rowData, columnCount++, "-", style,sheet);
+						}
+						
+						createCell(rowData, columnCount++, wodata.getStatus(), style,sheet);
+						createCell(rowData, columnCount++, inv.getNodocument(), style,sheet);
+						createCell(rowData, columnCount++, checkNullDate(inv.getTanggal(),""), style,sheet);
+						
+						// -1 lebih rendah, 0  sama dengan, 1 lebih tinggi
+						int compare = new BigDecimal(inv.getTotalinvoice()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(inv.getTotalinvoice()));
+						if(compare == 0) {
+							styleAmount.setDataFormat(format.getFormat("#,###"));
+						}else {
+							styleAmount.setDataFormat(format.getFormat("#,###.##"));
+						}
+						
+						
+						createCell(rowData, columnCount++, inv.getTotalinvoice(), styleAmount,sheet);
+						
+						List<PenerimaanKasBankData> listpenerimaan = penerimaanKasBankService.getListByDetailIdInvoiceJoinBank(idcompany,idbranch,inv.getId());
+						if(listpenerimaan != null && listpenerimaan.size() > 0) {
+							PenerimaanKasBankData penerimaan = listpenerimaan.get(0);
+							createCell(rowData, columnCount++, checkNullDate(penerimaan.getReceivedate(),""), style,sheet);
+							createCell(rowData, columnCount++, penerimaan.getBankName(), style,sheet);
+							createCell(rowData, columnCount++, penerimaan.getNodocument(), style,sheet);
+							if(inv.getTanggal() != null && penerimaan.getReceivedate() != null) {
+								createCell(rowData, columnCount++, GlobalFunc.getDiffDate(inv.getTanggal().getTime(), penerimaan.getReceivedate().getTime()), style,sheet);
+							}else {
+								createCell(rowData, columnCount++, "-", style,sheet);
+							}
+						}else {
+							createCell(rowData, columnCount++, "-", style,sheet);
+							createCell(rowData, columnCount++, "-", style,sheet);
+							createCell(rowData, columnCount++, "-", style,sheet);
+							createCell(rowData, columnCount++, "-", style,sheet);
+						}
+						
+					}
+				}else {
+					Row rowData = sheet.createRow(rowcount++);
+					int columnCount = 0;
+					createCell(rowData, columnCount++, wodata.getNodocument(), style,sheet);
+					createCell(rowData, columnCount++, checkNullDate(wodata.getTanggal(),""), style,sheet);
+					createCell(rowData, columnCount++, wodata.getNoaju(), style,sheet);
+					createCell(rowData, columnCount++, wodata.getNamaCustomer(), style,sheet);
+					createCell(rowData, columnCount++, wodata.getJeniswo(), style,sheet);
+					createCell(rowData, columnCount++, wodata.getPortasalname(), style,sheet);
+					createCell(rowData, columnCount++, wodata.getPorttujuanname(), style,sheet);
+					createCell(rowData, columnCount++, checkNullDate(wodata.getEtd(),""), style,sheet);
+					createCell(rowData, columnCount++, checkNullDate(wodata.getEta(),""), style,sheet);
+					createCell(rowData, columnCount++, wodata.getNobl(), style,sheet);
+					createCell(rowData, columnCount++, checkNullDate(wodata.getTanggalsppb_npe(),""), style,sheet);
+					createCell(rowData, columnCount++, listDetailWO.size(), style,sheet);
+					if(listDetailWO != null && listDetailWO.size() > 0) {
+						//lembur
+						String lembur = "-";
+						if(listDetailWO.get(0).getWoSuratJalan().getLembur() != null) {
+							if(listDetailWO.get(0).getWoSuratJalan().getLembur().equals("Y")) {
+								lembur = "Yes";
+							}else {
+								lembur = "No";
+							}
+						}
+						createCell(rowData, columnCount++, lembur, style,sheet);
+					}else {
+						//lembur
+						createCell(rowData, columnCount++, "-", style,sheet);
+					}
+					
+					createCell(rowData, columnCount++, wodata.getStatus(), style,sheet);
+					createCell(rowData, columnCount++, "-", style,sheet);
+					createCell(rowData, columnCount++, "-", style,sheet);
+					createCell(rowData, columnCount++, "-", style,sheet);
+					createCell(rowData, columnCount++, "-", style,sheet);
+					createCell(rowData, columnCount++, "-", style,sheet);
+					createCell(rowData, columnCount++, "-", style,sheet);
+					createCell(rowData, columnCount++, "-", style,sheet);
+					
+				}
+				
+			}
+        	
+        }
+        
+        data.setWorkbook(workbook);
+		return data;
+	}
 
 }

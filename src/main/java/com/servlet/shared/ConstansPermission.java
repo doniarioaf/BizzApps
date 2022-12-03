@@ -182,6 +182,8 @@ public class ConstansPermission {
 	public static final String DELETE_ASSET = "DELETE_ASSET";
 	public static final String CREATE_ASSET_MAPPING = "CREATE_ASSET_MAPPING";
 	public static final String DELETE_HISTORY_ASSET_MAPPING = "DELETE_HISTORY_ASSET_MAPPING";
+	
+	public static final String READ_REPORT_STATUS_INVOICE = "READ_REPORT_STATUS_INVOICE";
 
 	
 	

@@ -20,4 +20,5 @@ public interface PenerimaanKasBankService {
 	List<DetailPenerimaanKasBankData> getListDetailByIdInvoice(Long idcompany,Long idbranch,Long idInvoice);
 	List<PenerimaanKasBankData> getListByDetailIdInvoice(Long idcompany,Long idbranch,Long idinvoice);
 	List<DetailPenerimaanKasBankData> getListDetailByIdWO(Long idcompany,Long idbranch,Long idWo);
+	List<PenerimaanKasBankData> getListByDetailIdInvoiceJoinBank(Long idcompany,Long idbranch,Long idinvoice);
 }

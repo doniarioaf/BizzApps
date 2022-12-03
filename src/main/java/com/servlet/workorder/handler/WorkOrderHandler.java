@@ -41,6 +41,7 @@ import com.servlet.workorder.entity.WorkOrder;
 import com.servlet.workorder.entity.WorkOrderData;
 import com.servlet.workorder.entity.WorkOrderDropDownData;
 import com.servlet.workorder.entity.WorkOrderTemplate;
+import com.servlet.workorder.mapper.GetDetailWorkOrderForReportStatusInvoice;
 import com.servlet.workorder.mapper.GetDetailWorkOrderJoinTable;
 import com.servlet.workorder.mapper.GetDetailWorkOrderJoinTableWithSuratJalan;
 import com.servlet.workorder.mapper.GetListDocumentWorkOrderData;
@@ -535,9 +536,13 @@ public class WorkOrderHandler implements WorkOrderService{
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetWorkOrderJoinTableData().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
-		if(param.equals(ConstantReportName.BONGKARMUATDEPO)) {
-			//new java.sql.Date(body.getTanggalnopen())
+		if(param.getReportName().equals(ConstantReportName.BONGKARMUATDEPO)) {
 			sqlBuilder.append(" and data.tanggal >= '"+new java.sql.Date(param.getFromDate())+"'  and data.tanggal <= '"+new java.sql.Date(param.getToDate())+"' ");
+		}else if(param.getReportName().equals(ConstantReportName.STATUSINVOICE)) {
+			sqlBuilder.append(" and data.tanggal >= '"+new java.sql.Date(param.getFromDate())+"'  and data.tanggal <= '"+new java.sql.Date(param.getToDate())+"' ");
+			if(!param.getStatus().equals("")) {
+				sqlBuilder.append(" and data.status = '"+param.getStatus()+"' ");
+			}
 		}
 		final Object[] queryParameters = new Object[] {param.getIdcompany(),param.getIdbranch()};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderJoinTableData(), queryParameters);
@@ -660,6 +665,16 @@ public class WorkOrderHandler implements WorkOrderService{
 		data.setSuccess(validations.size() > 0?false:true);
 		data.setValidations(validations);
 		return data;
+	}
+
+	@Override
+	public List<DetailWorkOrderData> getListContainerByIdWorkOrderForReportStatusInvoice(Long idcompany, Long idbranch,
+			Long idworkorder) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailWorkOrderForReportStatusInvoice().schema());
+		sqlBuilder.append(" where data.idworkorder = ? and data.idcompany = ? and data.idbranch = ? ");
+		final Object[] queryParameters = new Object[] {idworkorder,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailWorkOrderForReportStatusInvoice(), queryParameters);
 	}
 
 }
