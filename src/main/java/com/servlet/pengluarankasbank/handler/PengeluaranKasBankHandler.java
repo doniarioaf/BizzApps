@@ -22,6 +22,7 @@ import com.servlet.pengluarankasbank.entity.PengluaranKasBank;
 import com.servlet.pengluarankasbank.mapper.GetDetailPengeluaranKasBankJoinTable;
 import com.servlet.pengluarankasbank.mapper.GetPengeluaranKasBankData;
 import com.servlet.pengluarankasbank.mapper.GetPengeluaranKasBankJoinTable;
+import com.servlet.pengluarankasbank.mapper.GetTotalAmount;
 import com.servlet.pengluarankasbank.repo.DetailPengeluaranKasBankRepo;
 import com.servlet.pengluarankasbank.repo.PengeluaranKasBankRepo;
 import com.servlet.pengluarankasbank.service.PengeluaranKasBankService;
@@ -286,6 +287,36 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailPengeluaranKasBankJoinTable().schema());
 		sqlBuilder.append(" where data.idpengeluarankasbank = ? and data.idcompany = ? and data.idbranch = ? ");
 		final Object[] queryParameters = new Object[] {idpengeluarankasbank,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPengeluaranKasBankJoinTable(), queryParameters);
+	}
+
+	@Override
+	public Double summaryAmountPengeluaranByDate(Long idcompany, Long idbranch, java.sql.Date fromdate,
+			java.sql.Date todate, Long idpengeluaran) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetTotalAmount().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? ");
+		if(fromdate != null && todate != null) {
+			sqlBuilder.append(" and data.idpengeluarankasbank in (select pkb.id from m_pengeluaran_kas_bank as pkb where pkb.paymentdate >= '"+fromdate+"'  and pkb.paymentdate <= '"+todate+"' and pkb.isactive = true and pkb.isdelete = false ) ");
+		}
+		if(idpengeluaran != null) {
+			sqlBuilder.append(" and data.idpengeluarankasbank = "+idpengeluaran+" ");
+		}
+		
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmount(), queryParameters);
+		if(list != null && list.size() > 0) {
+			return list.get(0);
+		}
+		return 0.0;
+	}
+
+	@Override
+	public List<DetailPengeluaranKasBankData> getListDetailById(Long idcompany, Long idbranch, Long id) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailPengeluaranKasBankJoinTable().schema());
+		sqlBuilder.append(" where data.idpengeluarankasbank = ? and data.idcompany = ? and data.idbranch = ? ");
+		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPengeluaranKasBankJoinTable(), queryParameters);
 	}
 

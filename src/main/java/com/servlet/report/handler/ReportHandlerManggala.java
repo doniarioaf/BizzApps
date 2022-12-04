@@ -22,12 +22,19 @@ import org.springframework.stereotype.Service;
 
 import com.servlet.address.entity.DistrictData;
 import com.servlet.address.service.DistrictService;
+import com.servlet.bankaccount.entity.BankAccountData;
+import com.servlet.bankaccount.service.BankAccountService;
 import com.servlet.invoice.entity.InvoiceData;
 import com.servlet.invoice.service.InvoiceService;
+import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBankData;
 import com.servlet.penerimaankasbank.entity.PenerimaanKasBankData;
+import com.servlet.penerimaankasbank.entity.PenerimaanPengeluaranData;
 import com.servlet.penerimaankasbank.service.PenerimaanKasBankService;
+import com.servlet.pengluarankasbank.entity.DetailPengeluaranKasBankData;
+import com.servlet.pengluarankasbank.service.PengeluaranKasBankService;
 import com.servlet.report.entity.ManggalaStatusInvoice;
 import com.servlet.report.entity.Manggala_BodyReportBongkarMuatDanDepo;
+import com.servlet.report.entity.ParamReportManggala;
 import com.servlet.report.entity.ReportWorkBookExcel;
 import com.servlet.report.service.ReportServiceManggala;
 import com.servlet.shared.ConstantReportName;
@@ -43,6 +50,10 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 	private WorkOrderService workOrderService;
 	@Autowired
 	private PenerimaanKasBankService penerimaanKasBankService;
+	@Autowired
+	private PengeluaranKasBankService pengeluaranKasBankService;
+	@Autowired
+	private BankAccountService bankAccountService;
 	@Autowired
 	private DistrictService districtService;
 	@Autowired
@@ -179,7 +190,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, checkNull(detailWO.getWoSuratJalan().getNoPolisi(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(detailWO.getWoSuratJalan().getNamaSupir(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(detailWO.getWoSuratJalan().getKepemilikanmobil(),""), style,sheet);
-						createCell(rowData, columnCount++, checkNull(wodata.getStatusCodeName(),""), style,sheet);
+						createCell(rowData, columnCount++, checkNull(wodata.getStatus(),""), style,sheet);
 					}
 				}
 			}
@@ -426,6 +437,218 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 			}
         	
         }
+        
+        data.setWorkbook(workbook);
+		return data;
+	}
+
+	@Override
+	public ReportWorkBookExcel getReportKasBank(ParamReportManggala body, long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		ReportWorkBookExcel data = new ReportWorkBookExcel();
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		
+		XSSFDataFormat format = workbook.createDataFormat();
+		
+		XSSFSheet sheet = workbook.createSheet("Laporan Kas Bank");
+		sheet.setDefaultColumnWidth(1000);
+		
+		CellStyle style = workbook.createCellStyle();
+		CellStyle styleAmount = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setBold(true);
+        font.setFontHeight(12);
+        style.setFont(font);
+        styleAmount.setFont(font);
+        
+        
+        
+		
+        String dateFrom = "";
+		try {
+			dateFrom = GlobalFunc.getDateLongToString(body.getFromDate(), "dd-MMM-yyyy");
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        String dateThru = "";
+		try {
+			dateThru = GlobalFunc.getDateLongToString(body.getToDate(), "dd-MMM-yyyy");
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+		Timestamp tsDateBeforeFrom = null;
+		try {
+			tsDateBeforeFrom = GlobalFunc.addDays(new Timestamp(body.getFromDate()) ,-1);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		Date dtDateBeforeFrom = new Date(tsDateBeforeFrom.getTime());
+		
+		BankAccountData bankData = bankAccountService.getByIdForReport(idcompany, idbranch, body.getIdbank());
+		double saldoAwalBank = 0.0;
+		if(bankData != null) {
+			if(bankData.getSaldoawal() != null) {
+				saldoAwalBank = bankData.getSaldoawal();
+			}
+		}
+		
+		//56169461 = 01-Jan-70
+		Double saldoPenerimaan = penerimaanKasBankService.summaryAmountPenerimaanByDate(idcompany, idbranch, new Date(56169461L), dtDateBeforeFrom, null);
+		saldoPenerimaan = saldoPenerimaan != null? saldoPenerimaan:0.0;
+		Double saldoPengeluaraan = pengeluaranKasBankService.summaryAmountPengeluaranByDate(idcompany, idbranch, new Date(56169461L), dtDateBeforeFrom, null);
+		saldoPengeluaraan = saldoPengeluaraan != null ? saldoPengeluaraan:0.0;
+		double totalSaldoAwal = saldoAwalBank + saldoPenerimaan + saldoPengeluaraan; 
+        Row rowTitle = sheet.createRow(1);
+        createCell(rowTitle, 0, "Laporan Kas/Bank", style,sheet);
+        Row rowPeriode = sheet.createRow(2);
+        createCell(rowPeriode, 0, "Periode", style,sheet);
+        createCell(rowPeriode, 1, dateFrom+" s/d "+dateThru, style,sheet);
+        Row rowStatus = sheet.createRow(3);
+        createCell(rowStatus, 0, "Bank", style,sheet);
+        createCell(rowStatus, 1, bankData != null?bankData.getNamabank():"" , style,sheet);
+        int rowcount = 5;
+        Row row = sheet.createRow(rowcount);
+        
+        createCell(row, 0, "Tanggal Transaksi", style,sheet);
+        createCell(row, 1, "No. Voucher", style,sheet);
+        createCell(row, 2, "COA", style,sheet);
+        createCell(row, 3, "No. WO yang dibayar", style,sheet);
+        createCell(row, 4, "Nomor AJU", style,sheet);
+        createCell(row, 5, "No. Invoice", style,sheet);
+        createCell(row, 6, "Nama Customer", style,sheet);
+        createCell(row, 7, "Keterangan", style,sheet);
+        createCell(row, 8, "Uang Masuk", style,sheet);
+        createCell(row, 9, "Uang Keluar", style,sheet);
+        createCell(row, 10, "Saldo", style,sheet);
+        
+        List<PenerimaanPengeluaranData> list = penerimaanKasBankService.getPenerimaanPengeluaranData(idcompany, idbranch, new Date(body.getFromDate()), new Date(body.getToDate()), body.getIdbank());
+        if(list != null && list.size() > 0) {
+        	rowcount = 6;
+			font.setBold(false);
+			font.setFontHeight(9);
+			
+			Row rowDataSaldoAwal = sheet.createRow(rowcount++);
+			int columnCount = 0;
+			createCell(rowDataSaldoAwal, columnCount++, "", style,sheet);
+			createCell(rowDataSaldoAwal, columnCount++, "", style,sheet);
+			createCell(rowDataSaldoAwal, columnCount++, "", style,sheet);
+			createCell(rowDataSaldoAwal, columnCount++, "", style,sheet);
+			createCell(rowDataSaldoAwal, columnCount++, "", style,sheet);
+			createCell(rowDataSaldoAwal, columnCount++, "", style,sheet);
+			createCell(rowDataSaldoAwal, columnCount++, "Saldo Awal", style,sheet);
+			createCell(rowDataSaldoAwal, columnCount++, "", style,sheet);
+			createCell(rowDataSaldoAwal, columnCount++, "", style,sheet);
+			createCell(rowDataSaldoAwal, columnCount++, "", style,sheet);
+			
+			// -1 lebih rendah, 0  sama dengan, 1 lebih tinggi
+			int compare = new BigDecimal(totalSaldoAwal).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(totalSaldoAwal));
+			styleAmount = workbook.createCellStyle();
+	        styleAmount.setFont(font);
+			if(compare == 0) {
+				styleAmount.setDataFormat(format.getFormat("#,###"));
+			}else {
+				styleAmount.setDataFormat(format.getFormat("#,###.##"));
+			}
+			
+			
+			createCell(rowDataSaldoAwal, columnCount++, totalSaldoAwal, styleAmount,sheet);
+			
+			for(PenerimaanPengeluaranData datapenerimaan : list) {
+				if(datapenerimaan.getPenerimaan_id() != null) {
+					List<DetailPenerimaanKasBankData> listdetail = penerimaanKasBankService.getListDetailByIdReportKasBank(idcompany, idbranch, datapenerimaan.getPenerimaan_id());
+					for(DetailPenerimaanKasBankData det : listdetail) {
+						Row rowData = sheet.createRow(rowcount++);
+						columnCount = 0;
+						
+						createCell(rowData, columnCount++, checkNullDate(datapenerimaan.getPenerimaan_receivedate(),""), style,sheet);
+						createCell(rowData, columnCount++, datapenerimaan.getPenerimaan_nodocument(), style,sheet);
+						createCell(rowData, columnCount++, det.getCoaname(), style,sheet);
+						createCell(rowData, columnCount++, det.getNodocworkorder(), style,sheet);
+						createCell(rowData, columnCount++, det.getNoaju(), style,sheet);
+						createCell(rowData, columnCount++, det.getNodocinvoice(), style,sheet);
+						createCell(rowData, columnCount++, datapenerimaan.getPenerimaan_receivefrom(), style,sheet);
+						createCell(rowData, columnCount++, datapenerimaan.getPenerimaan_keterangan(), style,sheet);
+						Double saldoUangMasuk = det.getAmount().doubleValue();//penerimaanKasBankService.summaryAmountPenerimaanByDate(idcompany, idbranch, null, null, datapenerimaan.getPenerimaan_id());
+						saldoUangMasuk = saldoUangMasuk != null?saldoUangMasuk:0.0;
+						compare = new BigDecimal(saldoUangMasuk).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(saldoUangMasuk));
+						styleAmount = workbook.createCellStyle();
+				        styleAmount.setFont(font);
+						if(compare == 0) {
+							styleAmount.setDataFormat(format.getFormat("#,###"));
+						}else {
+							styleAmount.setDataFormat(format.getFormat("#,###.##"));
+						}
+						createCell(rowData, columnCount++, saldoUangMasuk, styleAmount,sheet);
+						createCell(rowData, columnCount++, "", style,sheet);
+						
+						totalSaldoAwal = totalSaldoAwal + saldoUangMasuk.doubleValue();
+						double saldo = totalSaldoAwal;
+						compare = new BigDecimal(saldo).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(saldo));
+						styleAmount = workbook.createCellStyle();
+				        styleAmount.setFont(font);
+						if(compare == 0) {
+							styleAmount.setDataFormat(format.getFormat("#,###"));
+						}else {
+							styleAmount.setDataFormat(format.getFormat("#,###.##"));
+						}
+						createCell(rowData, columnCount++, saldo, styleAmount,sheet);
+						
+					}
+				}
+				
+				if(datapenerimaan.getPengeluaran_id() != null) {
+					List<DetailPengeluaranKasBankData> listdetail = pengeluaranKasBankService.getListDetailById(idcompany, idbranch, datapenerimaan.getPengeluaran_id());
+					for(DetailPengeluaranKasBankData det : listdetail) {
+						Row rowData = sheet.createRow(rowcount++);
+						columnCount = 0;
+						
+						createCell(rowData, columnCount++, checkNullDate(datapenerimaan.getPengeluaran_paymentdate(),""), style,sheet);
+						createCell(rowData, columnCount++, datapenerimaan.getPengeluaran_nodocument(), style,sheet);
+						createCell(rowData, columnCount++, datapenerimaan.getPengeluaran_coaName(), style,sheet);
+						createCell(rowData, columnCount++, "", style,sheet);
+						createCell(rowData, columnCount++, "", style,sheet);
+						createCell(rowData, columnCount++, "", style,sheet);
+						createCell(rowData, columnCount++, datapenerimaan.getPengeluaran_paymentto(), style,sheet);
+						createCell(rowData, columnCount++, datapenerimaan.getPengeluaran_keterangan(), style,sheet);
+						Double saldoUangKeluar = det.getAmount().doubleValue();//pengeluaranKasBankService.summaryAmountPengeluaranByDate(idcompany, idbranch, null, null, datapenerimaan.getPengeluaran_id());
+						saldoUangKeluar = saldoUangKeluar != null?saldoUangKeluar:0.0;
+						compare = new BigDecimal(saldoUangKeluar).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(saldoUangKeluar));
+						styleAmount = workbook.createCellStyle();
+				        styleAmount.setFont(font);
+						if(compare == 0) {
+							styleAmount.setDataFormat(format.getFormat("#,###"));
+						}else {
+							styleAmount.setDataFormat(format.getFormat("#,###.##"));
+						}
+						createCell(rowData, columnCount++, "", style,sheet);
+						createCell(rowData, columnCount++, saldoUangKeluar, styleAmount,sheet);
+						
+						totalSaldoAwal = totalSaldoAwal - saldoUangKeluar.doubleValue();
+						double saldo = totalSaldoAwal;
+						
+						compare = new BigDecimal(saldo).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(saldo));
+						styleAmount = workbook.createCellStyle();
+				        styleAmount.setFont(font);
+						if(compare == 0) {
+							styleAmount.setDataFormat(format.getFormat("#,###"));
+						}else {
+							styleAmount.setDataFormat(format.getFormat("#,###.##"));
+						}
+						createCell(rowData, columnCount++, saldo, styleAmount,sheet);
+						
+						
+					}
+					
+				}
+			}
+        }
+        
         
         data.setWorkbook(workbook);
 		return data;

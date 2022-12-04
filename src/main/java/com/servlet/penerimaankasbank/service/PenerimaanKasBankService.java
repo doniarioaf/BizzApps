@@ -1,11 +1,13 @@
 package com.servlet.penerimaankasbank.service;
 
+import java.sql.Date;
 import java.util.List;
 
 import com.servlet.penerimaankasbank.entity.BodyPenerimaanKasBank;
 import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBankData;
 import com.servlet.penerimaankasbank.entity.PenerimaanKasBankData;
 import com.servlet.penerimaankasbank.entity.PenerimaanKasBankTemplate;
+import com.servlet.penerimaankasbank.entity.PenerimaanPengeluaranData;
 import com.servlet.shared.ReturnData;
 
 public interface PenerimaanKasBankService {
@@ -21,4 +23,7 @@ public interface PenerimaanKasBankService {
 	List<PenerimaanKasBankData> getListByDetailIdInvoice(Long idcompany,Long idbranch,Long idinvoice);
 	List<DetailPenerimaanKasBankData> getListDetailByIdWO(Long idcompany,Long idbranch,Long idWo);
 	List<PenerimaanKasBankData> getListByDetailIdInvoiceJoinBank(Long idcompany,Long idbranch,Long idinvoice);
+	Double summaryAmountPenerimaanByDate(Long idcompany,Long idbranch,Date fromdate, Date todate,Long idpenerimaan);
+	List<PenerimaanPengeluaranData> getPenerimaanPengeluaranData(Long idcompany,Long idbranch,Date fromdate, Date todate,Long idbank);
+	List<DetailPenerimaanKasBankData> getListDetailByIdReportKasBank(Long idcompany,Long idbranch,Long id);
 }

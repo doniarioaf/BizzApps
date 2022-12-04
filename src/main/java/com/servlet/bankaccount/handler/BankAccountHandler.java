@@ -12,6 +12,7 @@ import com.servlet.bankaccount.entity.BankAccount;
 import com.servlet.bankaccount.entity.BankAccountData;
 import com.servlet.bankaccount.entity.BodyBankAccount;
 import com.servlet.bankaccount.mapper.GetDataBankAccount;
+import com.servlet.bankaccount.mapper.GetDataBankAccountReport;
 import com.servlet.bankaccount.repo.BankAccountRepo;
 import com.servlet.bankaccount.service.BankAccountService;
 import com.servlet.shared.ConstansCodeMessage;
@@ -243,6 +244,21 @@ public class BankAccountHandler implements BankAccountService{
 			}
 		}
 		return flagpermission;
+	}
+
+	@Override
+	public BankAccountData getByIdForReport(Long idcompany, Long idbranch, Long id) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataBankAccountReport().schema());
+		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+		List<BankAccountData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataBankAccountReport(), queryParameters);
+		if(list != null && list.size() > 0) {
+			BankAccountData val = list.get(0); 
+			return val;
+			
+		}
+		return null;
 	}
 
 }

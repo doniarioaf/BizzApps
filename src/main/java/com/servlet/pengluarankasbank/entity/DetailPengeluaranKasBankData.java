@@ -7,6 +7,11 @@ public class DetailPengeluaranKasBankData {
 	private Double amount;
 	private Long idasset;
 	private String assetName;
+	@Override
+	public String toString() {
+		return "DetailPengeluaranKasBankData [idcoa=" + idcoa + ", coaName=" + coaName + ", catatan=" + catatan
+				+ ", amount=" + amount + ", idasset=" + idasset + ", assetName=" + assetName + "]";
+	}
 	public Long getIdcoa() {
 		return idcoa;
 	}

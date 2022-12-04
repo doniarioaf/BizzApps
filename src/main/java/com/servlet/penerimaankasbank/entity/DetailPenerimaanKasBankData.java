@@ -12,6 +12,14 @@ public class DetailPenerimaanKasBankData {
 	private String nodocinvoice;
 	private Long idworkorder;
 	private String nodocworkorder;
+	private String noaju;
+	@Override
+	public String toString() {
+		return "DetailPenerimaanKasBankData [idpenerimaankasbank=" + idpenerimaankasbank + ", counter=" + counter
+				+ ", idcoa=" + idcoa + ", coaname=" + coaname + ", catatan=" + catatan + ", amount=" + amount
+				+ ", isdownpayment=" + isdownpayment + ", idinvoice=" + idinvoice + ", nodocinvoice=" + nodocinvoice
+				+ ", idworkorder=" + idworkorder + ", nodocworkorder=" + nodocworkorder + ", noaju=" + noaju + "]";
+	}
 	public Long getIdcoa() {
 		return idcoa;
 	}
@@ -77,5 +85,11 @@ public class DetailPenerimaanKasBankData {
 	}
 	public void setIdpenerimaankasbank(Long idpenerimaankasbank) {
 		this.idpenerimaankasbank = idpenerimaankasbank;
+	}
+	public String getNoaju() {
+		return noaju;
+	}
+	public void setNoaju(String noaju) {
+		this.noaju = noaju;
 	}
 }

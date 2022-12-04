@@ -23,11 +23,14 @@ import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBankPK;
 import com.servlet.penerimaankasbank.entity.PenerimaanKasBank;
 import com.servlet.penerimaankasbank.entity.PenerimaanKasBankData;
 import com.servlet.penerimaankasbank.entity.PenerimaanKasBankTemplate;
+import com.servlet.penerimaankasbank.entity.PenerimaanPengeluaranData;
 import com.servlet.penerimaankasbank.mapper.GetDetailPenerimaanKasBankData;
 import com.servlet.penerimaankasbank.mapper.GetDetailPenerimaanKasBankJoinTable;
 import com.servlet.penerimaankasbank.mapper.GetPenerimaanKasBankJoinBank;
 import com.servlet.penerimaankasbank.mapper.GetPenerimaanKasBankJoinTable;
 import com.servlet.penerimaankasbank.mapper.GetPenerimaanKasBankNotJoinTable;
+import com.servlet.penerimaankasbank.mapper.GetPenerimaanPengeluaranData;
+import com.servlet.penerimaankasbank.mapper.GetTotalAmount;
 import com.servlet.penerimaankasbank.repo.DetailPenerimaanKasBankRepo;
 import com.servlet.penerimaankasbank.repo.PenerimaanKasBankRepo;
 import com.servlet.penerimaankasbank.service.PenerimaanKasBankService;
@@ -466,6 +469,52 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 		sqlBuilder.append(" and data.id in (select detail.idpenerimaankasbank from detail_penerimaan_kas_bank as detail where detail.idinvoice = "+idinvoice+" ) ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetPenerimaanKasBankJoinBank(), queryParameters);
+	}
+
+	@Override
+	public Double summaryAmountPenerimaanByDate(Long idcompany, Long idbranch, java.sql.Date fromdate,
+			java.sql.Date todate,Long idpenerimaan) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetTotalAmount().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? ");
+		if(fromdate != null && todate != null) {
+			sqlBuilder.append(" and data.idpenerimaankasbank in (select pkb.id from m_penerimaan_kas_bank as pkb where pkb.receivedate >= '"+fromdate+"'  and pkb.receivedate <= '"+todate+"' and pkb.isactive = true and pkb.isdelete = false ) ");
+		}
+		if(idpenerimaan != null) {
+			sqlBuilder.append(" and data.idpenerimaankasbank = "+idpenerimaan+"  ");
+		}
+		
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmount(), queryParameters);
+		if(list != null && list.size() > 0) {
+			return list.get(0);
+		}
+		return 0.0;
+	}
+
+	@Override
+	public List<PenerimaanPengeluaranData> getPenerimaanPengeluaranData(Long idcompany, Long idbranch,
+			java.sql.Date fromdate, java.sql.Date todate, Long idbank) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPenerimaanPengeluaranData().schema());
+		sqlBuilder.append(" where ");
+		sqlBuilder.append(" (data.idcompany = ? and data.idbranch = ?  and data.isactive = true and data.isdelete = false and data.idbank = "+idbank+" and data.receivedate >= '"+fromdate+"'  and data.receivedate <= '"+todate+"' ) ");
+		sqlBuilder.append(" or ");
+		sqlBuilder.append(" (pengeluaran.idcompany = "+idcompany+" and pengeluaran.idbranch = "+idbranch+"  and pengeluaran.isactive = true and pengeluaran.isdelete = false and pengeluaran.idbank = "+idbank+" and pengeluaran.paymentdate >= '"+fromdate+"'  and pengeluaran.paymentdate <= '"+todate+"' ) ");
+		sqlBuilder.append(" order by data.receivedate , pengeluaran.paymentdate desc ");
+		
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetPenerimaanPengeluaranData(), queryParameters);
+	}
+
+	@Override
+	public List<DetailPenerimaanKasBankData> getListDetailByIdReportKasBank(Long idcompany, Long idbranch,
+			Long id) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailPenerimaanKasBankJoinTable().schema());
+		sqlBuilder.append(" where data.idpenerimaankasbank = ? and data.idcompany = ? and data.idbranch = ? ");
+		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPenerimaanKasBankJoinTable(), queryParameters);
 	}
 
 }
