@@ -1,6 +1,7 @@
 package com.servlet.asset.handler;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,6 +30,7 @@ import com.servlet.asset.repo.HistoryAssetMappingRepo;
 import com.servlet.asset.service.AssetService;
 import com.servlet.parameter.service.ParameterService;
 import com.servlet.shared.ConstansCodeMessage;
+import com.servlet.shared.GlobalFunc;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 
@@ -684,6 +686,32 @@ public class AssetHandler implements AssetService{
 		sqlBuilder.append(" where data.idasset = ? and data.idcompany = ? and data.idbranch = ?  ");
 		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetAssetMapping(), queryParameters);
+	}
+
+	@Override
+	public List<AssetData> getListAssetReminder(Long idcompany, Long idbranch) {
+		// TODO Auto-generated method stub
+		Date dt = new Date();
+		long time = dt.getTime();
+		try {
+			Timestamp tsThru = GlobalFunc.addDays(new Timestamp(time), 30);
+			java.sql.Date dtFrom = new java.sql.Date(time);
+			java.sql.Date dtThru = new java.sql.Date(tsThru.getTime());
+			
+			final StringBuilder sqlBuilder = new StringBuilder("select " + new GetAssetData().schema());
+			sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false and data.isactive = true ");
+			sqlBuilder.append(" and data.assettype = 'KEPALA'  ");
+			sqlBuilder.append(" and ( data.kepala_masaberlakustnk <= '"+dtFrom+"' or (data.kepala_masaberlakustnk >= '"+dtFrom+"' and data.kepala_masaberlakustnk <= '"+dtThru+"' )   )");
+			sqlBuilder.append(" or ( data.kepala_masaberlakukir <= '"+dtFrom+"' or (data.kepala_masaberlakukir >= '"+dtFrom+"' and data.kepala_masaberlakukir <= '"+dtThru+"' )   )");
+			final Object[] queryParameters = new Object[] {idcompany,idbranch};
+			return this.jdbcTemplate.query(sqlBuilder.toString(), new GetAssetData(), queryParameters);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+//			e.printStackTrace();
+			return new ArrayList<AssetData>();
+		}
+		
+		
 	}
 
 }

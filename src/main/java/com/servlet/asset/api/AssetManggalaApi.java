@@ -56,6 +56,14 @@ public class AssetManggalaApi {
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
+	@GetMapping("/listreminder")
+	ResponseEntity<Response> getListReminder(@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "REMINDER");
+		Response response = securityService.response(ConstansPermission.READ_ASSET,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
 	@GetMapping("/listmapping/{id}/{jenisasset}")
 	ResponseEntity<Response> getListMapping(@PathVariable long id,@PathVariable String jenisasset,@RequestHeader(ConstansKey.AUTH) String authorization) {
 		HashMap<String, Object> param = new HashMap<String, Object>();

@@ -15,6 +15,7 @@ import com.servlet.bankaccount.service.BankAccountService;
 import com.servlet.coa.service.CoaService;
 import com.servlet.invoice.entity.InvoiceData;
 import com.servlet.invoice.service.InvoiceService;
+import com.servlet.parametermanggala.service.ParameterManggalaService;
 import com.servlet.penerimaankasbank.entity.BodyDetailPenerimaanKasBank;
 import com.servlet.penerimaankasbank.entity.BodyPenerimaanKasBank;
 import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBank;
@@ -64,6 +65,8 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 	private WorkOrderRepo workOrderRepo;
 	@Autowired
 	private InvoiceService invoiceService;
+	@Autowired
+	private ParameterManggalaService parameterManggalaService;
 	
 	@Override
 	public List<PenerimaanKasBankData> getListAll(Long idcompany, Long idbranch) {
@@ -93,6 +96,7 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 		if(list != null && list.size() > 0) {
 			PenerimaanKasBankData val = list.get(0);
 			val.setDetails(getDetails(idcompany, idbranch, id));
+			val.setDisablededitordelete(compareDateDocWithParameter(idcompany,idbranch,val.getReceivedate()));
 //			val.setTemplate(getTemplate(idcompany, idbranch));
 			return val;
 		}
@@ -170,6 +174,11 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 			List<ValidationDataMessage> validationsDetails = checkDetail(body.getDetails(), idcompany, idbranch,id,"EDIT");
 			validations.addAll(validationsDetails);
 			
+			boolean flag = compareDateDocWithParameter(idcompany,idbranch,value.getReceivedate());
+			if(flag) {
+				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_PENERIMAAN_DATE_CLOSEBOOK,"Tidak Bisa Edit/Delete, Sudah Tutup Buku");
+				validations.add(msg);
+			}
 			if(validations.size() == 0 && validationsDetails.size() == 0) {
 				try {
 					Timestamp ts = new Timestamp(new Date().getTime());
@@ -208,6 +217,11 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 		long idsave = 0;
 		PenerimaanKasBankData value = checkById(idcompany,idbranch,id);
 		if(value != null) {
+			boolean flag = compareDateDocWithParameter(idcompany,idbranch,value.getReceivedate());
+			if(flag) {
+				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_PENERIMAAN_DATE_CLOSEBOOK,"Tidak Bisa Edit/Delete, Sudah Tutup Buku");
+				validations.add(msg);
+			}
 			if(validations.size() == 0) {
 				try {
 					Timestamp ts = new Timestamp(new Date().getTime());
@@ -516,5 +530,22 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPenerimaanKasBankJoinTable(), queryParameters);
 	}
+	
+	private boolean compareDateDocWithParameter(Long idcompany,Long idbranch,Date ReceiveDate) {
+		java.sql.Date dtParamTutupBuku = parameterManggalaService.getValueByParamName(idcompany,idbranch,"BULANTUTUPBUKU","DATE").getDateValue();
+		boolean disableBtn = false;
+		if(dtParamTutupBuku != null) {
+			Timestamp tsDocument = new Timestamp(ReceiveDate.getTime());
+			Timestamp tsTutupBuku = new Timestamp(dtParamTutupBuku.getTime());
+			int compare = tsDocument.compareTo(tsTutupBuku);
+			if(compare <= 0) {
+				disableBtn = true;
+			}
+			
+		}
+		return disableBtn;
+	}
+	
+	
 
 }

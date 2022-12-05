@@ -22,4 +22,5 @@ public interface AssetService {
 	List<AssetData> getListAssetForPenandaanSuratJalan(Long idcompany,Long idbranch);
 	List<AssetData> getListAssetForMapping(Long idcompany,Long idbranch,Long id,String jenisasset);
 	List<HistoryAssetMappingData> getListHistoryMapping(Long idcompany,Long idbranch, Long id);
+	List<AssetData> getListAssetReminder(Long idcompany,Long idbranch);
 }

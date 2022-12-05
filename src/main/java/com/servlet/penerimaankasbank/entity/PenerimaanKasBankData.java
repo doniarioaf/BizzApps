@@ -16,6 +16,7 @@ public class PenerimaanKasBankData {
 	private boolean isactive;
 	private List<DetailPenerimaanKasBankData> details;
 	private PenerimaanKasBankTemplate template;
+	private boolean disablededitordelete;
 	public Long getId() {
 		return id;
 	}
@@ -88,4 +89,11 @@ public class PenerimaanKasBankData {
 	public void setTemplate(PenerimaanKasBankTemplate template) {
 		this.template = template;
 	}
+	public boolean isDisablededitordelete() {
+		return disablededitordelete;
+	}
+	public void setDisablededitordelete(boolean disablededitordelete) {
+		this.disablededitordelete = disablededitordelete;
+	}
+	
 }

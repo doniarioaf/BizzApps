@@ -1753,6 +1753,8 @@ public class ProcessHandler implements ProcessService{
 					long id = (long) param.get("id");
 					String jenisasset = (String) param.get("jenisasset");
 					val.setData(assetService.getListAssetForMapping(auth.getIdcompany(), auth.getIdbranch(),id,jenisasset));
+				}else if(type.equals("REMINDER")) {
+					val.setData(assetService.getListAssetReminder(auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_REPORT_STATUS_INVOICE)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;

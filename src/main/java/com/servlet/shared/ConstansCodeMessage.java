@@ -96,5 +96,6 @@ public class ConstansCodeMessage {
 	public static final String VALIDASI_INVOICE_ALREADY_PAYMENT_EDIT = "validation.invoice.already.payment.edit";
 	public static final String VALIDASI_INVOICE_ALREADY_PAYMENT_DELETE = "validation.invoice.already.payment.delete";
 	public static final String VALIDASI_ASSET_KODEASSET_ISEXIST = "validation.asset.kodeasset.isexist";
+	public static final String VALIDASI_PENERIMAAN_DATE_CLOSEBOOK = "validation.penerimaan.date.closebook";
 	
 }

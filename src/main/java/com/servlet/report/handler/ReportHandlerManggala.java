@@ -503,7 +503,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 		saldoPenerimaan = saldoPenerimaan != null? saldoPenerimaan:0.0;
 		Double saldoPengeluaraan = pengeluaranKasBankService.summaryAmountPengeluaranByDate(idcompany, idbranch, new Date(56169461L), dtDateBeforeFrom, null);
 		saldoPengeluaraan = saldoPengeluaraan != null ? saldoPengeluaraan:0.0;
-		double totalSaldoAwal = saldoAwalBank + saldoPenerimaan + saldoPengeluaraan; 
+		double totalSaldoAwal = saldoAwalBank + saldoPenerimaan - saldoPengeluaraan; 
         Row rowTitle = sheet.createRow(1);
         createCell(rowTitle, 0, "Laporan Kas/Bank", style,sheet);
         Row rowPeriode = sheet.createRow(2);
