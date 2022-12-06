@@ -601,6 +601,7 @@ public class AssetHandler implements AssetService{
 					tableHistory.setIduser(iduser);
 					tableHistory.setType(body.getType());
 					tableHistory.setTanggal(ts);
+					tableHistory.setIdassetmapping(idsave);
 					historyAssetMappingRepo.saveAndFlush(tableHistory);
 				}
 				
@@ -626,7 +627,17 @@ public class AssetHandler implements AssetService{
 		long idsave = 0;
 		if(validations.size() == 0) {
 			try {
-				historyAssetMappingRepo.deleteById(id);
+				Optional<HistoryAssetMapping> table = historyAssetMappingRepo.findById(id);
+				if(table.isPresent()) {
+					HistoryAssetMapping data = table.get();
+					if(data.getIdassetmapping() != null) {
+						if(data.getIdassetmapping().longValue() > 0) {
+							assetMappingRepo.deleteById(data.getIdassetmapping());
+						}
+					}
+					historyAssetMappingRepo.deleteById(id);
+				}
+				
 			}catch (Exception e) {
 				// TODO: handle exception
 				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");

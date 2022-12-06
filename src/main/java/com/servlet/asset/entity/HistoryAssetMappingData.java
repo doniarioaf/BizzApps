@@ -16,7 +16,14 @@ public class HistoryAssetMappingData {
 	private String buntut_nama;
 	private String sparepartkepala_nama;
 	private String sparepartbuntut_nama;
+	private Long idassetmapping;
 	
+	public Long getIdassetmapping() {
+		return idassetmapping;
+	}
+	public void setIdassetmapping(Long idassetmapping) {
+		this.idassetmapping = idassetmapping;
+	}
 	public Long getId() {
 		return id;
 	}

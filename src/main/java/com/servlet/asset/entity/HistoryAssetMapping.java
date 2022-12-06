@@ -23,8 +23,15 @@ private static final long serialVersionUID = 1L;
 	private Long iduser;
 	private Long before;
 	private Long after;
+	private Long idassetmapping;
 	private String type;
 	private Timestamp tanggal;
+	public Long getIdassetmapping() {
+		return idassetmapping;
+	}
+	public void setIdassetmapping(Long idassetmapping) {
+		this.idassetmapping = idassetmapping;
+	}
 	public Long getId() {
 		return id;
 	}

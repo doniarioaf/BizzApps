@@ -423,6 +423,14 @@ public class InvoiceHandler implements InvoiceService{
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceDataJoinWorkOrder(), queryParameters);
 	}
+	
+	private List<DetailInvoicePriceData> getDetailsInvoicePriceForPrint(Long idcompany, Long idbranch,Long idinvoice) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailInvoicePriceJoinTableData().schema());
+		sqlBuilder.append(" where data.idinvoice = ? and data.idcompany = ? and data.idbranch = ? and data.qty > 0 ");
+		final Object[] queryParameters = new Object[] {idinvoice,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailInvoicePriceJoinTableData(), queryParameters);
+	}
 
 	@Override
 	public PrintInvoiceData printInvoice(Long idcompany, Long idbranch, Long id) {
@@ -432,16 +440,21 @@ public class InvoiceHandler implements InvoiceService{
 		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
 		List<PrintInvoiceData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetPrintInvoiceData(), queryParameters);
 		if(list != null && list.size() > 0) {
+			Double ppn = parameterManggalaService.getValueByParamName(idcompany,idbranch,"PPN","NUMBER").getDoubleValue();
 			PrintInvoiceData val = list.get(0);
 			val.setCustomer(customerManggalaService.getDataCustomerForPrintInvoice(idcompany, idbranch, val.getIdcustomer()));
-			val.setDetailsprice(getDetailsInvoicePrice(idcompany, idbranch, id));
+			val.setDetailsprice(getDetailsInvoicePriceForPrint(idcompany, idbranch, id));
 			val.setListpenerimaan(penerimaanKasBankService.getListByDetailIdInvoice(idcompany, idbranch, id));
 			val.setDetailspenerimaan(penerimaanKasBankService.getListDetailByIdInvoice(idcompany, idbranch, id));
 			val.setKeteranganinvoice1(parameterManggalaService.getValueByParamName(idcompany,idbranch,"KETERANGANINVOICE1","TEXT").getStrValue());
 			val.setKeteranganinvoice2(parameterManggalaService.getValueByParamName(idcompany,idbranch,"KETERANGANINVOICE2","TEXT").getStrValue());
 			val.setKeteranganinvoice3(parameterManggalaService.getValueByParamName(idcompany,idbranch,"KETERANGANINVOICE3","TEXT").getStrValue());
 			val.setNamapenagih(parameterManggalaService.getValueByParamName(idcompany,idbranch,"NAMAPENAGIH","TEXT").getStrValue());
-			
+			if(ppn != null) {
+				val.setPpn(ppn.toString());
+			}else {
+				val.setPpn("0");
+			}
 			return val;
 		}
 		return null;

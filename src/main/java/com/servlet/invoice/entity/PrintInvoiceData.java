@@ -26,6 +26,7 @@ public class PrintInvoiceData {
 	private String keteranganinvoice2;
 	private String keteranganinvoice3;
 	private String namapenagih;
+	private String ppn;
 	public Long getId() {
 		return id;
 	}
@@ -133,6 +134,12 @@ public class PrintInvoiceData {
 	}
 	public void setIdinvoicetype(String idinvoicetype) {
 		this.idinvoicetype = idinvoicetype;
+	}
+	public String getPpn() {
+		return ppn;
+	}
+	public void setPpn(String ppn) {
+		this.ppn = ppn;
 	}
 	
 }

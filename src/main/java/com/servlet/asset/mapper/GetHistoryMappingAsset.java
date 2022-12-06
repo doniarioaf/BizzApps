@@ -14,7 +14,7 @@ public class GetHistoryMappingAsset implements RowMapper<HistoryAssetMappingData
 	public GetHistoryMappingAsset() {
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
-		sqlBuilder.append("data.id as id, data.idasset as idasset, data.before as before, data.after as after, data.type as type, data.iduser as iduser, data.tanggal as tanggal, ");
+		sqlBuilder.append("data.id as id, data.idasset as idasset, data.before as before, data.after as after, data.type as type, data.iduser as iduser, data.tanggal as tanggal, data.idassetmapping as idassetmapping, ");
 		sqlBuilder.append("assetafter.kodeasset as kodeasset,assetafter.assettype as assettype,  ");
 		sqlBuilder.append("assetafter.kepala_nama as kepala_nama,assetafter.buntut_nama as buntut_nama,  ");
 		sqlBuilder.append("assetafter.sparepartkepala_nama as sparepartkepala_nama,assetafter.sparepartbuntut_nama as sparepartbuntut_nama  ");
@@ -44,6 +44,8 @@ public class GetHistoryMappingAsset implements RowMapper<HistoryAssetMappingData
 		final String buntut_nama = rs.getString("buntut_nama");
 		final String sparepartkepala_nama = rs.getString("sparepartkepala_nama");
 		final String sparepartbuntut_nama = rs.getString("sparepartbuntut_nama");
+		final Long idassetmapping = rs.getLong("idassetmapping");
+		
 		
 		HistoryAssetMappingData data = new HistoryAssetMappingData();
 		data.setId(id);
@@ -59,6 +61,7 @@ public class GetHistoryMappingAsset implements RowMapper<HistoryAssetMappingData
 		data.setBuntut_nama(buntut_nama);
 		data.setSparepartkepala_nama(sparepartkepala_nama);
 		data.setSparepartbuntut_nama(sparepartbuntut_nama);
+		data.setIdassetmapping(idassetmapping);
 		return data;
 	}
 
