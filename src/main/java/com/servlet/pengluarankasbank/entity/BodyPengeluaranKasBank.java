@@ -9,6 +9,13 @@ public class BodyPengeluaranKasBank {
 	private String keterangan;
 	private boolean isactive;
 	private BodyDetailPengeluaranKasBank[] details;
+	private Long idwo;
+	public Long getIdwo() {
+		return idwo;
+	}
+	public void setIdwo(Long idwo) {
+		this.idwo = idwo;
+	}
 	public Long getPaymentdate() {
 		return paymentdate;
 	}

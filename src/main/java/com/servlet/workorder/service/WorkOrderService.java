@@ -5,11 +5,13 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.servlet.report.entity.ParamReportManggala;
 import com.servlet.shared.ReturnData;
 import com.servlet.workorder.entity.BodySearch;
 import com.servlet.workorder.entity.BodyWorkOrder;
 import com.servlet.workorder.entity.DetailWorkOrderData;
 import com.servlet.workorder.entity.ListDocumentWorkOrderData;
+import com.servlet.workorder.entity.ParamDropDownWO;
 import com.servlet.workorder.entity.ParamWoReport;
 import com.servlet.workorder.entity.WorkOrderData;
 import com.servlet.workorder.entity.WorkOrderDropDownData;
@@ -37,4 +39,6 @@ public interface WorkOrderService {
 	List<WorkOrderData> getListSearchWO(Long idcompany,Long idbranch,BodySearch body);
 	ReturnData changeStatusWO(Long idcompany,Long idbranch,Long id,String Status);
 	List<DetailWorkOrderData> getListContainerByIdWorkOrderForReportStatusInvoice(Long idcompany,Long idbranch,Long idworkorder);
+	List<WorkOrderData> getListDataWoForReportLabaRugi(Long idcompany,Long idbranch,ParamReportManggala param);
+	List<WorkOrderDropDownData> getListDropDownByParam(Long idcompany,Long idbranch,ParamDropDownWO param);
 }

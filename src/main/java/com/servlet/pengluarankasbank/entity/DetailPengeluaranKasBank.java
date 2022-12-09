@@ -18,6 +18,13 @@ public class DetailPengeluaranKasBank implements Serializable{
 	private String catatan;
 	private Double amount;
 	private Long idasset;
+	private Long idinvoiceitem;
+	public Long getIdinvoiceitem() {
+		return idinvoiceitem;
+	}
+	public void setIdinvoiceitem(Long idinvoiceitem) {
+		this.idinvoiceitem = idinvoiceitem;
+	}
 	public DetailPengeluaranKasBankPK getDetailPengeluaranKasBankPK() {
 		return detailPengeluaranKasBankPK;
 	}

@@ -15,7 +15,7 @@ public class GetPengeluaranKasBankData implements RowMapper<PengeluaranKasBankDa
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
 		sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.paymentdate as paymentdate, data.paymentto as paymentto, data.idcoa as idcoa, ");
-		sqlBuilder.append("data.idbank as idbank, data.keterangan as keterangan, data.isactive as isactive ");
+		sqlBuilder.append("data.idbank as idbank, data.keterangan as keterangan, data.isactive as isactive,data.idwo as idwo ");
 		sqlBuilder.append("from m_pengeluaran_kas_bank as data ");
 		
 		this.schemaSql = sqlBuilder.toString();
@@ -37,6 +37,7 @@ public class GetPengeluaranKasBankData implements RowMapper<PengeluaranKasBankDa
 		final Long idbank = rs.getLong("idbank");
 		final String keterangan = rs.getString("keterangan");
 		final boolean isactive = rs.getBoolean("isactive");
+		final Long idwo = rs.getLong("idwo");
 		
 		PengeluaranKasBankData data = new PengeluaranKasBankData();
 		data.setId(id);
@@ -47,6 +48,7 @@ public class GetPengeluaranKasBankData implements RowMapper<PengeluaranKasBankDa
 		data.setIdbank(idbank);
 		data.setKeterangan(keterangan);
 		data.setIsactive(isactive);
+		data.setIdwo(idwo);
 		return data;
 	}
 

@@ -545,6 +545,34 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 		}
 		return disableBtn;
 	}
+
+	@Override
+	public Double summaryAmountPenerimaanByIdWO(Long idcompany, Long idbranch, java.sql.Date fromdate,
+			java.sql.Date todate, Long idwo, Long idbank,String invoiceType) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetTotalAmount().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? ");
+		if(fromdate != null && todate != null) {
+			if(idbank.longValue() > 0) {
+				sqlBuilder.append(" and data.idpenerimaankasbank in (select pkb.id from m_penerimaan_kas_bank as pkb where pkb.receivedate >= '"+fromdate+"'  and pkb.receivedate <= '"+todate+"' and pkb.isactive = true and pkb.isdelete = false and pkb.idbank = "+idbank+" ) ");
+			}else {
+				sqlBuilder.append(" and data.idpenerimaankasbank in (select pkb.id from m_penerimaan_kas_bank as pkb where pkb.receivedate >= '"+fromdate+"'  and pkb.receivedate <= '"+todate+"' and pkb.isactive = true and pkb.isdelete = false ) ");
+			}
+			
+		}
+		
+		sqlBuilder.append(" and data.idworkorder = "+idwo+"  ");
+		if(!invoiceType.equals("")) {
+			sqlBuilder.append(" and data.idinvoice in (select id from m_invoice as inv where inv.isactive = true and inv.isdelete = false and inv.idinvoicetype = '"+invoiceType+"' )  ");
+		}
+		
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmount(), queryParameters);
+		if(list != null && list.size() > 0) {
+			return list.get(0);
+		}
+		return 0.0;
+	}
 	
 	
 

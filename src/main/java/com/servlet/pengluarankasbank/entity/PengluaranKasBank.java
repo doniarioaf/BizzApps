@@ -34,6 +34,13 @@ private static final long serialVersionUID = 1L;
 	private Timestamp updatedate;
 	private String deleteby;
 	private Timestamp deletedate;
+	private Long idwo;
+	public Long getIdwo() {
+		return idwo;
+	}
+	public void setIdwo(Long idwo) {
+		this.idwo = idwo;
+	}
 	public Long getId() {
 		return id;
 	}

@@ -24,6 +24,13 @@ public class DetailInvoicePrice implements Serializable{
 	private Long qty;
 	private Double diskon;
 	private Double subtotal;
+	private Long idpengeluarankasbank;
+	public Long getIdpengeluarankasbank() {
+		return idpengeluarankasbank;
+	}
+	public void setIdpengeluarankasbank(Long idpengeluarankasbank) {
+		this.idpengeluarankasbank = idpengeluarankasbank;
+	}
 	public DetailInvoicePricePK getDetailInvoicePricePK() {
 		return detailInvoicePricePK;
 	}

@@ -112,7 +112,7 @@ public class InvoiceHandler implements InvoiceService{
 	public ReturnData saveInvoice(Long idcompany, Long idbranch, Long iduser, BodyInvoice body) {
 		// TODO Auto-generated method stub
 		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
-		List<ValidationDataMessage> validationsCheckData = checkData(idcompany,idbranch,body,"ADD");
+		List<ValidationDataMessage> validationsCheckData = checkData(idcompany,idbranch,body,"ADD",null);
 		long idsave = 0;
 		validations.addAll(validationsCheckData);
 		Timestamp ts = new Timestamp(new Date().getTime());
@@ -172,12 +172,14 @@ public class InvoiceHandler implements InvoiceService{
 	public ReturnData updateInvoice(Long idcompany, Long idbranch, Long iduser, Long id, BodyInvoice body) {
 		// TODO Auto-generated method stub
 		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
+		InvoiceData value = checkById(idcompany,idbranch,id);
+		
 		Timestamp ts = new Timestamp(new Date().getTime());
-		List<ValidationDataMessage> validationsCheckData = checkData(idcompany,idbranch,body,"EDIT");
+		List<ValidationDataMessage> validationsCheckData = checkData(idcompany,idbranch,body,"EDIT",value);
 		long idsave = 0;
 		validations.addAll(validationsCheckData);
 		
-		InvoiceData value = checkById(idcompany,idbranch,id);
+		
 		List<DetailPenerimaanKasBankData> checkAlreadyPayment = penerimaanKasBankService.getListDetailByIdInvoice(idcompany, idbranch, id);
 		if(checkAlreadyPayment != null && checkAlreadyPayment.size() > 0) {
 			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_INVOICE_ALREADY_PAYMENT_EDIT,"Tidak Bisa Edit, Sudah Terjadi Pembayaran");
@@ -258,7 +260,7 @@ public class InvoiceHandler implements InvoiceService{
 		return setTemplate(idcompany,idbranch);
 	}
 
-	private List<ValidationDataMessage> checkData(Long idcompany, Long idbranch, BodyInvoice body,String action){
+	private List<ValidationDataMessage> checkData(Long idcompany, Long idbranch, BodyInvoice body,String action,InvoiceData dataTable){
 		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
 		if(body.getIdcustomer() != null) {
 			HashMap<String, Object> result = customerManggalaService.checkCustomerById(idcompany, idbranch, body.getIdcustomer());
@@ -282,6 +284,27 @@ public class InvoiceHandler implements InvoiceService{
 				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_WO_NOT_AVAILABLE,"WO Status Not Available");
 				validations.add(msg);
 			}
+			
+			if(body.getIdinvoicetype().equals("REIMBURSEMENT")) {
+				boolean flagcontinue = true;
+				if(dataTable != null) {
+					if(dataTable.getIdwo() != null) {
+						if(body.getIdwo().longValue() == dataTable.getIdwo().longValue()) {
+							flagcontinue = false;
+						}
+					}
+				}
+				if(flagcontinue) {
+					//(invoice dengan type reimbursement hanya boleh 1 pada 1 WO)
+					List<InvoiceData> listinv = getListInvoiceByIdWo(idcompany, idbranch, body.getIdwo());
+					if(listinv != null && listinv.size() > 0) {
+						ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_INVOICE_WO_EXIST_REIMBURSEMENT,"WO sudah terpasang pada invoice lain");
+						validations.add(msg);
+					}
+				}
+			}
+			
+			
 		}
 		
 		if(body.getIdsuratjalan() != null) {
@@ -346,6 +369,7 @@ public class InvoiceHandler implements InvoiceService{
 					detailInvoicePrice.setQty(detail.getQty());
 					detailInvoicePrice.setDiskon(detail.getDiskon());
 					detailInvoicePrice.setSubtotal(detail.getSubtotal());
+					detailInvoicePrice.setIdpengeluarankasbank(detail.getIdpengeluarankasbank());
 					detailInvoicePriceRepo.saveAndFlush(detailInvoicePrice);
 					count++;
 				}

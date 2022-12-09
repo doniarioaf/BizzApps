@@ -13,9 +13,10 @@ private String schemaSql;
 	public GetDetailPengeluaranKasBankJoinTable() {
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
-		sqlBuilder.append("data.idcoa as idcoa, data.catatan as catatan, data.amount as amount, data.idasset as idasset, coa.nama as coaname ");
+		sqlBuilder.append("data.idcoa as idcoa, data.catatan as catatan, data.amount as amount, data.idasset as idasset, coa.nama as coaname, data.idinvoiceitem as idinvoiceitem, invtype.nama as invtypenama  ");
 		sqlBuilder.append("from detail_pengeluaran_kas_bank as data ");
 		sqlBuilder.append("left join m_coa as coa on coa.id = data.idcoa ");
+		sqlBuilder.append("left join m_invoice_type as invtype on invtype.id = data.idinvoiceitem ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}
@@ -31,6 +32,9 @@ private String schemaSql;
 		final Double amount = rs.getDouble("amount");
 		final Long idasset = rs.getLong("idasset");
 		final String coaname = rs.getString("coaname");
+		final String invtypenama = rs.getString("invtypenama");
+		final Long idinvoiceitem = rs.getLong("idinvoiceitem");
+		
 		
 		DetailPengeluaranKasBankData data = new DetailPengeluaranKasBankData();
 		data.setIdcoa(idcoa);
@@ -39,6 +43,8 @@ private String schemaSql;
 		data.setAmount(amount);
 		data.setIdasset(idasset);
 		data.setAssetName("");
+		data.setIdinvoiceitem(idinvoiceitem);
+		data.setInvoiceitemName(invtypenama);
 		return data;
 	}
 

@@ -8,18 +8,21 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.servlet.workorder.entity.WorkOrderData;
 
-public class GetWorkOrderNotJoinTableData implements RowMapper<WorkOrderData>{
+public class GetDataWorkOrderForReportLabaRugi implements RowMapper<WorkOrderData>{
 	private String schemaSql;
 	
-	public GetWorkOrderNotJoinTableData() {
+	public GetDataWorkOrderForReportLabaRugi() {
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
 		sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.tanggal as tanggal, data.idcustomer as idcustomer,data.namacargo as namacargo, data.isactive as isactive, ");
 		sqlBuilder.append("data.status as status, data.jeniswo as jeniswo, data.modatransportasi as modatransportasi, data.etd as etd,data.eta as eta, ");
 		sqlBuilder.append("data.portasal as portasal, data.porttujuan as porttujuan, data.jalur as jalur, data.noaju as noaju, data.nopen as nopen, data.tanggalnopen as tanggalnopen, ");
 		sqlBuilder.append("data.nobl as nobl, data.tanggalbl as tanggalbl, data.pelayaran as pelayaran, data.importir as importir, data.eksportir as eksportir, data.qq as qq, ");
-		sqlBuilder.append("data.voyagenumber as voyagenumber, data.tanggalsppb_npe as tanggalsppb_npe, data.depo as depo, data.invoiceno as invoiceno, data.idvendordepo as idvendordepo ");
+		sqlBuilder.append("data.voyagenumber as voyagenumber, data.tanggalsppb_npe as tanggalsppb_npe, data.depo as depo, data.invoiceno as invoiceno, ");
+		sqlBuilder.append("cust.customername as customername, mporttujuan.name as porttujuanname ");
 		sqlBuilder.append("from m_workorder as data ");
+		sqlBuilder.append("left join m_customer_manggala as cust on cust.id = data.idcustomer ");
+		sqlBuilder.append("left join m_port as mporttujuan on mporttujuan.id = data.porttujuan ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}
@@ -27,6 +30,7 @@ public class GetWorkOrderNotJoinTableData implements RowMapper<WorkOrderData>{
 	public String schema() {
 		return this.schemaSql;
 	}
+	
 	
 	@Override
 	public WorkOrderData mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -36,6 +40,7 @@ public class GetWorkOrderNotJoinTableData implements RowMapper<WorkOrderData>{
 		final Date tanggal = rs.getDate("tanggal");
 		final Long idcustomer = rs.getLong("idcustomer");
 		final String namacargo = rs.getString("namacargo");
+		final String customername = rs.getString("customername");
 		final boolean isactive = rs.getBoolean("isactive");
 		final String status = rs.getString("status");
 		final String jeniswo = rs.getString("jeniswo");
@@ -58,7 +63,7 @@ public class GetWorkOrderNotJoinTableData implements RowMapper<WorkOrderData>{
 		final Date tanggalsppb_npe = rs.getDate("tanggalsppb_npe");
 		final String depo = rs.getString("depo");
 		final String invoiceno = rs.getString("invoiceno");
-		final Long idvendordepo = rs.getLong("idvendordepo");
+		final String porttujuanname = rs.getString("porttujuanname");
 		
 		
 		WorkOrderData data = new WorkOrderData();
@@ -66,6 +71,7 @@ public class GetWorkOrderNotJoinTableData implements RowMapper<WorkOrderData>{
 		data.setNodocument(nodocument);
 		data.setTanggal(tanggal);
 		data.setIdcustomer(idcustomer);
+		data.setNamaCustomer(customername);
 		data.setNamacargo(namacargo);
 		data.setIsactive(isactive);
 		data.setStatus(status);
@@ -89,7 +95,7 @@ public class GetWorkOrderNotJoinTableData implements RowMapper<WorkOrderData>{
 		data.setTanggalsppb_npe(tanggalsppb_npe);
 		data.setDepo(depo);
 		data.setInvoiceno(invoiceno);
-		data.setIdvendordepo(idvendordepo);
+		data.setPorttujuanname(porttujuanname);
 		return data;
 	}
 

@@ -16,6 +16,21 @@ public class PengeluaranKasBankData {
 	private boolean isactive;
 	private PengeluaranKasBankTemplate template;
 	private List<DetailPengeluaranKasBankData> details;
+	private boolean disablededitordelete;
+	private Long idwo;
+	private String nodocumentWO;
+	public String getNodocumentWO() {
+		return nodocumentWO;
+	}
+	public void setNodocumentWO(String nodocumentWO) {
+		this.nodocumentWO = nodocumentWO;
+	}
+	public Long getIdwo() {
+		return idwo;
+	}
+	public void setIdwo(Long idwo) {
+		this.idwo = idwo;
+	}
 	public Long getId() {
 		return id;
 	}
@@ -87,5 +102,11 @@ public class PengeluaranKasBankData {
 	}
 	public void setDetails(List<DetailPengeluaranKasBankData> details) {
 		this.details = details;
+	}
+	public boolean isDisablededitordelete() {
+		return disablededitordelete;
+	}
+	public void setDisablededitordelete(boolean disablededitordelete) {
+		this.disablededitordelete = disablededitordelete;
 	}
 }

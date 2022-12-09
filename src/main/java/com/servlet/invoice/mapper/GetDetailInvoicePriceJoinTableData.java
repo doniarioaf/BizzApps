@@ -15,10 +15,11 @@ public class GetDetailInvoicePriceJoinTableData implements RowMapper<DetailInvoi
 		final StringBuilder sqlBuilder = new StringBuilder(400);
 		sqlBuilder.append("data.idinvoice as idinvoice, data.idwarehouse as idwarehouse, data.idinvoicetype as idinvoicetype, data.jalur as jalur, data.price as price, ");
 		sqlBuilder.append("data.ismandatory as ismandatory, data.idpricelist as idpricelist, data.qty as qty, data.diskon as diskon, data.subtotal as subtotal, ");
-		sqlBuilder.append("invtype.nama as invtypename, prl.nodocument as prlnodocument ");
+		sqlBuilder.append("invtype.nama as invtypename, prl.nodocument as prlnodocument, data.idpengeluarankasbank as idpengeluarankasbank, pengeluaran.nodocument as pengeluarannodocument ");
 		sqlBuilder.append("from detail_invoice_price as data ");
 		sqlBuilder.append("left join m_invoice_type as invtype on invtype.id = data.idinvoicetype ");
 		sqlBuilder.append("left join m_price_list as prl on prl.id = data.idpricelist ");
+		sqlBuilder.append("left join m_pengeluaran_kas_bank as pengeluaran on pengeluaran.id = data.idpengeluarankasbank ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}
@@ -40,6 +41,8 @@ public class GetDetailInvoicePriceJoinTableData implements RowMapper<DetailInvoi
 		final Long qty = rs.getLong("qty");
 		final Double diskon = rs.getDouble("diskon");
 		final Double subtotal = rs.getDouble("subtotal");
+		final String pengeluarannodocument = rs.getString("pengeluarannodocument");
+		final Long idpengeluarankasbank = rs.getLong("idpengeluarankasbank");
 		
 		DetailInvoicePriceData data = new DetailInvoicePriceData();
 		data.setIdwarehouse(idwarehouse);
@@ -53,6 +56,8 @@ public class GetDetailInvoicePriceJoinTableData implements RowMapper<DetailInvoi
 		data.setQty(qty);
 		data.setDiskon(diskon);
 		data.setSubtotal(subtotal);
+		data.setIdpengeluarankasbank(idpengeluarankasbank);
+		data.setNodocumentpengeluaran(pengeluarannodocument);
 		return data;
 	}
 

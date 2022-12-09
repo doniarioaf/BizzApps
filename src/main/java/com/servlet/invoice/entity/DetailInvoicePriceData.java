@@ -12,6 +12,20 @@ public class DetailInvoicePriceData {
 	private Long qty;
 	private Double diskon;
 	private Double subtotal;
+	private Long idpengeluarankasbank;
+	private String nodocumentpengeluaran;
+	public String getNodocumentpengeluaran() {
+		return nodocumentpengeluaran;
+	}
+	public void setNodocumentpengeluaran(String nodocumentpengeluaran) {
+		this.nodocumentpengeluaran = nodocumentpengeluaran;
+	}
+	public Long getIdpengeluarankasbank() {
+		return idpengeluarankasbank;
+	}
+	public void setIdpengeluarankasbank(Long idpengeluarankasbank) {
+		this.idpengeluarankasbank = idpengeluarankasbank;
+	}
 	public Long getIdwarehouse() {
 		return idwarehouse;
 	}

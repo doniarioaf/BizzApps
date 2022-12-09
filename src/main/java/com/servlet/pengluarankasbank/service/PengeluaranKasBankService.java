@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.servlet.pengluarankasbank.entity.BodyPengeluaranKasBank;
 import com.servlet.pengluarankasbank.entity.DetailPengeluaranKasBankData;
+import com.servlet.pengluarankasbank.entity.PengeluaranHeaderAndDetail;
 import com.servlet.pengluarankasbank.entity.PengeluaranKasBankData;
 import com.servlet.pengluarankasbank.entity.PengeluaranKasBankTemplate;
 import com.servlet.shared.ReturnData;
@@ -20,4 +21,6 @@ public interface PengeluaranKasBankService {
 	PengeluaranKasBankData getByIdWithTemplate(Long idcompany,Long idbranch,Long id);
 	Double summaryAmountPengeluaranByDate(Long idcompany,Long idbranch,Date fromdate, Date todate, Long idpengeluaran);
 	List<DetailPengeluaranKasBankData> getListDetailById(Long idcompany,Long idbranch,Long id);
+	Double summaryAmountPengeluaranByIdWo(Long idcompany,Long idbranch,Date fromdate, Date todate, Long idwo);
+	PengeluaranHeaderAndDetail getListByIdWo(Long idcompany,Long idbranch,Long idWO);
 }

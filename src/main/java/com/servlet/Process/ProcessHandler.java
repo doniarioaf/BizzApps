@@ -1737,6 +1737,9 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("PRINTINVOICE")) {
 					long id = (long) param.get("id");
 					val.setData(invoiceService.printInvoice(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("SEACRH_PENGELUARAN")) {
+					long idwo = (long) param.get("idwo");
+					val.setData(pengeluaranKasBankService.getListByIdWo(auth.getIdcompany(), auth.getIdbranch(),idwo));
 				}
 				
 			}else if(codepermission.equals(ConstansPermission.READ_ASSET)) {
@@ -1778,6 +1781,23 @@ public class ProcessHandler implements ProcessService{
 					ParamReportManggala body = (ParamReportManggala) param.get("body");
 					if(body.getTypeReport().equals("XLSX")) {
 						val.setData(reportServiceManggala.getReportKasBank(body, auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
+					}
+//					else if(body.getTypereport().equals("PPT")) {
+//						val.setData(reportService.getReportMonitoringDataPPT(body,auth.getIdcompany(), auth.getIdbranch()).getPpt());
+//					}else {
+//						val.setData(reportService.getReportMonitoringDataPDF(body, auth.getIdcompany(), auth.getIdbranch()));
+//					}
+					
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(bankAccountService.getListActiveBankAccount(auth.getIdcompany(), auth.getIdbranch()));
+				}
+			}else if(codepermission.equals(ConstansPermission.READ_REPORT_LABA_RUGI)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("REPORT")) {
+					ParamReportManggala body = (ParamReportManggala) param.get("body");
+					if(body.getTypeReport().equals("XLSX")) {
+						val.setData(reportServiceManggala.getReportLabaRugi(body, auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
 					}
 //					else if(body.getTypereport().equals("PPT")) {
 //						val.setData(reportService.getReportMonitoringDataPPT(body,auth.getIdcompany(), auth.getIdbranch()).getPpt());

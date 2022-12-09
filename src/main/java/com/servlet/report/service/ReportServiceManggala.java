@@ -9,4 +9,5 @@ public interface ReportServiceManggala {
 	ReportWorkBookExcel getReportBongkarMuatDanDepo(Manggala_BodyReportBongkarMuatDanDepo body,long idcompany,long idbranch);
 	ReportWorkBookExcel getReportStatusInvoice(ManggalaStatusInvoice body,long idcompany,long idbranch);
 	ReportWorkBookExcel getReportKasBank(ParamReportManggala body,long idcompany,long idbranch);
+	ReportWorkBookExcel getReportLabaRugi(ParamReportManggala body,long idcompany,long idbranch);
 }

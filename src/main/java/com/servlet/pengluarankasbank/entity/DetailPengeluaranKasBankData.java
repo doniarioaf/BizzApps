@@ -1,16 +1,32 @@
 package com.servlet.pengluarankasbank.entity;
 
 public class DetailPengeluaranKasBankData {
+	private Long idpengeluarankasbank;
 	private Long idcoa;
 	private String coaName;
 	private String catatan;
 	private Double amount;
 	private Long idasset;
 	private String assetName;
-	@Override
-	public String toString() {
-		return "DetailPengeluaranKasBankData [idcoa=" + idcoa + ", coaName=" + coaName + ", catatan=" + catatan
-				+ ", amount=" + amount + ", idasset=" + idasset + ", assetName=" + assetName + "]";
+	private Long idinvoiceitem;
+	private String invoiceitemName;
+	public Long getIdpengeluarankasbank() {
+		return idpengeluarankasbank;
+	}
+	public void setIdpengeluarankasbank(Long idpengeluarankasbank) {
+		this.idpengeluarankasbank = idpengeluarankasbank;
+	}
+	public String getInvoiceitemName() {
+		return invoiceitemName;
+	}
+	public void setInvoiceitemName(String invoiceitemName) {
+		this.invoiceitemName = invoiceitemName;
+	}
+	public Long getIdinvoiceitem() {
+		return idinvoiceitem;
+	}
+	public void setIdinvoiceitem(Long idinvoiceitem) {
+		this.idinvoiceitem = idinvoiceitem;
 	}
 	public Long getIdcoa() {
 		return idcoa;

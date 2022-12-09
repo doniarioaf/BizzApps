@@ -46,6 +46,13 @@ public class WorkOrderData {
 	private WorkOrderTemplate templates;
 	private List<DetailWorkOrderData> details;
 	private List<ListDocumentWorkOrderData> documents;
+	private Long idvendordepo;
+	public Long getIdvendordepo() {
+		return idvendordepo;
+	}
+	public void setIdvendordepo(Long idvendordepo) {
+		this.idvendordepo = idvendordepo;
+	}
 	
 	public List<ListDocumentWorkOrderData> getDocuments() {
 		return documents;

@@ -185,6 +185,7 @@ public class ConstansPermission {
 	
 	public static final String READ_REPORT_STATUS_INVOICE = "READ_REPORT_STATUS_INVOICE";
 	public static final String READ_REPORT_KAS_BANK = "READ_REPORT_KAS_BANK";
+	public static final String READ_REPORT_LABA_RUGI = "READ_REPORT_LABA_RUGI";
 
 	
 	

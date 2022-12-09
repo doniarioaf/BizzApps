@@ -654,4 +654,174 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 		return data;
 	}
 
+	@Override
+	public ReportWorkBookExcel getReportLabaRugi(ParamReportManggala body, long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		ReportWorkBookExcel data = new ReportWorkBookExcel();
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		
+		XSSFDataFormat format = workbook.createDataFormat();
+		
+		XSSFSheet sheet = workbook.createSheet("Laporan Laba Rugi");
+		sheet.setDefaultColumnWidth(1000);
+		
+		CellStyle style = workbook.createCellStyle();
+		CellStyle styleAmount = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setBold(true);
+        font.setFontHeight(12);
+        style.setFont(font);
+        styleAmount.setFont(font);
+        
+        
+        
+		
+        String dateFrom = "";
+		try {
+			dateFrom = GlobalFunc.getDateLongToString(body.getFromDate(), "dd-MMM-yyyy");
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        String dateThru = "";
+		try {
+			dateThru = GlobalFunc.getDateLongToString(body.getToDate(), "dd-MMM-yyyy");
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		BankAccountData bankData = bankAccountService.getByIdForReport(idcompany, idbranch, body.getIdbank());
+		
+		Row rowTitle = sheet.createRow(1);
+        createCell(rowTitle, 0, "Laporan Laba Rugi", style,sheet);
+        Row rowPeriode = sheet.createRow(2);
+        createCell(rowPeriode, 0, "Periode", style,sheet);
+        createCell(rowPeriode, 1, dateFrom+" s/d "+dateThru, style,sheet);
+        Row rowStatus = sheet.createRow(3);
+        createCell(rowStatus, 0, "Bank", style,sheet);
+        createCell(rowStatus, 1, bankData != null?bankData.getNamabank():"" , style,sheet);
+        int rowcount = 5;
+        Row row = sheet.createRow(rowcount);
+        
+        createCell(row, 0, "No. WO", style,sheet);
+        createCell(row, 1, "Tanggal WO", style,sheet);
+        createCell(row, 2, "No. AJU", style,sheet);
+        createCell(row, 3, "Nama Cutomer", style,sheet);
+        createCell(row, 4, "Jenis WO", style,sheet);
+        createCell(row, 5, "Port", style,sheet);
+        createCell(row, 6, "Tanggal Invoice", style,sheet);
+        createCell(row, 7, "Total Invoice", style,sheet);
+        createCell(row, 8, "Invoice Paid", style,sheet);
+        createCell(row, 9, "No. Invoice", style,sheet);
+        createCell(row, 10, "Total Reimbursement Fee", style,sheet);
+        createCell(row, 11, "Reimbursement Paid", style,sheet);
+        createCell(row, 12, "Total Others Fee", style,sheet);
+        createCell(row, 13, "Laba/Rugi", style,sheet);
+        
+        List<WorkOrderData> list = workOrderService.getListDataWoForReportLabaRugi(idcompany, idbranch, body);
+        if(list != null && list.size() > 0) {
+        	rowcount = 6;
+			font.setBold(false);
+			font.setFontHeight(9);
+			
+			Double totalAkhir = 0.0;
+			for(WorkOrderData datawo : list) {
+				Row rowData = sheet.createRow(rowcount++);
+				int columnCount = 0;
+				
+				createCell(rowData, columnCount++, datawo.getNodocument(), style,sheet);
+				createCell(rowData, columnCount++, checkNullDate(datawo.getTanggal(),""), style,sheet);
+				createCell(rowData, columnCount++, datawo.getNoaju(), style,sheet);
+				createCell(rowData, columnCount++, datawo.getNamaCustomer(), style,sheet);
+				createCell(rowData, columnCount++, datawo.getJeniswo(), style,sheet);
+				createCell(rowData, columnCount++, datawo.getPorttujuanname(), style,sheet);
+				
+				String tglInv = "";
+				String noInv = "";
+				
+				List<InvoiceData> listinv = invoiceService.getListInvoiceByIdWo(idcompany,idbranch,datawo.getId());
+				int count =0;
+				double totalInvoice = 0.0;
+				double totalInvoiceReimbursement = 0.0;
+				if(listinv != null && listinv.size() > 0) {
+					for(InvoiceData inv : listinv) {
+						totalInvoice += inv.getTotalinvoice() != null?inv.getTotalinvoice().doubleValue():0.0;
+						if(inv.getIdinvoicetype().equals("REIMBURSEMENT")) {
+							totalInvoiceReimbursement += inv.getTotalinvoice() != null?inv.getTotalinvoice().doubleValue():0.0;
+						}
+						count++;
+						if(count == listinv.size()){
+							tglInv += checkNullDate(inv.getTanggal(),"");
+							noInv += inv.getNodocument();
+						}else {
+							tglInv += checkNullDate(inv.getTanggal(),"")+",";
+							noInv += inv.getNodocument()+",";
+						}
+					}
+				}
+				createCell(rowData, columnCount++, tglInv, style,sheet);
+				
+				int compare = new BigDecimal(totalInvoice).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(totalInvoice));
+				styleAmount = workbook.createCellStyle();
+		        styleAmount.setFont(font);
+				if(compare == 0) {
+					styleAmount.setDataFormat(format.getFormat("#,###"));
+				}else {
+					styleAmount.setDataFormat(format.getFormat("#,###.##"));
+				}
+				createCell(rowData, columnCount++, totalInvoice, styleAmount,sheet);
+				
+				Double invPaid = penerimaanKasBankService.summaryAmountPenerimaanByIdWO(idcompany, idbranch, new Date(body.getFromDate()), new Date(body.getToDate()), datawo.getId(), body.getIdbank(),"");
+				invPaid = invPaid != null?invPaid:0.0;
+				
+				compare = new BigDecimal(invPaid).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(invPaid));
+				styleAmount = workbook.createCellStyle();
+		        styleAmount.setFont(font);
+				if(compare == 0) {
+					styleAmount.setDataFormat(format.getFormat("#,###"));
+				}else {
+					styleAmount.setDataFormat(format.getFormat("#,###.##"));
+				}
+				createCell(rowData, columnCount++, invPaid, styleAmount,sheet);
+				
+				createCell(rowData, columnCount++, noInv, style,sheet);
+				
+				compare = new BigDecimal(totalInvoiceReimbursement).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(totalInvoiceReimbursement));
+				styleAmount = workbook.createCellStyle();
+		        styleAmount.setFont(font);
+				if(compare == 0) {
+					styleAmount.setDataFormat(format.getFormat("#,###"));
+				}else {
+					styleAmount.setDataFormat(format.getFormat("#,###.##"));
+				}
+				createCell(rowData, columnCount++, totalInvoiceReimbursement, styleAmount,sheet);
+				
+				Double reimbursementPaid = penerimaanKasBankService.summaryAmountPenerimaanByIdWO(idcompany, idbranch, new Date(body.getFromDate()), new Date(body.getToDate()), datawo.getId(), body.getIdbank(),"REIMBURSEMENT");
+				reimbursementPaid = reimbursementPaid != null?reimbursementPaid:0.0;
+				compare = new BigDecimal(reimbursementPaid).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(reimbursementPaid));
+				styleAmount = workbook.createCellStyle();
+		        styleAmount.setFont(font);
+				if(compare == 0) {
+					styleAmount.setDataFormat(format.getFormat("#,###"));
+				}else {
+					styleAmount.setDataFormat(format.getFormat("#,###.##"));
+				}
+				createCell(rowData, columnCount++, reimbursementPaid, styleAmount,sheet);
+				
+				Double totalOthersFee = 0.0;
+				createCell(rowData, columnCount++, totalOthersFee, styleAmount,sheet);
+				
+				Double totalLabaRugi = invPaid - totalInvoiceReimbursement - totalOthersFee;
+				totalAkhir += totalLabaRugi;
+				createCell(rowData, columnCount++, totalLabaRugi, styleAmount,sheet);
+				
+	        }
+			Row rowData = sheet.createRow(rowcount++);
+			createCell(rowData, 13, totalAkhir, styleAmount,sheet);
+        }
+        
+        data.setWorkbook(workbook);
+		return data;
+	}
+
 }

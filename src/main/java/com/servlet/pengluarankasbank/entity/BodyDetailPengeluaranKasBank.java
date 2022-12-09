@@ -5,6 +5,13 @@ public class BodyDetailPengeluaranKasBank {
 	private String catatan;
 	private Double amount;
 	private Long idasset;
+	private Long idinvoiceitem;
+	public Long getIdinvoiceitem() {
+		return idinvoiceitem;
+	}
+	public void setIdinvoiceitem(Long idinvoiceitem) {
+		this.idinvoiceitem = idinvoiceitem;
+	}
 	public Long getIdcoa() {
 		return idcoa;
 	}

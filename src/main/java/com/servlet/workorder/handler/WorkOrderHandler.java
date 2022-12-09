@@ -19,6 +19,7 @@ import com.servlet.parameter.entity.ParameterData;
 import com.servlet.parameter.service.ParameterService;
 import com.servlet.partai.service.PartaiService;
 import com.servlet.port.service.PortService;
+import com.servlet.report.entity.ParamReportManggala;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
@@ -36,6 +37,7 @@ import com.servlet.workorder.entity.DetailWorkOrderData;
 import com.servlet.workorder.entity.DetailWorkOrderPK;
 import com.servlet.workorder.entity.ListDocumentWorkOrder;
 import com.servlet.workorder.entity.ListDocumentWorkOrderData;
+import com.servlet.workorder.entity.ParamDropDownWO;
 import com.servlet.workorder.entity.ParamWoReport;
 import com.servlet.workorder.entity.WorkOrder;
 import com.servlet.workorder.entity.WorkOrderData;
@@ -182,6 +184,7 @@ public class WorkOrderHandler implements WorkOrderService{
 					table.setVoyagenumber(body.getVoyagenumber());
 					table.setTanggalsppb_npe(body.getTanggalsppb_npe().longValue() > 0? new java.sql.Date(body.getTanggalsppb_npe()):null);
 					table.setDepo(body.getDepo());
+					table.setIdvendordepo(body.getIdvendordepo());
 					table.setInvoiceno("");
 					table.setIsactive(body.isIsactive());
 					table.setIsdelete(false);
@@ -254,6 +257,7 @@ public class WorkOrderHandler implements WorkOrderService{
 					table.setVoyagenumber(body.getVoyagenumber());
 					table.setTanggalsppb_npe(body.getTanggalsppb_npe().longValue() > 0? new java.sql.Date(body.getTanggalsppb_npe()):null);
 					table.setDepo(body.getDepo());
+					table.setIdvendordepo(body.getIdvendordepo());
 					table.setIsactive(body.isIsactive());
 					table.setUpdateby(iduser.toString());
 					table.setUpdatedate(ts);
@@ -675,6 +679,29 @@ public class WorkOrderHandler implements WorkOrderService{
 		sqlBuilder.append(" where data.idworkorder = ? and data.idcompany = ? and data.idbranch = ? ");
 		final Object[] queryParameters = new Object[] {idworkorder,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailWorkOrderForReportStatusInvoice(), queryParameters);
+	}
+
+	@Override
+	public List<WorkOrderData> getListDataWoForReportLabaRugi(Long idcompany,Long idbranch,ParamReportManggala param) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetWorkOrderJoinTableData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		sqlBuilder.append(" and data.tanggal >= '"+new java.sql.Date(param.getFromDate())+"'  and data.tanggal <= '"+new java.sql.Date(param.getToDate())+"' ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderJoinTableData(), queryParameters);
+	}
+
+	@Override
+	public List<WorkOrderDropDownData> getListDropDownByParam(Long idcompany, Long idbranch, ParamDropDownWO param) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetWorkOrderDropdownData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		if(param.getMenu().equals("PENGELUARAN_KAS_BANK")) {
+			sqlBuilder.append(" and data.status = '"+param.getStatus()+"' ");
+		}
+		sqlBuilder.append(" order by cust.customername ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderDropdownData(), queryParameters);
 	}
 
 }

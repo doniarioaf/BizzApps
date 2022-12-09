@@ -11,14 +11,19 @@ import org.springframework.stereotype.Service;
 
 import com.servlet.bankaccount.service.BankAccountService;
 import com.servlet.coa.service.CoaService;
+import com.servlet.invoicetype.entity.ParamInvTypeDropDown;
+import com.servlet.invoicetype.service.InvoiceTypeService;
+import com.servlet.parametermanggala.service.ParameterManggalaService;
 import com.servlet.pengluarankasbank.entity.BodyDetailPengeluaranKasBank;
 import com.servlet.pengluarankasbank.entity.BodyPengeluaranKasBank;
 import com.servlet.pengluarankasbank.entity.DetailPengeluaranKasBank;
 import com.servlet.pengluarankasbank.entity.DetailPengeluaranKasBankData;
 import com.servlet.pengluarankasbank.entity.DetailPengeluaranKasBankPK;
+import com.servlet.pengluarankasbank.entity.PengeluaranHeaderAndDetail;
 import com.servlet.pengluarankasbank.entity.PengeluaranKasBankData;
 import com.servlet.pengluarankasbank.entity.PengeluaranKasBankTemplate;
 import com.servlet.pengluarankasbank.entity.PengluaranKasBank;
+import com.servlet.pengluarankasbank.mapper.GetDetailPengeluaranKasBankData;
 import com.servlet.pengluarankasbank.mapper.GetDetailPengeluaranKasBankJoinTable;
 import com.servlet.pengluarankasbank.mapper.GetPengeluaranKasBankData;
 import com.servlet.pengluarankasbank.mapper.GetPengeluaranKasBankJoinTable;
@@ -31,6 +36,8 @@ import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.workorder.entity.ParamDropDownWO;
+import com.servlet.workorder.service.WorkOrderService;
 
 @Service
 public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
@@ -46,6 +53,13 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 	private CoaService coaService;
 	@Autowired
 	private BankAccountService bankAccountService;
+	@Autowired
+	private ParameterManggalaService parameterManggalaService;
+	@Autowired
+	private WorkOrderService workOrderService;
+	@Autowired
+	private InvoiceTypeService invoiceTypeService;
+	
 	
 	@Override
 	public List<PengeluaranKasBankData> getListAll(Long idcompany, Long idbranch) {
@@ -75,6 +89,7 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		if(list != null && list.size() > 0) {
 			PengeluaranKasBankData val = list.get(0);
 			val.setDetails(getDetails(idcompany,idbranch,id));
+			val.setDisablededitordelete(compareDateDocWithParameter(idcompany,idbranch,val.getPaymentdate()));
 			return val;
 		}
 		return null;
@@ -106,6 +121,7 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 				table.setPaymentto(body.getPaymentto());
 				table.setKeterangan(body.getKeterangan());
 				table.setIsactive(body.isIsactive());
+				table.setIdwo(body.getIdwo());
 				table.setIsdelete(false);
 				table.setCreatedby(iduser.toString());
 				table.setCreateddate(ts);
@@ -143,6 +159,11 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		long idsave = 0;
 		PengeluaranKasBankData value = checkById(idcompany,idbranch,id);
 		if(value != null) {
+			boolean flag = compareDateDocWithParameter(idcompany,idbranch,value.getPaymentdate());
+			if(flag) {
+				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_PENGELUARAN_DATE_CLOSEBOOK,"Tidak Bisa Edit/Delete, Sudah Tutup Buku");
+				validations.add(msg);
+			}
 			if(validations.size() == 0) {
 				try {
 					Timestamp ts = new Timestamp(new Date().getTime());
@@ -152,6 +173,7 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 					table.setIdbank(body.getIdbank());
 					table.setPaymentto(body.getPaymentto());
 					table.setKeterangan(body.getKeterangan());
+					table.setIdwo(body.getIdwo());
 					table.setIsactive(body.isIsactive());
 					table.setUpdateby(iduser.toString());
 					table.setUpdatedate(ts);
@@ -181,6 +203,11 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		long idsave = 0;
 		PengeluaranKasBankData value = checkById(idcompany,idbranch,id);
 		if(value != null) {
+			boolean flag = compareDateDocWithParameter(idcompany,idbranch,value.getPaymentdate());
+			if(flag) {
+				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_PENGELUARAN_DATE_CLOSEBOOK,"Tidak Bisa Edit/Delete, Sudah Tutup Buku");
+				validations.add(msg);
+			}
 			if(validations.size() == 0) {
 				try {
 					Timestamp ts = new Timestamp(new Date().getTime());
@@ -242,9 +269,19 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 	}
 	
 	private PengeluaranKasBankTemplate setTemplate(Long idcompany, Long idbranch) {
+		ParamDropDownWO paramwo = new ParamDropDownWO();
+		paramwo.setStatus("OPEN");
+		paramwo.setMenu("PENGELUARAN_KAS_BANK");
+		
+		ParamInvTypeDropDown paramInvType = new ParamInvTypeDropDown();
+		paramInvType.setInvoicetype("REIMBURSEMENT");
+		paramInvType.setMenu("PENGELUARAN_KAS_BANK");
+		
 		PengeluaranKasBankTemplate template = new PengeluaranKasBankTemplate();
 		template.setBankOptions(bankAccountService.getListActiveBankAccount(idcompany, idbranch));
 		template.setCoaOptions(coaService.getListActiveCOA(idcompany, idbranch));
+		template.setWoOptions(workOrderService.getListDropDownByParam(idcompany, idbranch, paramwo));
+		template.setInvoiceItemOptions(invoiceTypeService.getListDropDownInvoiceType(idcompany, idbranch, paramInvType));
 		return template;
 	}
 	
@@ -272,6 +309,7 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 					detailPengeluaranKasBank.setCatatan(detail.getCatatan());
 					detailPengeluaranKasBank.setAmount(detail.getAmount());
 					detailPengeluaranKasBank.setIdasset(detail.getIdasset());
+					detailPengeluaranKasBank.setIdinvoiceitem(detail.getIdinvoiceitem());
 					
 					detailPengeluaranKasBankRepo.saveAndFlush(detailPengeluaranKasBank);
 					count++;
@@ -318,6 +356,66 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		sqlBuilder.append(" where data.idpengeluarankasbank = ? and data.idcompany = ? and data.idbranch = ? ");
 		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPengeluaranKasBankJoinTable(), queryParameters);
+	}
+	
+	private boolean compareDateDocWithParameter(Long idcompany,Long idbranch,Date paymentdate) {
+		java.sql.Date dtParamTutupBuku = parameterManggalaService.getValueByParamName(idcompany,idbranch,"BULANTUTUPBUKU","DATE").getDateValue();
+		boolean disableBtn = false;
+		if(dtParamTutupBuku != null) {
+			Timestamp tsDocument = new Timestamp(paymentdate.getTime());
+			Timestamp tsTutupBuku = new Timestamp(dtParamTutupBuku.getTime());
+			int compare = tsDocument.compareTo(tsTutupBuku);
+			if(compare <= 0) {
+				disableBtn = true;
+			}
+			
+		}
+		return disableBtn;
+	}
+
+	@Override
+	public Double summaryAmountPengeluaranByIdWo(Long idcompany, Long idbranch, java.sql.Date fromdate,
+			java.sql.Date todate, Long idwo) {
+		// TODO Auto-generated method stub
+//		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetTotalAmount().schema());
+//		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? ");
+//		if(fromdate != null && todate != null) {
+//			sqlBuilder.append(" and data.idpengeluarankasbank in (select pkb.id from m_pengeluaran_kas_bank as pkb where pkb.paymentdate >= '"+fromdate+"'  and pkb.paymentdate <= '"+todate+"' and pkb.isactive = true and pkb.isdelete = false ) ");
+//		}
+//		sqlBuilder.append(" and data.idpengeluarankasbank = "+idpengeluaran+" ");
+//		
+//		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+//		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmount(), queryParameters);
+//		if(list != null && list.size() > 0) {
+//			return list.get(0);
+//		}
+		return 0.0;
+	}
+	
+	private List<DetailPengeluaranKasBankData> getListDetailByIdWONotJoin(Long idcompany, Long idbranch, Long idWO) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailPengeluaranKasBankData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? ");
+		sqlBuilder.append(" and data.idpengeluarankasbank in (select m.id from m_pengeluaran_kas_bank as m where m.isactive = true  and m.isdelete = false and m.idwo = "+idWO+" ) ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPengeluaranKasBankData(), queryParameters);
+	}
+
+	@Override
+	public PengeluaranHeaderAndDetail getListByIdWo(Long idcompany, Long idbranch, Long idWO) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPengeluaranKasBankData().schema());
+		sqlBuilder.append(" where data.idwo = ? and data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {idWO, idcompany,idbranch};
+		List<PengeluaranKasBankData> headers = this.jdbcTemplate.query(sqlBuilder.toString(), new GetPengeluaranKasBankData(), queryParameters);
+		
+		List<DetailPengeluaranKasBankData> details = getListDetailByIdWONotJoin(idcompany, idbranch, idWO);
+		
+		PengeluaranHeaderAndDetail data = new PengeluaranHeaderAndDetail();
+		data.setHeaders(headers);
+		data.setDetails(details);
+		
+		return data;
 	}
 
 }

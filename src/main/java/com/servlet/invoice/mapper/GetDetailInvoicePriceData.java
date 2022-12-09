@@ -13,7 +13,7 @@ public class GetDetailInvoicePriceData implements RowMapper<DetailInvoicePriceDa
 	public GetDetailInvoicePriceData() {
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
-		sqlBuilder.append("data.idinvoice as idinvoice, data.idwarehouse as idwarehouse, data.idinvoicetype as idinvoicetype, data.jalur as jalur, data.price as price, ");
+		sqlBuilder.append("data.idpengeluarankasbank as idpengeluarankasbank,data.idinvoice as idinvoice, data.idwarehouse as idwarehouse, data.idinvoicetype as idinvoicetype, data.jalur as jalur, data.price as price, ");
 		sqlBuilder.append("data.ismandatory as ismandatory, data.idpricelist as idpricelist, data.qty as qty, data.diskon as diskon, data.subtotal as subtotal ");
 		sqlBuilder.append("from detail_invoice_price as data ");
 		
@@ -37,6 +37,8 @@ public class GetDetailInvoicePriceData implements RowMapper<DetailInvoicePriceDa
 		final Long qty = rs.getLong("qty");
 		final Double diskon = rs.getDouble("diskon");
 		final Double subtotal = rs.getDouble("subtotal");
+		final Long idpengeluarankasbank = rs.getLong("idpengeluarankasbank");
+		
 		
 		DetailInvoicePriceData data = new DetailInvoicePriceData();
 		data.setIdwarehouse(idwarehouse);
@@ -50,6 +52,7 @@ public class GetDetailInvoicePriceData implements RowMapper<DetailInvoicePriceDa
 		data.setQty(qty);
 		data.setDiskon(diskon);
 		data.setSubtotal(subtotal);
+		data.setIdpengeluarankasbank(idpengeluarankasbank);
 		return data;
 	}
 

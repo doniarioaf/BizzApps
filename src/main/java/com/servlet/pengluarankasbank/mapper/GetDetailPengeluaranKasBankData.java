@@ -11,8 +11,9 @@ public class GetDetailPengeluaranKasBankData implements RowMapper<DetailPengelua
 	public GetDetailPengeluaranKasBankData() {
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
-		sqlBuilder.append("data.idcoa as idcoa, data.catatan as catatan, data.amount as amount, data.idasset as idasset ");
+		sqlBuilder.append("data.idpengeluarankasbank as idpengeluarankasbank,data.idcoa as idcoa, data.catatan as catatan, data.amount as amount, data.idasset as idasset, data.idinvoiceitem as idinvoiceitem, invtype.nama as invtypenama ");
 		sqlBuilder.append("from detail_pengeluaran_kas_bank as data ");
+		sqlBuilder.append("left join m_invoice_type as invtype on invtype.id = data.idinvoiceitem ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}
@@ -29,6 +30,10 @@ public class GetDetailPengeluaranKasBankData implements RowMapper<DetailPengelua
 		final String catatan = rs.getString("catatan");
 		final Double amount = rs.getDouble("amount");
 		final Long idasset = rs.getLong("idasset");
+		final Long idinvoiceitem = rs.getLong("idinvoiceitem");
+		final Long idpengeluarankasbank = rs.getLong("idpengeluarankasbank");
+		final String invtypenama = rs.getString("invtypenama");
+		
 		
 		DetailPengeluaranKasBankData data = new DetailPengeluaranKasBankData();
 		data.setIdcoa(idcoa);
@@ -37,6 +42,9 @@ public class GetDetailPengeluaranKasBankData implements RowMapper<DetailPengelua
 		data.setAmount(amount);
 		data.setIdasset(idasset);
 		data.setAssetName("");
+		data.setIdinvoiceitem(idinvoiceitem);
+		data.setInvoiceitemName(invtypenama);
+		data.setIdpengeluarankasbank(idpengeluarankasbank);
 		return data;
 	}
 

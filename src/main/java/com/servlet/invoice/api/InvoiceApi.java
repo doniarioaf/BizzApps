@@ -84,6 +84,15 @@ public class InvoiceApi {
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
+	@GetMapping("/searchpengeluaran/{idwo}")
+	ResponseEntity<Response> searchPengeluaranByWO(@PathVariable long idwo,@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "SEACRH_PENGELUARAN");
+		param.put("idwo", idwo);
+		Response response = securityService.response(ConstansPermission.READ_INVOICE,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
 	@PostMapping("/searchpricelist")
 	ResponseEntity<Response> searchPriceList(@RequestBody @Validated BodySearchInvoicePriceList body,@RequestHeader(ConstansKey.AUTH) String authorization) {
 		HashMap<String, Object> param = new HashMap<String, Object>();

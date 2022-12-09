@@ -15,10 +15,11 @@ public class GetPengeluaranKasBankJoinTable implements RowMapper<PengeluaranKasB
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
 		sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.paymentdate as paymentdate, data.paymentto as paymentto, data.idcoa as idcoa, ");
-		sqlBuilder.append("data.idbank as idbank, data.keterangan as keterangan, data.isactive as isactive, coa.nama as coaname, bank.namabank as namabank ");
+		sqlBuilder.append("data.idbank as idbank, data.keterangan as keterangan, data.isactive as isactive, coa.nama as coaname, bank.namabank as namabank, data.idwo as idwo, wo.nodocument as nodocumentwo ");
 		sqlBuilder.append("from m_pengeluaran_kas_bank as data ");
 		sqlBuilder.append("left join m_coa as coa on coa.id = data.idcoa ");
 		sqlBuilder.append("left join m_bank_account as bank on bank.id = data.idbank ");
+		sqlBuilder.append("left join m_workorder as wo on wo.id = data.idwo ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}
@@ -41,6 +42,9 @@ public class GetPengeluaranKasBankJoinTable implements RowMapper<PengeluaranKasB
 		final boolean isactive = rs.getBoolean("isactive");
 		final String coaname = rs.getString("coaname");
 		final String namabank = rs.getString("namabank");
+		final Long idwo = rs.getLong("idwo");
+		final String nodocumentwo = rs.getString("nodocumentwo");
+		
 		
 		PengeluaranKasBankData data = new PengeluaranKasBankData();
 		data.setId(id);
@@ -53,6 +57,8 @@ public class GetPengeluaranKasBankJoinTable implements RowMapper<PengeluaranKasB
 		data.setIsactive(isactive);
 		data.setCoaName(coaname);
 		data.setBankName(namabank);
+		data.setIdwo(idwo);
+		data.setNodocumentWO(nodocumentwo);
 		return data;
 	}
 
