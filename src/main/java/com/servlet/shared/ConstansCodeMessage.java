@@ -78,5 +78,26 @@ public class ConstansCodeMessage {
 	public static final String VALIDASI_PAYMENTTYPE_NAME_EXISTS = "validation.paymenttype.name.exist";
 	
 	public static final String VALIDASI_WORK_ORDER_INVOICENO_NOT_EMPTY = "validation.workorder.invoiceno.not.empty";
+	public static final String VALIDASI_DOCUMENT_INCORRECT_FORMAT = "validation.document.incorrect.format";
+	public static final String VALIDASI_DOCUMENT_MAX_SIZE_OVER_LIMIT = "validation.document.max.size.overlimit";
+	
+	public static final String VALIDASI_PENERIMAANKASBANK_WO_STATUS_NOT_OPEN = "validation.penerimaankasbank.wo.status.not.open";
+	public static final String VALIDASI_PENERIMAANKASBANK_WO_NOT_ACTIVE = "validation.penerimaankasbank.wo.not.active";
+	
+	public static final String VALIDASI_CUSTOMER_NOT_FOUND = "validation.customer.not.found";
+	public static final String VALIDASI_CUSTOMER_NOT_ACTIVE = "validation.customer.not.active";
+	public static final String VALIDASI_WO_NOT_FOUND = "validation.wo.not.found";
+	public static final String VALIDASI_WO_NOT_ACTIVE = "validation.wo.not.active";
+	public static final String VALIDASI_WO_NOT_AVAILABLE = "validation.wo.status.not.available";
+	public static final String VALIDASI_SJ_NOT_FOUND = "validation.sj.not.found";
+	public static final String VALIDASI_SJ_NOT_ACTIVE = "validation.sj.not.active";
+	public static final String VALIDASI_SJ_NOT_AVAILABLE = "validation.sj.status.not.available";
+	
+	public static final String VALIDASI_INVOICE_ALREADY_PAYMENT_EDIT = "validation.invoice.already.payment.edit";
+	public static final String VALIDASI_INVOICE_ALREADY_PAYMENT_DELETE = "validation.invoice.already.payment.delete";
+	public static final String VALIDASI_ASSET_KODEASSET_ISEXIST = "validation.asset.kodeasset.isexist";
+	public static final String VALIDASI_PENERIMAAN_DATE_CLOSEBOOK = "validation.penerimaan.date.closebook";
+	public static final String VALIDASI_PENGELUARAN_DATE_CLOSEBOOK = "validation.pengeluaran.date.closebook";
+	public static final String VALIDASI_INVOICE_WO_EXIST_REIMBURSEMENT = "validation.invoice.wo.exist.reimbursement";
 	
 }

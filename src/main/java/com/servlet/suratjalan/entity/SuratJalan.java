@@ -1,6 +1,7 @@
 package com.servlet.suratjalan.entity;
 
 import java.io.Serializable;
+import java.sql.Date;
 import java.sql.Timestamp;
 
 import javax.persistence.Entity;
@@ -36,6 +37,14 @@ public class SuratJalan implements Serializable{
 	private Timestamp updatedate;
 	private String deleteby;
 	private Timestamp deletedate;
+	private String kepemilikanmobil;
+	private Long idemployee_supir;
+	private Long idasset;
+	private Long idvendormobil;
+	private String lembur;
+	private Date tanggalkembali;
+	
+	
 	public Long getId() {
 		return id;
 	}
@@ -155,5 +164,41 @@ public class SuratJalan implements Serializable{
 	}
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	public String getKepemilikanmobil() {
+		return kepemilikanmobil;
+	}
+	public void setKepemilikanmobil(String kepemilikanmobil) {
+		this.kepemilikanmobil = kepemilikanmobil;
+	}
+	public Long getIdemployee_supir() {
+		return idemployee_supir;
+	}
+	public void setIdemployee_supir(Long idemployee_supir) {
+		this.idemployee_supir = idemployee_supir;
+	}
+	public Long getIdasset() {
+		return idasset;
+	}
+	public void setIdasset(Long idasset) {
+		this.idasset = idasset;
+	}
+	public Long getIdvendormobil() {
+		return idvendormobil;
+	}
+	public void setIdvendormobil(Long idvendormobil) {
+		this.idvendormobil = idvendormobil;
+	}
+	public String getLembur() {
+		return lembur;
+	}
+	public void setLembur(String lembur) {
+		this.lembur = lembur;
+	}
+	public Date getTanggalkembali() {
+		return tanggalkembali;
+	}
+	public void setTanggalkembali(Date tanggalkembali) {
+		this.tanggalkembali = tanggalkembali;
 	}
 }

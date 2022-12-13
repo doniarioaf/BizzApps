@@ -20,9 +20,9 @@ public class GetWorkOrderJoinTableData implements RowMapper<WorkOrderData>{
 		sqlBuilder.append("data.nobl as nobl, data.tanggalbl as tanggalbl, data.pelayaran as pelayaran, data.importir as importir, data.eksportir as eksportir, data.qq as qq, ");
 		sqlBuilder.append("data.voyagenumber as voyagenumber, data.tanggalsppb_npe as tanggalsppb_npe, data.depo as depo, data.invoiceno as invoiceno, ");
 		
-		sqlBuilder.append("cust.customername as customername, wotype.codename as wotypename, paramtransport.codename as transportname, mportasal.name as portasalname, mporttujuan.name as porttujuanname, ");
+		sqlBuilder.append("cust.customername as customername, cust.kodepos as custkodepos, wotype.codename as wotypename, paramtransport.codename as transportname, mportasal.name as portasalname, mporttujuan.name as porttujuanname, ");
 		sqlBuilder.append("paramwarnajalur.codename as warnajalurname, vendorpelayaran.nama as vendorpelayaranname, vendorimportir.nama as vendorimportirname, ");
-		sqlBuilder.append("vendoreksportir.nama as vendoreksportirname,vendorqq.nama as vendorqqname ");
+		sqlBuilder.append("vendoreksportir.nama as vendoreksportirname,vendorqq.nama as vendorqqname , vendordepo.nama as vendordeponame ");
 		sqlBuilder.append("from m_workorder as data ");
 		sqlBuilder.append("left join m_customer_manggala as cust on cust.id = data.idcustomer ");
 		sqlBuilder.append("left join m_parameter as wotype on wotype.code = data.jeniswo and wotype.grup = 'WO_TYPE' ");
@@ -34,6 +34,7 @@ public class GetWorkOrderJoinTableData implements RowMapper<WorkOrderData>{
 		sqlBuilder.append("left join m_vendor as vendorimportir on vendorimportir.id = data.importir ");
 		sqlBuilder.append("left join m_vendor as vendoreksportir on vendoreksportir.id = data.eksportir ");
 		sqlBuilder.append("left join m_vendor as vendorqq on vendorqq.id = data.qq ");
+		sqlBuilder.append("left join m_vendor as vendordepo on vendordepo.id = data.idvendordepo ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}
@@ -70,10 +71,11 @@ public class GetWorkOrderJoinTableData implements RowMapper<WorkOrderData>{
 		final Long qq = rs.getLong("qq");
 		final String voyagenumber = rs.getString("voyagenumber");
 		final Date tanggalsppb_npe = rs.getDate("tanggalsppb_npe");
-		final String depo = rs.getString("depo");
+		final String vendordeponame = rs.getString("vendordeponame");
 		final String invoiceno = rs.getString("invoiceno");
 		
 		final String customername = rs.getString("customername");
+		final String custkodepos = rs.getString("custkodepos");
 		final String wotypename = rs.getString("wotypename");
 		final String transportname = rs.getString("transportname");
 		final String portasalname = rs.getString("portasalname");
@@ -112,10 +114,11 @@ public class GetWorkOrderJoinTableData implements RowMapper<WorkOrderData>{
 		data.setQq(qq);
 		data.setVoyagenumber(voyagenumber);
 		data.setTanggalsppb_npe(tanggalsppb_npe);
-		data.setDepo(depo);
+		data.setDepo(vendordeponame);
 		data.setInvoiceno(invoiceno);
 		
 		data.setNamaCustomer(customername);
+		data.setKodeposCustomer(custkodepos);
 		data.setJeniswoCodeName(wotypename);
 		data.setModatransportasiCodeName(transportname);
 		data.setPortasalname(portasalname);

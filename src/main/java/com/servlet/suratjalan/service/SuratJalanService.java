@@ -1,12 +1,15 @@
 package com.servlet.suratjalan.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.servlet.shared.ReturnData;
 import com.servlet.suratjalan.entity.BodyStatusSuratJalan;
 import com.servlet.suratjalan.entity.BodySuratJalan;
+import com.servlet.suratjalan.entity.PenandaanSuratJalanTemplate;
 import com.servlet.suratjalan.entity.PrintData;
 import com.servlet.suratjalan.entity.SuratJalanData;
+import com.servlet.suratjalan.entity.SuratJalanDropDown;
 import com.servlet.suratjalan.entity.SuratJalanTemplate;
 
 public interface SuratJalanService {
@@ -21,4 +24,7 @@ public interface SuratJalanService {
 	ReturnData updateStatus(Long idcompany,Long idbranch,Long iduser,Long id,BodyStatusSuratJalan body);
 	SuratJalanTemplate getTemplate(Long idcompany,Long idbranch);
 	PrintData printById(Long idcompany,Long idbranch,Long id);
+	PenandaanSuratJalanTemplate getPenandaanSuratJalanTemplate(Long idcompany,Long idbranch);
+	HashMap<String, Object> checkSuratjalan(Long idcompany,Long idbranch,Long id);
+	List<SuratJalanDropDown> getListByIdWO(Long idcompany,Long idbranch,Long idwo);
 }

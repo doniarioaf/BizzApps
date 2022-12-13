@@ -29,6 +29,14 @@ public class BodyWorkOrder {
 	private boolean isactive;
 	private BodyDetailWorkOrder[] details;
 	
+	private Long idvendordepo;
+	public Long getIdvendordepo() {
+		return idvendordepo;
+	}
+	public void setIdvendordepo(Long idvendordepo) {
+		this.idvendordepo = idvendordepo;
+	}
+	
 	public Long getTanggal() {
 		return tanggal;
 	}

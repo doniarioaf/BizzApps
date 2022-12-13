@@ -1,5 +1,6 @@
 package com.servlet.suratjalan.entity;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -27,6 +28,17 @@ public class SuratJalanData {
 	private String containerjumlahkg;
 	private String status;
 	private String statusname;
+	private String kepemilikanmobil;
+	private String kepemilikanmobilname;
+	private Long idemployee_supir;
+	private String supirname;
+	private Long idasset;
+	private String assetname;
+	private Long idvendormobil;
+	private String vendormobilname;
+	private String lembur;
+	private String lemburname;
+	private Date tanggalkembali;
 	private SuratJalanTemplate template;
 	private List<HistorySuratJalanData> history;
 	public SuratJalanTemplate getTemplate() {
@@ -178,5 +190,71 @@ public class SuratJalanData {
 	}
 	public void setHistory(List<HistorySuratJalanData> history) {
 		this.history = history;
+	}
+	public String getKepemilikanmobil() {
+		return kepemilikanmobil;
+	}
+	public void setKepemilikanmobil(String kepemilikanmobil) {
+		this.kepemilikanmobil = kepemilikanmobil;
+	}
+	public String getKepemilikanmobilname() {
+		return kepemilikanmobilname;
+	}
+	public void setKepemilikanmobilname(String kepemilikanmobilname) {
+		this.kepemilikanmobilname = kepemilikanmobilname;
+	}
+	public Long getIdemployee_supir() {
+		return idemployee_supir;
+	}
+	public void setIdemployee_supir(Long idemployee_supir) {
+		this.idemployee_supir = idemployee_supir;
+	}
+	public String getSupirname() {
+		return supirname;
+	}
+	public void setSupirname(String supirname) {
+		this.supirname = supirname;
+	}
+	public Long getIdasset() {
+		return idasset;
+	}
+	public void setIdasset(Long idasset) {
+		this.idasset = idasset;
+	}
+	public String getAssetname() {
+		return assetname;
+	}
+	public void setAssetname(String assetname) {
+		this.assetname = assetname;
+	}
+	public Long getIdvendormobil() {
+		return idvendormobil;
+	}
+	public void setIdvendormobil(Long idvendormobil) {
+		this.idvendormobil = idvendormobil;
+	}
+	public String getVendormobilname() {
+		return vendormobilname;
+	}
+	public void setVendormobilname(String vendormobilname) {
+		this.vendormobilname = vendormobilname;
+	}
+	public String getLembur() {
+		return lembur;
+	}
+	public void setLembur(String lembur) {
+		this.lembur = lembur;
+	}
+	public String getLemburname() {
+		return lemburname;
+	}
+	public void setLemburname(String lemburname) {
+		this.lemburname = lemburname;
+	}
+	public Date getTanggalkembali() {
+		return tanggalkembali;
+	}
+	public void setTanggalkembali(Date tanggalkembali) {
+		this.tanggalkembali = tanggalkembali;
 	}
 }

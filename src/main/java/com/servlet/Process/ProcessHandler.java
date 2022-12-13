@@ -3,6 +3,7 @@ package com.servlet.Process;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,13 +38,20 @@ import com.servlet.admin.role.entity.BodyRole;
 import com.servlet.admin.role.service.RoleService;
 import com.servlet.admin.usermobile.entity.BodyUserMobile;
 import com.servlet.admin.usermobile.service.UserMobileService;
+import com.servlet.asset.entity.BodyAsset;
+import com.servlet.asset.entity.BodyAssetMapping;
+import com.servlet.asset.service.AssetService;
 import com.servlet.bankaccount.entity.BodyBankAccount;
 import com.servlet.bankaccount.service.BankAccountService;
+//import com.servlet.coa.service.CoaService;
 import com.servlet.customermanggala.entity.BodyCustomerManggala;
 import com.servlet.customermanggala.entity.BodySearch;
 import com.servlet.customermanggala.service.CustomerManggalaService;
 import com.servlet.employeemanggala.entity.BodyEmployeeManggala;
 import com.servlet.employeemanggala.service.EmployeeManggalaService;
+import com.servlet.invoice.entity.BodyInvoice;
+import com.servlet.invoice.entity.BodySearchInvoicePriceList;
+import com.servlet.invoice.service.InvoiceService;
 import com.servlet.invoicetype.entity.BodyInvoiceType;
 import com.servlet.invoicetype.service.InvoiceTypeService;
 import com.servlet.mobile.callplan.entity.BodyCallPlan;
@@ -67,14 +75,23 @@ import com.servlet.partai.entity.BodyPartai;
 import com.servlet.partai.service.PartaiService;
 import com.servlet.paymenttype.entity.BodyPaymentType;
 import com.servlet.paymenttype.service.PaymentTypeService;
+import com.servlet.penerimaankasbank.entity.BodyPenerimaanKasBank;
+import com.servlet.penerimaankasbank.service.PenerimaanKasBankService;
+import com.servlet.pengluarankasbank.entity.BodyPengeluaranKasBank;
+import com.servlet.pengluarankasbank.service.PengeluaranKasBankService;
 import com.servlet.port.entity.BodyPort;
 import com.servlet.port.service.PortService;
 import com.servlet.pricelist.entity.BodyPriceList;
 import com.servlet.pricelist.entity.BodySearchPriceList;
+import com.servlet.pricelist.entity.PriceListData;
 import com.servlet.pricelist.service.PriceListService;
 import com.servlet.report.entity.BodyGetMaps;
 import com.servlet.report.entity.BodyReportMonitoring;
+import com.servlet.report.entity.ManggalaStatusInvoice;
+import com.servlet.report.entity.Manggala_BodyReportBongkarMuatDanDepo;
+import com.servlet.report.entity.ParamReportManggala;
 import com.servlet.report.service.ReportService;
+import com.servlet.report.service.ReportServiceManggala;
 import com.servlet.security.entity.AuthorizationData;
 import com.servlet.shared.AESEncryptionDecryption;
 import com.servlet.shared.ConstansKey;
@@ -177,7 +194,16 @@ public class ProcessHandler implements ProcessService{
 	WorkOrderService workOrderService;
 	@Autowired
 	SuratJalanService suratJalanService;
-	
+	@Autowired
+	ReportServiceManggala reportServiceManggala;
+	@Autowired
+	PenerimaanKasBankService penerimaanKasBankService;
+	@Autowired
+	PengeluaranKasBankService pengeluaranKasBankService;
+	@Autowired
+	InvoiceService invoiceService;
+	@Autowired
+	AssetService assetService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -999,6 +1025,206 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_DOCUMENT_WORKORDER)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("UPLOADDOCUMENT")) {
+					MultipartFile file = (MultipartFile) param.get("body");
+					Long id = (Long) param.get("id");
+					ReturnData valReturn = workOrderService.uploadDocumentWorkOrder(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, file);
+					if(valReturn.isSuccess()) {
+						val.setData(valReturn.getId());
+					}else {
+						val.setSuccess(valReturn.isSuccess());
+						val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+						val.setValidations(valReturn.getValidations());
+						val.setData(null);
+					}
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_DOCUMENT_WORKORDER)) {
+				long id = (long) data;
+				ReturnData valReturn = workOrderService.deleteDocumentWorkOrder(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_PENERIMAAN_KASBANK)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("CREATE")) {
+					BodyPenerimaanKasBank body = (BodyPenerimaanKasBank) param.get("body");
+					ReturnData valReturn =  penerimaanKasBankService.saveData(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), body);
+					if(valReturn.isSuccess()) {
+						val.setData(valReturn.getId());
+					}else {
+						val.setSuccess(valReturn.isSuccess());
+						val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+						val.setValidations(valReturn.getValidations());
+						val.setData(null);
+					}
+				}else if(type.equals("SEARCHINVOICE")) {
+					com.servlet.invoice.entity.BodySearch body = (com.servlet.invoice.entity.BodySearch) param.get("body");
+					val.setData(invoiceService.getListSearchInvoice(auth.getIdcompany(),auth.getIdbranch(), body));
+				}else if(type.equals("SEARCHWO")) {
+					com.servlet.workorder.entity.BodySearch body = (com.servlet.workorder.entity.BodySearch) param.get("body");
+					val.setData(workOrderService.getListSearchWO(auth.getIdcompany(),auth.getIdbranch(), body));
+				}
+				
+			}else if(codepermission.equals(ConstansPermission.EDIT_PENERIMAAN_KASBANK)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyPenerimaanKasBank body  = (BodyPenerimaanKasBank) param.get("body");
+				ReturnData valReturn = penerimaanKasBankService.updateData(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_PENERIMAAN_KASBANK)) {
+				long id = (long) data;
+				ReturnData valReturn = penerimaanKasBankService.deleteData(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_PENGELUARAN_KASBANK)) {
+				BodyPengeluaranKasBank param = (BodyPengeluaranKasBank) data;
+				ReturnData valReturn =  pengeluaranKasBankService.saveData(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_PENGELUARAN_KASBANK)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyPengeluaranKasBank body  = (BodyPengeluaranKasBank) param.get("body");
+				ReturnData valReturn = pengeluaranKasBankService.updateData(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_PENGELUARAN_KASBANK)) {
+				long id = (long) data;
+				ReturnData valReturn = pengeluaranKasBankService.deleteData(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_INVOICE)) {
+				BodyInvoice param = (BodyInvoice) data;
+				ReturnData valReturn =  invoiceService.saveInvoice(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_INVOICE)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyInvoice body  = (BodyInvoice) param.get("body");
+				ReturnData valReturn = invoiceService.updateInvoice(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_INVOICE)) {
+				long id = (long) data;
+				ReturnData valReturn = invoiceService.deleteInvoice(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_ASSET)) {
+				BodyAsset param = (BodyAsset) data;
+				ReturnData valReturn =  assetService.saveAsset(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_ASSET)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyAsset body  = (BodyAsset) param.get("body");
+				ReturnData valReturn = assetService.updateAsset(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_ASSET)) {
+				long id = (long) data;
+				ReturnData valReturn = assetService.deleteAsset(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_ASSET_MAPPING)) {
+				BodyAssetMapping param = (BodyAssetMapping) data;
+				ReturnData valReturn =  assetService.saveAssetMapping(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_HISTORY_ASSET_MAPPING)) {
+				long id = (long) data;
+				ReturnData valReturn = assetService.deleteHistoryAssetMapping(auth.getIdcompany(),auth.getIdbranch(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 			}
 			
 			
@@ -1247,7 +1473,7 @@ public class ProcessHandler implements ProcessService{
 					val.setData(bankAccountService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
-					val.setData(bankAccountService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+					val.setData(bankAccountService.getById(auth.getIdcompany(), auth.getIdbranch(),id,auth.getId()));
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_EMPLOYEE_MANGGALA)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
@@ -1317,6 +1543,8 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
 					val.setData(parameterManggalaService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}if(type.equals("TEMPLATE")) {
+					val.setData(parameterManggalaService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_WAREHOUSE)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
@@ -1409,6 +1637,8 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("TEMPLATE_WITH_ID")) {
 					long id = (long) param.get("id");
 					val.setData(suratJalanService.getTemplateWithDataById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("PENANDAAN_SJ_TEMPLATE")) {
+					val.setData(suratJalanService.getPenandaanSuratJalanTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}
 				
 			}else if(codepermission.equals(ConstansPermission.READ_PRINT_SURATJALAN)) {
@@ -1418,7 +1648,168 @@ public class ProcessHandler implements ProcessService{
 					long id = (long) param.get("id");
 					val.setData(suratJalanService.printById(auth.getIdcompany(), auth.getIdbranch(),id));
 				}
+			}else if(codepermission.equals(ConstansPermission.READ_DOCUMENT_WORKORDER)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				
+				if(type.equals("DOCUMENT_DATA")) {
+					long id = (long) param.get("id");
+					val.setData(workOrderService.getDocumentWorkOrder(auth.getIdcompany(), auth.getIdbranch(),id));
+				}
+			}else if(codepermission.equals(ConstansPermission.READ_REPORT_BONGKARMUATDEPO)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("REPORT")) {
+					Manggala_BodyReportBongkarMuatDanDepo body = (Manggala_BodyReportBongkarMuatDanDepo) param.get("body");
+					if(body.getTypeReport().equals("XLSX")) {
+						val.setData(reportServiceManggala.getReportBongkarMuatDanDepo(body, auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
+					}
+//					else if(body.getTypereport().equals("PPT")) {
+//						val.setData(reportService.getReportMonitoringDataPPT(body,auth.getIdcompany(), auth.getIdbranch()).getPpt());
+//					}else {
+//						val.setData(reportService.getReportMonitoringDataPDF(body, auth.getIdcompany(), auth.getIdbranch()));
+//					}
+					
+				}
+			}else if(codepermission.equals(ConstansPermission.READ_PENERIMAAN_KASBANK)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(penerimaanKasBankService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(penerimaanKasBankService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(penerimaanKasBankService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("TEMPLATE_ID")) {
+					long id = (long) param.get("id");
+					val.setData(penerimaanKasBankService.getByIdWithTemplate(auth.getIdcompany(), auth.getIdbranch(),id));
+				}
+				
+			}else if(codepermission.equals(ConstansPermission.READ_PENGELUARAN_KASBANK)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(pengeluaranKasBankService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(pengeluaranKasBankService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(pengeluaranKasBankService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("TEMPLATE_ID")) {
+					long id = (long) param.get("id");
+					val.setData(pengeluaranKasBankService.getByIdWithTemplate(auth.getIdcompany(), auth.getIdbranch(),id));
+				}
+				
+			}else if(codepermission.equals(ConstansPermission.READ_INVOICE)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(invoiceService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(invoiceService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(invoiceService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("DETAIL_TEMPLATE")) {
+					long id = (long) param.get("id");
+					val.setData(invoiceService.getByIdWithTemplate(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("SEARCHDATACUSTOMER")) {
+					BodySearch body = (BodySearch) param.get("body");
+					val.setData(customerManggalaService.getListSearchCustomer(auth.getIdcompany(), auth.getIdbranch(), body));
+				}else if(type.equals("SEACRHWO")) {
+					long idcustomer = (long) param.get("idcustomer");
+					
+					HashMap<String, Object> mapParam = new HashMap<String, Object>();
+					mapParam.put("type", "INVOICE");
+					mapParam.put("idcustomer", idcustomer);
+					
+					val.setData(workOrderService.getListWOByStatus(auth.getIdcompany(), auth.getIdbranch(),"OPEN", mapParam));
+				}else if(type.equals("SEACRH_SURATJALAN")) {
+					long idwo = (long) param.get("idwo");
+					val.setData(suratJalanService.getListByIdWO(auth.getIdcompany(), auth.getIdbranch(),idwo));
+				}else if(type.equals("SEACRH_PRICELIST")) {
+					BodySearchInvoicePriceList body = (BodySearchInvoicePriceList) param.get("body");
+					long idcustomer = body.getIdcustomer() == null?0:body.getIdcustomer();
+					long idwarehouse = body.getIdwarehouse() == null?0:body.getIdwarehouse();
+					String idinvoicetype = body.getIdinvoicetype();
+					val.setData(priceListService.getListPriceListByIdCustomer(auth.getIdcompany(), auth.getIdbranch(),idcustomer,idwarehouse,idinvoicetype,body.getJalur()));
+				}else if(type.equals("PRINTINVOICE")) {
+					long id = (long) param.get("id");
+					val.setData(invoiceService.printInvoice(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("SEACRH_PENGELUARAN")) {
+					long idwo = (long) param.get("idwo");
+					val.setData(pengeluaranKasBankService.getListByIdWo(auth.getIdcompany(), auth.getIdbranch(),idwo));
+				}
+				
+			}else if(codepermission.equals(ConstansPermission.READ_ASSET)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(assetService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(assetService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(assetService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("LISTMAPPING")) {
+					long id = (long) param.get("id");
+					String jenisasset = (String) param.get("jenisasset");
+					val.setData(assetService.getListAssetForMapping(auth.getIdcompany(), auth.getIdbranch(),id,jenisasset));
+				}else if(type.equals("REMINDER")) {
+					val.setData(assetService.getListAssetReminder(auth.getIdcompany(), auth.getIdbranch()));
+				}
+			}else if(codepermission.equals(ConstansPermission.READ_REPORT_STATUS_INVOICE)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("REPORT")) {
+					ManggalaStatusInvoice body = (ManggalaStatusInvoice) param.get("body");
+					if(body.getTypeReport().equals("XLSX")) {
+						val.setData(reportServiceManggala.getReportStatusInvoice(body, auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
+					}
+//					else if(body.getTypereport().equals("PPT")) {
+//						val.setData(reportService.getReportMonitoringDataPPT(body,auth.getIdcompany(), auth.getIdbranch()).getPpt());
+//					}else {
+//						val.setData(reportService.getReportMonitoringDataPDF(body, auth.getIdcompany(), auth.getIdbranch()));
+//					}
+					
+				}
+			}else if(codepermission.equals(ConstansPermission.READ_REPORT_KAS_BANK)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("REPORT")) {
+					ParamReportManggala body = (ParamReportManggala) param.get("body");
+					if(body.getTypeReport().equals("XLSX")) {
+						val.setData(reportServiceManggala.getReportKasBank(body, auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
+					}
+//					else if(body.getTypereport().equals("PPT")) {
+//						val.setData(reportService.getReportMonitoringDataPPT(body,auth.getIdcompany(), auth.getIdbranch()).getPpt());
+//					}else {
+//						val.setData(reportService.getReportMonitoringDataPDF(body, auth.getIdcompany(), auth.getIdbranch()));
+//					}
+					
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(bankAccountService.getListActiveBankAccount(auth.getIdcompany(), auth.getIdbranch()));
+				}
+			}else if(codepermission.equals(ConstansPermission.READ_REPORT_LABA_RUGI)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("REPORT")) {
+					ParamReportManggala body = (ParamReportManggala) param.get("body");
+					if(body.getTypeReport().equals("XLSX")) {
+						val.setData(reportServiceManggala.getReportLabaRugi(body, auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
+					}
+//					else if(body.getTypereport().equals("PPT")) {
+//						val.setData(reportService.getReportMonitoringDataPPT(body,auth.getIdcompany(), auth.getIdbranch()).getPpt());
+//					}else {
+//						val.setData(reportService.getReportMonitoringDataPDF(body, auth.getIdcompany(), auth.getIdbranch()));
+//					}
+					
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(bankAccountService.getListActiveBankAccount(auth.getIdcompany(), auth.getIdbranch()));
+				}
 			}
+			
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
 			if(codepermission.equals(ConstansPermission.READ_INFO_MOBILE)) {
 				String type = (String) data;

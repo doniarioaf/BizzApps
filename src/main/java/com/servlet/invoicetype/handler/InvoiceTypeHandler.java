@@ -13,6 +13,7 @@ import com.servlet.invoicetype.entity.BodyInvoiceType;
 import com.servlet.invoicetype.entity.InvoiceType;
 import com.servlet.invoicetype.entity.InvoiceTypeData;
 import com.servlet.invoicetype.entity.InvoiceTypeTemplate;
+import com.servlet.invoicetype.entity.ParamInvTypeDropDown;
 import com.servlet.invoicetype.mapper.GetInvoiceTypeData;
 import com.servlet.invoicetype.repo.InvoiceTypeRepo;
 import com.servlet.invoicetype.service.InvoiceTypeService;
@@ -190,6 +191,18 @@ public class InvoiceTypeHandler implements InvoiceTypeService{
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetInvoiceTypeData().schema());
 		sqlBuilder.append(" where data.invoicetype = ? and data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
 		final Object[] queryParameters = new Object[] {invoicetype,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceTypeData(), queryParameters);
+	}
+
+	@Override
+	public List<InvoiceTypeData> getListDropDownInvoiceType(Long idcompany, Long idbranch,ParamInvTypeDropDown param) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetInvoiceTypeData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		if(param.getMenu().equals("PENGELUARAN_KAS_BANK")) {
+			sqlBuilder.append(" and data.invoicetype = '"+param.getInvoicetype()+"' ");
+		}
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceTypeData(), queryParameters);
 	}
 

@@ -465,4 +465,13 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 		return data;
 	}
 
+	@Override
+	public List<EmployeManggalaDataList> getListEmployeeSupir(Long idcompany, Long idbranch) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetEmployeeManggalaDataList().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false and data.jabatan != 'STAF' and data.statuskaryawan != 'BERHENTI' order by data.id ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetEmployeeManggalaDataList(), queryParameters);
+	}
+
 }

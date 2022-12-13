@@ -1,5 +1,6 @@
 package com.servlet.customermanggala.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.servlet.customermanggala.entity.BodyCustomerManggala;
@@ -26,4 +27,6 @@ public interface CustomerManggalaService {
 	List<CustomerManggalaData> getListCustomerForPriceList(Long idcompany,Long idbranch,Long idcustomer);
 	List<CustomerManggalaData> getListSearchCustomer(Long idcompany,Long idbranch,BodySearch body);
 	CustomerManggalaData getDataCustomerNotFilter(Long idcompany,Long idbranch,Long id);
+	HashMap<String, Object> checkCustomerById(Long idcompany,Long idbranch,Long id);
+	CustomerManggalaData getDataCustomerForPrintInvoice(Long idcompany,Long idbranch,Long id);
 }

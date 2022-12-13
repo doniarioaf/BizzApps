@@ -18,7 +18,7 @@ public class GetWorkOrderNotJoinTableData implements RowMapper<WorkOrderData>{
 		sqlBuilder.append("data.status as status, data.jeniswo as jeniswo, data.modatransportasi as modatransportasi, data.etd as etd,data.eta as eta, ");
 		sqlBuilder.append("data.portasal as portasal, data.porttujuan as porttujuan, data.jalur as jalur, data.noaju as noaju, data.nopen as nopen, data.tanggalnopen as tanggalnopen, ");
 		sqlBuilder.append("data.nobl as nobl, data.tanggalbl as tanggalbl, data.pelayaran as pelayaran, data.importir as importir, data.eksportir as eksportir, data.qq as qq, ");
-		sqlBuilder.append("data.voyagenumber as voyagenumber, data.tanggalsppb_npe as tanggalsppb_npe, data.depo as depo, data.invoiceno as invoiceno ");
+		sqlBuilder.append("data.voyagenumber as voyagenumber, data.tanggalsppb_npe as tanggalsppb_npe, data.depo as depo, data.invoiceno as invoiceno, data.idvendordepo as idvendordepo ");
 		sqlBuilder.append("from m_workorder as data ");
 		
 		this.schemaSql = sqlBuilder.toString();
@@ -58,6 +58,8 @@ public class GetWorkOrderNotJoinTableData implements RowMapper<WorkOrderData>{
 		final Date tanggalsppb_npe = rs.getDate("tanggalsppb_npe");
 		final String depo = rs.getString("depo");
 		final String invoiceno = rs.getString("invoiceno");
+		final Long idvendordepo = rs.getLong("idvendordepo");
+		
 		
 		WorkOrderData data = new WorkOrderData();
 		data.setId(id);
@@ -87,7 +89,7 @@ public class GetWorkOrderNotJoinTableData implements RowMapper<WorkOrderData>{
 		data.setTanggalsppb_npe(tanggalsppb_npe);
 		data.setDepo(depo);
 		data.setInvoiceno(invoiceno);
-		
+		data.setIdvendordepo(idvendordepo);
 		return data;
 	}
 

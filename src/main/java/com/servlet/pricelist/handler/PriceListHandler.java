@@ -95,26 +95,34 @@ public class PriceListHandler implements PriceListService{
 			if(data != null) {
 				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_PRICELIST_CUSTOMER_EXISTS,"Customer Sudah Ada");
 				validations.add(msg);
-			}
-			
+			}			
 		}
 		
 		if(validations.size() == 0) {
 			try {
 				
-				PriceList table = new PriceList();
-				table.setIdcompany(idcompany);
-				table.setIdbranch(idbranch);
-				table.setIdcustomer(body.getIdcustomer());
-				table.setNodocument(docNumber);
-				table.setIsactive(body.isIsactive());
-				table.setIsdelete(false);
-				table.setCreatedby(iduser.toString());
-				table.setCreateddate(ts);
+				try {
+					PriceList table = new PriceList();
+					table.setIdcompany(idcompany);
+					table.setIdbranch(idbranch);
+					table.setIdcustomer(body.getIdcustomer());
+					table.setNodocument(docNumber);
+					table.setIsactive(body.isIsactive());
+					table.setIsdelete(false);
+					table.setCreatedby(iduser.toString());
+					table.setCreateddate(ts);
+					
+					idsave = repository.saveAndFlush(table).getId();
+				}catch (Exception e) {
+					runningNumberService.rollBackDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_PRICELIST);
+					ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
+					validations.add(msg);
+					e.printStackTrace();
+				}
+				if(idsave > 0) {
+					putDetail(body.getDetailpricelist(), idcompany, idbranch, idsave, "ADD");
+				}
 				
-				idsave = repository.saveAndFlush(table).getId();
-				
-				putDetail(body.getDetailpricelist(), idcompany, idbranch, idsave, "ADD");
 				
 			}catch (Exception e) {
 				// TODO: handle exception
@@ -201,7 +209,8 @@ public class PriceListHandler implements PriceListService{
 	private PriceListTemplate setTemplate(Long idcompany, Long idbranch, Long idcustomer) {
 		PriceListTemplate data = new PriceListTemplate();
 		data.setCustomerOptions(customerManggalaService.getListCustomerForPriceList(idcompany, idbranch,idcustomer));
-		data.setBiayaJasaOptions(invoiceTypeService.getListAllByInvoiceType(idcompany, idbranch, "JASA"));
+//		data.setBiayaJasaOptions(invoiceTypeService.getListAllByInvoiceType(idcompany, idbranch, "JASA"));
+		data.setBiayaJasaOptions(invoiceTypeService.getListActiveBankAccount(idcompany, idbranch));
 		
 		return data;
 	}
@@ -285,6 +294,71 @@ public class PriceListHandler implements PriceListService{
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		List<PriceListData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetPriceListSearchData(), queryParameters);
 		return list;
+	}
+
+	@Override
+	public List<PriceListData> getListPriceListByIdCustomer(Long idcompany, Long idbranch, Long idcustomer,Long idwarehouse,String idinvoicetype,String jalur) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPriceListData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.idcustomer = ? and data.isactive = true  and data.isdelete = false ");
+		if(!jalur.equals("") && idwarehouse.intValue() > 0) {
+			if(jalur.equals("HIJAU")) {
+				sqlBuilder.append(" and data.id in (select detail.idpricelist from detail_price_list as detail where detail.jalur = '"+jalur+"' and detail.idwarehouse = "+idwarehouse+" and detail.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ) ");
+			}else {
+				sqlBuilder.append(" and data.id in (select detail.idpricelist from detail_price_list as detail where detail.idwarehouse = "+idwarehouse+" and detail.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ) ");
+			}
+			
+		}else if(!jalur.equals("")) {
+			if(jalur.equals("HIJAU")) {
+				sqlBuilder.append(" and data.id in (select detail.idpricelist from detail_price_list as detail where detail.jalur = '"+jalur+"' and detail.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ) ");
+			}else{
+				sqlBuilder.append(" and data.id in (select detail.idpricelist from detail_price_list as detail where detail.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ) ");
+			}
+			
+		}else if(idwarehouse.intValue() > 0) {
+			sqlBuilder.append(" and data.id in (select detail.idpricelist from detail_price_list as detail where detail.idwarehouse = "+idwarehouse+" and detail.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ) ");
+		}else {
+			sqlBuilder.append(" and data.id in (select detail.idpricelist from detail_price_list as detail where detail.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ) ");
+		}
+		
+		final Object[] queryParameters = new Object[] {idcompany,idbranch,idcustomer};
+		List<PriceListData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetPriceListData(), queryParameters);
+		List<PriceListData> listVal = new ArrayList<PriceListData>();
+		if(list != null && list.size() > 0) {
+			for(PriceListData data : list) {
+				PriceListData val = data;
+				val.setDetails(getDetailsByWarehouse(idcompany,idbranch,data.getId(),idwarehouse,idinvoicetype,jalur));
+				listVal.add(val);
+			}
+		}
+		return listVal;
+	}
+	
+	private List<DetailPriceListData> getDetailsByWarehouse(Long idcompany, Long idbranch,Long idpricelist,Long idwarehouse,String idinvoicetype,String jalur) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailPriceListDataJoinTable().schema());
+		sqlBuilder.append(" where data.idpricelist = ? and data.idcompany = ? and data.idbranch = ? ");
+		if(!jalur.equals("") && idwarehouse.intValue() > 0) {
+			if(jalur.equals("HIJAU")) {
+				sqlBuilder.append(" and data.idwarehouse = "+idwarehouse+" and data.jalur = '"+jalur+"' and data.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ");
+			}else {
+				sqlBuilder.append(" and data.idwarehouse = "+idwarehouse+" and data.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ");
+			}
+			
+		}else if(!jalur.equals("")) {
+			if(jalur.equals("HIJAU")) {
+				sqlBuilder.append(" and data.jalur = '"+jalur+"' and data.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ");
+			}else {
+				sqlBuilder.append(" and data.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ");
+			}
+			
+		}else if(idwarehouse.intValue() > 0) {
+			sqlBuilder.append(" and data.idwarehouse = "+idwarehouse+" and data.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ");
+		}else {
+			sqlBuilder.append(" and data.idinvoicetype in (select invtype.id from m_invoice_type as invtype where invtype.invoicetype = '"+idinvoicetype+"' ) ");
+		}
+		final Object[] queryParameters = new Object[] {idpricelist,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPriceListDataJoinTable(), queryParameters);
 	}
 	
 

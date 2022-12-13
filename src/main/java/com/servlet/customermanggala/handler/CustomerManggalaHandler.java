@@ -3,7 +3,9 @@ package com.servlet.customermanggala.handler;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -497,6 +499,51 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 		List<CustomerManggalaData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataCustomerManggala(), queryParameters);
 		if(list != null && list.size() > 0) {
 			CustomerManggalaData val = list.get(0);
+			return val;
+		}
+		return null;
+	}
+
+	@Override
+	public HashMap<String, Object> checkCustomerById(Long idcompany, Long idbranch, Long id) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> result = new HashMap<String, Object>();
+		Optional<CustomerManggala> custOpt = repository.findById(id.longValue());
+		boolean isFound = true;
+		boolean isActive = true;
+		if(custOpt.isPresent()) {
+			CustomerManggala cust = custOpt.get();
+			if(cust.isIsdelete()) {
+				isFound = false;
+			}else if(!cust.isIsactive()) {
+				isActive = false;
+			}
+		}
+		result.put("ISFOUND", isFound);
+		result.put("ISACTIVE", isActive);
+		return result;
+	}
+
+	@Override
+	public CustomerManggalaData getDataCustomerForPrintInvoice(Long idcompany, Long idbranch, Long id) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataCustomerManggala().schema());
+		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+		List<CustomerManggalaData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataCustomerManggala(), queryParameters);
+		if(list != null && list.size() > 0) {
+			CustomerManggalaData val = list.get(0);
+			val.setDetailsInfoContact(getListDetailInfoContact(idcompany, idbranch, id));
+			Province prov = provinceService.getById(new Long(val.getProvinsi()).longValue());
+			City city = cityService.getById(new Long(val.getKota()).longValue());
+//			PostalCode postalcode = postalCodeService.getById(new Long(val.getKodepos()).longValue());
+			if(prov != null) {
+				val.setProvinsiname(prov.getProv_name());
+			}
+			if(city != null) {
+				val.setKotaname(city.getCity_name());
+			}
+			
 			return val;
 		}
 		return null;

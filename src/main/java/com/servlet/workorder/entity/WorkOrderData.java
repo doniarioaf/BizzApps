@@ -9,6 +9,7 @@ public class WorkOrderData {
 	private Date tanggal;
 	private Long idcustomer;
 	private String namaCustomer;
+	private String kodeposCustomer;
 	private String namacargo;
 	private String status;
 	private String statusCodeName;
@@ -44,6 +45,21 @@ public class WorkOrderData {
 	private boolean isactive;
 	private WorkOrderTemplate templates;
 	private List<DetailWorkOrderData> details;
+	private List<ListDocumentWorkOrderData> documents;
+	private Long idvendordepo;
+	public Long getIdvendordepo() {
+		return idvendordepo;
+	}
+	public void setIdvendordepo(Long idvendordepo) {
+		this.idvendordepo = idvendordepo;
+	}
+	
+	public List<ListDocumentWorkOrderData> getDocuments() {
+		return documents;
+	}
+	public void setDocuments(List<ListDocumentWorkOrderData> documents) {
+		this.documents = documents;
+	}
 	public List<DetailWorkOrderData> getDetails() {
 		return details;
 	}
@@ -283,5 +299,11 @@ public class WorkOrderData {
 	}
 	public void setTemplates(WorkOrderTemplate templates) {
 		this.templates = templates;
+	}
+	public String getKodeposCustomer() {
+		return kodeposCustomer;
+	}
+	public void setKodeposCustomer(String kodeposCustomer) {
+		this.kodeposCustomer = kodeposCustomer;
 	}
 }

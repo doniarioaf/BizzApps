@@ -5,6 +5,7 @@ import java.util.List;
 import com.servlet.invoicetype.entity.BodyInvoiceType;
 import com.servlet.invoicetype.entity.InvoiceTypeData;
 import com.servlet.invoicetype.entity.InvoiceTypeTemplate;
+import com.servlet.invoicetype.entity.ParamInvTypeDropDown;
 import com.servlet.shared.ReturnData;
 
 public interface InvoiceTypeService {
@@ -16,4 +17,5 @@ public interface InvoiceTypeService {
 	ReturnData deleteInvoiceType(Long idcompany,Long idbranch,Long iduser,Long id);
 	InvoiceTypeTemplate getTemplate(Long idcompany,Long idbranch);
 	List<InvoiceTypeData> getListAllByInvoiceType(Long idcompany,Long idbranch,String invoicetype);
+	List<InvoiceTypeData> getListDropDownInvoiceType(Long idcompany,Long idbranch,ParamInvTypeDropDown param);
 }

@@ -83,6 +83,7 @@ public class ConstansPermission {
 	public static final String CREATE_BANK_ACCOUNT = "CREATE_BANK_ACCOUNT";
 	public static final String EDIT_BANK_ACCOUNT = "EDIT_BANK_ACCOUNT";
 	public static final String DELETE_BANK_ACCOUNT = "DELETE_BANK_ACCOUNT";
+	public static final String CREATE_SALDO_AWAL = "CREATE_SALDO_AWAL";
 	
 	public static final String READ_EMPLOYEE_MANGGALA = "READ_EMPLOYEE_MANGGALA";
 	public static final String CREATE_EMPLOYEE_MANGGALA = "CREATE_EMPLOYEE_MANGGALA";
@@ -153,6 +154,39 @@ public class ConstansPermission {
 	public static final String DELETE_SURATJALAN = "DELETE_SURATJALAN";
 	public static final String EDIT_STATUS_SURATJALAN = "EDIT_STATUS_SURATJALAN";
 	public static final String READ_PRINT_SURATJALAN = "READ_PRINT_SURATJALAN";
+	
+	public static final String READ_DOCUMENT_WORKORDER = "READ_DOCUMENT_WORKORDER";
+	public static final String CREATE_DOCUMENT_WORKORDER = "CREATE_DOCUMENT_WORKORDER";
+	public static final String DELETE_DOCUMENT_WORKORDER = "DELETE_DOCUMENT_WORKORDER";
+	
+	public static final String READ_REPORT_BONGKARMUATDEPO = "READ_REPORT_BONGKARMUATDEPO";
+	
+	public static final String READ_PENERIMAAN_KASBANK = "READ_PENERIMAAN_KASBANK";
+	public static final String CREATE_PENERIMAAN_KASBANK = "CREATE_PENERIMAAN_KASBANK";
+	public static final String EDIT_PENERIMAAN_KASBANK = "EDIT_PENERIMAAN_KASBANK";
+	public static final String DELETE_PENERIMAAN_KASBANK = "DELETE_PENERIMAAN_KASBANK";
+	
+	public static final String READ_PENGELUARAN_KASBANK = "READ_PENGELUARAN_KASBANK";
+	public static final String CREATE_PENGELUARAN_KASBANK = "CREATE_PENGELUARAN_KASBANK";
+	public static final String EDIT_PENGELUARAN_KASBANK = "EDIT_PENGELUARAN_KASBANK";
+	public static final String DELETE_PENGELUARAN_KASBANK = "DELETE_PENGELUARAN_KASBANK";
+	
+	public static final String READ_INVOICE = "READ_INVOICE";
+	public static final String CREATE_INVOICE = "CREATE_INVOICE";
+	public static final String EDIT_INVOICE = "EDIT_INVOICE";
+	public static final String DELETE_INVOICE = "DELETE_INVOICE";
+	
+	public static final String READ_ASSET = "READ_ASSET";
+	public static final String CREATE_ASSET = "CREATE_ASSET";
+	public static final String EDIT_ASSET = "EDIT_ASSET";
+	public static final String DELETE_ASSET = "DELETE_ASSET";
+	public static final String CREATE_ASSET_MAPPING = "CREATE_ASSET_MAPPING";
+	public static final String DELETE_HISTORY_ASSET_MAPPING = "DELETE_HISTORY_ASSET_MAPPING";
+	
+	public static final String READ_REPORT_STATUS_INVOICE = "READ_REPORT_STATUS_INVOICE";
+	public static final String READ_REPORT_KAS_BANK = "READ_REPORT_KAS_BANK";
+	public static final String READ_REPORT_LABA_RUGI = "READ_REPORT_LABA_RUGI";
+
 	
 	
 }

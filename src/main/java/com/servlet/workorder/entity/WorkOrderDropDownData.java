@@ -8,6 +8,7 @@ public class WorkOrderDropDownData {
 	private String namacargo;
 	private String nobl;
 	private String noaju;
+	private String jalur;
 	public Long getId() {
 		return id;
 	}
@@ -49,5 +50,11 @@ public class WorkOrderDropDownData {
 	}
 	public void setNoaju(String noaju) {
 		this.noaju = noaju;
+	}
+	public String getJalur() {
+		return jalur;
+	}
+	public void setJalur(String jalur) {
+		this.jalur = jalur;
 	}
 }

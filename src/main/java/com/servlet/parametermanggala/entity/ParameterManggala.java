@@ -1,6 +1,7 @@
 package com.servlet.parametermanggala.entity;
 
 import java.io.Serializable;
+import java.sql.Date;
 import java.sql.Timestamp;
 
 import javax.persistence.Entity;
@@ -21,6 +22,8 @@ private static final long serialVersionUID = 1L;
 	private Long idbranch;
 	private String paramname;
 	private String paramvalue;
+	private String paramtype;
+	private Date paramdate;
 	private boolean isactive;
 	private boolean isdelete;
 	private String createdby;
@@ -29,6 +32,7 @@ private static final long serialVersionUID = 1L;
 	private Timestamp updatedate;
 	private String deleteby;
 	private Timestamp deletedate;
+	
 	public Long getId() {
 		return id;
 	}
@@ -106,5 +110,17 @@ private static final long serialVersionUID = 1L;
 	}
 	public void setDeletedate(Timestamp deletedate) {
 		this.deletedate = deletedate;
+	}
+	public String getParamtype() {
+		return paramtype;
+	}
+	public void setParamtype(String paramtype) {
+		this.paramtype = paramtype;
+	}
+	public Date getParamdate() {
+		return paramdate;
+	}
+	public void setParamdate(Date paramdate) {
+		this.paramdate = paramdate;
 	}
 }
