@@ -213,11 +213,35 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 		return sdf.format(dt);
 	}
 	
+	private void createCell(Row row, int columnCount, Object value, CellStyle style,XSSFSheet sheet,int widthColumn) {
+//        sheet.autoSizeColumn(columnCount);
+        sheet.setColumnWidth(columnCount, widthColumn);
+        Cell cell = row.createCell(columnCount);
+        if (value instanceof Integer) {
+            cell.setCellValue((Integer) value);
+        } else if (value instanceof Boolean) {
+            cell.setCellValue((Boolean) value);
+        }else if (value instanceof Date) {
+            cell.setCellValue((java.util.Date) value);
+        }else if (value instanceof Timestamp) {
+            cell.setCellValue((Timestamp) value);
+        }else if (value instanceof Long) {
+            cell.setCellValue((Long) value);
+        }else if (value instanceof Double) {
+            cell.setCellValue((Double) value);
+        }else {
+        	String textval = (String) value;
+//        	int numberOfLines = textval.split("\n").length;
+//        	row.setHeightInPoints((2+numberOfLines) * sheet.getDefaultRowHeightInPoints());
+//        	style.setWrapText(true);
+            cell.setCellValue(textval);
+        }
+        cell.setCellStyle(style);
+    }
 	
 	
 	private void createCell(Row row, int columnCount, Object value, CellStyle style,XSSFSheet sheet) {
         sheet.autoSizeColumn(columnCount);
-        
         Cell cell = row.createCell(columnCount);
         if (value instanceof Integer) {
             cell.setCellValue((Integer) value);
@@ -371,7 +395,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						}
 						
 						
-						createCell(rowData, columnCount++, inv.getTotalinvoice(), styleAmount,sheet);
+						createCell(rowData, columnCount++, inv.getTotalinvoice(), styleAmount,sheet,7000);
 						
 						List<PenerimaanKasBankData> listpenerimaan = penerimaanKasBankService.getListByDetailIdInvoiceJoinBank(idcompany,idbranch,inv.getId());
 						if(listpenerimaan != null && listpenerimaan.size() > 0) {
@@ -490,7 +514,8 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 		
 		Date dtDateBeforeFrom = new Date(tsDateBeforeFrom.getTime());
 		
-		BankAccountData bankData = bankAccountService.getByIdForReport(idcompany, idbranch, body.getIdbank());
+		long idbank = body.getIdbank() != null?body.getIdbank():0;
+		BankAccountData bankData = bankAccountService.getByIdForReport(idcompany, idbranch, idbank);
 		double saldoAwalBank = 0.0;
 		if(bankData != null) {
 			if(bankData.getSaldoawal() != null) {
@@ -499,9 +524,9 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 		}
 		
 		//56169461 = 01-Jan-70
-		Double saldoPenerimaan = penerimaanKasBankService.summaryAmountPenerimaanByDate(idcompany, idbranch, new Date(56169461L), dtDateBeforeFrom, null);
+		Double saldoPenerimaan = penerimaanKasBankService.summaryAmountPenerimaanByDate(idcompany, idbranch, new Date(56169461L), dtDateBeforeFrom, null,idbank);
 		saldoPenerimaan = saldoPenerimaan != null? saldoPenerimaan:0.0;
-		Double saldoPengeluaraan = pengeluaranKasBankService.summaryAmountPengeluaranByDate(idcompany, idbranch, new Date(56169461L), dtDateBeforeFrom, null);
+		Double saldoPengeluaraan = pengeluaranKasBankService.summaryAmountPengeluaranByDate(idcompany, idbranch, new Date(56169461L), dtDateBeforeFrom, null,idbank);
 		saldoPengeluaraan = saldoPengeluaraan != null ? saldoPengeluaraan:0.0;
 		double totalSaldoAwal = saldoAwalBank + saldoPenerimaan - saldoPengeluaraan; 
         Row rowTitle = sheet.createRow(1);
@@ -557,7 +582,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 			}
 			
 			
-			createCell(rowDataSaldoAwal, columnCount++, totalSaldoAwal, styleAmount,sheet);
+			createCell(rowDataSaldoAwal, columnCount++, totalSaldoAwal, styleAmount,sheet,7000);
 			
 			for(PenerimaanPengeluaranData datapenerimaan : list) {
 				if(datapenerimaan.getPenerimaan_id() != null) {
@@ -584,7 +609,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						}else {
 							styleAmount.setDataFormat(format.getFormat("#,###.##"));
 						}
-						createCell(rowData, columnCount++, saldoUangMasuk, styleAmount,sheet);
+						createCell(rowData, columnCount++, saldoUangMasuk, styleAmount,sheet,7000);
 						createCell(rowData, columnCount++, "", style,sheet);
 						
 						totalSaldoAwal = totalSaldoAwal + saldoUangMasuk.doubleValue();
@@ -597,7 +622,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						}else {
 							styleAmount.setDataFormat(format.getFormat("#,###.##"));
 						}
-						createCell(rowData, columnCount++, saldo, styleAmount,sheet);
+						createCell(rowData, columnCount++, saldo, styleAmount,sheet,7000);
 						
 					}
 				}
@@ -627,7 +652,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 							styleAmount.setDataFormat(format.getFormat("#,###.##"));
 						}
 						createCell(rowData, columnCount++, "", style,sheet);
-						createCell(rowData, columnCount++, saldoUangKeluar, styleAmount,sheet);
+						createCell(rowData, columnCount++, saldoUangKeluar, styleAmount,sheet,7000);
 						
 						totalSaldoAwal = totalSaldoAwal - saldoUangKeluar.doubleValue();
 						double saldo = totalSaldoAwal;
@@ -640,7 +665,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						}else {
 							styleAmount.setDataFormat(format.getFormat("#,###.##"));
 						}
-						createCell(rowData, columnCount++, saldo, styleAmount,sheet);
+						createCell(rowData, columnCount++, saldo, styleAmount,sheet,7000);
 						
 						
 					}
@@ -699,7 +724,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
         createCell(rowPeriode, 1, dateFrom+" s/d "+dateThru, style,sheet);
         Row rowStatus = sheet.createRow(3);
         createCell(rowStatus, 0, "Bank", style,sheet);
-        createCell(rowStatus, 1, bankData != null?bankData.getNamabank():"" , style,sheet);
+        createCell(rowStatus, 1, bankData != null?bankData.getNamabank():"All" , style,sheet);
         int rowcount = 5;
         Row row = sheet.createRow(rowcount);
         
@@ -769,7 +794,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 				}else {
 					styleAmount.setDataFormat(format.getFormat("#,###.##"));
 				}
-				createCell(rowData, columnCount++, totalInvoice, styleAmount,sheet);
+				createCell(rowData, columnCount++, totalInvoice, styleAmount,sheet,7000);
 				
 				Double invPaid = penerimaanKasBankService.summaryAmountPenerimaanByIdWO(idcompany, idbranch, new Date(body.getFromDate()), new Date(body.getToDate()), datawo.getId(), body.getIdbank(),"");
 				invPaid = invPaid != null?invPaid:0.0;
@@ -782,7 +807,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 				}else {
 					styleAmount.setDataFormat(format.getFormat("#,###.##"));
 				}
-				createCell(rowData, columnCount++, invPaid, styleAmount,sheet);
+				createCell(rowData, columnCount++, invPaid, styleAmount,sheet,7000);
 				
 				createCell(rowData, columnCount++, noInv, style,sheet);
 				
@@ -794,7 +819,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 				}else {
 					styleAmount.setDataFormat(format.getFormat("#,###.##"));
 				}
-				createCell(rowData, columnCount++, totalInvoiceReimbursement, styleAmount,sheet);
+				createCell(rowData, columnCount++, totalInvoiceReimbursement, styleAmount,sheet,7000);
 				
 				Double reimbursementPaid = penerimaanKasBankService.summaryAmountPenerimaanByIdWO(idcompany, idbranch, new Date(body.getFromDate()), new Date(body.getToDate()), datawo.getId(), body.getIdbank(),"REIMBURSEMENT");
 				reimbursementPaid = reimbursementPaid != null?reimbursementPaid:0.0;
@@ -806,18 +831,18 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 				}else {
 					styleAmount.setDataFormat(format.getFormat("#,###.##"));
 				}
-				createCell(rowData, columnCount++, reimbursementPaid, styleAmount,sheet);
+				createCell(rowData, columnCount++, reimbursementPaid, styleAmount,sheet,7000);
 				
-				Double totalOthersFee = 0.0;
-				createCell(rowData, columnCount++, totalOthersFee, styleAmount,sheet);
+				Double totalOthersFee = pengeluaranKasBankService.summaryAmountPengeluaranByIdWo(idcompany, idbranch, new Date(body.getFromDate()), new Date(body.getToDate()), datawo.getId(), body.getIdbank());
+				createCell(rowData, columnCount++, totalOthersFee, styleAmount,sheet,7000);
 				
 				Double totalLabaRugi = invPaid - totalInvoiceReimbursement - totalOthersFee;
 				totalAkhir += totalLabaRugi;
-				createCell(rowData, columnCount++, totalLabaRugi, styleAmount,sheet);
+				createCell(rowData, columnCount++, totalLabaRugi, styleAmount,sheet,7000);
 				
 	        }
 			Row rowData = sheet.createRow(rowcount++);
-			createCell(rowData, 13, totalAkhir, styleAmount,sheet);
+			createCell(rowData, 13, totalAkhir, styleAmount,sheet,7000);
         }
         
         data.setWorkbook(workbook);

@@ -487,16 +487,22 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 
 	@Override
 	public Double summaryAmountPenerimaanByDate(Long idcompany, Long idbranch, java.sql.Date fromdate,
-			java.sql.Date todate,Long idpenerimaan) {
+			java.sql.Date todate,Long idpenerimaan,Long idbank) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetTotalAmount().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? ");
 		if(fromdate != null && todate != null) {
-			sqlBuilder.append(" and data.idpenerimaankasbank in (select pkb.id from m_penerimaan_kas_bank as pkb where pkb.receivedate >= '"+fromdate+"'  and pkb.receivedate <= '"+todate+"' and pkb.isactive = true and pkb.isdelete = false ) ");
+			if(idbank != null && idbank.longValue() > 0) {
+				sqlBuilder.append(" and data.idpenerimaankasbank in (select pkb.id from m_penerimaan_kas_bank as pkb where pkb.receivedate >= '"+fromdate+"'  and pkb.receivedate <= '"+todate+"' and pkb.isactive = true and pkb.isdelete = false and pkb.idbank = "+idbank+" ) ");
+			}else {
+				sqlBuilder.append(" and data.idpenerimaankasbank in (select pkb.id from m_penerimaan_kas_bank as pkb where pkb.receivedate >= '"+fromdate+"'  and pkb.receivedate <= '"+todate+"' and pkb.isactive = true and pkb.isdelete = false ) ");
+			}
+			
 		}
 		if(idpenerimaan != null) {
 			sqlBuilder.append(" and data.idpenerimaankasbank = "+idpenerimaan+"  ");
 		}
+		
 		
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmount(), queryParameters);

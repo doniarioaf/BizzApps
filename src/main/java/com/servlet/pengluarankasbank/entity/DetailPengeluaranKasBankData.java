@@ -8,6 +8,8 @@ public class DetailPengeluaranKasBankData {
 	private Double amount;
 	private Long idasset;
 	private String assetName;
+	private String assetNameKepala;
+	private String assetNameBuntut;
 	private Long idinvoiceitem;
 	private String invoiceitemName;
 	public Long getIdpengeluarankasbank() {
@@ -63,5 +65,17 @@ public class DetailPengeluaranKasBankData {
 	}
 	public void setAssetName(String assetName) {
 		this.assetName = assetName;
+	}
+	public String getAssetNameKepala() {
+		return assetNameKepala;
+	}
+	public void setAssetNameKepala(String assetNameKepala) {
+		this.assetNameKepala = assetNameKepala;
+	}
+	public String getAssetNameBuntut() {
+		return assetNameBuntut;
+	}
+	public void setAssetNameBuntut(String assetNameBuntut) {
+		this.assetNameBuntut = assetNameBuntut;
 	}
 }

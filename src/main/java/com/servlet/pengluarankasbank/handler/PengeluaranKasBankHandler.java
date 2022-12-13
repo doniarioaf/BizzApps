@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.servlet.asset.service.AssetService;
 import com.servlet.bankaccount.service.BankAccountService;
 import com.servlet.coa.service.CoaService;
 import com.servlet.invoicetype.entity.ParamInvTypeDropDown;
@@ -59,6 +60,8 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 	private WorkOrderService workOrderService;
 	@Autowired
 	private InvoiceTypeService invoiceTypeService;
+	@Autowired
+	private AssetService assetService;
 	
 	
 	@Override
@@ -282,6 +285,7 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		template.setCoaOptions(coaService.getListActiveCOA(idcompany, idbranch));
 		template.setWoOptions(workOrderService.getListDropDownByParam(idcompany, idbranch, paramwo));
 		template.setInvoiceItemOptions(invoiceTypeService.getListDropDownInvoiceType(idcompany, idbranch, paramInvType));
+		template.setAssetOptions(assetService.getListAssetForPengeluaran(idcompany, idbranch));
 		return template;
 	}
 	
@@ -330,16 +334,23 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 
 	@Override
 	public Double summaryAmountPengeluaranByDate(Long idcompany, Long idbranch, java.sql.Date fromdate,
-			java.sql.Date todate, Long idpengeluaran) {
+			java.sql.Date todate, Long idpengeluaran,Long idbank) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetTotalAmount().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? ");
 		if(fromdate != null && todate != null) {
-			sqlBuilder.append(" and data.idpengeluarankasbank in (select pkb.id from m_pengeluaran_kas_bank as pkb where pkb.paymentdate >= '"+fromdate+"'  and pkb.paymentdate <= '"+todate+"' and pkb.isactive = true and pkb.isdelete = false ) ");
+			if(idbank != null && idbank.longValue() > 0) {
+				sqlBuilder.append(" and data.idpengeluarankasbank in (select pkb.id from m_pengeluaran_kas_bank as pkb where pkb.paymentdate >= '"+fromdate+"'  and pkb.paymentdate <= '"+todate+"' and pkb.isactive = true and pkb.isdelete = false and pkb.idbank = "+idbank+" ) ");
+			}else {
+				sqlBuilder.append(" and data.idpengeluarankasbank in (select pkb.id from m_pengeluaran_kas_bank as pkb where pkb.paymentdate >= '"+fromdate+"'  and pkb.paymentdate <= '"+todate+"' and pkb.isactive = true and pkb.isdelete = false ) ");
+			}
+			
 		}
 		if(idpengeluaran != null) {
 			sqlBuilder.append(" and data.idpengeluarankasbank = "+idpengeluaran+" ");
 		}
+		
+		
 		
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmount(), queryParameters);
@@ -375,20 +386,24 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 
 	@Override
 	public Double summaryAmountPengeluaranByIdWo(Long idcompany, Long idbranch, java.sql.Date fromdate,
-			java.sql.Date todate, Long idwo) {
+			java.sql.Date todate, Long idwo,Long idbank) {
 		// TODO Auto-generated method stub
-//		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetTotalAmount().schema());
-//		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? ");
-//		if(fromdate != null && todate != null) {
-//			sqlBuilder.append(" and data.idpengeluarankasbank in (select pkb.id from m_pengeluaran_kas_bank as pkb where pkb.paymentdate >= '"+fromdate+"'  and pkb.paymentdate <= '"+todate+"' and pkb.isactive = true and pkb.isdelete = false ) ");
-//		}
-//		sqlBuilder.append(" and data.idpengeluarankasbank = "+idpengeluaran+" ");
-//		
-//		final Object[] queryParameters = new Object[] {idcompany,idbranch};
-//		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmount(), queryParameters);
-//		if(list != null && list.size() > 0) {
-//			return list.get(0);
-//		}
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetTotalAmount().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? ");
+		if(fromdate != null && todate != null) {
+			if(idbank.longValue() > 0) {
+				sqlBuilder.append(" and data.idpengeluarankasbank in (select pkb.id from m_pengeluaran_kas_bank as pkb where pkb.paymentdate >= '"+fromdate+"'  and pkb.paymentdate <= '"+todate+"' and pkb.isactive = true and pkb.isdelete = false and pkb.idbank = "+idbank+" and pkb.idwo = "+idwo+" ) ");
+			}else {
+				sqlBuilder.append(" and data.idpengeluarankasbank in (select pkb.id from m_pengeluaran_kas_bank as pkb where pkb.paymentdate >= '"+fromdate+"'  and pkb.paymentdate <= '"+todate+"' and pkb.isactive = true and pkb.isdelete = false and pkb.idwo = "+idwo+" ) ");
+			}
+			
+		}
+
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmount(), queryParameters);
+		if(list != null && list.size() > 0) {
+			return list.get(0);
+		}
 		return 0.0;
 	}
 	

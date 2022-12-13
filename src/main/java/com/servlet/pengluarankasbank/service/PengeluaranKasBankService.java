@@ -19,8 +19,8 @@ public interface PengeluaranKasBankService {
 	ReturnData deleteData(Long idcompany,Long idbranch,Long iduser,Long id);
 	PengeluaranKasBankTemplate getTemplate(Long idcompany,Long idbranch);
 	PengeluaranKasBankData getByIdWithTemplate(Long idcompany,Long idbranch,Long id);
-	Double summaryAmountPengeluaranByDate(Long idcompany,Long idbranch,Date fromdate, Date todate, Long idpengeluaran);
+	Double summaryAmountPengeluaranByDate(Long idcompany,Long idbranch,Date fromdate, Date todate, Long idpengeluaran, Long idbank);
 	List<DetailPengeluaranKasBankData> getListDetailById(Long idcompany,Long idbranch,Long id);
-	Double summaryAmountPengeluaranByIdWo(Long idcompany,Long idbranch,Date fromdate, Date todate, Long idwo);
+	Double summaryAmountPengeluaranByIdWo(Long idcompany,Long idbranch,Date fromdate, Date todate, Long idwo,Long idbank);
 	PengeluaranHeaderAndDetail getListByIdWo(Long idcompany,Long idbranch,Long idWO);
 }

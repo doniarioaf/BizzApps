@@ -2,6 +2,7 @@ package com.servlet.pengluarankasbank.entity;
 
 import java.util.List;
 
+import com.servlet.asset.entity.AssetData;
 import com.servlet.bankaccount.entity.BankAccountData;
 import com.servlet.coa.entity.CoaData;
 import com.servlet.invoicetype.entity.InvoiceTypeData;
@@ -12,8 +13,14 @@ public class PengeluaranKasBankTemplate {
 	private List<BankAccountData> bankOptions;
 	private List<WorkOrderDropDownData> woOptions;
 	private List<InvoiceTypeData> invoiceItemOptions;
+	private List<AssetData> assetOptions;
 	
-	
+	public List<AssetData> getAssetOptions() {
+		return assetOptions;
+	}
+	public void setAssetOptions(List<AssetData> assetOptions) {
+		this.assetOptions = assetOptions;
+	}
 	public List<InvoiceTypeData> getInvoiceItemOptions() {
 		return invoiceItemOptions;
 	}

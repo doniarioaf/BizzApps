@@ -23,7 +23,7 @@ public interface PenerimaanKasBankService {
 	List<PenerimaanKasBankData> getListByDetailIdInvoice(Long idcompany,Long idbranch,Long idinvoice);
 	List<DetailPenerimaanKasBankData> getListDetailByIdWO(Long idcompany,Long idbranch,Long idWo);
 	List<PenerimaanKasBankData> getListByDetailIdInvoiceJoinBank(Long idcompany,Long idbranch,Long idinvoice);
-	Double summaryAmountPenerimaanByDate(Long idcompany,Long idbranch,Date fromdate, Date todate,Long idpenerimaan);
+	Double summaryAmountPenerimaanByDate(Long idcompany,Long idbranch,Date fromdate, Date todate,Long idpenerimaan,Long idbank);
 	List<PenerimaanPengeluaranData> getPenerimaanPengeluaranData(Long idcompany,Long idbranch,Date fromdate, Date todate,Long idbank);
 	List<DetailPenerimaanKasBankData> getListDetailByIdReportKasBank(Long idcompany,Long idbranch,Long id);
 	Double summaryAmountPenerimaanByIdWO(Long idcompany,Long idbranch,Date fromdate, Date todate,Long idwo,Long idbank,String invoiceType);
