@@ -16,11 +16,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.servlet.customermanggala.entity.BodySearch;
+import com.servlet.employeemanggala.entity.BodySearhEmpl;
 import com.servlet.pengluarankasbank.entity.BodyPengeluaranKasBank;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConstansPermission;
 import com.servlet.shared.Response;
+import com.servlet.vendor.entity.BodySearchVendor;
 
 @RestController
 @RequestMapping("/v1/pengeluarankasbank")
@@ -59,6 +63,33 @@ public class PengeluaranKasBankApi {
 	ResponseEntity<Response> getTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("type", "TEMPLATE");
+		Response response = securityService.response(ConstansPermission.READ_PENGELUARAN_KASBANK,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@PostMapping("/searchcustomer")
+	ResponseEntity<Response> searchData(@RequestBody @Validated BodySearch body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "SEARCHDATACUSTOMER");
+		param.put("body", body);
+		Response response = securityService.response(ConstansPermission.READ_PENGELUARAN_KASBANK,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@PostMapping("/searchvendor")
+	ResponseEntity<Response> searchDataVendor(@RequestBody @Validated BodySearchVendor body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "SEARCHDATAVENDOR");
+		param.put("body", body);
+		Response response = securityService.response(ConstansPermission.READ_PENGELUARAN_KASBANK,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@PostMapping("/searchemployee")
+	ResponseEntity<Response> searchDataEmployee(@RequestBody @Validated BodySearhEmpl body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "SEARCHDATAEMPLOYEE");
+		param.put("body", body);
 		Response response = securityService.response(ConstansPermission.READ_PENGELUARAN_KASBANK,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}

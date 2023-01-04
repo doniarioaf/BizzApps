@@ -94,7 +94,28 @@ private String schemaSql;
 		sqlBuilder.append("paramspbuntutbanukuran.codename as spbuntutbanukuran, ");
 		sqlBuilder.append("paramspbuntutbanstatus.codename as spbuntutbanstatus, ");
 		sqlBuilder.append("paramspbuntutjenissparepart.codename as spbuntutjenissparepart, ");
-		sqlBuilder.append("paramspbuntutbearingposisi.codename as spbuntutbearingposisi ");
+		sqlBuilder.append("paramspbuntutbearingposisi.codename as spbuntutbearingposisi, ");
+		
+		sqlBuilder.append("data.sparepartkepala_filter_type as sparepartkepala_filter_type,");
+		sqlBuilder.append("data.sparepartkepala_filter_posisi as sparepartkepala_filter_posisi,");
+		sqlBuilder.append("data.sparepartkepala_bohlam_type as sparepartkepala_bohlam_type,");
+		sqlBuilder.append("data.sparepartkepala_selang_type as sparepartkepala_selang_type,");
+		
+		sqlBuilder.append("data.sparepartbuntut_filter_type as sparepartbuntut_filter_type,");
+		sqlBuilder.append("data.sparepartbuntut_filter_posisi as sparepartbuntut_filter_posisi,");
+		sqlBuilder.append("data.sparepartbuntut_bohlam_type as sparepartbuntut_bohlam_type,");
+		sqlBuilder.append("data.sparepartbuntut_selang_type as sparepartbuntut_selang_type,");
+		
+		sqlBuilder.append("paramspkepalafiltertype.codename as spkepalafiltertype, ");
+		sqlBuilder.append("paramspkepalafilterposisi.codename as spkepalafilterposisi, ");
+		sqlBuilder.append("paramspkepalabohlamtype.codename as spkepalabohlamtype, ");
+		sqlBuilder.append("paramspkepalaselangtype.codename as spkepalaselangtype, ");
+		
+		sqlBuilder.append("paramspbuntutfiltertype.codename as spbuntutfiltertype, ");
+		sqlBuilder.append("paramspbuntutfilterposisi.codename as spbuntutfilterposisi, ");
+		sqlBuilder.append("paramspbuntutbohlamtype.codename as spbuntutbohlamtype, ");
+		sqlBuilder.append("paramspbuntutselangtype.codename as spbuntutselangtype ");
+
 		
 		sqlBuilder.append(" from m_asset as data ");
 		sqlBuilder.append(" left join m_parameter as param on param.code = data.assettype and param.grup = 'ASSET_TYPE' ");
@@ -120,6 +141,17 @@ private String schemaSql;
 		sqlBuilder.append(" left join m_parameter as paramspbuntutbanjenis on paramspbuntutbanjenis.code = data.sparepartbuntut_ban_jenis and paramspbuntutbanjenis.grup = 'JENIS_BAN' ");
 		sqlBuilder.append(" left join m_parameter as paramspbuntutbanukuran on paramspbuntutbanukuran.code = data.sparepartbuntut_ban_ukuran and paramspbuntutbanukuran.grup = 'UKURAN_BAN' ");
 		sqlBuilder.append(" left join m_parameter as paramspbuntutbanstatus on paramspbuntutbanstatus.code = data.sparepartbuntut_ban_status and paramspbuntutbanstatus.grup = 'STATUS_BAN' ");
+		
+		sqlBuilder.append(" left join m_parameter as paramspkepalafiltertype on paramspkepalafiltertype.code = data.sparepartkepala_filter_type and paramspkepalafiltertype.grup = 'SPAREPART_FILTER_TIPE' ");
+		sqlBuilder.append(" left join m_parameter as paramspkepalafilterposisi on paramspkepalafilterposisi.code = data.sparepartkepala_filter_posisi and paramspkepalafilterposisi.grup = 'SPAREPART_POSISI_FILTER' ");
+		sqlBuilder.append(" left join m_parameter as paramspkepalabohlamtype on paramspkepalabohlamtype.code = data.sparepartkepala_bohlam_type and paramspkepalabohlamtype.grup = 'SPAREPART_BOHLAM_TIPE' ");
+		sqlBuilder.append(" left join m_parameter as paramspkepalaselangtype on paramspkepalaselangtype.code = data.sparepartkepala_selang_type and paramspkepalaselangtype.grup = 'SPAREPART_SELANG_TIPE' ");
+
+		sqlBuilder.append(" left join m_parameter as paramspbuntutfiltertype on paramspbuntutfiltertype.code = data.sparepartbuntut_filter_type and paramspbuntutfiltertype.grup = 'SPAREPART_FILTER_TIPE' ");
+		sqlBuilder.append(" left join m_parameter as paramspbuntutfilterposisi on paramspbuntutfilterposisi.code = data.sparepartbuntut_filter_posisi and paramspbuntutfilterposisi.grup = 'SPAREPART_POSISI_FILTER' ");
+		sqlBuilder.append(" left join m_parameter as paramspbuntutbohlamtype on paramspbuntutbohlamtype.code = data.sparepartbuntut_bohlam_type and paramspbuntutbohlamtype.grup = 'SPAREPART_BOHLAM_TIPE' ");
+		sqlBuilder.append(" left join m_parameter as paramspbuntutselangtype on paramspbuntutselangtype.code = data.sparepartbuntut_selang_type and paramspbuntutselangtype.grup = 'SPAREPART_SELANG_TIPE' ");
+
 		
 		
 		this.schemaSql = sqlBuilder.toString();
@@ -219,6 +251,25 @@ private String schemaSql;
 		final String spbuntutjenissparepart = rs.getString("spbuntutjenissparepart");
 		final String spbuntutbearingposisi = rs.getString("spbuntutbearingposisi");
 		
+		final String sparepartkepala_filter_type = rs.getString("sparepartkepala_filter_type");
+		final String sparepartkepala_filter_posisi = rs.getString("sparepartkepala_filter_posisi");
+		final String sparepartkepala_bohlam_type = rs.getString("sparepartkepala_bohlam_type");
+		final String sparepartkepala_selang_type = rs.getString("sparepartkepala_selang_type");
+		
+		final String sparepartbuntut_filter_type = rs.getString("sparepartbuntut_filter_type");
+		final String sparepartbuntut_filter_posisi = rs.getString("sparepartbuntut_filter_posisi");
+		final String sparepartbuntut_bohlam_type = rs.getString("sparepartbuntut_bohlam_type");
+		final String sparepartbuntut_selang_type = rs.getString("sparepartbuntut_selang_type");
+		
+		final String spkepalafiltertype = rs.getString("spkepalafiltertype");
+		final String spkepalafilterposisi = rs.getString("spkepalafilterposisi");
+		final String spkepalabohlamtype = rs.getString("spkepalabohlamtype");
+		final String spkepalaselangtype = rs.getString("spkepalaselangtype");
+		
+		final String spbuntutfiltertype = rs.getString("spbuntutfiltertype");
+		final String spbuntutfilterposisi = rs.getString("spbuntutfilterposisi");
+		final String spbuntutbohlamtype = rs.getString("spbuntutbohlamtype");
+		final String spbuntutselangtype = rs.getString("spbuntutselangtype");
 		
 		
 		AssetData data = new AssetData();
@@ -306,6 +357,25 @@ private String schemaSql;
 		data.setSparepartbuntut_ban_statusname(spbuntutbanstatus);
 		data.setSparepartbuntut_jenisname(spbuntutjenissparepart);
 		
+		data.setSparepartkepala_filter_type(sparepartkepala_filter_type);
+		data.setSparepartkepala_filter_posisi(sparepartkepala_filter_posisi);
+		data.setSparepartkepala_bohlam_type(sparepartkepala_bohlam_type);
+		data.setSparepartkepala_selang_type(sparepartkepala_selang_type);
+		
+		data.setSparepartkepala_filter_type_name(spkepalafiltertype);
+		data.setSparepartkepala_filter_posisi_name(spkepalafilterposisi);
+		data.setSparepartkepala_bohlam_type_name(spkepalabohlamtype);
+		data.setSparepartkepala_selang_type_name(spkepalaselangtype);
+		
+		data.setSparepartbuntut_filter_type(sparepartbuntut_filter_type);
+		data.setSparepartbuntut_filter_posisi(sparepartbuntut_filter_posisi);
+		data.setSparepartbuntut_bohlam_type(sparepartbuntut_bohlam_type);
+		data.setSparepartbuntut_selang_type(sparepartbuntut_selang_type);
+		
+		data.setSparepartbuntut_filter_type_name(spbuntutfiltertype);
+		data.setSparepartbuntut_filter_posisi_name(spbuntutfilterposisi);
+		data.setSparepartbuntut_bohlam_type_name(spbuntutbohlamtype);
+		data.setSparepartbuntut_selang_type_name(spbuntutselangtype);
 		
 		return data;
 	}

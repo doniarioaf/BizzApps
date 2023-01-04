@@ -74,7 +74,17 @@ public class GetAssetData implements RowMapper<AssetData>{
 		sqlBuilder.append("data.sparepartbuntut_lainnya_nama as sparepartbuntut_lainnya_nama,");
 		sqlBuilder.append("data.sparepartbuntut_lainnya_keterangan as sparepartbuntut_lainnya_keterangan,");
 		sqlBuilder.append("data.isactive as isactive,");
-		sqlBuilder.append("param.codename as assettypename");
+		sqlBuilder.append("param.codename as assettypename,");
+		
+		sqlBuilder.append("data.sparepartkepala_filter_type as sparepartkepala_filter_type,");
+		sqlBuilder.append("data.sparepartkepala_filter_posisi as sparepartkepala_filter_posisi,");
+		sqlBuilder.append("data.sparepartkepala_bohlam_type as sparepartkepala_bohlam_type,");
+		sqlBuilder.append("data.sparepartkepala_selang_type as sparepartkepala_selang_type,");
+		
+		sqlBuilder.append("data.sparepartbuntut_filter_type as sparepartbuntut_filter_type,");
+		sqlBuilder.append("data.sparepartbuntut_filter_posisi as sparepartbuntut_filter_posisi,");
+		sqlBuilder.append("data.sparepartbuntut_bohlam_type as sparepartbuntut_bohlam_type,");
+		sqlBuilder.append("data.sparepartbuntut_selang_type as sparepartbuntut_selang_type");
 		
 		sqlBuilder.append(" from m_asset as data ");
 		sqlBuilder.append(" left join m_parameter as param on param.code = data.assettype and param.grup = 'ASSET_TYPE' ");
@@ -153,7 +163,18 @@ public class GetAssetData implements RowMapper<AssetData>{
 		final String sparepartbuntut_lainnya_keterangan = rs.getString("sparepartbuntut_lainnya_keterangan");
 		final boolean isactive = rs.getBoolean("isactive");
 		
+		final String sparepartkepala_filter_type = rs.getString("sparepartkepala_filter_type");
+		final String sparepartkepala_filter_posisi = rs.getString("sparepartkepala_filter_posisi");
+		final String sparepartkepala_bohlam_type = rs.getString("sparepartkepala_bohlam_type");
+		final String sparepartkepala_selang_type = rs.getString("sparepartkepala_selang_type");
+		
+		final String sparepartbuntut_filter_type = rs.getString("sparepartbuntut_filter_type");
+		final String sparepartbuntut_filter_posisi = rs.getString("sparepartbuntut_filter_posisi");
+		final String sparepartbuntut_bohlam_type = rs.getString("sparepartbuntut_bohlam_type");
+		final String sparepartbuntut_selang_type = rs.getString("sparepartbuntut_selang_type");
+		
 		AssetData data = new AssetData();
+		
 		data.setId(id);
 		data.setKodeasset(kodeasset);
 		data.setAssettype(assettype);
@@ -214,6 +235,17 @@ public class GetAssetData implements RowMapper<AssetData>{
 		data.setSparepartbuntut_lainnya_nama(sparepartbuntut_lainnya_nama);
 		data.setSparepartbuntut_lainnya_keterangan(sparepartbuntut_lainnya_keterangan);
 		data.setIsactive(isactive);
+		
+		data.setSparepartkepala_filter_type(sparepartkepala_filter_type);
+		data.setSparepartkepala_filter_posisi(sparepartkepala_filter_posisi);
+		data.setSparepartkepala_bohlam_type(sparepartkepala_bohlam_type);
+		data.setSparepartkepala_selang_type(sparepartkepala_selang_type);
+		
+		data.setSparepartbuntut_filter_type(sparepartbuntut_filter_type);
+		data.setSparepartbuntut_filter_posisi(sparepartbuntut_filter_posisi);
+		data.setSparepartbuntut_bohlam_type(sparepartbuntut_bohlam_type);
+		data.setSparepartbuntut_selang_type(sparepartbuntut_selang_type);
+		
 		return data;
 	}
 

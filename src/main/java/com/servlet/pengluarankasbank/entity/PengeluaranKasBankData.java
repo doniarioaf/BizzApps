@@ -19,6 +19,48 @@ public class PengeluaranKasBankData {
 	private boolean disablededitordelete;
 	private Long idwo;
 	private String nodocumentWO;
+	private Long idcustomer;
+	private String customerName;
+	private Long idvendor;
+	private String vendorName;
+	private Long idemployee;
+	private String employeeName;
+	public Long getIdcustomer() {
+		return idcustomer;
+	}
+	public void setIdcustomer(Long idcustomer) {
+		this.idcustomer = idcustomer;
+	}
+	public String getCustomerName() {
+		return customerName;
+	}
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
+	public Long getIdvendor() {
+		return idvendor;
+	}
+	public void setIdvendor(Long idvendor) {
+		this.idvendor = idvendor;
+	}
+	public String getVendorName() {
+		return vendorName;
+	}
+	public void setVendorName(String vendorName) {
+		this.vendorName = vendorName;
+	}
+	public Long getIdemployee() {
+		return idemployee;
+	}
+	public void setIdemployee(Long idemployee) {
+		this.idemployee = idemployee;
+	}
+	public String getEmployeeName() {
+		return employeeName;
+	}
+	public void setEmployeeName(String employeeName) {
+		this.employeeName = employeeName;
+	}
 	public String getNodocumentWO() {
 		return nodocumentWO;
 	}

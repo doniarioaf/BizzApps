@@ -63,6 +63,10 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 	@Autowired
 	private AssetService assetService;
 	
+	private final String PAYMENTTO_EMPLOYEE = "EMPLOYEE";
+	private final String PAYMENTTO_CUSTOMER = "CUSTOMER";
+	private final String PAYMENTTO_VENDOR = "VENDOR";
+	
 	
 	@Override
 	public List<PengeluaranKasBankData> getListAll(Long idcompany, Long idbranch) {
@@ -125,6 +129,21 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 				table.setKeterangan(body.getKeterangan());
 				table.setIsactive(body.isIsactive());
 				table.setIdwo(body.getIdwo());
+				
+				if(body.getPaymentto().equals(PAYMENTTO_CUSTOMER)) {
+					table.setIdcustomer(body.getIdcustomer());
+					table.setIdemployee(null);
+					table.setIdvendor(null);
+				}else if(body.getPaymentto().equals(PAYMENTTO_EMPLOYEE)) {
+					table.setIdcustomer(null);
+					table.setIdemployee(body.getIdemployee());
+					table.setIdvendor(null);
+				}else if(body.getPaymentto().equals(PAYMENTTO_VENDOR)) {
+					table.setIdcustomer(null);
+					table.setIdemployee(null);
+					table.setIdvendor(body.getIdvendor());
+				}
+				
 				table.setIsdelete(false);
 				table.setCreatedby(iduser.toString());
 				table.setCreateddate(ts);
@@ -178,6 +197,21 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 					table.setKeterangan(body.getKeterangan());
 					table.setIdwo(body.getIdwo());
 					table.setIsactive(body.isIsactive());
+					
+					if(body.getPaymentto().equals(PAYMENTTO_CUSTOMER)) {
+						table.setIdcustomer(body.getIdcustomer());
+						table.setIdemployee(null);
+						table.setIdvendor(null);
+					}else if(body.getPaymentto().equals(PAYMENTTO_EMPLOYEE)) {
+						table.setIdcustomer(null);
+						table.setIdemployee(body.getIdemployee());
+						table.setIdvendor(null);
+					}else if(body.getPaymentto().equals(PAYMENTTO_VENDOR)) {
+						table.setIdcustomer(null);
+						table.setIdemployee(null);
+						table.setIdvendor(body.getIdvendor());
+					}
+					
 					table.setUpdateby(iduser.toString());
 					table.setUpdatedate(ts);
 					

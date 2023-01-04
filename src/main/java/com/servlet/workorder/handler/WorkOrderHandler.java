@@ -163,28 +163,34 @@ public class WorkOrderHandler implements WorkOrderService{
 					table.setNodocument(docNumber);
 					table.setTanggal(new java.sql.Date(body.getTanggal()));
 					table.setIdcustomer(body.getIdcustomer());
-					table.setNamacargo(body.getNamacargo());
 					table.setStatus(body.getStatus());
 					table.setJeniswo(body.getJeniswo());
-					table.setModatransportasi(body.getModatransportasi());
-					table.setEtd(new java.sql.Date(body.getEtd()));
-					table.setEta(new java.sql.Date(body.getEta()));
-					table.setPortasal(body.getPortasal());
-					table.setPorttujuan(body.getPorttujuan());
-					table.setJalur(body.getJalur());
-					table.setNoaju(body.getNoaju());
-					table.setNopen(body.getNopen());
-					table.setTanggalnopen(body.getTanggalnopen().longValue() > 0? new java.sql.Date(body.getTanggalnopen()):null);
-					table.setNobl(body.getNobl());
-					table.setTanggalbl(body.getTanggalbl().longValue() > 0? new java.sql.Date(body.getTanggalbl()):null);
-					table.setPelayaran(body.getPelayaran());
-					table.setImportir(body.getImportir());
-					table.setEksportir(body.getEksportir());
-					table.setQq(body.getQq());
-					table.setVoyagenumber(body.getVoyagenumber());
-					table.setTanggalsppb_npe(body.getTanggalsppb_npe().longValue() > 0? new java.sql.Date(body.getTanggalsppb_npe()):null);
 					table.setDepo(body.getDepo());
+					
+					if(!body.getJeniswo().equals("TR")) {
+						table.setNamacargo(body.getNamacargo());
+						table.setModatransportasi(body.getModatransportasi());
+						table.setEtd(new java.sql.Date(body.getEtd()));
+						table.setEta(new java.sql.Date(body.getEta()));
+						table.setPortasal(body.getPortasal());
+						table.setPorttujuan(body.getPorttujuan());
+						table.setJalur(body.getJalur());
+						table.setNoaju(body.getNoaju());
+						table.setNopen(body.getNopen());
+						table.setTanggalnopen(body.getTanggalnopen().longValue() > 0? new java.sql.Date(body.getTanggalnopen()):null);
+						table.setNobl(body.getNobl());
+						table.setTanggalbl(body.getTanggalbl().longValue() > 0? new java.sql.Date(body.getTanggalbl()):null);
+						table.setPelayaran(body.getPelayaran());
+						table.setImportir(body.getImportir());
+						table.setEksportir(body.getEksportir());
+						table.setQq(body.getQq());
+						table.setVoyagenumber(body.getVoyagenumber());
+						table.setTanggalsppb_npe(body.getTanggalsppb_npe().longValue() > 0? new java.sql.Date(body.getTanggalsppb_npe()):null);
+						
+						
+					}
 					table.setIdvendordepo(body.getIdvendordepo());
+					
 					table.setInvoiceno("");
 					table.setIsactive(body.isIsactive());
 					table.setIsdelete(false);
@@ -236,27 +242,53 @@ public class WorkOrderHandler implements WorkOrderService{
 				if(value != null) {
 					Timestamp ts = new Timestamp(new Date().getTime());
 					WorkOrder table = repository.getById(id);
-					table.setNamacargo(body.getNamacargo());
 					table.setStatus(body.getStatus());
 					table.setJeniswo(body.getJeniswo());
-					table.setModatransportasi(body.getModatransportasi());
-					table.setEtd(new java.sql.Date(body.getEtd()));
-					table.setEta(new java.sql.Date(body.getEta()));
-					table.setPortasal(body.getPortasal());
-					table.setPorttujuan(body.getPorttujuan());
-					table.setJalur(body.getJalur());
-					table.setNoaju(body.getNoaju());
-					table.setNopen(body.getNopen());
-					table.setTanggalnopen(body.getTanggalnopen().longValue() > 0 ?new java.sql.Date(body.getTanggalnopen()):null);
-					table.setNobl(body.getNobl());
-					table.setTanggalbl(body.getTanggalbl().longValue() > 0? new java.sql.Date(body.getTanggalbl()):null);
-					table.setPelayaran(body.getPelayaran());
-					table.setImportir(body.getImportir());
-					table.setEksportir(body.getEksportir());
-					table.setQq(body.getQq());
-					table.setVoyagenumber(body.getVoyagenumber());
-					table.setTanggalsppb_npe(body.getTanggalsppb_npe().longValue() > 0? new java.sql.Date(body.getTanggalsppb_npe()):null);
 					table.setDepo(body.getDepo());
+					
+					if(body.getJeniswo().equals("TR")) {
+						table.setNamacargo(null);
+						table.setModatransportasi(null);
+						table.setEtd(null);
+						table.setEta(null);
+						table.setPortasal(null);
+						table.setPorttujuan(null);
+						table.setJalur(null);
+						table.setNoaju(null);
+						table.setNopen(null);
+						table.setTanggalnopen(null);
+						table.setNobl(null);
+						table.setTanggalbl(null);
+						table.setPelayaran(null);
+						table.setImportir(null);
+						table.setEksportir(null);
+						table.setQq(null);
+						table.setVoyagenumber(null);
+						table.setTanggalsppb_npe(null);
+						
+//						table.setIdvendordepo(null);
+					}else {
+						table.setNamacargo(body.getNamacargo());
+						table.setModatransportasi(body.getModatransportasi());
+						table.setEtd(new java.sql.Date(body.getEtd()));
+						table.setEta(new java.sql.Date(body.getEta()));
+						table.setPortasal(body.getPortasal());
+						table.setPorttujuan(body.getPorttujuan());
+						table.setJalur(body.getJalur());
+						table.setNoaju(body.getNoaju());
+						table.setNopen(body.getNopen());
+						table.setTanggalnopen(body.getTanggalnopen().longValue() > 0 ?new java.sql.Date(body.getTanggalnopen()):null);
+						table.setNobl(body.getNobl());
+						table.setTanggalbl(body.getTanggalbl().longValue() > 0? new java.sql.Date(body.getTanggalbl()):null);
+						table.setPelayaran(body.getPelayaran());
+						table.setImportir(body.getImportir());
+						table.setEksportir(body.getEksportir());
+						table.setQq(body.getQq());
+						table.setVoyagenumber(body.getVoyagenumber());
+						table.setTanggalsppb_npe(body.getTanggalsppb_npe().longValue() > 0? new java.sql.Date(body.getTanggalsppb_npe()):null);
+						
+						
+					}
 					table.setIdvendordepo(body.getIdvendordepo());
 					table.setIsactive(body.isIsactive());
 					table.setUpdateby(iduser.toString());

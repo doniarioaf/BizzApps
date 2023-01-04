@@ -18,6 +18,7 @@ import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 import com.servlet.vendor.entity.BodyDetailVendorBank;
 import com.servlet.vendor.entity.BodyDetailVendorContact;
+import com.servlet.vendor.entity.BodySearchVendor;
 import com.servlet.vendor.entity.BodyVendor;
 import com.servlet.vendor.entity.DetailVendorBank;
 import com.servlet.vendor.entity.DetailVendorBankData;
@@ -326,6 +327,16 @@ public class VendorHandler implements VendorService{
 			return list;
 		}
 		return null;
+	}
+
+	@Override
+	public List<VendorListData> getListSearchVendor(Long idcompany, Long idbranch, BodySearchVendor body) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetVendorListData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		sqlBuilder.append(" and lower(data.nama) like '%"+body.getName().toLowerCase()+"%' ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetVendorListData(), queryParameters);
 	}
 
 }

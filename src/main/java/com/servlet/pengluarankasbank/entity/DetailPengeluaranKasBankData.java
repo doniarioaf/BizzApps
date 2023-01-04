@@ -12,6 +12,8 @@ public class DetailPengeluaranKasBankData {
 	private String assetNameBuntut;
 	private Long idinvoiceitem;
 	private String invoiceitemName;
+	
+	
 	public Long getIdpengeluarankasbank() {
 		return idpengeluarankasbank;
 	}

@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.servlet.employeemanggala.entity.BodyDetailEmployeeManggalaInfoFamily;
 import com.servlet.employeemanggala.entity.BodyEmployeeManggala;
+import com.servlet.employeemanggala.entity.BodySearhEmpl;
 import com.servlet.employeemanggala.entity.DetailEmployeeManggalaInfoFamily;
 import com.servlet.employeemanggala.entity.DetailEmployeeManggalaInfoFamilyData;
 import com.servlet.employeemanggala.entity.DetailEmployeeManggalaInfoFamilyPK;
@@ -21,9 +22,11 @@ import com.servlet.employeemanggala.entity.EmployeManggalaDataList;
 import com.servlet.employeemanggala.entity.EmployeManggalaDataListParam;
 import com.servlet.employeemanggala.entity.EmployeeManggala;
 import com.servlet.employeemanggala.entity.EmployeeManggalaTemplate;
+import com.servlet.employeemanggala.entity.EmployeeSearchData;
 import com.servlet.employeemanggala.mapper.GetDetailEmployeeManggalaInfoFamilyData;
 import com.servlet.employeemanggala.mapper.GetEmployeeManggalaData;
 import com.servlet.employeemanggala.mapper.GetEmployeeManggalaDataList;
+import com.servlet.employeemanggala.mapper.GetEmployeeManggalaSeacrhData;
 import com.servlet.employeemanggala.repo.DetailEmployeeManggalaInfoFamilyRepo;
 import com.servlet.employeemanggala.repo.EmployeeManggalaRepo;
 import com.servlet.employeemanggala.service.EmployeeManggalaService;
@@ -472,6 +475,16 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false and data.jabatan != 'STAF' and data.statuskaryawan != 'BERHENTI' order by data.id ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetEmployeeManggalaDataList(), queryParameters);
+	}
+
+	@Override
+	public List<EmployeeSearchData> getListEmployeeSearch(Long idcompany, Long idbranch, BodySearhEmpl body) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetEmployeeManggalaSeacrhData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		sqlBuilder.append(" and lower(data.nama) like '%"+body.getNama().toLowerCase()+"%' and data.statuskaryawan not in ('BERHENTI') ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetEmployeeManggalaSeacrhData(), queryParameters);
 	}
 
 }

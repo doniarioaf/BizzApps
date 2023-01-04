@@ -48,6 +48,7 @@ import com.servlet.customermanggala.entity.BodyCustomerManggala;
 import com.servlet.customermanggala.entity.BodySearch;
 import com.servlet.customermanggala.service.CustomerManggalaService;
 import com.servlet.employeemanggala.entity.BodyEmployeeManggala;
+import com.servlet.employeemanggala.entity.BodySearhEmpl;
 import com.servlet.employeemanggala.service.EmployeeManggalaService;
 import com.servlet.invoice.entity.BodyInvoice;
 import com.servlet.invoice.entity.BodySearchInvoicePriceList;
@@ -104,6 +105,7 @@ import com.servlet.suratjalan.entity.BodySuratJalan;
 import com.servlet.suratjalan.service.SuratJalanService;
 import com.servlet.user.entity.BodyUserApps;
 import com.servlet.user.service.UserAppsService;
+import com.servlet.vendor.entity.BodySearchVendor;
 import com.servlet.vendor.entity.BodyVendor;
 import com.servlet.vendor.service.VendorService;
 import com.servlet.vendorcategory.entity.BodyVendorCategory;
@@ -1699,6 +1701,15 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("TEMPLATE_ID")) {
 					long id = (long) param.get("id");
 					val.setData(pengeluaranKasBankService.getByIdWithTemplate(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("SEARCHDATACUSTOMER")) {
+					BodySearch body = (BodySearch) param.get("body");
+					val.setData(customerManggalaService.getListSearchCustomer(auth.getIdcompany(), auth.getIdbranch(), body));
+				}else if(type.equals("SEARCHDATAVENDOR")) {
+					BodySearchVendor body = (BodySearchVendor) param.get("body");
+					val.setData(vendorService.getListSearchVendor(auth.getIdcompany(), auth.getIdbranch(), body));
+				}else if(type.equals("SEARCHDATAEMPLOYEE")) {
+					BodySearhEmpl body = (BodySearhEmpl) param.get("body");
+					val.setData(employeeManggalaService.getListEmployeeSearch(auth.getIdcompany(), auth.getIdbranch(), body));
 				}
 				
 			}else if(codepermission.equals(ConstansPermission.READ_INVOICE)) {

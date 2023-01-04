@@ -238,6 +238,11 @@ public class AssetHandler implements AssetService{
 		table.setSparepartbuntut_lainnya_nama("");
 		table.setSparepartbuntut_lainnya_keterangan("");
 		
+		table.setSparepartbuntut_filter_posisi("");
+		table.setSparepartbuntut_filter_type("");
+		table.setSparepartbuntut_bohlam_type("");
+		table.setSparepartbuntut_selang_type("");
+		
 		if(body.getSparepartbuntut_jenis().equals("BAN")) {
 			table.setSparepartbuntut_ban_nama(body.getSparepartbuntut_ban_nama());
 			table.setSparepartbuntut_ban_keterangan(body.getSparepartbuntut_ban_keterangan());
@@ -254,6 +259,13 @@ public class AssetHandler implements AssetService{
 		}else if(body.getSparepartbuntut_jenis().equals("LAINNYA")) {
 			table.setSparepartbuntut_lainnya_nama(body.getSparepartbuntut_lainnya_nama());
 			table.setSparepartbuntut_lainnya_keterangan(body.getSparepartbuntut_lainnya_keterangan());
+		}else if(body.getSparepartbuntut_jenis().equals("FILTER")) {
+			table.setSparepartbuntut_filter_posisi(body.getSparepartbuntut_filter_posisi());
+			table.setSparepartbuntut_filter_type(body.getSparepartbuntut_filter_type());
+		}else if(body.getSparepartbuntut_jenis().equals("BOHLAM")) {
+			table.setSparepartbuntut_bohlam_type(body.getSparepartbuntut_bohlam_type());
+		}else if(body.getSparepartbuntut_jenis().equals("SELANG")) {
+			table.setSparepartbuntut_selang_type(body.getSparepartbuntut_selang_type());
 		}
 		
 		
@@ -273,6 +285,11 @@ public class AssetHandler implements AssetService{
 		table.setSparepartkepala_ban_status("");
 		table.setSparepartkepala_lainnya_nama("");
 		table.setSparepartkepala_lainnya_keterangan("");
+		
+		table.setSparepartkepala_filter_posisi("");
+		table.setSparepartkepala_filter_type("");
+		table.setSparepartkepala_bohlam_type("");
+		table.setSparepartkepala_selang_type("");
 		
 		table.setBuntut_nama("");
 		table.setBuntut_nobuntut("");
@@ -328,6 +345,11 @@ public class AssetHandler implements AssetService{
 		table.setSparepartkepala_lainnya_nama("");
 		table.setSparepartkepala_lainnya_keterangan("");
 		
+		table.setSparepartkepala_filter_posisi("");
+		table.setSparepartkepala_filter_type("");
+		table.setSparepartkepala_bohlam_type("");
+		table.setSparepartkepala_selang_type("");
+		
 		if(body.getSparepartkepala_jenis().equals("BAN")) {
 			table.setSparepartkepala_ban_nama(body.getSparepartkepala_ban_nama());
 			table.setSparepartkepala_ban_keterangan(body.getSparepartkepala_ban_keterangan());
@@ -344,6 +366,13 @@ public class AssetHandler implements AssetService{
 		}else if(body.getSparepartkepala_jenis().equals("LAINNYA")) {
 			table.setSparepartkepala_lainnya_nama(body.getSparepartkepala_lainnya_nama());
 			table.setSparepartkepala_lainnya_keterangan(body.getSparepartkepala_lainnya_keterangan());
+		}else if(body.getSparepartkepala_jenis().equals("FILTER")) {
+			table.setSparepartkepala_filter_posisi(body.getSparepartkepala_filter_posisi());
+			table.setSparepartkepala_filter_type(body.getSparepartkepala_filter_type());
+		}else if(body.getSparepartkepala_jenis().equals("BOHLAM")) {
+			table.setSparepartkepala_bohlam_type(body.getSparepartkepala_bohlam_type());
+		}else if(body.getSparepartkepala_jenis().equals("SELANG")) {
+			table.setSparepartkepala_selang_type(body.getSparepartkepala_selang_type());
 		}
 		
 		
@@ -363,6 +392,11 @@ public class AssetHandler implements AssetService{
 		table.setSparepartbuntut_ban_status("");
 		table.setSparepartbuntut_lainnya_nama("");
 		table.setSparepartbuntut_lainnya_keterangan("");
+		
+		table.setSparepartbuntut_filter_posisi("");
+		table.setSparepartbuntut_filter_type("");
+		table.setSparepartbuntut_bohlam_type("");
+		table.setSparepartbuntut_selang_type("");
 		
 		table.setBuntut_nama("");
 		table.setBuntut_nobuntut("");
@@ -458,6 +492,16 @@ public class AssetHandler implements AssetService{
 		table.setSparepartbuntut_ban_status("");
 		table.setSparepartbuntut_lainnya_nama("");
 		table.setSparepartbuntut_lainnya_keterangan("");
+		
+		table.setSparepartkepala_filter_posisi("");
+		table.setSparepartkepala_filter_type("");
+		table.setSparepartkepala_bohlam_type("");
+		table.setSparepartkepala_selang_type("");
+		
+		table.setSparepartbuntut_filter_posisi("");
+		table.setSparepartbuntut_filter_type("");
+		table.setSparepartbuntut_bohlam_type("");
+		table.setSparepartbuntut_selang_type("");
 
 		return table;
 	}
@@ -525,7 +569,17 @@ public class AssetHandler implements AssetService{
 		table.setSparepartbuntut_ban_status("");
 		table.setSparepartbuntut_lainnya_nama("");
 		table.setSparepartbuntut_lainnya_keterangan("");
-
+		
+		table.setSparepartkepala_filter_posisi("");
+		table.setSparepartkepala_filter_type("");
+		table.setSparepartkepala_bohlam_type("");
+		table.setSparepartkepala_selang_type("");
+		
+		table.setSparepartbuntut_filter_posisi("");
+		table.setSparepartbuntut_filter_type("");
+		table.setSparepartbuntut_bohlam_type("");
+		table.setSparepartbuntut_selang_type("");
+		
 		return table;
 	}
 
@@ -543,6 +597,11 @@ public class AssetHandler implements AssetService{
 		data.setUkuranBanOptions(parameterService.getListParameterByGrup("UKURAN_BAN"));
 		data.setStatusBanOptions(parameterService.getListParameterByGrup("STATUS_BAN"));
 		data.setBentukBearingOptions(parameterService.getListParameterByGrup("BENTUKBEARING"));
+		
+		data.setSparepartPosisiFilterOptions(parameterService.getListParameterByGrup("SPAREPART_POSISI_FILTER"));
+		data.setSparepartFilterTypeOptions(parameterService.getListParameterByGrup("SPAREPART_FILTER_TIPE"));
+		data.setSparepartBohlamTypeOptions(parameterService.getListParameterByGrup("SPAREPART_BOHLAM_TIPE"));
+		data.setSparepartSelangTypeOptions(parameterService.getListParameterByGrup("SPAREPART_SELANG_TIPE"));
 		return data;
 	}
 
