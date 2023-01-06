@@ -12,6 +12,7 @@ public class PrintInvoiceData {
 	private String nodocument;
 	private Date tanggal;
 	private Long idcustomer;
+	private Long idwo;
 	private String refno;
 	private String deliveredto;
 	private String idinvoicetype;
@@ -27,6 +28,12 @@ public class PrintInvoiceData {
 	private String keteranganinvoice3;
 	private String namapenagih;
 	private String ppn;
+	public Long getIdwo() {
+		return idwo;
+	}
+	public void setIdwo(Long idwo) {
+		this.idwo = idwo;
+	}
 	public Long getId() {
 		return id;
 	}

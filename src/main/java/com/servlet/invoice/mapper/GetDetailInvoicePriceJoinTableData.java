@@ -15,11 +15,12 @@ public class GetDetailInvoicePriceJoinTableData implements RowMapper<DetailInvoi
 		final StringBuilder sqlBuilder = new StringBuilder(400);
 		sqlBuilder.append("data.idinvoice as idinvoice, data.idwarehouse as idwarehouse, data.idinvoicetype as idinvoicetype, data.jalur as jalur, data.price as price, ");
 		sqlBuilder.append("data.ismandatory as ismandatory, data.idpricelist as idpricelist, data.qty as qty, data.diskon as diskon, data.subtotal as subtotal, ");
-		sqlBuilder.append("invtype.nama as invtypename, prl.nodocument as prlnodocument, data.idpengeluarankasbank as idpengeluarankasbank, pengeluaran.nodocument as pengeluarannodocument ");
+		sqlBuilder.append("invtype.nama as invtypename, prl.nodocument as prlnodocument, data.idpengeluarankasbank as idpengeluarankasbank, pengeluaran.nodocument as pengeluarannodocument, warehouse.nama as warehousename ");
 		sqlBuilder.append("from detail_invoice_price as data ");
 		sqlBuilder.append("left join m_invoice_type as invtype on invtype.id = data.idinvoicetype ");
 		sqlBuilder.append("left join m_price_list as prl on prl.id = data.idpricelist ");
 		sqlBuilder.append("left join m_pengeluaran_kas_bank as pengeluaran on pengeluaran.id = data.idpengeluarankasbank ");
+		sqlBuilder.append("left join m_warehouse as warehouse on warehouse.id = data.idwarehouse ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}
@@ -31,6 +32,7 @@ public class GetDetailInvoicePriceJoinTableData implements RowMapper<DetailInvoi
 	public DetailInvoicePriceData mapRow(ResultSet rs, int rowNum) throws SQLException {
 		// TODO Auto-generated method stub
 		final Long idwarehouse = rs.getLong("idwarehouse");
+		final String warehousename = rs.getString("warehousename");
 		final Long idinvoicetype = rs.getLong("idinvoicetype");
 		final String invtypename = rs.getString("invtypename");
 		final String jalur = rs.getString("jalur");
@@ -46,6 +48,7 @@ public class GetDetailInvoicePriceJoinTableData implements RowMapper<DetailInvoi
 		
 		DetailInvoicePriceData data = new DetailInvoicePriceData();
 		data.setIdwarehouse(idwarehouse);
+		data.setWarehouseName(warehousename);
 		data.setIdinvoicetype(idinvoicetype);
 		data.setInvoicetypename(invtypename);
 		data.setJalur(jalur);

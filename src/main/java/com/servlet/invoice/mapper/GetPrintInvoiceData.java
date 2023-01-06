@@ -36,7 +36,7 @@ public class GetPrintInvoiceData implements RowMapper<PrintInvoiceData>{
 		final String refno = rs.getString("refno");
 		final String deliveredto = rs.getString("deliveredto");
 		final Date deliverydate = rs.getDate("deliverydate");
-//		final Long idwo = rs.getLong("idwo");
+		final Long idwo = rs.getLong("idwo");
 //		final Long idsuratjalan = rs.getLong("idsuratjalan");
 		final String idinvoicetype = rs.getString("idinvoicetype");
 		final Double totalinvoice = rs.getDouble("totalinvoice");
@@ -45,6 +45,7 @@ public class GetPrintInvoiceData implements RowMapper<PrintInvoiceData>{
 		
 		PrintInvoiceData data = new PrintInvoiceData();
 		data.setId(id);
+		data.setIdwo(idwo);
 		data.setNodocument(nodocument);
 		data.setTanggal(tanggal);
 		data.setIdcustomer(idcustomer);

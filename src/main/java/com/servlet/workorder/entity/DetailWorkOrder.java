@@ -16,8 +16,8 @@ public class DetailWorkOrder implements Serializable{
     private DetailWorkOrderPK detailWorkOrderPK;
 	private String jumlahkoli;
 	private String jumlahkg;
-	private String nocontainer;
-	private String noseal;
+//	private String nocontainer;
+//	private String noseal;
 	private String barang;
 	public DetailWorkOrderPK getDetailWorkOrderPK() {
 		return detailWorkOrderPK;
@@ -37,18 +37,18 @@ public class DetailWorkOrder implements Serializable{
 	public void setJumlahkg(String jumlahkg) {
 		this.jumlahkg = jumlahkg;
 	}
-	public String getNocontainer() {
-		return nocontainer;
-	}
-	public void setNocontainer(String nocontainer) {
-		this.nocontainer = nocontainer;
-	}
-	public String getNoseal() {
-		return noseal;
-	}
-	public void setNoseal(String noseal) {
-		this.noseal = noseal;
-	}
+//	public String getNocontainer() {
+//		return nocontainer;
+//	}
+//	public void setNocontainer(String nocontainer) {
+//		this.nocontainer = nocontainer;
+//	}
+//	public String getNoseal() {
+//		return noseal;
+//	}
+//	public void setNoseal(String noseal) {
+//		this.noseal = noseal;
+//	}
 	public String getBarang() {
 		return barang;
 	}

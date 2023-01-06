@@ -33,7 +33,7 @@ public class GetSearchDataCustomerManggala implements RowMapper<CustomerManggala
 //		final String alamat = rs.getString("alamat");
 //		final String provinsi = rs.getString("provinsi");
 		final String kota = rs.getString("kota");
-//		final String kodepos = rs.getString("kodepos");
+		final String kodepos = rs.getString("kodepos");
 //		final String npwp = rs.getString("npwp");
 //		final String nib = rs.getString("nib");
 //		final boolean isactive = rs.getBoolean("isactive");
@@ -49,7 +49,7 @@ public class GetSearchDataCustomerManggala implements RowMapper<CustomerManggala
 		data.setProvinsiname("");
 		data.setKota(kota);
 		data.setKotaname("");
-		data.setKodepos("");
+		data.setKodepos(kodepos);
 		data.setKodeposname("");
 		data.setNpwp("");
 		data.setNib("");

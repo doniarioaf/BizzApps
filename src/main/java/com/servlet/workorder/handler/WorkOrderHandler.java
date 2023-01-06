@@ -289,6 +289,7 @@ public class WorkOrderHandler implements WorkOrderService{
 						
 						
 					}
+					table.setStatus(body.getStatus());
 					table.setIdvendordepo(body.getIdvendordepo());
 					table.setIsactive(body.isIsactive());
 					table.setUpdateby(iduser.toString());
@@ -391,14 +392,15 @@ public class WorkOrderHandler implements WorkOrderService{
 					detailWorkOrderPK.setIdbranch(idbranch);
 					detailWorkOrderPK.setIdworkorder(idsave);
 					detailWorkOrderPK.setIdpartai(detail.getIdpartai());
+					detailWorkOrderPK.setNocontainer(detail.getNocontainer());
+					detailWorkOrderPK.setNoseal(detail.getNoseal());
 					
 					DetailWorkOrder detailWorkOrder = new DetailWorkOrder();
 					detailWorkOrder.setDetailWorkOrderPK(detailWorkOrderPK);
 					detailWorkOrder.setBarang(detail.getBarang());
 					detailWorkOrder.setJumlahkg(detail.getJumlahkg());
 					detailWorkOrder.setJumlahkoli(detail.getJumlahkoli());
-					detailWorkOrder.setNocontainer(detail.getNocontainer());
-					detailWorkOrder.setNoseal(detail.getNoseal());
+					
 					detailWorkOrderRepo.saveAndFlush(detailWorkOrder);
 				}
 			}
@@ -718,7 +720,7 @@ public class WorkOrderHandler implements WorkOrderService{
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetWorkOrderJoinTableData().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
-		sqlBuilder.append(" and data.tanggal >= '"+new java.sql.Date(param.getFromDate())+"'  and data.tanggal <= '"+new java.sql.Date(param.getToDate())+"' ");
+		sqlBuilder.append(" and data.status = 'CLOSED' and data.tanggal >= '"+new java.sql.Date(param.getFromDate())+"'  and data.tanggal <= '"+new java.sql.Date(param.getToDate())+"' ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderJoinTableData(), queryParameters);
 	}
@@ -734,6 +736,18 @@ public class WorkOrderHandler implements WorkOrderService{
 		sqlBuilder.append(" order by cust.customername ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderDropdownData(), queryParameters);
+	}
+
+	@Override
+	public List<DetailWorkOrderData> getListContainerByIdWorkOrderForSuratJalan(Long idcompany, Long idbranch,
+			Long idworkorder) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailWorkOrderJoinTable().schema());
+		sqlBuilder.append(" where data.idworkorder = ? and data.idcompany = ? and data.idbranch = ? ");
+		sqlBuilder.append(" and data.nocontainer in (select sj.nocantainer from t_surat_jalan as sj where sj.status in ('OPEN_SJ') and sj.isdelete = false and sj.idworkorder = "+idworkorder+" ) ");
+		
+		final Object[] queryParameters = new Object[] {idworkorder,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailWorkOrderJoinTable(), queryParameters);
 	}
 
 }

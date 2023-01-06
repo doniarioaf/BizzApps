@@ -38,16 +38,19 @@ import com.servlet.suratjalan.entity.SuratJalan;
 import com.servlet.suratjalan.entity.SuratJalanData;
 import com.servlet.suratjalan.entity.SuratJalanDropDown;
 import com.servlet.suratjalan.entity.SuratJalanTemplate;
+import com.servlet.suratjalan.entity.SuratJalanWO;
 import com.servlet.suratjalan.mapper.GetDataFullSuratJalan;
 import com.servlet.suratjalan.mapper.GetHistorySuratJalan;
 import com.servlet.suratjalan.mapper.GetPrintDataSuratJalan;
 import com.servlet.suratjalan.mapper.GetSuraJalanDropDownData;
 import com.servlet.suratjalan.mapper.GetSuratJalanList;
 import com.servlet.suratjalan.mapper.GetSuratJalanNotJoin;
+import com.servlet.suratjalan.mapper.GetSuratJalanWO;
 import com.servlet.suratjalan.repo.HistorySuratJalanRepo;
 import com.servlet.suratjalan.repo.SuratJalanRepo;
 import com.servlet.suratjalan.service.SuratJalanService;
 import com.servlet.vendor.service.VendorService;
+import com.servlet.workorder.entity.DetailWorkOrderData;
 import com.servlet.workorder.service.WorkOrderService;
 
 @Service
@@ -457,6 +460,22 @@ public class SuratJalanHandler implements SuratJalanService{
 		sqlBuilder.append(" order by data.tanggal ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch,idwo};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetSuraJalanDropDownData(), queryParameters);
+	}
+
+	@Override
+	public HashMap<String, Object> getListSuratJalanByWO(Long idcompany, Long idbranch, Long idwo) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> data = new HashMap<String, Object>();
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetSuratJalanWO().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.idworkorder = ? and data.isactive = true  and data.isdelete = false ");
+		sqlBuilder.append(" order by data.tanggal ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch,idwo};
+		List<SuratJalanWO> listSJ = this.jdbcTemplate.query(sqlBuilder.toString(), new GetSuratJalanWO(), queryParameters);
+		List<DetailWorkOrderData> listPartai = workOrderService.getListContainerByIdWorkOrderForSuratJalan(idcompany,idbranch,idwo);
+		
+		data.put("suratjalan", listSJ);
+		data.put("partaiwo", listPartai);
+		return data;
 	}
 
 }

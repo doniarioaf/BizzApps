@@ -1624,6 +1624,9 @@ public class ProcessHandler implements ProcessService{
 					long id = (long) param.get("id");
 					String nocontainer = (String) param.get("nocontainer");
 					val.setData(workOrderService.getListContainerByIdWorkOrder(auth.getIdcompany(), auth.getIdbranch(),id,nocontainer));
+				}else if(type.equals("GETSURATJALANBYWO")) {
+					long idwo = (long) param.get("idwo");
+					val.setData(suratJalanService.getListSuratJalanByWO(auth.getIdcompany(), auth.getIdbranch(),idwo));
 				}
 				
 			}else if(codepermission.equals(ConstansPermission.READ_SURATJALAN)) {
@@ -1751,6 +1754,12 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("SEACRH_PENGELUARAN")) {
 					long idwo = (long) param.get("idwo");
 					val.setData(pengeluaranKasBankService.getListByIdWo(auth.getIdcompany(), auth.getIdbranch(),idwo));
+				}else if(type.equals("GETDISTRICT")) {
+					long postalcode = (long) param.get("postalcode");
+					val.setData(districtService.getListDistrictByPostalCode(postalcode));
+				}else if(type.equals("GETSURATJALANBYWO")) {
+					long idwo = (long) param.get("idwo");
+					val.setData(suratJalanService.getListSuratJalanByWO(auth.getIdcompany(), auth.getIdbranch(),idwo));
 				}
 				
 			}else if(codepermission.equals(ConstansPermission.READ_ASSET)) {
