@@ -25,6 +25,21 @@ public class PengeluaranKasBankData {
 	private String vendorName;
 	private Long idemployee;
 	private String employeeName;
+	private String idpaymenttype;
+	private String paymenttypename;
+	
+	public String getIdpaymenttype() {
+		return idpaymenttype;
+	}
+	public void setIdpaymenttype(String idpaymenttype) {
+		this.idpaymenttype = idpaymenttype;
+	}
+	public String getPaymenttypename() {
+		return paymenttypename;
+	}
+	public void setPaymenttypename(String paymenttypename) {
+		this.paymenttypename = paymenttypename;
+	}
 	public Long getIdcustomer() {
 		return idcustomer;
 	}

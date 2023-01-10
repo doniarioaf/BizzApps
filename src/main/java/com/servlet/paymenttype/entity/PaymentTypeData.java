@@ -7,6 +7,20 @@ public class PaymentTypeData {
 	private String nama;
 	private boolean isactive;
 	private PaymentTypeTemplate template;
+	private Long idcoa;
+	private String coaName;
+	public Long getIdcoa() {
+		return idcoa;
+	}
+	public void setIdcoa(Long idcoa) {
+		this.idcoa = idcoa;
+	}
+	public String getCoaName() {
+		return coaName;
+	}
+	public void setCoaName(String coaName) {
+		this.coaName = coaName;
+	}
 	public Long getId() {
 		return id;
 	}

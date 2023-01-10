@@ -793,4 +793,13 @@ public class AssetHandler implements AssetService{
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetAssetData(), queryParameters);
 	}
 
+	@Override
+	public List<AssetData> getListAssetSparePartForPengeluaran(Long idcompany, Long idbranch) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetAssetData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false and data.isactive = true and data.assettype in ('SP_KEPALA','SP_BUNTUT') ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetAssetData(), queryParameters);
+	}
+
 }

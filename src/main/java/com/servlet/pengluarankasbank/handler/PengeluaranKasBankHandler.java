@@ -14,7 +14,9 @@ import com.servlet.bankaccount.service.BankAccountService;
 import com.servlet.coa.service.CoaService;
 import com.servlet.invoicetype.entity.ParamInvTypeDropDown;
 import com.servlet.invoicetype.service.InvoiceTypeService;
+import com.servlet.parameter.service.ParameterService;
 import com.servlet.parametermanggala.service.ParameterManggalaService;
+import com.servlet.paymenttype.service.PaymentTypeService;
 import com.servlet.pengluarankasbank.entity.BodyDetailPengeluaranKasBank;
 import com.servlet.pengluarankasbank.entity.BodyPengeluaranKasBank;
 import com.servlet.pengluarankasbank.entity.DetailPengeluaranKasBank;
@@ -62,6 +64,10 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 	private InvoiceTypeService invoiceTypeService;
 	@Autowired
 	private AssetService assetService;
+	@Autowired
+	private ParameterService parameterService;
+	@Autowired
+	private PaymentTypeService paymentTypeService;
 	
 	private final String PAYMENTTO_EMPLOYEE = "EMPLOYEE";
 	private final String PAYMENTTO_CUSTOMER = "CUSTOMER";
@@ -72,7 +78,7 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 	public List<PengeluaranKasBankData> getListAll(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPengeluaranKasBankData().schema());
-		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false ");
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false order by data.nodocument desc ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetPengeluaranKasBankData(), queryParameters);
 	}
@@ -81,7 +87,7 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 	public List<PengeluaranKasBankData> getListActive(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPengeluaranKasBankData().schema());
-		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false order by data.nodocument desc ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetPengeluaranKasBankData(), queryParameters);
 	}
@@ -143,7 +149,7 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 					table.setIdemployee(null);
 					table.setIdvendor(body.getIdvendor());
 				}
-				
+				table.setIdpaymenttype(body.getIdpaymenttype());
 				table.setIsdelete(false);
 				table.setCreatedby(iduser.toString());
 				table.setCreateddate(ts);
@@ -211,7 +217,7 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 						table.setIdemployee(null);
 						table.setIdvendor(body.getIdvendor());
 					}
-					
+					table.setIdpaymenttype(body.getIdpaymenttype());
 					table.setUpdateby(iduser.toString());
 					table.setUpdatedate(ts);
 					
@@ -320,20 +326,24 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		template.setWoOptions(workOrderService.getListDropDownByParam(idcompany, idbranch, paramwo));
 		template.setInvoiceItemOptions(invoiceTypeService.getListDropDownInvoiceType(idcompany, idbranch, paramInvType));
 		template.setAssetOptions(assetService.getListAssetForPengeluaran(idcompany, idbranch));
+		template.setPaymenttypeOptions(parameterService.getListParameterByGrup("PAYMENTITEM_TYPE"));
+		template.setAssetSparePartOptions(assetService.getListAssetSparePartForPengeluaran(idcompany, idbranch));
+		template.setSpareparttypeOptions(parameterService.getListParameterByGrup("JENIS_SPAREPART"));
+		template.setPaymentItemOptions(paymentTypeService.getListActive(idcompany, idbranch));
 		return template;
 	}
 	
 	private String putDetail(BodyDetailPengeluaranKasBank[] details,Long idcompany, Long idbranch,long idsave,String action) {
 		//detailPengeluaranKasBankRepo
-		if(action.equals("EDIT")) {
-			detailPengeluaranKasBankRepo.deleteAllDetail(idsave, idcompany, idbranch);
-		}
+//		if(action.equals("EDIT")) {
+//			detailPengeluaranKasBankRepo.deleteAllDetail(idsave, idcompany, idbranch);
+//		}
 		
 		if(details != null) {
 			if(details.length > 0) {
 				long count = 1;
-				for(int i=0; i < details.length; i++) {
-					BodyDetailPengeluaranKasBank detail = details[i];
+//				for(int i=0; i < details.length; i++) {
+					BodyDetailPengeluaranKasBank detail = details[0];//details[i];
 					
 					DetailPengeluaranKasBankPK pk = new DetailPengeluaranKasBankPK();
 					pk.setCounter(count);
@@ -342,16 +352,22 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 					pk.setIdpengeluarankasbank(idsave);
 					
 					DetailPengeluaranKasBank detailPengeluaranKasBank = new DetailPengeluaranKasBank();
+					if(action.equals("EDIT")) {
+						detailPengeluaranKasBank = detailPengeluaranKasBankRepo.getById(pk);
+					}
 					detailPengeluaranKasBank.setDetailPengeluaranKasBankPK(pk);
 					detailPengeluaranKasBank.setIdcoa(detail.getIdcoa());
 					detailPengeluaranKasBank.setCatatan(detail.getCatatan());
 					detailPengeluaranKasBank.setAmount(detail.getAmount());
 					detailPengeluaranKasBank.setIdasset(detail.getIdasset());
 					detailPengeluaranKasBank.setIdinvoiceitem(detail.getIdinvoiceitem());
+					detailPengeluaranKasBank.setIdpaymentitem(detail.getIdpaymentitem());
+					detailPengeluaranKasBank.setSparepartassettype(detail.getSparepartassettype());
+					detailPengeluaranKasBank.setIdassetsparepart(detail.getIdassetsparepart());
 					
 					detailPengeluaranKasBankRepo.saveAndFlush(detailPengeluaranKasBank);
 					count++;
-				}
+//				}
 			}
 		}
 		

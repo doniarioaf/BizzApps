@@ -12,8 +12,57 @@ public class DetailPengeluaranKasBankData {
 	private String assetNameBuntut;
 	private Long idinvoiceitem;
 	private String invoiceitemName;
+	private Long idpaymentitem;
+	private String paymentitemName;
+	private Long idassetsparepart;
+	private String assetsparepartNameKepala;
+	private String assetsparepartNameBuntut;
+	private String sparepartassettype;
+	private String sparepartassettypeName;
 	
+	public String getAssetsparepartNameKepala() {
+		return assetsparepartNameKepala;
+	}
+	public void setAssetsparepartNameKepala(String assetsparepartNameKepala) {
+		this.assetsparepartNameKepala = assetsparepartNameKepala;
+	}
+	public String getAssetsparepartNameBuntut() {
+		return assetsparepartNameBuntut;
+	}
+	public void setAssetsparepartNameBuntut(String assetsparepartNameBuntut) {
+		this.assetsparepartNameBuntut = assetsparepartNameBuntut;
+	}
 	
+	public Long getIdpaymentitem() {
+		return idpaymentitem;
+	}
+	public void setIdpaymentitem(Long idpaymentitem) {
+		this.idpaymentitem = idpaymentitem;
+	}
+	public String getPaymentitemName() {
+		return paymentitemName;
+	}
+	public void setPaymentitemName(String paymentitemName) {
+		this.paymentitemName = paymentitemName;
+	}
+	public Long getIdassetsparepart() {
+		return idassetsparepart;
+	}
+	public void setIdassetsparepart(Long idassetsparepart) {
+		this.idassetsparepart = idassetsparepart;
+	}
+	public String getSparepartassettype() {
+		return sparepartassettype;
+	}
+	public void setSparepartassettype(String sparepartassettype) {
+		this.sparepartassettype = sparepartassettype;
+	}
+	public String getSparepartassettypeName() {
+		return sparepartassettypeName;
+	}
+	public void setSparepartassettypeName(String sparepartassettypeName) {
+		this.sparepartassettypeName = sparepartassettypeName;
+	}
 	public Long getIdpengeluarankasbank() {
 		return idpengeluarankasbank;
 	}

@@ -4,6 +4,13 @@ public class BodyInvoiceType {
 	private String invoicetype;
 	private String nama;
 	private boolean isactive;
+	private Long idcoa;
+	public Long getIdcoa() {
+		return idcoa;
+	}
+	public void setIdcoa(Long idcoa) {
+		this.idcoa = idcoa;
+	}
 	public String getInvoicetype() {
 		return invoicetype;
 	}

@@ -5,8 +5,22 @@ public class InvoiceTypeData {
 	private String invoicetype;
 	private String invoicetypename;
 	private String nama;
+	private Long idcoa;
+	private String coaName;
 	private boolean isactive;
 	private InvoiceTypeTemplate template;
+	public Long getIdcoa() {
+		return idcoa;
+	}
+	public void setIdcoa(Long idcoa) {
+		this.idcoa = idcoa;
+	}
+	public String getCoaName() {
+		return coaName;
+	}
+	public void setCoaName(String coaName) {
+		this.coaName = coaName;
+	}
 	public Long getId() {
 		return id;
 	}

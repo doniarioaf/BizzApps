@@ -21,6 +21,7 @@ public class InvoiceType implements Serializable{
 	private Long idbranch;
 	private String invoicetype;
 	private String nama;
+	private Long idcoa;
 	private boolean isactive;
 	private boolean isdelete;
 	private String createdby;
@@ -29,6 +30,13 @@ public class InvoiceType implements Serializable{
 	private Timestamp updatedate;
 	private String deleteby;
 	private Timestamp deletedate;
+	
+	public Long getIdcoa() {
+		return idcoa;
+	}
+	public void setIdcoa(Long idcoa) {
+		this.idcoa = idcoa;
+	}
 	public Long getId() {
 		return id;
 	}

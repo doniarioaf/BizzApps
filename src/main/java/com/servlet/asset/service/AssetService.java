@@ -24,4 +24,5 @@ public interface AssetService {
 	List<HistoryAssetMappingData> getListHistoryMapping(Long idcompany,Long idbranch, Long id);
 	List<AssetData> getListAssetReminder(Long idcompany,Long idbranch);
 	List<AssetData> getListAssetForPengeluaran(Long idcompany,Long idbranch);
+	List<AssetData> getListAssetSparePartForPengeluaran(Long idcompany,Long idbranch);
 }

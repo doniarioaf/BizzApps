@@ -16,11 +16,12 @@ public class GetPengeluaranKasBankData implements RowMapper<PengeluaranKasBankDa
 		final StringBuilder sqlBuilder = new StringBuilder(400);
 		sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.paymentdate as paymentdate, data.paymentto as paymentto, data.idcoa as idcoa, ");
 		sqlBuilder.append("data.idbank as idbank, data.keterangan as keterangan, data.isactive as isactive,data.idwo as idwo, data.idcustomer as idcustomer, data.idvendor as idvendor, data.idemployee as idemployee, ");
-		sqlBuilder.append("cust.customername as customername, emp.nama as empnama, vendor.nama as vendornama ");
+		sqlBuilder.append("cust.customername as customername, emp.nama as empnama, vendor.nama as vendornama, parampayment.codename as parampaymentname, data.idpaymenttype as idpaymenttype  ");
 		sqlBuilder.append("from m_pengeluaran_kas_bank as data ");
 		sqlBuilder.append("left join m_customer_manggala as cust on cust.id = data.idcustomer ");
 		sqlBuilder.append("left join m_employee_manggala as emp on emp.id = data.idemployee ");
 		sqlBuilder.append("left join m_vendor as vendor on vendor.id = data.idvendor ");
+		sqlBuilder.append("left join m_parameter as parampayment on parampayment.code = data.idpaymenttype and parampayment.grup = 'PAYMENTITEM_TYPE' ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}
@@ -48,6 +49,9 @@ public class GetPengeluaranKasBankData implements RowMapper<PengeluaranKasBankDa
 		final String vendornama = rs.getString("vendornama");
 		final Long idemployee = rs.getLong("idemployee");
 		final String empnama = rs.getString("empnama");
+		final String idpaymenttype = rs.getString("idpaymenttype");
+		final String parampaymentname = rs.getString("parampaymentname");
+		
 		
 		PengeluaranKasBankData data = new PengeluaranKasBankData();
 		data.setId(id);
@@ -65,6 +69,8 @@ public class GetPengeluaranKasBankData implements RowMapper<PengeluaranKasBankDa
 		data.setVendorName(vendornama);
 		data.setIdemployee(idemployee);
 		data.setEmployeeName(empnama);
+		data.setIdpaymenttype(idpaymenttype);
+		data.setPaymenttypename(parampaymentname);
 		return data;
 	}
 

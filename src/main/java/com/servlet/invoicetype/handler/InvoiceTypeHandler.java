@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.servlet.coa.service.CoaService;
 import com.servlet.invoicetype.entity.BodyInvoiceType;
 import com.servlet.invoicetype.entity.InvoiceType;
 import com.servlet.invoicetype.entity.InvoiceTypeData;
@@ -30,6 +31,8 @@ public class InvoiceTypeHandler implements InvoiceTypeService{
 	private InvoiceTypeRepo repository;
 	@Autowired
 	private ParameterService parameterService;
+	@Autowired
+	private CoaService coaService;
 	
 	@Override
 	public List<InvoiceTypeData> getListAll(Long idcompany, Long idbranch) {
@@ -82,6 +85,7 @@ public class InvoiceTypeHandler implements InvoiceTypeService{
 				table.setIdbranch(idbranch);
 				table.setInvoicetype(body.getInvoicetype());
 				table.setNama(body.getNama());
+				table.setIdcoa(body.getIdcoa());
 				table.setIsactive(body.isIsactive());
 				table.setIsdelete(false);
 				table.setCreatedby(iduser.toString());
@@ -122,6 +126,7 @@ public class InvoiceTypeHandler implements InvoiceTypeService{
 					InvoiceType table = repository.getById(id);
 					table.setInvoicetype(body.getInvoicetype());
 					table.setNama(body.getNama());
+					table.setIdcoa(body.getIdcoa());
 					table.setIsactive(body.isIsactive());
 					table.setUpdateby(iduser.toString());
 					table.setUpdatedate(ts);
@@ -182,6 +187,7 @@ public class InvoiceTypeHandler implements InvoiceTypeService{
 	private InvoiceTypeTemplate getDataTemplate(long idcompany, long idbranch) {
 		InvoiceTypeTemplate data = new InvoiceTypeTemplate();
 		data.setInvoiceTypeOptions(parameterService.getListParameterByGrup("INVOICETYPE"));
+		data.setCoaOptions(coaService.getListActiveCOA(idcompany, idbranch));
 		return data;
 	}
 

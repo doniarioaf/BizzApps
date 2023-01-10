@@ -8,6 +8,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import com.servlet.coa.service.CoaService;
 import com.servlet.parameter.service.ParameterService;
 import com.servlet.paymenttype.entity.BodyPaymentType;
 import com.servlet.paymenttype.entity.PaymentType;
@@ -28,6 +30,8 @@ public class PaymentTypeHandler implements PaymentTypeService{
 	private PaymentTypeRepo repository;
 	@Autowired
 	private ParameterService parameterService;
+	@Autowired
+	private CoaService coaService;
 	
 	@Override
 	public List<PaymentTypeData> getListAll(Long idcompany, Long idbranch) {
@@ -80,6 +84,7 @@ public class PaymentTypeHandler implements PaymentTypeService{
 				table.setIdbranch(idbranch);
 				table.setPaymenttype(body.getPaymenttype());
 				table.setNama(body.getNama());
+				table.setIdcoa(body.getIdcoa());
 				table.setIsactive(body.isIsactive());
 				table.setIsdelete(false);
 				table.setCreatedby(iduser.toString());
@@ -120,6 +125,7 @@ public class PaymentTypeHandler implements PaymentTypeService{
 					PaymentType table = repository.getById(id);
 					table.setPaymenttype(body.getPaymenttype());
 					table.setNama(body.getNama());
+					table.setIdcoa(body.getIdcoa());
 					table.setIsactive(body.isIsactive());
 					table.setUpdateby(iduser.toString());
 					table.setUpdatedate(ts);
@@ -174,6 +180,7 @@ public class PaymentTypeHandler implements PaymentTypeService{
 	private PaymentTypeTemplate getDataTemplate(long idcompany, long idbranch) {
 		PaymentTypeTemplate data = new PaymentTypeTemplate();
 		data.setPaymentTypeOptions(parameterService.getListParameterByGrup("PAYMENTITEM_TYPE"));
+		data.setCoaOptions(coaService.getListActiveCOA(idcompany, idbranch));
 		return data;
 	}
 	

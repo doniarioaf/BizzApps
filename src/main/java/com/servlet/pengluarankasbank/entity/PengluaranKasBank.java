@@ -38,6 +38,13 @@ private static final long serialVersionUID = 1L;
 	private Long idcustomer;
 	private Long idvendor;
 	private Long idemployee;
+	private String idpaymenttype;
+	public String getIdpaymenttype() {
+		return idpaymenttype;
+	}
+	public void setIdpaymenttype(String idpaymenttype) {
+		this.idpaymenttype = idpaymenttype;
+	}
 	public Long getIdcustomer() {
 		return idcustomer;
 	}

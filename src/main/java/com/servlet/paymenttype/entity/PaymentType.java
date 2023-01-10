@@ -30,6 +30,7 @@ private static final long serialVersionUID = 1L;
 	private Timestamp updatedate;
 	private String deleteby;
 	private Timestamp deletedate;
+	private Long idcoa;
 	public Long getId() {
 		return id;
 	}
@@ -107,5 +108,11 @@ private static final long serialVersionUID = 1L;
 	}
 	public void setDeletedate(Timestamp deletedate) {
 		this.deletedate = deletedate;
+	}
+	public Long getIdcoa() {
+		return idcoa;
+	}
+	public void setIdcoa(Long idcoa) {
+		this.idcoa = idcoa;
 	}
 }
