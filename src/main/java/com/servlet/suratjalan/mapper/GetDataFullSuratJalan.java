@@ -20,9 +20,9 @@ public class GetDataFullSuratJalan implements RowMapper<SuratJalanData>{
 		sqlBuilder.append("data.idwarehouse as idwarehouse, data.catatan as catatan, data.nocantainer as nocantainer, data.status as status, ");
 		sqlBuilder.append("wo.nodocument as nodocumentwo, wo.nobl as nobl, wo.noaju as noaju,wo.namacargo as namacargo, ");
 		sqlBuilder.append("cust.customername as customername, paramstatus.codename as statusname, ");
-		sqlBuilder.append("warehouse.nama as warehousename, warehouse.contactnumber as contactname, warehouse.contacthp as contacthp, warehouse.alamat as alamat, ");
+		sqlBuilder.append("warehouse.nama as warehousename, warehouse.contactnumber as contactname, warehouse.contacthp as contacthp, warehouse.alamat as alamat,warehouse.kecamatan as warehousekecamatan, ");
 		sqlBuilder.append("partai.name as partainame, detailworkorder.jumlahkoli as jumlahkoli, detailworkorder.jumlahkg as jumlahkg, ");
-		sqlBuilder.append("data.kepemilikanmobil as kepemilikanmobil,data.idemployee_supir as idemployee_supir, data.idasset as idasset, data.idvendormobil as idvendormobil, data.lembur as lembur, ");
+		sqlBuilder.append("data.kepemilikanmobil as kepemilikanmobil,data.idemployee_supir as idemployee_supir, data.idasset as idasset, asset.kepala_nopolisi as kepala_nopolisi, data.idvendormobil as idvendormobil, data.lembur as lembur, ");
 		sqlBuilder.append("paramkepemilikanmobil.codename as paramkepemilikanmobilname, emp.nama as supirname, ven.nama as vendormobilname,paramlembur.codename as lemburname, data.tanggalkembali as tanggalkembali ");
 		
 		sqlBuilder.append("from t_surat_jalan as data ");
@@ -36,6 +36,7 @@ public class GetDataFullSuratJalan implements RowMapper<SuratJalanData>{
 		sqlBuilder.append("left join m_employee_manggala as emp on emp.id = data.idemployee_supir ");
 		sqlBuilder.append("left join m_vendor as ven on ven.id = data.idvendormobil ");
 		sqlBuilder.append("left join m_parameter as paramlembur on paramlembur.code = data.lembur and paramlembur.grup ='CHOOSE_YES_NO' ");
+		sqlBuilder.append("left join m_asset as asset on asset.id = data.idasset ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}
@@ -80,10 +81,14 @@ public class GetDataFullSuratJalan implements RowMapper<SuratJalanData>{
 		final String lembur = rs.getString("lembur");
 		final String lemburname = rs.getString("lemburname");
 		final Date tanggalkembali = rs.getDate("tanggalkembali");
+		final String kepala_nopolisi = rs.getString("kepala_nopolisi");
+		final String warehousekecamatan = rs.getString("warehousekecamatan");
+		
 		
 		SuratJalanData data = new SuratJalanData();
 		data.setId(id);
 		data.setIdasset(idasset);
+		data.setNopolisi(kepala_nopolisi);
 		data.setNodocument(nodocument);
 		data.setTanggal(tanggal);
 		data.setIdworkorder(idworkorder);
@@ -98,6 +103,7 @@ public class GetDataFullSuratJalan implements RowMapper<SuratJalanData>{
 		data.setWarehousecontactname(contactname);
 		data.setWarehousecontactno(contacthp);
 		data.setWarehouseaddress(alamat);
+		data.setWarehousekecamatan(warehousekecamatan);
 		data.setCatatan(catatan);
 		data.setNocantainer(nocantainer);
 		data.setContainerpartai(partainame);

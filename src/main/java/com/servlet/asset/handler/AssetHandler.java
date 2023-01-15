@@ -812,4 +812,13 @@ public class AssetHandler implements AssetService{
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetHistoryMappingAsset(), queryParameters);
 	}
 
+	@Override
+	public List<AssetData> getListAssetByAssetType(Long idcompany, Long idbranch, String assetType) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetAssetData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.assettype = ?  and data.isdelete = false and data.isactive = true ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch,assetType};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetAssetData(), queryParameters);
+	}
+
 }

@@ -9,6 +9,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -20,12 +21,22 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.servlet.address.entity.District;
 import com.servlet.address.entity.DistrictData;
+import com.servlet.address.repo.DistrictRepo;
 import com.servlet.address.service.DistrictService;
+import com.servlet.asset.entity.Asset;
+import com.servlet.asset.repo.AssetRepo;
+import com.servlet.asset.service.AssetService;
 import com.servlet.bankaccount.entity.BankAccountData;
 import com.servlet.bankaccount.service.BankAccountService;
+import com.servlet.employeemanggala.entity.EmployeeManggala;
+import com.servlet.employeemanggala.repo.EmployeeManggalaRepo;
+import com.servlet.employeemanggala.service.EmployeeManggalaService;
 import com.servlet.invoice.entity.InvoiceData;
 import com.servlet.invoice.service.InvoiceService;
+import com.servlet.mapping.entity.MappingData;
+import com.servlet.mapping.service.MappingService;
 import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBankData;
 import com.servlet.penerimaankasbank.entity.PenerimaanKasBankData;
 import com.servlet.penerimaankasbank.entity.PenerimaanPengeluaranData;
@@ -35,10 +46,13 @@ import com.servlet.pengluarankasbank.service.PengeluaranKasBankService;
 import com.servlet.report.entity.ManggalaStatusInvoice;
 import com.servlet.report.entity.Manggala_BodyReportBongkarMuatDanDepo;
 import com.servlet.report.entity.ParamReportManggala;
+import com.servlet.report.entity.ReportSummaryKegiatanTructTemplate;
 import com.servlet.report.entity.ReportWorkBookExcel;
 import com.servlet.report.service.ReportServiceManggala;
 import com.servlet.shared.ConstantReportName;
 import com.servlet.shared.GlobalFunc;
+import com.servlet.suratjalan.entity.SuratJalanData;
+import com.servlet.suratjalan.service.SuratJalanService;
 import com.servlet.workorder.entity.DetailWorkOrderData;
 import com.servlet.workorder.entity.ParamWoReport;
 import com.servlet.workorder.entity.WorkOrderData;
@@ -58,6 +72,20 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 	private DistrictService districtService;
 	@Autowired
 	private InvoiceService invoiceService;
+	@Autowired
+	private AssetService assetService;
+	@Autowired
+	private AssetRepo assetRepo;
+	@Autowired
+	private EmployeeManggalaService employeeManggalaService;
+	@Autowired
+	private EmployeeManggalaRepo employeeManggalaRepo;
+	@Autowired
+	private SuratJalanService suratJalanService;
+	@Autowired
+	private DistrictRepo districtRepo;
+	@Autowired
+	private MappingService mappingservice;
 	
 	@Override
 	public ReportWorkBookExcel getReportBongkarMuatDanDepo(Manggala_BodyReportBongkarMuatDanDepo body, long idcompany,
@@ -843,6 +871,235 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 	        }
 			Row rowData = sheet.createRow(rowcount++);
 			createCell(rowData, 13, totalAkhir, styleAmount,sheet,7000);
+        }
+        
+        data.setWorkbook(workbook);
+		return data;
+	}
+
+	@Override
+	public ReportSummaryKegiatanTructTemplate getSummaryKegiatanTructTemplate(long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		ReportSummaryKegiatanTructTemplate template = new ReportSummaryKegiatanTructTemplate();
+		template.setAssetOptions(assetService.getListAssetByAssetType(idcompany,idbranch,"KEPALA"));
+		template.setDriverOptions(employeeManggalaService.getListEmployeeSupir(idcompany,idbranch));
+		return template;
+	}
+
+	@Override
+	public ReportWorkBookExcel getReportSummaryKegiatanTruck(ParamReportManggala body, long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		ReportWorkBookExcel data = new ReportWorkBookExcel();
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		
+		XSSFDataFormat format = workbook.createDataFormat();
+		
+		XSSFSheet sheet = workbook.createSheet("Laporan Summary Kegiatan Truck");
+		sheet.setDefaultColumnWidth(1000);
+		
+		CellStyle style = workbook.createCellStyle();
+		CellStyle styleAmount = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setBold(true);
+        font.setFontHeight(12);
+        style.setFont(font);
+        styleAmount.setFont(font);
+        
+        String dateFrom = "";
+		try {
+			dateFrom = GlobalFunc.getDateLongToString(body.getFromDate(), "dd-MMM-yyyy");
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        String dateThru = "";
+		try {
+			dateThru = GlobalFunc.getDateLongToString(body.getToDate(), "dd-MMM-yyyy");
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		String asset = "All";
+		if(body.getIdAsset() != null) {
+			Asset assetOpt = assetRepo.getById(body.getIdAsset());
+			if(assetOpt != null) {
+				asset = assetOpt.getKepala_nopolisi();
+			}
+			
+		}
+		
+		String driver = "All";
+		if(body.getIdEmployee() != null) {
+			EmployeeManggala empOpt = employeeManggalaRepo.getById(body.getIdEmployee());
+			if(empOpt != null) {
+				driver = empOpt.getNama();
+			}
+			
+		}
+		
+		
+		Row rowTitle = sheet.createRow(1);
+        createCell(rowTitle, 0, "Laporan Summary Kegiatan Truck", style,sheet);
+        Row rowPeriode = sheet.createRow(2);
+        createCell(rowPeriode, 0, "Periode", style,sheet);
+        createCell(rowPeriode, 1, dateFrom+" s/d "+dateThru, style,sheet);
+        Row rowStatus = sheet.createRow(3);
+        createCell(rowStatus, 0, "No Truck", style,sheet);
+        createCell(rowStatus, 1, asset , style,sheet);
+        Row rowDriver = sheet.createRow(4);
+        createCell(rowDriver, 0, "Supir", style,sheet);
+        createCell(rowDriver, 1, driver , style,sheet);
+        
+        int rowcount = 6;
+        Row row = sheet.createRow(rowcount);
+        
+        //Laporan Summary Kegiatan Truck
+                
+        createCell(row, 0, "No.", style,sheet);
+        createCell(row, 1, "Nomor WO", style,sheet);
+        createCell(row, 2, "Tanggal", style,sheet);
+        createCell(row, 3, "Nomor SJ", style,sheet);
+        createCell(row, 4, "No Truck", style,sheet);
+        createCell(row, 5, "Customer", style,sheet);
+        createCell(row, 6, "Kecamatan", style,sheet);
+        createCell(row, 7, "Supir", style,sheet);
+        createCell(row, 8, "Uang Lolo (Rp)", style,sheet);
+        createCell(row, 9, "Uang Repair/Demurrage (Rp)", style,sheet);
+        createCell(row, 10, "Uang Jalan (Rp)", style,sheet);
+        createCell(row, 11, "Uang Bongkar/Muat (Rp)", style,sheet);
+        createCell(row, 12, "Uang Kawalan (Rp)", style,sheet);
+        createCell(row, 13, "Lain-lain (Rp)", style,sheet);
+        
+        List<SuratJalanData> listSj = suratJalanService.getListSuratJalanForSummaryKegiatanTruck(idcompany,idbranch,body.getFromDate(),body.getToDate(),null,body.getIdAsset(),body.getIdEmployee());
+        HashMap<String, Long> mapInvoiceItem = new HashMap<String, Long>();
+        List<MappingData> listInvoiceitem = mappingservice.getListMapping(idcompany, idbranch, "INVOICEITEM");
+        for(MappingData datamapping : listInvoiceitem) {
+        	mapInvoiceItem.put(datamapping.getMappingcode(), datamapping.getIdmaster());
+        }
+        
+        HashMap<String, Long> mapPaymentItem = new HashMap<String, Long>();
+        List<MappingData> listPaymentitem = mappingservice.getListMapping(idcompany, idbranch, "PAYMENTITEM");
+        for(MappingData datamapping : listPaymentitem) {
+        	mapPaymentItem.put(datamapping.getMappingcode(), datamapping.getIdmaster());
+        }
+        HashMap<Long, String> mappingKecamatan = new HashMap<Long, String>();
+        if(listSj != null && listSj.size() > 0) {
+        	rowcount = 7;
+			font.setBold(false);
+			font.setFontHeight(9);
+			
+			int nourut = 1;
+        	for(SuratJalanData sj : listSj) {
+        		Row rowData = sheet.createRow(rowcount++);
+    			int columnCount = 0;
+    			
+        		createCell(rowData, columnCount++, nourut, style,sheet);
+        		createCell(rowData, columnCount++, sj.getNodocumentWO(), style,sheet);
+        		createCell(rowData, columnCount++, checkNullDate(sj.getTanggalkembali(),""), style,sheet);
+        		createCell(rowData, columnCount++, sj.getNodocument(), style,sheet);
+        		createCell(rowData, columnCount++, sj.getNopolisi(), style,sheet);
+        		createCell(rowData, columnCount++, sj.getNamacustomer(), style,sheet);
+        		
+        		String kecamatan = "";
+        		if(sj.getWarehousekecamatan() != null && !sj.getWarehousekecamatan().equals("")) {
+        			long idkec = new Long(sj.getWarehousekecamatan());
+        			if(mappingKecamatan.get(idkec) == null) {
+        				Optional<District> disOpt = districtRepo.findById(idkec);
+            			if(disOpt.isPresent()) {
+            				kecamatan = disOpt.get().getDis_name();
+            				mappingKecamatan.put(idkec, kecamatan);
+            			}
+        			}else {
+        				kecamatan = mappingKecamatan.get(idkec);
+        			}
+        			
+        		}
+        		createCell(rowData, columnCount++, kecamatan, style,sheet);
+        		createCell(rowData, columnCount++, sj.getSupirname(), style,sheet);
+        		
+        		//summaryAmountPengeluaranForSummaryKegiatanTruck(Long idcompany,Long idbranch, Long idwo,Long idcustomer,Long idemployee, Long idinvoiceitem,Long idpaymentitem, Long idasset);
+        		Long iduangLolo = mapInvoiceItem.get("UANGLOLO");
+        		Double uangLolo = pengeluaranKasBankService.summaryAmountPengeluaranForSummaryKegiatanTruck(idcompany,idbranch,sj.getIdworkorder(),sj.getIdcustomer(),body.getIdEmployee(),iduangLolo,null,body.getIdAsset());
+        		
+        		int compare = new BigDecimal(uangLolo).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(uangLolo));
+				styleAmount = workbook.createCellStyle();
+		        styleAmount.setFont(font);
+				if(compare == 0) {
+					styleAmount.setDataFormat(format.getFormat("#,###"));
+				}else {
+					styleAmount.setDataFormat(format.getFormat("#,###.##"));
+				}
+				createCell(rowData, columnCount++, uangLolo, styleAmount,sheet,7000);
+        		
+        		Long iduangRepair = mapInvoiceItem.get("UANGREPAIR");
+        		Double uangRepair = pengeluaranKasBankService.summaryAmountPengeluaranForSummaryKegiatanTruck(idcompany,idbranch,sj.getIdworkorder(),sj.getIdcustomer(),body.getIdEmployee(),iduangRepair,null,body.getIdAsset());
+        		
+        		compare = new BigDecimal(uangRepair).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(uangRepair));
+				styleAmount = workbook.createCellStyle();
+		        styleAmount.setFont(font);
+				if(compare == 0) {
+					styleAmount.setDataFormat(format.getFormat("#,###"));
+				}else {
+					styleAmount.setDataFormat(format.getFormat("#,###.##"));
+				}
+				createCell(rowData, columnCount++, uangRepair, styleAmount,sheet,7000);
+				
+        		
+        		Long iduangJalan = mapPaymentItem.get("UANGJALAN");
+        		Double uangJalan = pengeluaranKasBankService.summaryAmountPengeluaranForSummaryKegiatanTruck(idcompany,idbranch,sj.getIdworkorder(),sj.getIdcustomer(),body.getIdEmployee(),null,iduangJalan,body.getIdAsset());
+        		
+        		compare = new BigDecimal(uangJalan).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(uangJalan));
+				styleAmount = workbook.createCellStyle();
+		        styleAmount.setFont(font);
+				if(compare == 0) {
+					styleAmount.setDataFormat(format.getFormat("#,###"));
+				}else {
+					styleAmount.setDataFormat(format.getFormat("#,###.##"));
+				}
+				createCell(rowData, columnCount++, uangJalan, styleAmount,sheet,7000);
+        		
+        		Long iduangBongkarMuat = mapPaymentItem.get("UANGBONGKARMUAT");
+        		Double uangBongkarMuat = pengeluaranKasBankService.summaryAmountPengeluaranForSummaryKegiatanTruck(idcompany,idbranch,sj.getIdworkorder(),sj.getIdcustomer(),body.getIdEmployee(),null,iduangBongkarMuat,body.getIdAsset());
+        		
+        		compare = new BigDecimal(uangBongkarMuat).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(uangBongkarMuat));
+				styleAmount = workbook.createCellStyle();
+		        styleAmount.setFont(font);
+				if(compare == 0) {
+					styleAmount.setDataFormat(format.getFormat("#,###"));
+				}else {
+					styleAmount.setDataFormat(format.getFormat("#,###.##"));
+				}
+				createCell(rowData, columnCount++, uangBongkarMuat, styleAmount,sheet,7000);
+        		
+        		Long iduangKawalan = mapPaymentItem.get("UANGKAWALAN");
+        		Double uangKawalan = pengeluaranKasBankService.summaryAmountPengeluaranForSummaryKegiatanTruck(idcompany,idbranch,sj.getIdworkorder(),sj.getIdcustomer(),body.getIdEmployee(),null,iduangKawalan,body.getIdAsset());
+        		
+        		compare = new BigDecimal(uangKawalan).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(uangKawalan));
+				styleAmount = workbook.createCellStyle();
+		        styleAmount.setFont(font);
+				if(compare == 0) {
+					styleAmount.setDataFormat(format.getFormat("#,###"));
+				}else {
+					styleAmount.setDataFormat(format.getFormat("#,###.##"));
+				}
+				createCell(rowData, columnCount++, uangKawalan, styleAmount,sheet,7000);
+        		
+        		Long iduangLainLain = mapPaymentItem.get("UANGLAINLAIN");
+        		Double uangLainLain = pengeluaranKasBankService.summaryAmountPengeluaranForSummaryKegiatanTruck(idcompany,idbranch,sj.getIdworkorder(),sj.getIdcustomer(),body.getIdEmployee(),null,iduangLainLain,body.getIdAsset());
+        		
+        		compare = new BigDecimal(uangLainLain).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(uangLainLain));
+				styleAmount = workbook.createCellStyle();
+		        styleAmount.setFont(font);
+				if(compare == 0) {
+					styleAmount.setDataFormat(format.getFormat("#,###"));
+				}else {
+					styleAmount.setDataFormat(format.getFormat("#,###.##"));
+				}
+				createCell(rowData, columnCount++, uangLainLain, styleAmount,sheet,7000);
+        		
+        		nourut++;
+            }
         }
         
         data.setWorkbook(workbook);

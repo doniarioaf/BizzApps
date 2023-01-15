@@ -478,4 +478,26 @@ public class SuratJalanHandler implements SuratJalanService{
 		return data;
 	}
 
+	@Override
+	public List<SuratJalanData> getListSuratJalanForSummaryKegiatanTruck(Long idcompany, Long idbranch,Long fromDate,Long thruDate, Long idwo,
+			Long idasset, Long idemployee_supir) {
+		// TODO Auto-generated method stub
+		//
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataFullSuratJalan().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		if(idwo != null) {
+			sqlBuilder.append(" and data.idworkorder = "+idwo.longValue()+" ");
+		}
+		if(idasset != null) {
+			sqlBuilder.append(" and data.idasset = "+idasset.longValue()+" ");
+		}
+		if(idemployee_supir != null) {
+			sqlBuilder.append(" and data.idemployee_supir = "+idemployee_supir.longValue()+" ");
+		}
+		
+		sqlBuilder.append(" and data.tanggalkembali >= '"+new java.sql.Date(fromDate)+"'  and data.tanggalkembali <= '"+new java.sql.Date(thruDate)+"' ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataFullSuratJalan(), queryParameters);
+	}
+
 }

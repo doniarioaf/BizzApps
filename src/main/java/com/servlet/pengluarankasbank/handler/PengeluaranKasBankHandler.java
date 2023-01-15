@@ -562,4 +562,35 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		return data;
 	}
 
+	@Override
+	public Double summaryAmountPengeluaranForSummaryKegiatanTruck(Long idcompany, Long idbranch, Long idwo, Long idcustomer, Long idemployee, Long idinvoiceitem, Long idpaymentitem,
+			Long idasset) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetTotalAmount().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? ");
+			final StringBuilder sqlBuilderMaster = new StringBuilder(" and data.idpengeluarankasbank in (select pkb.id from m_pengeluaran_kas_bank as pkb where pkb.isactive = true and pkb.isdelete = false and pkb.idwo = "+idwo+" and pkb.idcustomer = "+idcustomer+" ");
+			if(idemployee != null) {
+				sqlBuilderMaster.append(" and pkb.idemployee = "+idemployee+" ");
+			}
+			sqlBuilderMaster.append(" ) ");
+		
+			if(idasset != null) {
+				sqlBuilder.append(" and data.idasset = "+idasset+" ");
+			}
+			if(idinvoiceitem != null) {
+				sqlBuilder.append(" and data.idinvoiceitem = "+idinvoiceitem+" ");
+			}
+			if(idpaymentitem != null) {
+				sqlBuilder.append(" and data.idpaymentitem = "+idpaymentitem+" ");
+			}
+			sqlBuilder.append(sqlBuilderMaster.toString());
+			
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmount(), queryParameters);
+		if(list != null && list.size() > 0) {
+			return list.get(0);
+		}
+		return 0.0;
+	}
+
 }

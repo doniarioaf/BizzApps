@@ -23,4 +23,5 @@ public interface PengeluaranKasBankService {
 	List<DetailPengeluaranKasBankData> getListDetailById(Long idcompany,Long idbranch,Long id);
 	Double summaryAmountPengeluaranByIdWo(Long idcompany,Long idbranch,Date fromdate, Date todate, Long idwo,Long idbank);
 	PengeluaranHeaderAndDetail getListByIdWo(Long idcompany,Long idbranch,Long idWO);
+	Double summaryAmountPengeluaranForSummaryKegiatanTruck(Long idcompany,Long idbranch, Long idwo,Long idcustomer,Long idemployee, Long idinvoiceitem,Long idpaymentitem, Long idasset);
 }

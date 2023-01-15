@@ -26,4 +26,5 @@ public interface AssetService {
 	List<AssetData> getListAssetForPengeluaran(Long idcompany,Long idbranch);
 	List<AssetData> getListAssetSparePartForPengeluaran(Long idcompany,Long idbranch);
 	List<HistoryAssetMappingData> getListHistoryMappingForPengeluaranKasBank(Long idcompany,Long idbranch, Long idasset,Long idpengeluaran);
+	List<AssetData> getListAssetByAssetType(Long idcompany,Long idbranch,String assetType);
 }
