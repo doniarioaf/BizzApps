@@ -1,5 +1,6 @@
 package com.servlet.suratjalan.entity;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -12,7 +13,14 @@ public class SuratJalanWO {
 	private Long idwarehouse;
 	private String warehousename;
 	private String nocontainer;
+	private Date tanggalkembali;
 	
+	public Date getTanggalkembali() {
+		return tanggalkembali;
+	}
+	public void setTanggalkembali(Date tanggalkembali) {
+		this.tanggalkembali = tanggalkembali;
+	}
 	public String getNocontainer() {
 		return nocontainer;
 	}

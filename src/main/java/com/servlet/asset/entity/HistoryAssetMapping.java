@@ -26,6 +26,20 @@ private static final long serialVersionUID = 1L;
 	private Long idassetmapping;
 	private String type;
 	private Timestamp tanggal;
+	private Long idpengeluarankasbank;
+	private boolean isdelete;
+	public boolean isIsdelete() {
+		return isdelete;
+	}
+	public void setIsdelete(boolean isdelete) {
+		this.isdelete = isdelete;
+	}
+	public Long getIdpengeluarankasbank() {
+		return idpengeluarankasbank;
+	}
+	public void setIdpengeluarankasbank(Long idpengeluarankasbank) {
+		this.idpengeluarankasbank = idpengeluarankasbank;
+	}
 	public Long getIdassetmapping() {
 		return idassetmapping;
 	}

@@ -55,6 +55,8 @@ import com.servlet.invoice.entity.BodySearchInvoicePriceList;
 import com.servlet.invoice.service.InvoiceService;
 import com.servlet.invoicetype.entity.BodyInvoiceType;
 import com.servlet.invoicetype.service.InvoiceTypeService;
+import com.servlet.mapping.entity.BodyMapping;
+import com.servlet.mapping.service.MappingService;
 import com.servlet.mobile.callplan.entity.BodyCallPlan;
 import com.servlet.mobile.callplan.service.CallPlanService;
 import com.servlet.mobile.customercallplan.entity.DownloadCustomerCallPlan;
@@ -206,6 +208,8 @@ public class ProcessHandler implements ProcessService{
 	InvoiceService invoiceService;
 	@Autowired
 	AssetService assetService;
+	@Autowired
+	MappingService mappingService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -1572,6 +1576,11 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
 					val.setData(invoiceTypeService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("GETMAPPING")) {
+					val.setData(mappingService.getListMapping(auth.getIdcompany(), auth.getIdbranch(),"INVOICEITEM"));
+				}else if(type.equals("MAPPING")) {
+					BodyMapping body = (BodyMapping) param.get("body");
+					val.setData(mappingService.saveMapping(auth.getIdcompany(), auth.getIdbranch(),auth.getId(),body));
 				}
 				
 			}else if(codepermission.equals(ConstansPermission.READ_PRICELIST)) {
@@ -1602,6 +1611,11 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
 					val.setData(paymentTypeService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("GETMAPPING")) {
+					val.setData(mappingService.getListMapping(auth.getIdcompany(), auth.getIdbranch(),"PAYMENTITEM"));
+				}else if(type.equals("MAPPING")) {
+					BodyMapping body = (BodyMapping) param.get("body");
+					val.setData(mappingService.saveMapping(auth.getIdcompany(), auth.getIdbranch(),auth.getId(),body));
 				}
 				
 			}else if(codepermission.equals(ConstansPermission.READ_WORKORDER)) {

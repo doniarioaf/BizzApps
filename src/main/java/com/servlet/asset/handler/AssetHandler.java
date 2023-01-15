@@ -745,7 +745,7 @@ public class AssetHandler implements AssetService{
 	public List<HistoryAssetMappingData> getListHistoryMapping(Long idcompany, Long idbranch, Long id) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetHistoryMappingAsset().schema());
-		sqlBuilder.append(" where data.idasset = ? and data.idcompany = ? and data.idbranch = ? order by data.id desc ");
+		sqlBuilder.append(" where data.idasset = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false order by data.id desc ");
 		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetHistoryMappingAsset(), queryParameters);
 	}
@@ -800,6 +800,16 @@ public class AssetHandler implements AssetService{
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false and data.isactive = true and data.assettype in ('SP_KEPALA','SP_BUNTUT') ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetAssetData(), queryParameters);
+	}
+
+	@Override
+	public List<HistoryAssetMappingData> getListHistoryMappingForPengeluaranKasBank(Long idcompany, Long idbranch,
+			Long idasset, Long idpengeluaran) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetHistoryMappingAsset().schema());
+		sqlBuilder.append(" where data.idasset = ? and data.idcompany = ? and data.idbranch = ? and data.idpengeluarankasbank = ? and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {idasset,idcompany,idbranch,idpengeluaran};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetHistoryMappingAsset(), queryParameters);
 	}
 
 }

@@ -17,7 +17,20 @@ public class HistoryAssetMappingData {
 	private String sparepartkepala_nama;
 	private String sparepartbuntut_nama;
 	private Long idassetmapping;
-	
+	private Long idpengeluarankasbank;
+	private String noDocPengeluaranKasBank;
+	public Long getIdpengeluarankasbank() {
+		return idpengeluarankasbank;
+	}
+	public void setIdpengeluarankasbank(Long idpengeluarankasbank) {
+		this.idpengeluarankasbank = idpengeluarankasbank;
+	}
+	public String getNoDocPengeluaranKasBank() {
+		return noDocPengeluaranKasBank;
+	}
+	public void setNoDocPengeluaranKasBank(String noDocPengeluaranKasBank) {
+		this.noDocPengeluaranKasBank = noDocPengeluaranKasBank;
+	}
 	public Long getIdassetmapping() {
 		return idassetmapping;
 	}

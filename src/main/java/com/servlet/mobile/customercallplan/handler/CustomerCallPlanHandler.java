@@ -11,7 +11,6 @@ import com.servlet.mobile.customercallplan.entity.CustomerCallPlan;
 import com.servlet.mobile.customercallplan.entity.CustomerCallPlanData;
 import com.servlet.mobile.customercallplan.entity.CustomerCallPlanPK;
 import com.servlet.mobile.customercallplan.entity.DownloadCustomerCallPlan;
-import com.servlet.mobile.customercallplan.mapper.GetCountCustomerCallPlan;
 import com.servlet.mobile.customercallplan.mapper.GetCountCustomerCallPlanMobile;
 import com.servlet.mobile.customercallplan.mapper.GetCustomerCallPlanByIdCustomer;
 import com.servlet.mobile.customercallplan.mapper.GetCustomerCallPlanByIdCustomerMobile;

@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.servlet.asset.entity.HistoryAssetMapping;
+import com.servlet.asset.entity.HistoryAssetMappingData;
+import com.servlet.asset.repo.HistoryAssetMappingRepo;
 import com.servlet.asset.service.AssetService;
 import com.servlet.bankaccount.service.BankAccountService;
 import com.servlet.coa.service.CoaService;
@@ -68,6 +71,8 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 	private ParameterService parameterService;
 	@Autowired
 	private PaymentTypeService paymentTypeService;
+	@Autowired
+	private HistoryAssetMappingRepo historyAssetMappingRepo;
 	
 	private final String PAYMENTTO_EMPLOYEE = "EMPLOYEE";
 	private final String PAYMENTTO_CUSTOMER = "CUSTOMER";
@@ -163,7 +168,7 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 					e.printStackTrace();
 				}
 				if(idsave > 0) {
-					putDetail(body.getDetails(), idcompany, idbranch, idsave, "ADD");
+					putDetail(body.getDetails(), idcompany, idbranch, idsave, "ADD",iduser);
 				}
 				
 			}catch (Exception e) {
@@ -223,7 +228,7 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 					
 					idsave = repository.saveAndFlush(table).getId();
 					
-					putDetail(body.getDetails(), idcompany, idbranch, idsave, "EDIT");
+					putDetail(body.getDetails(), idcompany, idbranch, idsave, "EDIT",iduser);
 				}catch (Exception e) {
 					// TODO: handle exception
 					ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
@@ -259,6 +264,15 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 					table.setDeleteby(iduser.toString());
 					table.setDeletedate(ts);
 					idsave = repository.saveAndFlush(table).getId();
+					
+					List<HistoryAssetMappingData> listHistory = assetService.getListHistoryMappingForPengeluaranKasBank(idcompany,idbranch,id,idsave);
+					if(listHistory != null && listHistory.size() > 0) {
+						HistoryAssetMappingData history = listHistory.get(0);
+						HistoryAssetMapping tablehis = historyAssetMappingRepo.getById(history.getId());
+						tablehis.setIsdelete(true);
+						historyAssetMappingRepo.saveAndFlush(tablehis);
+						
+					}
 				}catch (Exception e) {
 					// TODO: handle exception
 					ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
@@ -333,12 +347,12 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		return template;
 	}
 	
-	private String putDetail(BodyDetailPengeluaranKasBank[] details,Long idcompany, Long idbranch,long idsave,String action) {
+	private String putDetail(BodyDetailPengeluaranKasBank[] details,Long idcompany, Long idbranch,long idsave,String action,long iduser) {
 		//detailPengeluaranKasBankRepo
 //		if(action.equals("EDIT")) {
 //			detailPengeluaranKasBankRepo.deleteAllDetail(idsave, idcompany, idbranch);
 //		}
-		
+		Timestamp ts = new Timestamp(new Date().getTime());
 		if(details != null) {
 			if(details.length > 0) {
 				long count = 1;
@@ -352,9 +366,18 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 					pk.setIdpengeluarankasbank(idsave);
 					
 					DetailPengeluaranKasBank detailPengeluaranKasBank = new DetailPengeluaranKasBank();
+					List<HistoryAssetMappingData> listHistory = new ArrayList<HistoryAssetMappingData>();
 					if(action.equals("EDIT")) {
 						detailPengeluaranKasBank = detailPengeluaranKasBankRepo.getById(pk);
+						Long idasset = null;
+						if(detailPengeluaranKasBank != null ) {
+							if(detailPengeluaranKasBank.getIdasset() != null && detailPengeluaranKasBank.getIdasset() != 0) {
+								idasset = detailPengeluaranKasBank.getIdasset();
+							}
+						}
+						listHistory = assetService.getListHistoryMappingForPengeluaranKasBank(idcompany,idbranch,idasset,idsave);
 					}
+					
 					detailPengeluaranKasBank.setDetailPengeluaranKasBankPK(pk);
 					detailPengeluaranKasBank.setIdcoa(detail.getIdcoa());
 					detailPengeluaranKasBank.setCatatan(detail.getCatatan());
@@ -366,6 +389,62 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 					detailPengeluaranKasBank.setIdassetsparepart(detail.getIdassetsparepart());
 					
 					detailPengeluaranKasBankRepo.saveAndFlush(detailPengeluaranKasBank);
+					
+					Long idassetSparepart = null;
+					if(detail.getIdassetsparepart() == null) {
+						idassetSparepart = 0L;
+					}else {
+						idassetSparepart = detail.getIdassetsparepart();
+					}
+					String type = "ARMADA";
+					if(idassetSparepart != null && idassetSparepart != 0) {
+						type = "SPAREPART";
+					}
+					
+					boolean isDelete = false;
+					if(detail.getIdasset() == null) {
+						isDelete = true;
+					}
+					if(listHistory != null && listHistory.size() > 0) {
+						HistoryAssetMappingData history = listHistory.get(0);
+						if(isDelete) {
+							historyAssetMappingRepo.deleteById(history.getId());
+						}else {
+							
+							HistoryAssetMapping table = historyAssetMappingRepo.getById(history.getId());
+							table.setIdasset(detail.getIdasset());
+							if(idassetSparepart == 0L) {
+								table.setAfter(detail.getIdasset());
+							}else {
+								table.setAfter(idassetSparepart);
+							}
+							
+							table.setType(type);
+							if(history.getIdasset() != detail.getIdasset() || history.getAfter() != idassetSparepart) {
+								table.setTanggal(ts);
+							}
+							table.setIduser(iduser);
+							historyAssetMappingRepo.saveAndFlush(table);
+						}
+						
+						
+					}else {
+						if(!isDelete) {
+							HistoryAssetMapping table = new HistoryAssetMapping();
+							table.setIdasset(detail.getIdasset());
+							table.setIdcompany(idcompany);
+							table.setIdbranch(idbranch);
+							table.setIduser(iduser);
+							table.setBefore(0L);
+							table.setAfter(idassetSparepart);
+							table.setType(type);
+							table.setTanggal(ts);
+							table.setIdpengeluarankasbank(idsave);
+							table.setIsdelete(false);
+							historyAssetMappingRepo.saveAndFlush(table);
+						}
+						
+					}
 					count++;
 //				}
 			}

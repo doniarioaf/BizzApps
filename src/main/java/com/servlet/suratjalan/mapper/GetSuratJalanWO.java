@@ -1,5 +1,6 @@
 package com.servlet.suratjalan.mapper;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -14,7 +15,7 @@ public class GetSuratJalanWO implements RowMapper<SuratJalanWO>{
 	public GetSuratJalanWO() {
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
-		sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.tanggal as tanggal, data.nocantainer as nocantainer, ");
+		sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.tanggal as tanggal, data.nocantainer as nocantainer, data.tanggalkembali as tanggalkembali, ");
 		sqlBuilder.append("data.idwarehouse as idwarehouse, warehouse.nama as warehousename ");
 		sqlBuilder.append("from t_surat_jalan as data ");
 		sqlBuilder.append("left join m_warehouse as warehouse on warehouse.id = data.idwarehouse ");
@@ -36,6 +37,7 @@ public class GetSuratJalanWO implements RowMapper<SuratJalanWO>{
 		final String nocantainer = rs.getString("nocantainer");
 		final Long idwarehouse = rs.getLong("idwarehouse");
 		final String warehousename = rs.getString("warehousename");
+		final Date tanggalkembali = rs.getDate("tanggalkembali");
 		
 		SuratJalanWO data = new SuratJalanWO();
 		data.setId(id);
@@ -44,6 +46,7 @@ public class GetSuratJalanWO implements RowMapper<SuratJalanWO>{
 		data.setIdwarehouse(idwarehouse);
 		data.setWarehousename(warehousename);
 		data.setNocontainer(nocantainer);
+		data.setTanggalkembali(tanggalkembali);
 		
 		return data;
 	}

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.servlet.mapping.entity.BodyMapping;
 import com.servlet.paymenttype.entity.BodyPaymentType;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
@@ -51,6 +52,23 @@ public class PaymentTypeApi {
 	ResponseEntity<Response> getTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("type", "TEMPLATE");
+		Response response = securityService.response(ConstansPermission.READ_PAYMENTTYPE,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@GetMapping("/listmapping")
+	ResponseEntity<Response> getMapping(@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "GETMAPPING");
+		Response response = securityService.response(ConstansPermission.READ_PAYMENTTYPE,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@PostMapping("/mapping")
+	ResponseEntity<Response> createMapping(@RequestBody @Validated BodyMapping body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "MAPPING");
+		param.put("body", body);
 		Response response = securityService.response(ConstansPermission.READ_PAYMENTTYPE,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}

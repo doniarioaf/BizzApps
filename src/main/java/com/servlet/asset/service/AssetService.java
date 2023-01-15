@@ -25,4 +25,5 @@ public interface AssetService {
 	List<AssetData> getListAssetReminder(Long idcompany,Long idbranch);
 	List<AssetData> getListAssetForPengeluaran(Long idcompany,Long idbranch);
 	List<AssetData> getListAssetSparePartForPengeluaran(Long idcompany,Long idbranch);
+	List<HistoryAssetMappingData> getListHistoryMappingForPengeluaranKasBank(Long idcompany,Long idbranch, Long idasset,Long idpengeluaran);
 }

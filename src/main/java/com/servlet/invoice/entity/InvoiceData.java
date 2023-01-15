@@ -18,6 +18,7 @@ public class InvoiceData {
 	private Long idwo;
 	private String noocumentwo;
 	private String jalurwo;
+	private String jalurname;
 	private Long idsuratjalan;
 	private String noocumentsuratjalan;
 	private Long idwarehousesuratjalan;
@@ -30,6 +31,14 @@ public class InvoiceData {
 	private List<DetailInvoicePriceData> detailsprice;
 	private List<PenerimaanKasBankData> listpenerimaan;
 	private List<DetailPenerimaanKasBankData> detailspenerimaan;
+	
+	
+	public String getJalurname() {
+		return jalurname;
+	}
+	public void setJalurname(String jalurname) {
+		this.jalurname = jalurname;
+	}
 	public Long getId() {
 		return id;
 	}
