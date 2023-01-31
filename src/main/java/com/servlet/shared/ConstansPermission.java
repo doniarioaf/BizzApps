@@ -188,6 +188,7 @@ public class ConstansPermission {
 	public static final String READ_REPORT_KAS_BANK = "READ_REPORT_KAS_BANK";
 	public static final String READ_REPORT_LABA_RUGI = "READ_REPORT_LABA_RUGI";
 	public static final String READ_REPORT_SUMMARY_KEGIATAN_TRUCK = "READ_REPORT_SUMMARY_KEGIATAN_TRUCK";
+	public static final String READ_REPORT_HISTORY_TRUCK = "READ_REPORT_HISTORY_TRUCK";
 
 	
 	

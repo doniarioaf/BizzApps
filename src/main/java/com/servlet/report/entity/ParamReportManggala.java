@@ -8,6 +8,13 @@ public class ParamReportManggala {
 	private String typeReport;
 	private Long idAsset;
 	private Long idEmployee;
+	private Long idAssetSparepart;
+	public Long getIdAssetSparepart() {
+		return idAssetSparepart;
+	}
+	public void setIdAssetSparepart(Long idAssetSparepart) {
+		this.idAssetSparepart = idAssetSparepart;
+	}
 	public Long getIdAsset() {
 		return idAsset;
 	}

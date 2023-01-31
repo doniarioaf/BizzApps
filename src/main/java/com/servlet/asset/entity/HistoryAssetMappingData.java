@@ -115,4 +115,13 @@ public class HistoryAssetMappingData {
 	public void setSparepartbuntut_nama(String sparepartbuntut_nama) {
 		this.sparepartbuntut_nama = sparepartbuntut_nama;
 	}
+	@Override
+	public String toString() {
+		return "HistoryAssetMappingData [id=" + id + ", idasset=" + idasset + ", iduser=" + iduser + ", before="
+				+ before + ", after=" + after + ", type=" + type + ", tanggal=" + tanggal + ", kodeasset=" + kodeasset
+				+ ", assettype=" + assettype + ", kepala_nama=" + kepala_nama + ", buntut_nama=" + buntut_nama
+				+ ", sparepartkepala_nama=" + sparepartkepala_nama + ", sparepartbuntut_nama=" + sparepartbuntut_nama
+				+ ", idassetmapping=" + idassetmapping + ", idpengeluarankasbank=" + idpengeluarankasbank
+				+ ", noDocPengeluaranKasBank=" + noDocPengeluaranKasBank + "]";
+	}
 }

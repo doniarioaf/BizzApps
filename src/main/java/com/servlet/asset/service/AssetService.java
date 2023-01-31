@@ -1,8 +1,10 @@
 package com.servlet.asset.service;
 
+import java.sql.Date;
 import java.util.List;
 
 import com.servlet.asset.entity.AssetData;
+import com.servlet.asset.entity.AssetMappingData;
 import com.servlet.asset.entity.AssetTemplate;
 import com.servlet.asset.entity.BodyAsset;
 import com.servlet.asset.entity.BodyAssetMapping;
@@ -26,5 +28,7 @@ public interface AssetService {
 	List<AssetData> getListAssetForPengeluaran(Long idcompany,Long idbranch);
 	List<AssetData> getListAssetSparePartForPengeluaran(Long idcompany,Long idbranch);
 	List<HistoryAssetMappingData> getListHistoryMappingForPengeluaranKasBank(Long idcompany,Long idbranch, Long idasset,Long idpengeluaran);
-	List<AssetData> getListAssetByAssetType(Long idcompany,Long idbranch,String assetType);
+	List<AssetData> getListAssetByAssetType(Long idcompany,Long idbranch,String assetType,Long id);
+	List<HistoryAssetMappingData> getListHistoryMappingReportHistoryTruck(Long idcompany,Long idbranch, Long idasset, Long idassetmapping, Long from,Long thru,boolean checkIsNullIdPengeluaranKasBank,Long idassetkepala);
+	List<AssetMappingData> getListAssetMappingByIdAsset(Long idcompany, Long idbranch, Long idasset);
 }

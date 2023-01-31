@@ -1859,6 +1859,23 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("TEMPLATE")) {
 					val.setData(reportServiceManggala.getSummaryKegiatanTructTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}
+			}else if(codepermission.equals(ConstansPermission.READ_REPORT_HISTORY_TRUCK)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("REPORT")) {
+					ParamReportManggala body = (ParamReportManggala) param.get("body");
+					if(body.getTypeReport().equals("XLSX")) {
+						val.setData(reportServiceManggala.getReportHistoryTruck(body, auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
+					}
+//					else if(body.getTypereport().equals("PPT")) {
+//						val.setData(reportService.getReportMonitoringDataPPT(body,auth.getIdcompany(), auth.getIdbranch()).getPpt());
+//					}else {
+//						val.setData(reportService.getReportMonitoringDataPDF(body, auth.getIdcompany(), auth.getIdbranch()));
+//					}
+					
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(reportServiceManggala.getHistoryTrucktTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}
 			}
 			
 		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {

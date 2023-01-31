@@ -494,7 +494,7 @@ public class SuratJalanHandler implements SuratJalanService{
 		if(idemployee_supir != null) {
 			sqlBuilder.append(" and data.idemployee_supir = "+idemployee_supir.longValue()+" ");
 		}
-		
+		sqlBuilder.append(" and data.idemployee_supir notnull and data.idemployee_supir != 0 ");
 		sqlBuilder.append(" and data.tanggalkembali >= '"+new java.sql.Date(fromDate)+"'  and data.tanggalkembali <= '"+new java.sql.Date(thruDate)+"' ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataFullSuratJalan(), queryParameters);

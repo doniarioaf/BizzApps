@@ -324,6 +324,50 @@ public class ReportApi {
 		
 	}
 	
+	@GetMapping("/manggala/historytruck/template")
+	ResponseEntity<Response> getListTemplateHistoryTruck(@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "TEMPLATE");
+		Response response = securityService.response(ConstansPermission.READ_REPORT_HISTORY_TRUCK,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@GetMapping("/manggala/historytruck")
+	ResponseEntity<Response> getReportHistoryTruck(HttpServletResponse response,@RequestHeader(ConstansKey.AUTH) String authorization,@RequestParam long from,@RequestParam long thru,@RequestParam Long idasset,@RequestParam Long idassetsparepart,@RequestParam String type) throws IOException {
+		ParamReportManggala body = new ParamReportManggala();
+		body.setFromDate(from);
+		body.setToDate(thru);
+		body.setIdAsset(idasset != 0?idasset:null);
+		body.setIdAssetSparepart(idassetsparepart != 0?idassetsparepart:null);
+		body.setTypeReport(type);
+		
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "REPORT");
+		param.put("body", body);
+		
+		Response response1 = securityService.response(ConstansPermission.READ_REPORT_HISTORY_TRUCK,param,authorization);
+		if(response1.getHttpcode() == HttpStatus.OK.value()) {
+			if(type.equals("XLSX")) {
+				XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+				export(response, workbook);
+//				return ResponseEntity.ok().build();
+			}else if(type.equals("PPT")){
+				XMLSlideShow ppt = (XMLSlideShow) response1.getData();
+				exportPPT(response,ppt);
+			}else {
+			
+				//PDF
+				ReportToPDF pdf = (ReportToPDF) response1.getData();
+				exportToPdf(response,pdf.getDocument(),pdf.getTable());
+//				return ResponseEntity.ok().build();
+			}
+			return ResponseEntity.ok().build();
+		}else {
+			return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
+		}
+		
+	}
+	
 	private void export(HttpServletResponse response,XSSFWorkbook workbook) throws IOException {
         ServletOutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);

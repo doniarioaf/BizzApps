@@ -28,6 +28,13 @@ private static final long serialVersionUID = 1L;
 	private Timestamp tanggal;
 	private Long idpengeluarankasbank;
 	private boolean isdelete;
+	private Long idassetkepala;
+	public Long getIdassetkepala() {
+		return idassetkepala;
+	}
+	public void setIdassetkepala(Long idassetkepala) {
+		this.idassetkepala = idassetkepala;
+	}
 	public boolean isIsdelete() {
 		return isdelete;
 	}

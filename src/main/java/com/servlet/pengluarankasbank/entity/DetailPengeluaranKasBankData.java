@@ -129,4 +129,15 @@ public class DetailPengeluaranKasBankData {
 	public void setAssetNameBuntut(String assetNameBuntut) {
 		this.assetNameBuntut = assetNameBuntut;
 	}
+	@Override
+	public String toString() {
+		return "DetailPengeluaranKasBankData [idpengeluarankasbank=" + idpengeluarankasbank + ", idcoa=" + idcoa
+				+ ", coaName=" + coaName + ", catatan=" + catatan + ", amount=" + amount + ", idasset=" + idasset
+				+ ", assetName=" + assetName + ", assetNameKepala=" + assetNameKepala + ", assetNameBuntut="
+				+ assetNameBuntut + ", idinvoiceitem=" + idinvoiceitem + ", invoiceitemName=" + invoiceitemName
+				+ ", idpaymentitem=" + idpaymentitem + ", paymentitemName=" + paymentitemName + ", idassetsparepart="
+				+ idassetsparepart + ", assetsparepartNameKepala=" + assetsparepartNameKepala
+				+ ", assetsparepartNameBuntut=" + assetsparepartNameBuntut + ", sparepartassettype="
+				+ sparepartassettype + ", sparepartassettypeName=" + sparepartassettypeName + "]";
+	}
 }

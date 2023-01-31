@@ -4,13 +4,17 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.servlet.asset.entity.Asset;
+import com.servlet.asset.entity.AssetMappingData;
 import com.servlet.asset.entity.HistoryAssetMapping;
 import com.servlet.asset.entity.HistoryAssetMappingData;
+import com.servlet.asset.repo.AssetRepo;
 import com.servlet.asset.repo.HistoryAssetMappingRepo;
 import com.servlet.asset.service.AssetService;
 import com.servlet.bankaccount.service.BankAccountService;
@@ -73,6 +77,8 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 	private PaymentTypeService paymentTypeService;
 	@Autowired
 	private HistoryAssetMappingRepo historyAssetMappingRepo;
+	@Autowired
+	private AssetRepo assetRepo;
 	
 	private final String PAYMENTTO_EMPLOYEE = "EMPLOYEE";
 	private final String PAYMENTTO_CUSTOMER = "CUSTOMER";
@@ -405,6 +411,7 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 					if(detail.getIdasset() == null) {
 						isDelete = true;
 					}
+					
 					if(listHistory != null && listHistory.size() > 0) {
 						HistoryAssetMappingData history = listHistory.get(0);
 						if(isDelete) {
@@ -412,6 +419,7 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 						}else {
 							
 							HistoryAssetMapping table = historyAssetMappingRepo.getById(history.getId());
+							
 							table.setIdasset(detail.getIdasset());
 							if(idassetSparepart == 0L) {
 								table.setAfter(detail.getIdasset());
@@ -424,6 +432,25 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 								table.setTanggal(ts);
 							}
 							table.setIduser(iduser);
+							
+							Optional<Asset> optAsset = assetRepo.findById(detail.getIdasset());
+							Long Idassetkepala = null;
+							if(optAsset.isPresent()) {
+								Asset asset = optAsset.get();
+								if(asset.getAssettype().equals("KEPALA")) {
+									Idassetkepala = detail.getIdasset();
+//									table.setIdassetkepala(detail.getIdasset());
+								}else if(asset.getAssettype().equals("BUNTUT")) {
+								List<AssetMappingData>	list = assetService.getListAssetMappingByIdAsset(idcompany,idbranch,detail.getIdasset());
+									if(list != null && list.size() > 0) {
+										AssetMappingData detList = list.get(0);
+										Idassetkepala = detList.getIdasset();
+//										table.setIdassetkepala(detList.getIdasset());
+									}
+								}
+							}
+							
+							table.setIdassetkepala(Idassetkepala);
 							historyAssetMappingRepo.saveAndFlush(table);
 						}
 						
@@ -441,6 +468,26 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 							table.setTanggal(ts);
 							table.setIdpengeluarankasbank(idsave);
 							table.setIsdelete(false);
+							
+							Optional<Asset> optAsset = assetRepo.findById(detail.getIdasset());
+							Long Idassetkepala = null;
+							if(optAsset.isPresent()) {
+								Asset asset = optAsset.get();
+								if(asset.getAssettype().equals("KEPALA")) {
+									Idassetkepala = detail.getIdasset();
+//									table.setIdassetkepala(detail.getIdasset());
+								}else if(asset.getAssettype().equals("BUNTUT")) {
+								List<AssetMappingData>	list = assetService.getListAssetMappingByIdAsset(idcompany,idbranch,detail.getIdasset());
+									if(list != null && list.size() > 0) {
+										AssetMappingData detList = list.get(0);
+										Idassetkepala = detList.getIdasset();
+//										table.setIdassetkepala(detList.getIdasset());
+									}
+								}
+							}
+							
+							table.setIdassetkepala(Idassetkepala);
+							
 							historyAssetMappingRepo.saveAndFlush(table);
 						}
 						
@@ -568,10 +615,13 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetTotalAmount().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? ");
-			final StringBuilder sqlBuilderMaster = new StringBuilder(" and data.idpengeluarankasbank in (select pkb.id from m_pengeluaran_kas_bank as pkb where pkb.isactive = true and pkb.isdelete = false and pkb.idwo = "+idwo+" and pkb.idcustomer = "+idcustomer+" ");
-			if(idemployee != null) {
-				sqlBuilderMaster.append(" and pkb.idemployee = "+idemployee+" ");
-			}
+			final StringBuilder sqlBuilderMaster = new StringBuilder(" and data.idpengeluarankasbank in (select pkb.id from m_pengeluaran_kas_bank as pkb where pkb.isactive = true and pkb.isdelete = false and pkb.idwo = "+idwo+" ");
+			sqlBuilderMaster.append(" and pkb.idemployee = "+idemployee+" ");
+//			if(idemployee != null) {
+//				sqlBuilderMaster.append(" and pkb.idemployee = "+idemployee+" ");
+//			}else {
+//				sqlBuilderMaster.append(" and pkb.idcustomer = "+idcustomer+" ");
+//			}
 			sqlBuilderMaster.append(" ) ");
 		
 			if(idasset != null) {

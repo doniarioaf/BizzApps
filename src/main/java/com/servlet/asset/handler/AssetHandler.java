@@ -661,6 +661,24 @@ public class AssetHandler implements AssetService{
 					tableHistory.setType(body.getType());
 					tableHistory.setTanggal(ts);
 					tableHistory.setIdassetmapping(idsave);
+					
+					Optional<Asset> optAsset = repository.findById(body.getIdasset().longValue());
+					Long Idassetkepala = null;
+					if(optAsset.isPresent()) {
+						Asset asset = optAsset.get();
+						if(asset.getAssettype().equals("KEPALA")) {
+							Idassetkepala = body.getIdasset();
+//							tableHistory.setIdassetkepala(body.getIdasset());
+						}else if(asset.getAssettype().equals("BUNTUT")) {
+						List<AssetMappingData>	list = getListAssetMappingByIdAsset(idcompany,idbranch,body.getIdasset());
+							if(list != null && list.size() > 0) {
+								AssetMappingData detList = list.get(0);
+								Idassetkepala = detList.getIdasset();
+//								tableHistory.setIdassetkepala(detList.getIdasset());
+							}
+						}
+					}
+					tableHistory.setIdassetkepala(Idassetkepala);
 					historyAssetMappingRepo.saveAndFlush(tableHistory);
 				}
 				
@@ -735,7 +753,6 @@ public class AssetHandler implements AssetService{
 			sqlBuilder.append(" and ");
 			sqlBuilder.append(" data.id not in (select am.idasset_mapping from m_asset_mapping as am) ");
 		}
-		System.out.println("sqlBuilder "+sqlBuilder.toString());
 		
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetAssetData(), queryParameters);
@@ -755,6 +772,15 @@ public class AssetHandler implements AssetService{
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetAssetMapping().schema());
 		sqlBuilder.append(" where data.idasset = ? and data.idcompany = ? and data.idbranch = ?  ");
 		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetAssetMapping(), queryParameters);
+	}
+	
+	@Override
+	public List<AssetMappingData> getListAssetMappingByIdAsset(Long idcompany, Long idbranch, Long idasset) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetAssetMapping().schema());
+		sqlBuilder.append(" where data.idasset_mapping = ? and data.idcompany = ? and data.idbranch = ? ");
+		final Object[] queryParameters = new Object[] {idasset,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetAssetMapping(), queryParameters);
 	}
 
@@ -813,12 +839,39 @@ public class AssetHandler implements AssetService{
 	}
 
 	@Override
-	public List<AssetData> getListAssetByAssetType(Long idcompany, Long idbranch, String assetType) {
+	public List<AssetData> getListAssetByAssetType(Long idcompany, Long idbranch, String assetType, Long id) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetAssetData().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.assettype = ?  and data.isdelete = false and data.isactive = true ");
+		if(id != null) {
+			sqlBuilder.append(" and data.id = "+id+" ");
+		}
 		final Object[] queryParameters = new Object[] {idcompany,idbranch,assetType};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetAssetData(), queryParameters);
+	}
+
+	@Override
+	public List<HistoryAssetMappingData> getListHistoryMappingReportHistoryTruck(Long idcompany, Long idbranch,
+			Long idasset, Long idassetmapping, Long from, Long thru,boolean checkIsNullIdPengeluaranKasBank, Long idassetkepala) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetHistoryMappingAsset().schema());
+		sqlBuilder.append(" where data.idasset = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		if(idassetmapping != null) {
+			sqlBuilder.append(" and data.after in ("+idasset+","+idassetmapping+") ");
+		}
+		sqlBuilder.append(" and data.after != 0 ");
+		
+		sqlBuilder.append(" and to_date(to_char(data.tanggal, 'YYYY-MM-DD'),'YYYY-MM-DD') >= '"+new java.sql.Date(from)+"'  and to_date(to_char(data.tanggal, 'YYYY-MM-DD'),'YYYY-MM-DD') <= '"+new java.sql.Date(thru)+"' ");
+		if(checkIsNullIdPengeluaranKasBank) {
+			sqlBuilder.append(" and data.idpengeluarankasbank notnull ");
+		}
+		if(idassetkepala != null) {
+			sqlBuilder.append(" and data.idassetkepala = "+idassetkepala+" ");
+		}
+		sqlBuilder.append(" order by data.id desc ");
+				
+		final Object[] queryParameters = new Object[] {idasset,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetHistoryMappingAsset(), queryParameters);
 	}
 
 }
