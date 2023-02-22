@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.servlet.address.service.CityService;
+import com.servlet.address.service.DistrictService;
 import com.servlet.address.service.PostalCodeService;
 import com.servlet.address.service.ProvinceService;
 import com.servlet.parameter.service.ParameterService;
@@ -60,6 +61,8 @@ public class VendorHandler implements VendorService{
 	private DetailVendorBankRepo detailVendorBankRepo;
 	@Autowired
 	private DetailVendorContactRepo detailVendorContactRepo;
+	@Autowired
+	private DistrictService districtService;
 	
 	@Override
 	public List<VendorListData> getListAll(Long idcompany, Long idbranch) {
@@ -88,6 +91,7 @@ public class VendorHandler implements VendorService{
 	private VendorTemplate getVendorTemplate(long idcompany, long idbranch) {
 		VendorTemplate data = new VendorTemplate();
 		data.setCityOptions(cityService.getListCity());
+		data.setDistrictOptions(districtService.getListDistrict());
 		data.setProvinceOptions(provinceService.getListProvince());
 		data.setPanggilanOptions(parameterService.getListParameterByGrup("PANGGILAN"));
 		data.setBadanUsahaOptions(parameterService.getListParameterByGrup("LEVEL_PERUSAHAAN"));
@@ -146,6 +150,7 @@ public class VendorHandler implements VendorService{
 				table.setProvinsi(body.getProvinsi());
 				table.setKota(body.getKota());
 				table.setKodepos(body.getKodepos());
+				table.setDistrict(body.getDistrict());
 				table.setIsactive(body.isIsactive());
 				table.setIsdelete(false);
 				table.setCreatedby(iduser.toString());
@@ -191,6 +196,7 @@ public class VendorHandler implements VendorService{
 					table.setProvinsi(body.getProvinsi());
 					table.setKota(body.getKota());
 					table.setKodepos(body.getKodepos());
+					table.setDistrict(body.getDistrict());
 					table.setIsactive(body.isIsactive());
 					
 					table.setUpdateby(iduser.toString());

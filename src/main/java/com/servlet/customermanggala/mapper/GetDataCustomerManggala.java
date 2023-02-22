@@ -14,7 +14,7 @@ public class GetDataCustomerManggala implements RowMapper<CustomerManggalaData>{
 	public GetDataCustomerManggala() {
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
-		sqlBuilder.append("data.id as id, data.customertype as customertype, data.customername as customername, data.alias as alias, data.alamat as alamat, data.provinsi as provinsi, data.kota as kota, data.kodepos as kodepos, data.npwp as npwp, data.nib as nib, data.isactive as isactive, data.telpkantor as telpkantor ");
+		sqlBuilder.append("data.id as id, data.customertype as customertype, data.customername as customername, data.alias as alias, data.alamat as alamat, data.provinsi as provinsi, data.kota as kota, data.kodepos as kodepos, data.npwp as npwp, data.nib as nib, data.isactive as isactive, data.telpkantor as telpkantor, data.district as district ");
 		sqlBuilder.append("from m_customer_manggala as data ");
 		
 		this.schemaSql = sqlBuilder.toString();
@@ -39,6 +39,7 @@ public class GetDataCustomerManggala implements RowMapper<CustomerManggalaData>{
 		final String nib = rs.getString("nib");
 		final boolean isactive = rs.getBoolean("isactive");
 		final String telpkantor = rs.getString("telpkantor");
+		final Long district = rs.getLong("district");
 		
 		CustomerManggalaData data = new CustomerManggalaData();
 		data.setId(id);
@@ -56,6 +57,7 @@ public class GetDataCustomerManggala implements RowMapper<CustomerManggalaData>{
 		data.setNib(nib);
 		data.setIsactive(isactive);
 		data.setTelpkantor(telpkantor);
+		data.setDistrict(district);
 		return data;
 	}
 

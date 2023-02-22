@@ -3,6 +3,7 @@ package com.servlet.vendor.entity;
 import java.util.List;
 
 import com.servlet.address.entity.City;
+import com.servlet.address.entity.DistrictData;
 import com.servlet.address.entity.Province;
 import com.servlet.parameter.entity.ParameterData;
 import com.servlet.vendorcategory.entity.VendorCategoryData;
@@ -13,6 +14,13 @@ public class VendorTemplate {
 	private List<ParameterData> badanUsahaOptions;
 	private List<ParameterData> panggilanOptions;
 	private List<VendorCategoryData> vendorCategoryOptions;
+	private List<DistrictData> districtOptions;
+	public List<DistrictData> getDistrictOptions() {
+		return districtOptions;
+	}
+	public void setDistrictOptions(List<DistrictData> districtOptions) {
+		this.districtOptions = districtOptions;
+	}
 	public List<City> getCityOptions() {
 		return cityOptions;
 	}

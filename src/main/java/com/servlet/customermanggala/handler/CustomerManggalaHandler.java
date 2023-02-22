@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.servlet.address.entity.City;
+import com.servlet.address.entity.District;
 import com.servlet.address.entity.Province;
 import com.servlet.address.service.CityService;
 import com.servlet.address.service.DistrictService;
@@ -115,12 +116,17 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 			CustomerManggalaData val = list.get(0);
 			Province prov = provinceService.getById(new Long(val.getProvinsi()).longValue());
 			City city = cityService.getById(new Long(val.getKota()).longValue());
+			District district = districtService.getById(val.getDistrict());
 //			PostalCode postalcode = postalCodeService.getById(new Long(val.getKodepos()).longValue());
 			if(prov != null) {
 				val.setProvinsiname(prov.getProv_name());
 			}
 			if(city != null) {
 				val.setKotaname(city.getCity_name());
+			}
+			
+			if(district != null) {
+				val.setDistrictName(district.getDis_name());
 			}
 			
 			CustomerManggalaTemplate data = new CustomerManggalaTemplate();
@@ -175,6 +181,7 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 				table.setAlamat(body.getAlamat());
 				table.setProvinsi(body.getProvinsi());
 				table.setKota(body.getKota());
+				table.setDistrict(body.getDistrict());
 				table.setKodepos(body.getKodepos());
 				table.setNpwp(body.getNpwp());
 				table.setNib(body.getNib());
@@ -316,6 +323,7 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 					table.setAlamat(body.getAlamat());
 					table.setProvinsi(body.getProvinsi());
 					table.setKota(body.getKota());
+					table.setDistrict(body.getDistrict());
 					table.setKodepos(body.getKodepos());
 					table.setNpwp(body.getNpwp());
 					table.setNib(body.getNib());
@@ -403,6 +411,7 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 		CustomerManggalaTemplate data = new CustomerManggalaTemplate();
 		data.setCityOptions(cityService.getListCity());
 		data.setProvinceOptions(provinceService.getListProvince());
+		data.setDistrictOptions(districtService.getListDistrict());
 		data.setPanggilanOptions(parameterService.getListParameterByGrup("PANGGILAN"));
 		data.setCustomertypeOptions(parameterService.getListParameterByGrup("LEVEL_PERUSAHAAN"));
 		data.setWarehouseOptions(warehouseService.getListForCustomer(idcompany, idbranch,idcustomer));

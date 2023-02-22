@@ -18,6 +18,8 @@ public class CustomerManggalaData {
 	private String kodeposname;
 	private String npwp;
 	private String nib;
+	private Long district;
+	private String districtName;
 	private boolean isactive;
 	private String telpkantor;
 	private CustomerManggalaTemplate template;
@@ -26,6 +28,19 @@ public class CustomerManggalaData {
 	private List<DetailCustomerManggalaInfoGudangData> detailsInfoGudang;
 	private List<DistrictData> districtOptions;
 	
+	
+	public Long getDistrict() {
+		return district;
+	}
+	public void setDistrict(Long district) {
+		this.district = district;
+	}
+	public String getDistrictName() {
+		return districtName;
+	}
+	public void setDistrictName(String districtName) {
+		this.districtName = districtName;
+	}
 	public Long getId() {
 		return id;
 	}

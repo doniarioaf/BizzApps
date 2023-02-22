@@ -12,6 +12,15 @@ public class BodyWarehouse {
 	private String contacthp;
 	private String note;
 	private boolean isactive;
+	private Long district;
+	
+	public Long getDistrict() {
+		return district;
+	}
+	public void setDistrict(Long district) {
+		this.district = district;
+	}
+	
 	public Long getId() {
 		return id;
 	}

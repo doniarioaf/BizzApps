@@ -11,10 +11,17 @@ public class BodyVendor {
 	private String provinsi;
 	private String kota;
 	private String kodepos;
+	private Long district;
 	private boolean isactive;
 	private BodyDetailVendorBank[] detailsbank;
 	private BodyDetailVendorContact[] detailscontact;
 	
+	public Long getDistrict() {
+		return district;
+	}
+	public void setDistrict(Long district) {
+		this.district = district;
+	}
 	public Long getIdvendorcategory() {
 		return idvendorcategory;
 	}

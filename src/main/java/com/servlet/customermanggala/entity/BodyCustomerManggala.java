@@ -12,10 +12,17 @@ public class BodyCustomerManggala {
 	private String nib;
 	private String telpkantor;
 	private boolean isactive;
+	private Long district;
 	private BodyCustomerManggalaInfoKementerian[] detailsinfokementerian;
 	private BodyCustomerManggalaInfoContact[] detailsinfocontact;
 	private BodyCustomerManggalaInfoGudang[] detailsinfogudang;
 	
+	public Long getDistrict() {
+		return district;
+	}
+	public void setDistrict(Long district) {
+		this.district = district;
+	}
 	public String getCustomertype() {
 		return customertype;
 	}

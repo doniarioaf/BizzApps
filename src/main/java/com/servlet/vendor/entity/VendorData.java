@@ -19,6 +19,14 @@ public class VendorData {
 	private VendorTemplate template;
 	private List<DetailVendorBankData> detailsbank;
 	private List<DetailVendorContactData> detailscontact;
+	private Long district;
+	
+	public Long getDistrict() {
+		return district;
+	}
+	public void setDistrict(Long district) {
+		this.district = district;
+	}
 	public Long getId() {
 		return id;
 	}

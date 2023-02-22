@@ -37,6 +37,13 @@ public class Warehouse implements Serializable{
 	private Timestamp updatedate;
 	private String deleteby;
 	private Timestamp deletedate;
+	private Long district;
+	public Long getDistrict() {
+		return district;
+	}
+	public void setDistrict(Long district) {
+		this.district = district;
+	}
 	public Long getId() {
 		return id;
 	}

@@ -35,6 +35,7 @@ import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConstansPermission;
 import com.servlet.shared.GlobalFunc;
+import com.servlet.shared.MacAddress;
 import com.servlet.shared.ProcessReturn;
 import com.servlet.shared.Response;
 import com.servlet.shared.ReturnData;
@@ -62,6 +63,7 @@ public class SecurityHandler implements SecurityService{
 	@Override
 	public Response response(String codepermission, Object data, String authorization) {
 		Response value = new Response();
+		MacAddress macAddress = new MacAddress();
 		if(authorization.equals("loginweb") || authorization.equals("loginmobile")) {
 			if(authorization.equals("loginmobile")) {
 				ReturnLoginMobile mobile = (ReturnLoginMobile) data;

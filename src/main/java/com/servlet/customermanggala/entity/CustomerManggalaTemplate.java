@@ -3,6 +3,7 @@ package com.servlet.customermanggala.entity;
 import java.util.List;
 
 import com.servlet.address.entity.City;
+import com.servlet.address.entity.DistrictData;
 import com.servlet.address.entity.Province;
 import com.servlet.parameter.entity.ParameterData;
 import com.servlet.warehouse.entity.WarehouseData;
@@ -13,6 +14,13 @@ public class CustomerManggalaTemplate {
 	private List<ParameterData> customertypeOptions;
 	private List<ParameterData> panggilanOptions;
 	private List<WarehouseData> warehouseOptions ;
+	private List<DistrictData> districtOptions;
+	public List<DistrictData> getDistrictOptions() {
+		return districtOptions;
+	}
+	public void setDistrictOptions(List<DistrictData> districtOptions) {
+		this.districtOptions = districtOptions;
+	}
 	public List<ParameterData> getCustomertypeOptions() {
 		return customertypeOptions;
 	}

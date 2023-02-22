@@ -66,4 +66,13 @@ public class PostalCodeHandler implements PostalCodeService{
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataPostalCode(), queryParameters);
 	}
 
+	@Override
+	public List<PostalCodeData> getListPostalCodeByPostalCodeByDistrictId(long districtid) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataPostalCode().schema());
+		sqlBuilder.append(" where data.subdis_id in (select subdis_id from subdistricts where dis_id = "+districtid+") ");
+		final Object[] queryParameters = new Object[] {};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataPostalCode(), queryParameters);
+	}
+
 }
