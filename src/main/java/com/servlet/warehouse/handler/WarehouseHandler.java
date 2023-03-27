@@ -107,6 +107,8 @@ public class WarehouseHandler implements WarehouseService{
 				table.setKecamatan(body.getKecamatan());
 				table.setNama(body.getNama());
 				table.setAlamat(body.getAlamat());
+				table.setAlamat2(body.getAlamat2());
+				table.setAlamat3(body.getAlamat3());
 				table.setAncerancer(body.getAncerancer());
 				table.setContactnumber(body.getContactnumber());
 				table.setContacthp(body.getContacthp());
@@ -156,6 +158,8 @@ public class WarehouseHandler implements WarehouseService{
 					table.setKecamatan(body.getKecamatan());
 					table.setNama(body.getNama());
 					table.setAlamat(body.getAlamat());
+					table.setAlamat2(body.getAlamat2());
+					table.setAlamat3(body.getAlamat3());
 					table.setAncerancer(body.getAncerancer());
 					table.setContactnumber(body.getContactnumber());
 					table.setContacthp(body.getContacthp());

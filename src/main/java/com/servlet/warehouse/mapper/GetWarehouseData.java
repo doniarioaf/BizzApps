@@ -15,7 +15,7 @@ public class GetWarehouseData implements RowMapper<WarehouseData>{
 		final StringBuilder sqlBuilder = new StringBuilder(400);
 		sqlBuilder.append("data.id as id, data.province as province, data.city as city, data.kecamatan as kecamatan,data.nama as nama, data.isactive as isactive, ");
 		sqlBuilder.append("data.alamat as alamat, data.ancerancer as ancerancer, data.contactnumber as contactnumber, data.contacthp as contacthp,data.note as note, ");
-		sqlBuilder.append("data.idcustomer as idcustomer, prov.prov_name as provincename, city.city_name as cityname, districts.dis_name as kecamatanname, cust.customername as customername ");
+		sqlBuilder.append("data.idcustomer as idcustomer, prov.prov_name as provincename, city.city_name as cityname, districts.dis_name as kecamatanname, cust.customername as customername,data.alamat2 as alamat2, data.alamat3 as alamat3 ");
 		sqlBuilder.append("from m_warehouse as data ");
 		sqlBuilder.append("left join provinces as prov on cast(prov.prov_id as text) = data.province ");
 		sqlBuilder.append("left join cities as city on cast(city.city_id as text) = data.city ");
@@ -38,6 +38,8 @@ public class GetWarehouseData implements RowMapper<WarehouseData>{
 		final String nama = rs.getString("nama");
 		final boolean isactive = rs.getBoolean("isactive");
 		final String alamat = rs.getString("alamat");
+		final String alamat2 = rs.getString("alamat2");
+		final String alamat3 = rs.getString("alamat3");
 		final String ancerancer = rs.getString("ancerancer");
 		final String contactnumber = rs.getString("contactnumber");
 		final String contacthp = rs.getString("contacthp");
@@ -65,6 +67,8 @@ public class GetWarehouseData implements RowMapper<WarehouseData>{
 		data.setIdcustomer(idcustomer);
 		data.setCustomername(customername);
 		data.setIsactive(isactive);
+		data.setAlamat2(alamat2);
+		data.setAlamat3(alamat3);
 		return data;
 	}
 

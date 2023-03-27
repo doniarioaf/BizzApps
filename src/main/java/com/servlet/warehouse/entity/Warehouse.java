@@ -38,6 +38,21 @@ public class Warehouse implements Serializable{
 	private String deleteby;
 	private Timestamp deletedate;
 	private Long district;
+	private String alamat2;
+	private String alamat3;
+	
+	public String getAlamat2() {
+		return alamat2;
+	}
+	public void setAlamat2(String alamat2) {
+		this.alamat2 = alamat2;
+	}
+	public String getAlamat3() {
+		return alamat3;
+	}
+	public void setAlamat3(String alamat3) {
+		this.alamat3 = alamat3;
+	}
 	public Long getDistrict() {
 		return district;
 	}

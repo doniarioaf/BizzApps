@@ -179,6 +179,8 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 				table.setCustomername(body.getCustomername());
 				table.setAlias(body.getAlias());
 				table.setAlamat(body.getAlamat());
+				table.setAlamat2(body.getAlamat2());
+				table.setAlamat3(body.getAlamat3());
 				table.setProvinsi(body.getProvinsi());
 				table.setKota(body.getKota());
 				table.setDistrict(body.getDistrict());
@@ -321,6 +323,8 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 					table.setCustomername(body.getCustomername());
 					table.setAlias(body.getAlias());
 					table.setAlamat(body.getAlamat());
+					table.setAlamat2(body.getAlamat2());
+					table.setAlamat3(body.getAlamat3());
 					table.setProvinsi(body.getProvinsi());
 					table.setKota(body.getKota());
 					table.setDistrict(body.getDistrict());

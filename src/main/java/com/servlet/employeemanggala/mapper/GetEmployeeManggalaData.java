@@ -16,7 +16,7 @@ public class GetEmployeeManggalaData implements RowMapper<EmployeManggalaData>{
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
 		sqlBuilder.append("data.id as id, data.code as code, data.statuskaryawan as statuskaryawan, data.jabatan as jabatan, data.nama as nama, data.noidentitas as noidentitas, data.alamat as alamat, data.tanggallahir as tanggallahir, data.status as status, data.namapasangan as namapasangan, data.tanggallahirpasangan as tanggallahirpasangan, data.namabank as namabank, ");
-		sqlBuilder.append("data.norekening as norekening, data.atasnama as atasnama, data.tanggalmulai as tanggalmulai, data.tanggalresign as tanggalresign, data.gaji as gaji, data.isactive as isactive, data.jeniskelamin as jeniskelamin, data.photo as photo ");
+		sqlBuilder.append("data.norekening as norekening, data.atasnama as atasnama, data.tanggalmulai as tanggalmulai, data.tanggalresign as tanggalresign, data.gaji as gaji, data.isactive as isactive, data.jeniskelamin as jeniskelamin, data.photo as photo, data.alamat2 as alamat2, data.alamat3 as alamat3 ");
 		sqlBuilder.append("from m_employee_manggala as data ");
 		
 		this.schemaSql = sqlBuilder.toString();
@@ -49,6 +49,8 @@ public class GetEmployeeManggalaData implements RowMapper<EmployeManggalaData>{
 		final boolean isactive = rs.getBoolean("isactive");
 		final String jeniskelamin = rs.getString("jeniskelamin");
 		final String photo = rs.getString("photo");
+		final String alamat2 = rs.getString("alamat2");
+		final String alamat3 = rs.getString("alamat3");
 		
 		EmployeManggalaData data = new EmployeManggalaData();
 		data.setId(id);
@@ -71,6 +73,8 @@ public class GetEmployeeManggalaData implements RowMapper<EmployeManggalaData>{
 		data.setJeniskelamin(jeniskelamin);
 		data.setIsactive(isactive);
 		data.setPhoto(photo);
+		data.setAlamat2(alamat2);
+		data.setAlamat3(alamat3);
 		return data;
 	}
 

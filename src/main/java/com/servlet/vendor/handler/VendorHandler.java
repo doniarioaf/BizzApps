@@ -147,6 +147,8 @@ public class VendorHandler implements VendorService{
 				table.setAlias(body.getAlias());
 				table.setNpwp(body.getNpwp());
 				table.setAddress(body.getAddress());
+				table.setAlamat2(body.getAlamat2());
+				table.setAlamat3(body.getAlamat3());
 				table.setProvinsi(body.getProvinsi());
 				table.setKota(body.getKota());
 				table.setKodepos(body.getKodepos());
@@ -193,6 +195,8 @@ public class VendorHandler implements VendorService{
 					table.setAlias(body.getAlias());
 					table.setNpwp(body.getNpwp());
 					table.setAddress(body.getAddress());
+					table.setAlamat2(body.getAlamat2());
+					table.setAlamat3(body.getAlamat3());
 					table.setProvinsi(body.getProvinsi());
 					table.setKota(body.getKota());
 					table.setKodepos(body.getKodepos());

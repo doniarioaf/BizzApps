@@ -160,6 +160,8 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 				table.setNama(body.getNama());
 				table.setNoidentitas(body.getNoidentitas());
 				table.setAlamat(body.getAlamat());
+				table.setAlamat2(body.getAlamat2());
+				table.setAlamat3(body.getAlamat3());
 				table.setTanggallahir(new java.sql.Date(body.getTanggallahir()));
 				table.setStatus(body.getStatus());
 				if(body.getStatus().equals("MENIKAH")) {
@@ -238,6 +240,8 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 					table.setNama(body.getNama());
 					table.setNoidentitas(body.getNoidentitas());
 					table.setAlamat(body.getAlamat());
+					table.setAlamat2(body.getAlamat2());
+					table.setAlamat3(body.getAlamat3());
 					table.setTanggallahir(new java.sql.Date(body.getTanggallahir()));
 					table.setStatus(body.getStatus());
 					if(body.getStatus().equals("MENIKAH")) {
