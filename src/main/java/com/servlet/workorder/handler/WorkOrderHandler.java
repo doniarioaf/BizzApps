@@ -392,8 +392,18 @@ public class WorkOrderHandler implements WorkOrderService{
 					detailWorkOrderPK.setIdbranch(idbranch);
 					detailWorkOrderPK.setIdworkorder(idsave);
 					detailWorkOrderPK.setIdpartai(detail.getIdpartai());
-					detailWorkOrderPK.setNocontainer(detail.getNocontainer());
-					detailWorkOrderPK.setNoseal(detail.getNoseal());
+					String noContainer = detail.getNocontainer();
+					if(detail.getNocontainer().equals("")) {
+						noContainer = "NC-NODATA-"+idsave+"-"+detail.getIdpartai()+"-"+i;
+					}
+					detailWorkOrderPK.setNocontainer(noContainer);
+					
+					String noSeal = detail.getNoseal();
+					if(detail.getNoseal().equals("")) {
+						noSeal = "NS-NODATA-"+idsave+"-"+detail.getIdpartai()+"-"+i;
+					}
+					
+					detailWorkOrderPK.setNoseal(noSeal);
 					
 					DetailWorkOrder detailWorkOrder = new DetailWorkOrder();
 					detailWorkOrder.setDetailWorkOrderPK(detailWorkOrderPK);
