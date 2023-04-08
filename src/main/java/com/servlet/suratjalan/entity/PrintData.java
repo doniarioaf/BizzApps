@@ -9,6 +9,7 @@ public class PrintData {
 	private Long idworkorder;
 	private String nodocumentWO;
 	private String woType;
+	private String woTypeName;
 	private String noblWO;
 	private String noajuWO;
 	private String namacargoWO;
@@ -27,6 +28,8 @@ public class PrintData {
 	private String warehousecontactname;
 	private String warehousecontactno;
 	private String warehouseaddress;
+	private String warehouseancerancer;
+	private String warehousecatatan;
 	private String catatan;
 	private String nocantainer;
 	private String containerpartai;
@@ -35,6 +38,26 @@ public class PrintData {
 	private String status;
 	private String statusname;
 	private String companyname;
+	
+	
+	public String getWarehousecatatan() {
+		return warehousecatatan;
+	}
+	public void setWarehousecatatan(String warehousecatatan) {
+		this.warehousecatatan = warehousecatatan;
+	}
+	public String getWarehouseancerancer() {
+		return warehouseancerancer;
+	}
+	public void setWarehouseancerancer(String warehouseancerancer) {
+		this.warehouseancerancer = warehouseancerancer;
+	}
+	public String getWoTypeName() {
+		return woTypeName;
+	}
+	public void setWoTypeName(String woTypeName) {
+		this.woTypeName = woTypeName;
+	}
 	public Long getId() {
 		return id;
 	}

@@ -37,6 +37,8 @@ import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBankData;
 import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBankPK;
 import com.servlet.penerimaankasbank.repo.DetailPenerimaanKasBankRepo;
 import com.servlet.penerimaankasbank.service.PenerimaanKasBankService;
+import com.servlet.pengluarankasbank.service.PengeluaranKasBankService;
+import com.servlet.pricelist.service.PriceListService;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
@@ -71,6 +73,11 @@ public class InvoiceHandler implements InvoiceService{
 	private ParameterService parameterService;
 	@Autowired
 	private ParameterManggalaService parameterManggalaService;
+	@Autowired
+	private PengeluaranKasBankService pengeluaranKasBankService;
+	@Autowired
+	private PriceListService priceListService;
+	
 	
 	@Override
 	public List<InvoiceData> getListAll(Long idcompany, Long idbranch) {
@@ -132,12 +139,18 @@ public class InvoiceHandler implements InvoiceService{
 					table.setIdcustomer(body.getIdcustomer());
 					table.setRefno(body.getRefno());
 					table.setDeliveredto(body.getDeliveredto());
-					table.setDeliverydate(new java.sql.Date(body.getDeliverydate()));
+					if(body.getDeliverydate() != null) {
+						table.setDeliverydate(new java.sql.Date(body.getDeliverydate()));
+					}else {
+						table.setDeliverydate(null);
+					}
+					
 					table.setIdwo(body.getIdwo());
 					table.setIdsuratjalan(body.getIdsuratjalan());
 					table.setIdinvoicetype(body.getIdinvoicetype());
 					table.setTotalinvoice(body.getTotalinvoice());
 					table.setDiskonnota(body.getDiskonnota());
+					table.setPpn(body.getPpn());
 					table.setIsactive(body.isIsactive());
 	
 					table.setIsdelete(false);
@@ -192,11 +205,17 @@ public class InvoiceHandler implements InvoiceService{
 				table.setIdcustomer(body.getIdcustomer());
 				table.setRefno(body.getRefno());
 				table.setDeliveredto(body.getDeliveredto());
-				table.setDeliverydate(new java.sql.Date(body.getDeliverydate()));
+//				table.setDeliverydate(new java.sql.Date(body.getDeliverydate()));
+				if(body.getDeliverydate() != null) {
+					table.setDeliverydate(new java.sql.Date(body.getDeliverydate()));
+				}else {
+					table.setDeliverydate(null);
+				}
 				table.setIdwo(body.getIdwo());
 				table.setIdsuratjalan(body.getIdsuratjalan());
 				table.setIdinvoicetype(body.getIdinvoicetype());
 				table.setDiskonnota(body.getDiskonnota());
+				table.setPpn(body.getPpn());
 				table.setTotalinvoice(body.getTotalinvoice());
 				table.setIsactive(body.isIsactive());
 				table.setUpdateby(iduser.toString());
@@ -257,7 +276,12 @@ public class InvoiceHandler implements InvoiceService{
 	@Override
 	public InvoiceTemplate getTemplate(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
-		return setTemplate(idcompany,idbranch);
+		return setTemplate(idcompany,idbranch,null);
+	}
+	
+	private InvoiceTemplate getTemplateWithData(Long idcompany, Long idbranch,InvoiceData data) {
+		// TODO Auto-generated method stub
+		return setTemplate(idcompany,idbranch,data);
 	}
 
 	private List<ValidationDataMessage> checkData(Long idcompany, Long idbranch, BodyInvoice body,String action,InvoiceData dataTable){
@@ -336,9 +360,25 @@ public class InvoiceHandler implements InvoiceService{
 		return null;
 	}
 	
-	private InvoiceTemplate setTemplate(long idcompany, long idbranch) {
+	private InvoiceTemplate setTemplate(long idcompany, long idbranch, InvoiceData datainv) {
+		Double ppn = parameterManggalaService.getValueByParamName(idcompany,idbranch,"PPN","NUMBER").getDoubleValue();
+		
 		InvoiceTemplate data = new InvoiceTemplate();
 		data.setInvoiceTypeOptions(parameterService.getListParameterByGrup("INVOICETYPE"));
+		data.setDefaultPPN(ppn);
+		if(datainv != null) {
+			if(datainv.getIdwo() != null && datainv.getIdwo() > 0) {
+				data.setSuratJalanOptions(suratJalanService.getListSuratJalanByWO(idcompany,idbranch,datainv.getIdwo()));
+				data.setSearchSuratJalanOptions(suratJalanService.getListByIdWO(idcompany,idbranch,datainv.getIdwo()));
+				if(datainv.getIdinvoicetype().equals("REIMBURSEMENT")) {
+					data.setSearchPengeluaranOptions(pengeluaranKasBankService.getListByIdWo(idcompany,idbranch,datainv.getIdwo()));
+				}else {
+					Long idwarehouse = datainv.getIdwarehousesuratjalan() != null?datainv.getIdwarehousesuratjalan():0L;
+					data.setSearchPricelistOptions(priceListService.getListPriceListByIdCustomer(idcompany, idbranch, datainv.getIdcustomer(), idwarehouse, datainv.getIdinvoicetype(), datainv.getJalurwo()));
+				}
+				
+			}
+		}
 		return data;
 	}
 	
@@ -422,7 +462,7 @@ public class InvoiceHandler implements InvoiceService{
 		if(list != null && list.size() > 0) {
 			InvoiceData val = list.get(0);
 			val.setDetailsprice(getDetailsInvoicePrice(idcompany, idbranch, id));
-			val.setTemplate(getTemplate(idcompany, idbranch));
+			val.setTemplate(getTemplateWithData(idcompany, idbranch,val));
 			return val;
 		}
 		return null;
@@ -464,7 +504,7 @@ public class InvoiceHandler implements InvoiceService{
 		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
 		List<PrintInvoiceData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetPrintInvoiceData(), queryParameters);
 		if(list != null && list.size() > 0) {
-			Double ppn = parameterManggalaService.getValueByParamName(idcompany,idbranch,"PPN","NUMBER").getDoubleValue();
+//			Double ppn = parameterManggalaService.getValueByParamName(idcompany,idbranch,"PPN","NUMBER").getDoubleValue();
 			PrintInvoiceData val = list.get(0);
 			val.setCustomer(customerManggalaService.getDataCustomerForPrintInvoice(idcompany, idbranch, val.getIdcustomer()));
 			val.setDetailsprice(getDetailsInvoicePriceForPrint(idcompany, idbranch, id));
@@ -474,11 +514,11 @@ public class InvoiceHandler implements InvoiceService{
 			val.setKeteranganinvoice2(parameterManggalaService.getValueByParamName(idcompany,idbranch,"KETERANGANINVOICE2","TEXT").getStrValue());
 			val.setKeteranganinvoice3(parameterManggalaService.getValueByParamName(idcompany,idbranch,"KETERANGANINVOICE3","TEXT").getStrValue());
 			val.setNamapenagih(parameterManggalaService.getValueByParamName(idcompany,idbranch,"NAMAPENAGIH","TEXT").getStrValue());
-			if(ppn != null) {
-				val.setPpn(ppn.toString());
-			}else {
-				val.setPpn("0");
-			}
+//			if(ppn != null) {
+//				val.setPpn(ppn.toString());
+//			}else {
+//				val.setPpn("0");
+//			}
 			return val;
 		}
 		return null;

@@ -16,7 +16,7 @@ public class GetSuratJalanWO implements RowMapper<SuratJalanWO>{
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
 		sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.tanggal as tanggal, data.nocantainer as nocantainer, data.tanggalkembali as tanggalkembali, ");
-		sqlBuilder.append("data.idwarehouse as idwarehouse, warehouse.nama as warehousename ");
+		sqlBuilder.append("data.idwarehouse as idwarehouse, warehouse.nama as warehousename, data.status as status ");
 		sqlBuilder.append("from t_surat_jalan as data ");
 		sqlBuilder.append("left join m_warehouse as warehouse on warehouse.id = data.idwarehouse ");
 		
@@ -38,6 +38,7 @@ public class GetSuratJalanWO implements RowMapper<SuratJalanWO>{
 		final Long idwarehouse = rs.getLong("idwarehouse");
 		final String warehousename = rs.getString("warehousename");
 		final Date tanggalkembali = rs.getDate("tanggalkembali");
+		final String status = rs.getString("status");
 		
 		SuratJalanWO data = new SuratJalanWO();
 		data.setId(id);
@@ -47,6 +48,7 @@ public class GetSuratJalanWO implements RowMapper<SuratJalanWO>{
 		data.setWarehousename(warehousename);
 		data.setNocontainer(nocantainer);
 		data.setTanggalkembali(tanggalkembali);
+		data.setStatus(status);
 		
 		return data;
 	}

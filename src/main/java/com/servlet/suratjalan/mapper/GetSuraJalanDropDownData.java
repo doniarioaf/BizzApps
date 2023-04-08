@@ -13,7 +13,7 @@ public class GetSuraJalanDropDownData implements RowMapper<SuratJalanDropDown>{
 	public GetSuraJalanDropDownData() {
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
-		sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.idcustomer as idcustomer, cust.customername as customername, data.idwarehouse as idwarehouse ");
+		sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.idcustomer as idcustomer, cust.customername as customername, data.idwarehouse as idwarehouse, data.status as status ");
 		sqlBuilder.append("from t_surat_jalan as data ");
 		sqlBuilder.append("left join m_customer_manggala as cust on cust.id = data.idcustomer ");
 		
@@ -31,6 +31,7 @@ public class GetSuraJalanDropDownData implements RowMapper<SuratJalanDropDown>{
 		final Long idcustomer = rs.getLong("idcustomer");
 		final String customername = rs.getString("customername");
 		final Long idwarehouse = rs.getLong("idwarehouse");
+		final String status = rs.getString("status");
 		//
 		SuratJalanDropDown data = new SuratJalanDropDown();
 		data.setId(id);
@@ -38,6 +39,7 @@ public class GetSuraJalanDropDownData implements RowMapper<SuratJalanDropDown>{
 		data.setNodocument(nodocument);
 		data.setNamacustomer(customername);
 		data.setIdwarehouse(idwarehouse);
+		data.setStatus(status);
 		return data;
 	}
 

@@ -31,7 +31,13 @@ public class InvoiceData {
 	private List<DetailInvoicePriceData> detailsprice;
 	private List<PenerimaanKasBankData> listpenerimaan;
 	private List<DetailPenerimaanKasBankData> detailspenerimaan;
-	
+	private Double ppn;
+	public Double getPpn() {
+		return ppn;
+	}
+	public void setPpn(Double ppn) {
+		this.ppn = ppn;
+	}
 	
 	public String getJalurname() {
 		return jalurname;

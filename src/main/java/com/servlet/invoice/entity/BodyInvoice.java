@@ -14,6 +14,15 @@ public class BodyInvoice {
 	private Double diskonnota;
 	private boolean isactive;
 	private BodyDetailInvoicePrice[] detailsprice;
+	
+	private Double ppn;
+	public Double getPpn() {
+		return ppn;
+	}
+	public void setPpn(Double ppn) {
+		this.ppn = ppn;
+	}
+	
 	public Long getTanggal() {
 		return tanggal;
 	}

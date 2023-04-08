@@ -14,6 +14,7 @@ public class PrintInvoiceData {
 	private Long idcustomer;
 	private Long idwo;
 	private String refno;
+	private String nobl;
 	private String deliveredto;
 	private String idinvoicetype;
 	private Date deliverydate;
@@ -28,6 +29,12 @@ public class PrintInvoiceData {
 	private String keteranganinvoice3;
 	private String namapenagih;
 	private String ppn;
+	public String getNobl() {
+		return nobl;
+	}
+	public void setNobl(String nobl) {
+		this.nobl = nobl;
+	}
 	public Long getIdwo() {
 		return idwo;
 	}

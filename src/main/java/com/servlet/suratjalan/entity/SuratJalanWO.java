@@ -2,9 +2,7 @@ package com.servlet.suratjalan.entity;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.List;
 
-import com.servlet.workorder.entity.DetailWorkOrderData;
 
 public class SuratJalanWO {
 	private Long id;
@@ -14,7 +12,14 @@ public class SuratJalanWO {
 	private String warehousename;
 	private String nocontainer;
 	private Date tanggalkembali;
+	private String status;
 	
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
 	public Date getTanggalkembali() {
 		return tanggalkembali;
 	}
