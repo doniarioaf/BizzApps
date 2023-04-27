@@ -1,6 +1,5 @@
 package com.servlet.admin.company.entity;
 
-import java.security.Timestamp;
 
 public class BodyCompanyy {
 	private long idcompany;
@@ -8,6 +7,7 @@ public class BodyCompanyy {
 	private long jumlahweb;
 	private int waktu;
 	private String type;
+	private String macaddress;
 	public int getWaktu() {
 		return waktu;
 	}
@@ -37,6 +37,12 @@ public class BodyCompanyy {
 	}
 	public void setJumlahweb(long jumlahweb) {
 		this.jumlahweb = jumlahweb;
+	}
+	public String getMacaddress() {
+		return macaddress;
+	}
+	public void setMacaddress(String macaddress) {
+		this.macaddress = macaddress;
 	}
 
 }

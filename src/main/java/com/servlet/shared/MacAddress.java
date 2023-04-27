@@ -33,13 +33,13 @@ public class MacAddress {
 		} catch (UnknownHostException e) {
 			
 //			e.printStackTrace();
-			map.put("ip_address", "");
-			map.put("mac_address", "");
+//			map.put("ip_address", "");
+//			map.put("mac_address", "");
 			
 		} catch (SocketException e){
 				
-			map.put("ip_address", "");
-			map.put("mac_address", "");
+//			map.put("ip_address", "");
+//			map.put("mac_address", "");
 				
 		}
 		return map;

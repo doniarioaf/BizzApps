@@ -304,10 +304,11 @@ public class InvoiceHandler implements InvoiceService{
 			}else if( result.get("ISACTIVE") != null && !(boolean)result.get("ISACTIVE") ) {
 				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_WO_NOT_ACTIVE,"WO Not Active");
 				validations.add(msg);
-			}else if( result.get("ISSTATUSAVAILABLE") != null && !(boolean)result.get("ISSTATUSAVAILABLE") ) {
-				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_WO_NOT_AVAILABLE,"WO Status Not Available");
-				validations.add(msg);
 			}
+//			else if( result.get("ISSTATUSAVAILABLE") != null && !(boolean)result.get("ISSTATUSAVAILABLE") ) {
+//				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_WO_NOT_AVAILABLE,"WO Status Not Available");
+//				validations.add(msg);
+//			}
 			
 			if(body.getIdinvoicetype().equals("REIMBURSEMENT")) {
 				boolean flagcontinue = true;
@@ -339,10 +340,11 @@ public class InvoiceHandler implements InvoiceService{
 			}else if( result.get("ISACTIVE") != null && !(boolean)result.get("ISACTIVE") ) {
 				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_SJ_NOT_ACTIVE,"Surat Jalan Not Active");
 				validations.add(msg);
-			}else if( result.get("ISSTATUSAVAILABLE") != null && !(boolean)result.get("ISSTATUSAVAILABLE") ) {
-				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_SJ_NOT_AVAILABLE,"Surat Jalan Status Not Available");
-				validations.add(msg);
 			}
+//			else if( result.get("ISSTATUSAVAILABLE") != null && !(boolean)result.get("ISSTATUSAVAILABLE") ) {
+//				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_SJ_NOT_AVAILABLE,"Surat Jalan Status Not Available");
+//				validations.add(msg);
+//			}
 		}
 		return validations;
 	}

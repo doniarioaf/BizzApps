@@ -218,6 +218,7 @@ public class CompanyHandler implements CompanyService{
 				lic.setExpired(timeexp);
 				lic.setLimituserweb(company.getJumlahweb());
 				lic.setLimitusermobile(company.getJumlahmobile());
+				lic.setMacaddress(company.getMacaddress());
 				String encryptedPassToken = aesEncryptionDecryption.encrypt(new ConvertJson().toJsonString(lic));
 				table.setLicense(encryptedPassToken);
 				repository.saveAndFlush(table);

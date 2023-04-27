@@ -19,7 +19,6 @@ import com.servlet.admin.company.service.CompanyService;
 import com.servlet.admin.logs.entity.LogsActivity;
 import com.servlet.admin.logs.service.LogsService;
 import com.servlet.admin.usermobile.entity.ReturnLoginMobile;
-import com.servlet.admin.usermobile.entity.UserMobile;
 import com.servlet.admin.usermobile.entity.UserMobileDataAuth;
 import com.servlet.admin.usermobile.entity.UserMobilePermission;
 import com.servlet.admin.usermobile.service.UserMobileService;
@@ -63,7 +62,6 @@ public class SecurityHandler implements SecurityService{
 	@Override
 	public Response response(String codepermission, Object data, String authorization) {
 		Response value = new Response();
-		MacAddress macAddress = new MacAddress();
 		if(authorization.equals("loginweb") || authorization.equals("loginmobile")) {
 			if(authorization.equals("loginmobile")) {
 				ReturnLoginMobile mobile = (ReturnLoginMobile) data;
@@ -504,6 +502,7 @@ public class SecurityHandler implements SecurityService{
 	@Override
 	public SecurityLicenseData checkLicense(long idcompany,Long jumlahuserweb, Long jumlahusermobile) {
 		// TODO Auto-generated method stub
+		HashMap<String, String> ip = new MacAddress().getAddress();
 		SecurityLicenseData dataSecurity = new SecurityLicenseData();
 		Gson gson = new Gson();
 		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
@@ -517,6 +516,19 @@ public class SecurityHandler implements SecurityService{
 					String decryption = aesEncryptionDecryption.decrypt(license);
 					data = new LicenseData();
 					data = gson.fromJson(decryption, LicenseData.class);
+					
+					if(ip.get("mac_address") != null) {
+						if(data.getMacaddress() == null) {
+							ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.MAC_ADDRESS_NOT_FOUND,"ID Server Tidak Terdaftar");
+							validations.add(msg);
+						}else if(!ip.get("mac_address").equals(data.getMacaddress())) {
+							ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.MAC_ADDRESS_NOT_SAME,"ID Server Tidak Sesuai");
+							validations.add(msg);
+						}
+					}else {
+						ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.MAC_ADDRESS_NOT_FOUND,"ID Server Tidak Ditemukan");
+						validations.add(msg);
+					}
 					
 					Timestamp ts = new Timestamp(new Date().getTime());
 					if(ts.after(data.getExpired())) {
