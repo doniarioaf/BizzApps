@@ -27,9 +27,9 @@ public class GetSearchDataCustomerManggala implements RowMapper<CustomerManggala
 	public CustomerManggalaData mapRow(ResultSet rs, int rowNum) throws SQLException {
 		// TODO Auto-generated method stub
 		final Long id = rs.getLong("id");
-//		final String customertype = rs.getString("customertype");
+		final String customertype = rs.getString("customertype");
 		final String customername = rs.getString("customername");
-//		final String alias = rs.getString("alias");
+		final String alias = rs.getString("alias");
 //		final String alamat = rs.getString("alamat");
 //		final String provinsi = rs.getString("provinsi");
 		final String kota = rs.getString("kota");
@@ -41,9 +41,9 @@ public class GetSearchDataCustomerManggala implements RowMapper<CustomerManggala
 		
 		CustomerManggalaData data = new CustomerManggalaData();
 		data.setId(id);
-		data.setCustomertype("");
+		data.setCustomertype(customertype);
 		data.setCustomername(customername);
-		data.setAlias("");
+		data.setAlias(alias);
 		data.setAlamat("");
 		data.setProvinsi("");
 		data.setProvinsiname("");

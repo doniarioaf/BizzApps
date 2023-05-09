@@ -321,11 +321,13 @@ public class InvoiceHandler implements InvoiceService{
 				}
 				if(flagcontinue) {
 					//(invoice dengan type reimbursement hanya boleh 1 pada 1 WO)
-					List<InvoiceData> listinv = getListInvoiceByIdWo(idcompany, idbranch, body.getIdwo());
-					if(listinv != null && listinv.size() > 0) {
-						ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_INVOICE_WO_EXIST_REIMBURSEMENT,"WO sudah terpasang pada invoice lain");
-						validations.add(msg);
-					}
+					
+					// sementara di remark dulu
+//					List<InvoiceData> listinv = getListInvoiceByIdWo(idcompany, idbranch, body.getIdwo());
+//					if(listinv != null && listinv.size() > 0) {
+//						ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_INVOICE_WO_EXIST_REIMBURSEMENT,"WO sudah terpasang pada invoice lain");
+//						validations.add(msg);
+//					}
 				}
 			}
 			

@@ -344,7 +344,7 @@ public class VendorHandler implements VendorService{
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetVendorListData().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
-		sqlBuilder.append(" and lower(data.nama) like '%"+body.getName().toLowerCase()+"%' ");
+		sqlBuilder.append(" and (lower(data.nama) like '%"+body.getName().toLowerCase()+"%' or lower(data.alias) like '%"+body.getName().toLowerCase()+"%') ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetVendorListData(), queryParameters);
 	}

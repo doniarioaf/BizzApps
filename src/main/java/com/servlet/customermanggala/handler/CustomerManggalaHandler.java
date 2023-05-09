@@ -498,7 +498,7 @@ public class CustomerManggalaHandler implements CustomerManggalaService{
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetSearchDataCustomerManggala().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
-		sqlBuilder.append(" and lower(data.customername) like '%"+body.getNama().toLowerCase()+"%' ");
+		sqlBuilder.append(" and ( lower(data.customername) like '%"+body.getNama().toLowerCase()+"%' or lower(data.alias) like '%"+body.getNama().toLowerCase()+"%') ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetSearchDataCustomerManggala(), queryParameters);
 	}
