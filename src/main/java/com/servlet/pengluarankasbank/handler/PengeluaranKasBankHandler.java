@@ -35,6 +35,7 @@ import com.servlet.pengluarankasbank.entity.PengeluaranKasBankTemplate;
 import com.servlet.pengluarankasbank.entity.PengluaranKasBank;
 import com.servlet.pengluarankasbank.mapper.GetDetailPengeluaranKasBankData;
 import com.servlet.pengluarankasbank.mapper.GetDetailPengeluaranKasBankJoinTable;
+import com.servlet.pengluarankasbank.mapper.GetListPengeluaranKasBank;
 import com.servlet.pengluarankasbank.mapper.GetPengeluaranKasBankData;
 import com.servlet.pengluarankasbank.mapper.GetPengeluaranKasBankJoinTable;
 import com.servlet.pengluarankasbank.mapper.GetTotalAmount;
@@ -641,6 +642,15 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 			return list.get(0);
 		}
 		return 0.0;
+	}
+
+	@Override
+	public List<PengeluaranKasBankData> getListAllJoin(Long idcompany, Long idbranch) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListPengeluaranKasBank().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false order by data.nodocument desc ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListPengeluaranKasBank(), queryParameters);
 	}
 
 }

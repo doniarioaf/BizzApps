@@ -8,10 +8,11 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.servlet.pengluarankasbank.entity.PengeluaranKasBankData;
 
-public class GetPengeluaranKasBankData implements RowMapper<PengeluaranKasBankData>{
+public class GetListPengeluaranKasBank implements RowMapper<PengeluaranKasBankData>{
+	
 	private String schemaSql;
 	
-	public GetPengeluaranKasBankData() {
+	public GetListPengeluaranKasBank() {
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
 		sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.paymentdate as paymentdate, data.paymentto as paymentto, data.idcoa as idcoa, ");
@@ -78,5 +79,4 @@ public class GetPengeluaranKasBankData implements RowMapper<PengeluaranKasBankDa
 		data.setNoAjuWO(noajuwo);
 		return data;
 	}
-
 }

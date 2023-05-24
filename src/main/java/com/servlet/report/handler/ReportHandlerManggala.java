@@ -661,6 +661,14 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 				}
 				
 				if(datapenerimaan.getPengeluaran_id() != null) {
+					String pengeluaranNamaPaymentTo = "";
+					if(datapenerimaan.getPengeluaran_paymentto().equals("EMPLOYEE")) {
+						pengeluaranNamaPaymentTo = datapenerimaan.getPengeluaran_employeename();
+					}else if(datapenerimaan.getPengeluaran_paymentto().equals("CUSTOMER")) {
+						pengeluaranNamaPaymentTo = datapenerimaan.getPengeluaran_customername();
+					}else if(datapenerimaan.getPengeluaran_paymentto().equals("VENDOR")) {
+						pengeluaranNamaPaymentTo = datapenerimaan.getPengeluaran_vendorname();
+					}
 					List<DetailPengeluaranKasBankData> listdetail = pengeluaranKasBankService.getListDetailById(idcompany, idbranch, datapenerimaan.getPengeluaran_id());
 					for(DetailPengeluaranKasBankData det : listdetail) {
 						Row rowData = sheet.createRow(rowcount++);
@@ -672,7 +680,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, "", style,sheet);
 						createCell(rowData, columnCount++, "", style,sheet);
 						createCell(rowData, columnCount++, "", style,sheet);
-						createCell(rowData, columnCount++, datapenerimaan.getPengeluaran_paymentto(), style,sheet);
+						createCell(rowData, columnCount++, pengeluaranNamaPaymentTo, style,sheet);
 						createCell(rowData, columnCount++, datapenerimaan.getPengeluaran_keterangan(), style,sheet);
 						Double saldoUangKeluar = det.getAmount().doubleValue();//pengeluaranKasBankService.summaryAmountPengeluaranByDate(idcompany, idbranch, null, null, datapenerimaan.getPengeluaran_id());
 						saldoUangKeluar = saldoUangKeluar != null?saldoUangKeluar:0.0;

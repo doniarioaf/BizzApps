@@ -19,6 +19,7 @@ public class PengeluaranKasBankData {
 	private boolean disablededitordelete;
 	private Long idwo;
 	private String nodocumentWO;
+	private String noAjuWO;
 	private Long idcustomer;
 	private String customerName;
 	private Long idvendor;
@@ -28,6 +29,12 @@ public class PengeluaranKasBankData {
 	private String idpaymenttype;
 	private String paymenttypename;
 	
+	public String getNoAjuWO() {
+		return noAjuWO;
+	}
+	public void setNoAjuWO(String noAjuWO) {
+		this.noAjuWO = noAjuWO;
+	}
 	public String getIdpaymenttype() {
 		return idpaymenttype;
 	}

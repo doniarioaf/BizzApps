@@ -3,7 +3,6 @@ package com.servlet.Process;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1712,7 +1711,7 @@ public class ProcessHandler implements ProcessService{
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				String type = (String) param.get("type");
 				if(type.equals("ALL")) {
-					val.setData(pengeluaranKasBankService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(pengeluaranKasBankService.getListAllJoin(auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("TEMPLATE")) {
 					val.setData(pengeluaranKasBankService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("DETAIL")) {

@@ -22,6 +22,28 @@ public class PenerimaanPengeluaranData {
 	private String pengeluaran_bankName;
 	private String pengeluaran_paymentto;
 	private String pengeluaran_keterangan;
+	private String pengeluaran_customername;
+	private String pengeluaran_vendorname;
+	private String pengeluaran_employeename;
+	
+	public String getPengeluaran_customername() {
+		return pengeluaran_customername;
+	}
+	public void setPengeluaran_customername(String pengeluaran_customername) {
+		this.pengeluaran_customername = pengeluaran_customername;
+	}
+	public String getPengeluaran_vendorname() {
+		return pengeluaran_vendorname;
+	}
+	public void setPengeluaran_vendorname(String pengeluaran_vendorname) {
+		this.pengeluaran_vendorname = pengeluaran_vendorname;
+	}
+	public String getPengeluaran_employeename() {
+		return pengeluaran_employeename;
+	}
+	public void setPengeluaran_employeename(String pengeluaran_employeename) {
+		this.pengeluaran_employeename = pengeluaran_employeename;
+	}
 	public Long getPenerimaan_id() {
 		return penerimaan_id;
 	}

@@ -13,6 +13,7 @@ import com.servlet.shared.ReturnData;
 public interface PengeluaranKasBankService {
 	List<PengeluaranKasBankData> getListAll(Long idcompany,Long idbranch);
 	List<PengeluaranKasBankData> getListActive(Long idcompany,Long idbranch);
+	List<PengeluaranKasBankData> getListAllJoin(Long idcompany,Long idbranch);
 	PengeluaranKasBankData getById(Long idcompany,Long idbranch,Long id);
 	ReturnData saveData(Long idcompany,Long idbranch,Long iduser,BodyPengeluaranKasBank body);
 	ReturnData updateData(Long idcompany,Long idbranch,Long iduser,Long id,BodyPengeluaranKasBank body);
