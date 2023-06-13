@@ -19,6 +19,8 @@ import com.servlet.asset.repo.HistoryAssetMappingRepo;
 import com.servlet.asset.service.AssetService;
 import com.servlet.bankaccount.service.BankAccountService;
 import com.servlet.coa.service.CoaService;
+import com.servlet.employeemanggala.entity.EmployeManggalaData;
+import com.servlet.employeemanggala.service.EmployeeManggalaService;
 import com.servlet.invoicetype.entity.ParamInvTypeDropDown;
 import com.servlet.invoicetype.service.InvoiceTypeService;
 import com.servlet.parameter.service.ParameterService;
@@ -47,6 +49,8 @@ import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.vendor.entity.DetailVendorBankData;
+import com.servlet.vendor.service.VendorService;
 import com.servlet.workorder.entity.ParamDropDownWO;
 import com.servlet.workorder.service.WorkOrderService;
 
@@ -80,6 +84,10 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 	private HistoryAssetMappingRepo historyAssetMappingRepo;
 	@Autowired
 	private AssetRepo assetRepo;
+	@Autowired
+	private VendorService vendorService;
+	@Autowired
+	private EmployeeManggalaService employeeManggalaService;
 	
 	private final String PAYMENTTO_EMPLOYEE = "EMPLOYEE";
 	private final String PAYMENTTO_CUSTOMER = "CUSTOMER";
@@ -115,6 +123,11 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 			PengeluaranKasBankData val = list.get(0);
 			val.setDetails(getDetails(idcompany,idbranch,id));
 			val.setDisablededitordelete(compareDateDocWithParameter(idcompany,idbranch,val.getPaymentdate()));
+			if(val.getPaymentto().equals(PAYMENTTO_VENDOR)) {
+				val.setListBank(getListBankVendor(val.getIdvendor(),idcompany,idbranch));
+			}else if(val.getPaymentto().equals(PAYMENTTO_EMPLOYEE)) {
+				val.setListBank(getEmpAccBankById(idcompany,idbranch,val.getIdemployee()));
+			}
 			return val;
 		}
 		return null;
@@ -313,6 +326,12 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 			PengeluaranKasBankData val = list.get(0);
 			val.setDetails(getDetails(idcompany,idbranch,id));
 			val.setTemplate(setTemplate(idcompany,idbranch));
+						
+			if(val.getPaymentto().equals(PAYMENTTO_VENDOR)) {
+				val.setListBank(getListBankVendor(val.getIdvendor(),idcompany,idbranch));
+			}else if(val.getPaymentto().equals(PAYMENTTO_EMPLOYEE)) {
+				val.setListBank(getEmpAccBankById(idcompany,idbranch,val.getIdemployee()));
+			}
 			return val;
 		}
 		return null;
@@ -651,6 +670,27 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false order by data.nodocument desc ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListPengeluaranKasBank(), queryParameters);
+	}
+
+	@Override
+	public List<DetailVendorBankData> getListBankVendor(Long id, Long idcompany, Long idbranch) {
+		// TODO Auto-generated method stub
+		return vendorService.getListBankVendor(id, idcompany, idbranch);
+	}
+
+	@Override
+	public List<DetailVendorBankData> getEmpAccBankById(Long idcompany, Long idbranch, Long id) {
+		// TODO Auto-generated method stub
+		List<DetailVendorBankData> list = new ArrayList<DetailVendorBankData>();
+		EmployeManggalaData emp = employeeManggalaService.getAccBankById(idcompany, idbranch, id);
+		if(emp != null) {
+			DetailVendorBankData bank = new DetailVendorBankData();
+			bank.setAtasnama(emp.getAtasnama());
+			bank.setBank(emp.getNamabank());
+			bank.setNorek(emp.getNorekening());
+			list.add(bank);
+		}
+		return list;
 	}
 
 }

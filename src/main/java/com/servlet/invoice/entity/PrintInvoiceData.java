@@ -24,11 +24,19 @@ public class PrintInvoiceData {
 	private List<DetailInvoicePriceData> detailsprice;
 	private List<PenerimaanKasBankData> listpenerimaan;
 	private List<DetailPenerimaanKasBankData> detailspenerimaan;
+	private Double summarypenerimaanDP;
 	private String keteranganinvoice1;
 	private String keteranganinvoice2;
 	private String keteranganinvoice3;
 	private String namapenagih;
 	private String ppn;
+	
+	public Double getSummarypenerimaanDP() {
+		return summarypenerimaanDP;
+	}
+	public void setSummarypenerimaanDP(Double summarypenerimaanDP) {
+		this.summarypenerimaanDP = summarypenerimaanDP;
+	}
 	public String getNobl() {
 		return nobl;
 	}

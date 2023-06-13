@@ -3,12 +3,14 @@ package com.servlet.pengluarankasbank.service;
 import java.sql.Date;
 import java.util.List;
 
+import com.servlet.employeemanggala.entity.EmployeManggalaData;
 import com.servlet.pengluarankasbank.entity.BodyPengeluaranKasBank;
 import com.servlet.pengluarankasbank.entity.DetailPengeluaranKasBankData;
 import com.servlet.pengluarankasbank.entity.PengeluaranHeaderAndDetail;
 import com.servlet.pengluarankasbank.entity.PengeluaranKasBankData;
 import com.servlet.pengluarankasbank.entity.PengeluaranKasBankTemplate;
 import com.servlet.shared.ReturnData;
+import com.servlet.vendor.entity.DetailVendorBankData;
 
 public interface PengeluaranKasBankService {
 	List<PengeluaranKasBankData> getListAll(Long idcompany,Long idbranch);
@@ -25,4 +27,6 @@ public interface PengeluaranKasBankService {
 	Double summaryAmountPengeluaranByIdWo(Long idcompany,Long idbranch,Date fromdate, Date todate, Long idwo,Long idbank);
 	PengeluaranHeaderAndDetail getListByIdWo(Long idcompany,Long idbranch,Long idWO);
 	Double summaryAmountPengeluaranForSummaryKegiatanTruck(Long idcompany,Long idbranch, Long idwo,Long idcustomer,Long idemployee, Long idinvoiceitem,Long idpaymentitem, Long idasset);
+	List<DetailVendorBankData> getListBankVendor(Long id,Long idcompany,Long idbranch);
+	List<DetailVendorBankData> getEmpAccBankById(Long idcompany,Long idbranch,Long id);
 }

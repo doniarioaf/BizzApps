@@ -3,6 +3,8 @@ package com.servlet.pengluarankasbank.entity;
 import java.sql.Date;
 import java.util.List;
 
+import com.servlet.vendor.entity.DetailVendorBankData;
+
 public class PengeluaranKasBankData {
 	private Long id;
 	private String nodocument;
@@ -28,7 +30,14 @@ public class PengeluaranKasBankData {
 	private String employeeName;
 	private String idpaymenttype;
 	private String paymenttypename;
+	private List<DetailVendorBankData> listBank;
 	
+	public List<DetailVendorBankData> getListBank() {
+		return listBank;
+	}
+	public void setListBank(List<DetailVendorBankData> listBank) {
+		this.listBank = listBank;
+	}
 	public String getNoAjuWO() {
 		return noAjuWO;
 	}

@@ -123,7 +123,15 @@ public class InvoiceHandler implements InvoiceService{
 		long idsave = 0;
 		validations.addAll(validationsCheckData);
 		Timestamp ts = new Timestamp(new Date().getTime());
-		String docNumber = runningNumberService.getDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_INVOICE, ts);
+		String docNumber = "";
+		if(body.getIdinvoicetype().equals("JASA")) {
+			docNumber = runningNumberService.getDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_INVOICE, ts);
+		}else if(body.getIdinvoicetype().equals("REIMBURSEMENT")) {
+			docNumber = runningNumberService.getDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_INVOICEREIMBURSEMENT, ts);
+		}else if(body.getIdinvoicetype().equals("DP")) {
+			docNumber = runningNumberService.getDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_INVOICEDP, ts);
+		}
+		
 		if(docNumber.equals("")) {
 			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_GENERATE_DOC_NUMBER,"Gagal Generate Document Number");
 			validations.add(msg);
@@ -486,7 +494,15 @@ public class InvoiceHandler implements InvoiceService{
 			if(body.getIdwo().intValue() > 0) {
 				sqlBuilder.append(" and data.idwo = "+body.getIdwo()+" ");
 			}
-			sqlBuilder.append(" and data.id not in (select dpk.idinvoice from detail_penerimaan_kas_bank as dpk where dpk.idcompany = "+idcompany+" and dpk.idbranch = "+idbranch+" ) ");
+			sqlBuilder.append(" and data.nodocument not like '%INVDP%'  ");
+			
+//			if(body.getIdpenerimaan() != null) {
+//				if(body.getIdpenerimaan().longValue() > 0) {
+//					sqlBuilder.append(" and data.id not in (select dpk.idinvoice from detail_penerimaan_kas_bank as dpk where dpk.idcompany = "+idcompany+" and dpk.idbranch = "+idbranch+" and dpk.idpenerimaankasbank = "+body.getIdpenerimaan()+" ) ");
+//				}
+//			}
+			
+//			sqlBuilder.append(" and data.id not in (select dpk.idinvoice from detail_penerimaan_kas_bank as dpk where dpk.idcompany = "+idcompany+" and dpk.idbranch = "+idbranch+" ) ");
 		}
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceDataJoinWorkOrder(), queryParameters);
@@ -518,6 +534,10 @@ public class InvoiceHandler implements InvoiceService{
 			val.setKeteranganinvoice2(parameterManggalaService.getValueByParamName(idcompany,idbranch,"KETERANGANINVOICE2","TEXT").getStrValue());
 			val.setKeteranganinvoice3(parameterManggalaService.getValueByParamName(idcompany,idbranch,"KETERANGANINVOICE3","TEXT").getStrValue());
 			val.setNamapenagih(parameterManggalaService.getValueByParamName(idcompany,idbranch,"NAMAPENAGIH","TEXT").getStrValue());
+//			if(val.getIdinvoicetype().equals("JASA")) {
+//				val.setSummarypenerimaanDP(penerimaanKasBankService.getSummaryDetailDPByIdWO(idcompany, idbranch, val.getIdwo()));
+//			}
+			
 //			if(ppn != null) {
 //				val.setPpn(ppn.toString());
 //			}else {
@@ -532,7 +552,7 @@ public class InvoiceHandler implements InvoiceService{
 	public List<InvoiceData> getListInvoiceByIdWo(Long idcompany, Long idbranch, Long idwo) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetInvoiceData().schema());
-		sqlBuilder.append(" where data.idwo = ? and data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		sqlBuilder.append(" where data.idwo = ? and data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false and data.nodocument not like '%INVDP%' ");
 		final Object[] queryParameters = new Object[] {idwo,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceData(), queryParameters);
 	}

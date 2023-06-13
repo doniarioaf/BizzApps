@@ -159,7 +159,7 @@ public class SuratJalanHandler implements SuratJalanService{
 				table.setIdcompany(idcompany);
 				table.setIdbranch(idbranch);
 				table.setNodocument(docNumber);
-				table.setStatus("OPEN_SJ");
+//				table.setStatus("OPEN_SJ");
 				table.setTanggal(new Timestamp(body.getTanggal()));
 				table.setIdworkorder(body.getIdworkorder());
 				table.setIdcustomer(body.getIdcustomer());

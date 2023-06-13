@@ -5,6 +5,13 @@ public class BodySearch {
 	private String namacustomer;
 	private Long idwo;
 	private String type;
+	private Long idpenerimaan;
+	public Long getIdpenerimaan() {
+		return idpenerimaan;
+	}
+	public void setIdpenerimaan(Long idpenerimaan) {
+		this.idpenerimaan = idpenerimaan;
+	}
 	public String getNodocument() {
 		return nodocument;
 	}

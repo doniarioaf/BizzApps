@@ -349,4 +349,10 @@ public class VendorHandler implements VendorService{
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetVendorListData(), queryParameters);
 	}
 
+	@Override
+	public List<DetailVendorBankData> getListBankVendor(Long id,Long idcompany, Long idbranch) {
+		// TODO Auto-generated method stub
+		return getListBank(id,idcompany,idbranch);
+	}
+
 }

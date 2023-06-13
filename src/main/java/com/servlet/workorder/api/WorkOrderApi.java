@@ -125,6 +125,17 @@ public class WorkOrderApi {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("id", id);
 		param.put("body", body);
+		param.put("type", "EDIT");
+		Response response = securityService.response(ConstansPermission.EDIT_WORKORDER,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@PutMapping("/status/{id}")
+	ResponseEntity<Response> updateObjectStatus(@PathVariable long id,@RequestBody @Validated BodyWorkOrder body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("id", id);
+		param.put("body", body);
+		param.put("type", "UPDATE_STATUS");
 		Response response = securityService.response(ConstansPermission.EDIT_WORKORDER,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}

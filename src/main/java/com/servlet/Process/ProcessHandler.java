@@ -962,15 +962,29 @@ public class ProcessHandler implements ProcessService{
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				long id  = (long) param.get("id");
 				BodyWorkOrder body  = (BodyWorkOrder) param.get("body");
-				ReturnData valReturn = workOrderService.updateWorkOrder(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
-				if(valReturn.isSuccess()) {
-					val.setData(valReturn.getId());
-				}else {
-					val.setSuccess(valReturn.isSuccess());
-					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
-					val.setValidations(valReturn.getValidations());
-					val.setData(null);
+				String type  = (String) param.get("type");
+				if(type.equals("EDIT")) {
+					ReturnData valReturn = workOrderService.updateWorkOrder(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+					if(valReturn.isSuccess()) {
+						val.setData(valReturn.getId());
+					}else {
+						val.setSuccess(valReturn.isSuccess());
+						val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+						val.setValidations(valReturn.getValidations());
+						val.setData(null);
+					}
+				}else if(type.equals("UPDATE_STATUS")) {
+					ReturnData valReturn = workOrderService.updateWorkOrderStatus(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+					if(valReturn.isSuccess()) {
+						val.setData(valReturn.getId());
+					}else {
+						val.setSuccess(valReturn.isSuccess());
+						val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+						val.setValidations(valReturn.getValidations());
+						val.setData(null);
+					}
 				}
+				
 			}else if(codepermission.equals(ConstansPermission.DELETE_WORKORDER)) {
 				long id = (long) data;
 				ReturnData valReturn = workOrderService.deleteWorkOrder(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
@@ -1729,6 +1743,12 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("SEARCHDATAEMPLOYEE")) {
 					BodySearhEmpl body = (BodySearhEmpl) param.get("body");
 					val.setData(employeeManggalaService.getListEmployeeSearch(auth.getIdcompany(), auth.getIdbranch(), body));
+				}else if(type.equals("LISTBANK")) {
+					long id = (long) param.get("id");
+					val.setData(pengeluaranKasBankService.getListBankVendor(id,auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("LISTBANKEMP")) {
+					long id = (long) param.get("id");
+					val.setData(pengeluaranKasBankService.getEmpAccBankById(auth.getIdcompany(), auth.getIdbranch(),id));
 				}
 				
 			}else if(codepermission.equals(ConstansPermission.READ_INVOICE)) {

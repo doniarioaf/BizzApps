@@ -42,4 +42,5 @@ public interface WorkOrderService {
 	List<WorkOrderData> getListDataWoForReportLabaRugi(Long idcompany,Long idbranch,ParamReportManggala param);
 	List<WorkOrderDropDownData> getListDropDownByParam(Long idcompany,Long idbranch,ParamDropDownWO param);
 	List<DetailWorkOrderData> getListContainerByIdWorkOrderForSuratJalan(Long idcompany,Long idbranch,Long idworkorder);
+	ReturnData updateWorkOrderStatus(Long idcompany,Long idbranch,Long iduser,Long id,BodyWorkOrder body);
 }

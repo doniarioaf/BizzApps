@@ -26,4 +26,5 @@ public interface EmployeeManggalaService {
 	ReturnData uploadImageEmployeeManggala(Long idcompany,Long idbranch,Long iduser,Long id,MultipartFile file);
 	List<EmployeManggalaDataList> getListEmployeeSupir(Long idcompany,Long idbranch);
 	List<EmployeeSearchData> getListEmployeeSearch(Long idcompany,Long idbranch,BodySearhEmpl body);
+	EmployeManggalaData getAccBankById(Long idcompany,Long idbranch,Long id);
 }

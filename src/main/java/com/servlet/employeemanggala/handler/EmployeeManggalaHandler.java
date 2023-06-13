@@ -491,4 +491,21 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetEmployeeManggalaSeacrhData(), queryParameters);
 	}
 
+	@Override
+	public EmployeManggalaData getAccBankById(Long idcompany, Long idbranch, Long id) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetEmployeeManggalaData().schema());
+		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+		List<EmployeManggalaData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetEmployeeManggalaData(), queryParameters);
+		if(list != null && list.size() > 0) {
+			EmployeManggalaData val = new EmployeManggalaData();
+			val.setNamabank(list.get(0).getNamabank());
+			val.setNorekening(list.get(0).getNorekening());
+			val.setAtasnama(list.get(0).getAtasnama());
+			return val;
+		}
+		return null;
+	}
+
 }

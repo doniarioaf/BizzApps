@@ -333,41 +333,41 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 					detailPenerimaanKasBankRepo.saveAndFlush(detailPenerimaanKasBank);
 					count++;
 					
-					if(detail.getIdworkorder() != null) {
-						if(detail.getIdworkorder().longValue() > 0) {
-							listIdWo.add(detail.getIdworkorder());
-						}
-					}
+//					if(detail.getIdworkorder() != null) {
+//						if(detail.getIdworkorder().longValue() > 0) {
+//							listIdWo.add(detail.getIdworkorder());
+//						}
+//					}
 				}
 			}
 			
-			if(listIdWo.size() > 0) {
-				for(Long idwo : listIdWo) {
-					double amountPenerimaan = 0.0;
-					double amountInvoice = 0.0;
-					
-					List<InvoiceData> listInv = invoiceService.getListInvoiceByIdWo(idcompany, idbranch, idwo);
-					if(listInv != null && listInv.size() > 0) {
-						for(InvoiceData invData : listInv) {
-							amountInvoice += invData.getTotalinvoice().doubleValue();
-						}
-					}
-					
-					List<DetailPenerimaanKasBankData> listPenerimaan = getDetailsByIdWo(idcompany, idbranch, idwo);
-					if(listPenerimaan != null && listPenerimaan.size() > 0) {
-						for(DetailPenerimaanKasBankData data : listPenerimaan) {
-							amountPenerimaan += data.getAmount().doubleValue();
-						}
-					}
-					
-					if(amountPenerimaan >= amountInvoice) {
-						workOrderService.changeStatusWO(idcompany, idbranch, idwo, "CLOSE");
-					}else{
-						workOrderService.changeStatusWO(idcompany, idbranch, idwo, "OPEN");
-					}
-					
-				}
-			}
+//			if(listIdWo.size() > 0) {
+//				for(Long idwo : listIdWo) {
+//					double amountPenerimaan = 0.0;
+//					double amountInvoice = 0.0;
+//					
+//					List<InvoiceData> listInv = invoiceService.getListInvoiceByIdWo(idcompany, idbranch, idwo);
+//					if(listInv != null && listInv.size() > 0) {
+//						for(InvoiceData invData : listInv) {
+//							amountInvoice += invData.getTotalinvoice().doubleValue();
+//						}
+//					}
+//					
+//					List<DetailPenerimaanKasBankData> listPenerimaan = getDetailsByIdWo(idcompany, idbranch, idwo);
+//					if(listPenerimaan != null && listPenerimaan.size() > 0) {
+//						for(DetailPenerimaanKasBankData data : listPenerimaan) {
+//							amountPenerimaan += data.getAmount().doubleValue();
+//						}
+//					}
+//					
+//					if(amountPenerimaan >= amountInvoice) {
+//						workOrderService.changeStatusWO(idcompany, idbranch, idwo, "CLOSE");
+//					}else{
+//						workOrderService.changeStatusWO(idcompany, idbranch, idwo, "OPEN");
+//					}
+//					
+//				}
+//			}
 			
 			
 		}
@@ -573,6 +573,19 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 		}
 		
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmount(), queryParameters);
+		if(list != null && list.size() > 0) {
+			return list.get(0);
+		}
+		return 0.0;
+	}
+
+	@Override
+	public Double getSummaryDetailDPByIdWO(Long idcompany, Long idbranch, Long idWO) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetTotalAmount().schema());
+		sqlBuilder.append(" where data.idworkorder = ? and data.idcompany = ? and data.idbranch = ? and data.isdownpayment = 'Y' and data.idinvoice notnull and data.idinvoice > 0 ");
+		final Object[] queryParameters = new Object[] {idWO,idcompany,idbranch};
 		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmount(), queryParameters);
 		if(list != null && list.size() > 0) {
 			return list.get(0);

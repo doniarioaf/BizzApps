@@ -1657,7 +1657,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 			catatan = det.getCatatan();
 			harga = det.getAmount();
 			
-			System.out.println("det toString = "+det.toString());
+//			System.out.println("det toString = "+det.toString());
 		}
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("jenisBiayaMaintenanceTruck", jenisBiayaMaintenanceTruck);

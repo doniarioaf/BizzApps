@@ -27,4 +27,5 @@ public interface PenerimaanKasBankService {
 	List<PenerimaanPengeluaranData> getPenerimaanPengeluaranData(Long idcompany,Long idbranch,Date fromdate, Date todate,Long idbank);
 	List<DetailPenerimaanKasBankData> getListDetailByIdReportKasBank(Long idcompany,Long idbranch,Long id);
 	Double summaryAmountPenerimaanByIdWO(Long idcompany,Long idbranch,Date fromdate, Date todate,Long idwo,Long idbank,String invoiceType);
+	Double getSummaryDetailDPByIdWO(Long idcompany,Long idbranch,Long idWO);
 }

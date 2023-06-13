@@ -50,6 +50,24 @@ public class PengeluaranKasBankApi {
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
+	@GetMapping("/listbankvendor/{id}")
+	ResponseEntity<Response> getListBankVendor(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "LISTBANK");
+		param.put("id", id);
+		Response response = securityService.response(ConstansPermission.READ_PENGELUARAN_KASBANK,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@GetMapping("/listbankemployee/{id}")
+	ResponseEntity<Response> getListBankEmployee(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "LISTBANKEMP");
+		param.put("id", id);
+		Response response = securityService.response(ConstansPermission.READ_PENGELUARAN_KASBANK,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
 	@GetMapping("/template/{id}")
 	ResponseEntity<Response> getByIdWithTemplate(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
 		HashMap<String, Object> param = new HashMap<String, Object>();
