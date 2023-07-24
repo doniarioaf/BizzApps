@@ -38,6 +38,7 @@ import com.servlet.pengluarankasbank.entity.PengluaranKasBank;
 import com.servlet.pengluarankasbank.mapper.GetDetailPengeluaranKasBankData;
 import com.servlet.pengluarankasbank.mapper.GetDetailPengeluaranKasBankJoinTable;
 import com.servlet.pengluarankasbank.mapper.GetListPengeluaranKasBank;
+import com.servlet.pengluarankasbank.mapper.GetListPengeluaranKasBankData;
 import com.servlet.pengluarankasbank.mapper.GetPengeluaranKasBankData;
 import com.servlet.pengluarankasbank.mapper.GetPengeluaranKasBankJoinTable;
 import com.servlet.pengluarankasbank.mapper.GetTotalAmount;
@@ -106,10 +107,10 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 	@Override
 	public List<PengeluaranKasBankData> getListActive(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
-		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPengeluaranKasBankData().schema());
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListPengeluaranKasBankData().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false order by data.nodocument desc ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
-		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetPengeluaranKasBankData(), queryParameters);
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListPengeluaranKasBankData(), queryParameters);
 	}
 
 	@Override

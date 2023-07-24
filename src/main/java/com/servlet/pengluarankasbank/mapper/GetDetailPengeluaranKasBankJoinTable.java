@@ -13,7 +13,7 @@ private String schemaSql;
 	public GetDetailPengeluaranKasBankJoinTable() {
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
-		sqlBuilder.append("data.idcoa as idcoa, data.catatan as catatan, data.amount as amount, data.idasset as idasset, coa.nama as coaname, data.idinvoiceitem as idinvoiceitem, invtype.nama as invtypenama, ");
+		sqlBuilder.append("data.idcoa as idcoa, data.catatan as catatanp, data.amount as amount, data.idasset as idasset, coa.nama as coaname, data.idinvoiceitem as idinvoiceitem, invtype.nama as invtypenama, ");
 		sqlBuilder.append("asset.kepala_nama as kepala_nama, asset.buntut_nama as buntut_nama,  ");
 		
 		sqlBuilder.append("data.idpaymentitem as idpaymentitem, paymenttype.nama as paymentitemname,");
@@ -40,7 +40,7 @@ private String schemaSql;
 	public DetailPengeluaranKasBankData mapRow(ResultSet rs, int rowNum) throws SQLException {
 		// TODO Auto-generated method stub
 		final Long idcoa = rs.getLong("idcoa");
-		final String catatan = rs.getString("catatan");
+		final String catatan = rs.getString("catatanp");
 		final Double amount = rs.getDouble("amount");
 		final Long idasset = rs.getLong("idasset");
 		final String coaname = rs.getString("coaname");

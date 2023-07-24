@@ -430,7 +430,7 @@ public class WorkOrderHandler implements WorkOrderService{
 	public List<WorkOrderDropDownData> getListDropDown(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetWorkOrderDropdownData().schema());
-		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false and data.jeniswo != 'JS' and data.status = 'OPEN' order by cust.customername ");
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false and data.jeniswo != 'JS' and data.status = 'OPEN' order by data.nodocument ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderDropdownData(), queryParameters);
 	}

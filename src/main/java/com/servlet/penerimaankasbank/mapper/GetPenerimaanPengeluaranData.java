@@ -18,12 +18,14 @@ public class GetPenerimaanPengeluaranData implements RowMapper<PenerimaanPengelu
 		
 		sqlBuilder.append("pengeluaran.id as pengeluaranid, pengeluaran.nodocument as pengeluarannodocument, pengeluaran.paymentdate as pengeluaranpaymentdate, pengeluaran.idcoa as pengeluaranidcoa, coapengeluaran.nama as pengeluarancoanama, ");
 		sqlBuilder.append("pengeluaran.idbank as pengeluaranidbank, pengeluaran.paymentto as pengeluaranpaymentto, pengeluaran.keterangan as pengeluaranketerangan, ");
-		sqlBuilder.append("cust.customername as pengeluarancustomername, emp.nama as pengeluaranempname, vendor.nama as pengeluaranvendorname ");
+		sqlBuilder.append("cust.customername as pengeluarancustomername, emp.nama as pengeluaranempname, vendor.nama as pengeluaranvendorname, ");
+		sqlBuilder.append("workorderpengeluaran.nodocument as pengeluarannowo, workorderpengeluaran.noaju as pengeluarannoaju ");
 		
 		sqlBuilder.append("from m_penerimaan_kas_bank as data ");
 		sqlBuilder.append("full join m_pengeluaran_kas_bank as pengeluaran on data.receivedate = pengeluaran.paymentdate ");
 		sqlBuilder.append("left join m_coa as coa on coa.id = data.idcoa ");
 		sqlBuilder.append("left join m_coa as coapengeluaran on coapengeluaran.id = pengeluaran.idcoa ");
+		sqlBuilder.append("left join m_workorder as workorderpengeluaran on workorderpengeluaran.id = pengeluaran.idwo ");
 		
 		sqlBuilder.append("left join m_customer_manggala as cust on cust.id = pengeluaran.idcustomer ");
 		sqlBuilder.append("left join m_employee_manggala as emp on emp.id = pengeluaran.idemployee ");
@@ -60,6 +62,8 @@ public class GetPenerimaanPengeluaranData implements RowMapper<PenerimaanPengelu
 		final String pengeluarancustomername = rs.getString("pengeluarancustomername");
 		final String pengeluaranempname = rs.getString("pengeluaranempname");
 		final String pengeluaranvendorname = rs.getString("pengeluaranvendorname");
+		final String pengeluarannowo = rs.getString("pengeluarannowo");
+		final String pengeluarannoaju = rs.getString("pengeluarannoaju");
 		
 		
 		PenerimaanPengeluaranData data = new PenerimaanPengeluaranData();
@@ -85,6 +89,8 @@ public class GetPenerimaanPengeluaranData implements RowMapper<PenerimaanPengelu
 		data.setPengeluaran_customername(pengeluarancustomername);
 		data.setPengeluaran_employeename(pengeluaranempname);
 		data.setPengeluaran_vendorname(pengeluaranvendorname);
+		data.setPengeluaran_nowo(pengeluarannowo);
+		data.setPengeluaran_noaju(pengeluarannoaju);
 		
 		return data;
 	}

@@ -1725,7 +1725,7 @@ public class ProcessHandler implements ProcessService{
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				String type = (String) param.get("type");
 				if(type.equals("ALL")) {
-					val.setData(pengeluaranKasBankService.getListAllJoin(auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(pengeluaranKasBankService.getListActive(auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("TEMPLATE")) {
 					val.setData(pengeluaranKasBankService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("DETAIL")) {

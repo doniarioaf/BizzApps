@@ -586,7 +586,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
         createCell(row, 10, "Saldo", style,sheet);
         
         List<PenerimaanPengeluaranData> list = penerimaanKasBankService.getPenerimaanPengeluaranData(idcompany, idbranch, new Date(body.getFromDate()), new Date(body.getToDate()), body.getIdbank());
-        if(list != null && list.size() > 0) {
+//        if(list != null && list.size() > 0) {
         	rowcount = 6;
 			font.setBold(false);
 			font.setFontHeight(9);
@@ -616,9 +616,9 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 			
 			
 			createCell(rowDataSaldoAwal, columnCount++, totalSaldoAwal, styleAmount,sheet,7000);
-			
+		if(list != null && list.size() > 0) {
 			for(PenerimaanPengeluaranData datapenerimaan : list) {
-				if(datapenerimaan.getPenerimaan_id() != null) {
+				if(datapenerimaan.getPenerimaan_id() != null && datapenerimaan.getPenerimaan_id() != 0) {
 					List<DetailPenerimaanKasBankData> listdetail = penerimaanKasBankService.getListDetailByIdReportKasBank(idcompany, idbranch, datapenerimaan.getPenerimaan_id());
 					for(DetailPenerimaanKasBankData det : listdetail) {
 						Row rowData = sheet.createRow(rowcount++);
@@ -631,6 +631,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, det.getNoaju(), style,sheet);
 						createCell(rowData, columnCount++, det.getNodocinvoice(), style,sheet);
 						createCell(rowData, columnCount++, datapenerimaan.getPenerimaan_receivefrom(), style,sheet);
+//						createCell(rowData, columnCount++, datapenerimaan.getPenerimaan_keterangan(), style,sheet);
 						createCell(rowData, columnCount++, datapenerimaan.getPenerimaan_keterangan(), style,sheet);
 						Double saldoUangMasuk = det.getAmount().doubleValue();//penerimaanKasBankService.summaryAmountPenerimaanByDate(idcompany, idbranch, null, null, datapenerimaan.getPenerimaan_id());
 						saldoUangMasuk = saldoUangMasuk != null?saldoUangMasuk:0.0;
@@ -659,8 +660,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						
 					}
 				}
-				
-				if(datapenerimaan.getPengeluaran_id() != null) {
+				if(datapenerimaan.getPengeluaran_id() != null && datapenerimaan.getPengeluaran_id() != 0) {
 					String pengeluaranNamaPaymentTo = "";
 					if(datapenerimaan.getPengeluaran_paymentto().equals("EMPLOYEE")) {
 						pengeluaranNamaPaymentTo = datapenerimaan.getPengeluaran_employeename();
@@ -669,6 +669,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 					}else if(datapenerimaan.getPengeluaran_paymentto().equals("VENDOR")) {
 						pengeluaranNamaPaymentTo = datapenerimaan.getPengeluaran_vendorname();
 					}
+					
 					List<DetailPengeluaranKasBankData> listdetail = pengeluaranKasBankService.getListDetailById(idcompany, idbranch, datapenerimaan.getPengeluaran_id());
 					for(DetailPengeluaranKasBankData det : listdetail) {
 						Row rowData = sheet.createRow(rowcount++);
@@ -677,10 +678,11 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, checkNullDate(datapenerimaan.getPengeluaran_paymentdate(),""), style,sheet);
 						createCell(rowData, columnCount++, datapenerimaan.getPengeluaran_nodocument(), style,sheet);
 						createCell(rowData, columnCount++, datapenerimaan.getPengeluaran_coaName(), style,sheet);
-						createCell(rowData, columnCount++, "", style,sheet);
-						createCell(rowData, columnCount++, "", style,sheet);
+						createCell(rowData, columnCount++, datapenerimaan.getPengeluaran_nowo(), style,sheet);
+						createCell(rowData, columnCount++, datapenerimaan.getPengeluaran_noaju(), style,sheet);
 						createCell(rowData, columnCount++, "", style,sheet);
 						createCell(rowData, columnCount++, pengeluaranNamaPaymentTo, style,sheet);
+//						createCell(rowData, columnCount++, datapenerimaan.getPengeluaran_keterangan(), style,sheet);
 						createCell(rowData, columnCount++, datapenerimaan.getPengeluaran_keterangan(), style,sheet);
 						Double saldoUangKeluar = det.getAmount().doubleValue();//pengeluaranKasBankService.summaryAmountPengeluaranByDate(idcompany, idbranch, null, null, datapenerimaan.getPengeluaran_id());
 						saldoUangKeluar = saldoUangKeluar != null?saldoUangKeluar:0.0;
