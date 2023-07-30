@@ -8,6 +8,7 @@ import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBankData;
 import com.servlet.penerimaankasbank.entity.PenerimaanKasBankData;
 import com.servlet.penerimaankasbank.entity.PenerimaanKasBankTemplate;
 import com.servlet.penerimaankasbank.entity.PenerimaanPengeluaranData;
+import com.servlet.report.entity.EntityHelperKasBank;
 import com.servlet.shared.ReturnData;
 
 public interface PenerimaanKasBankService {
@@ -28,4 +29,5 @@ public interface PenerimaanKasBankService {
 	List<DetailPenerimaanKasBankData> getListDetailByIdReportKasBank(Long idcompany,Long idbranch,Long id);
 	Double summaryAmountPenerimaanByIdWO(Long idcompany,Long idbranch,Date fromdate, Date todate,Long idwo,Long idbank,String invoiceType);
 	Double getSummaryDetailDPByIdWO(Long idcompany,Long idbranch,Long idWO);
+	List<EntityHelperKasBank> getDataReportKasBankPenerimaan(Long idcompany,Long idbranch,Date fromdate, Date todate,Long idbank);
 }

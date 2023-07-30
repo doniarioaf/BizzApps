@@ -26,6 +26,7 @@ import com.servlet.invoicetype.service.InvoiceTypeService;
 import com.servlet.parameter.service.ParameterService;
 import com.servlet.parametermanggala.service.ParameterManggalaService;
 import com.servlet.paymenttype.service.PaymentTypeService;
+import com.servlet.pengluarankasbank.mapper.GetDataReportKasBankMapper;
 import com.servlet.pengluarankasbank.entity.BodyDetailPengeluaranKasBank;
 import com.servlet.pengluarankasbank.entity.BodyPengeluaranKasBank;
 import com.servlet.pengluarankasbank.entity.DetailPengeluaranKasBank;
@@ -45,6 +46,7 @@ import com.servlet.pengluarankasbank.mapper.GetTotalAmount;
 import com.servlet.pengluarankasbank.repo.DetailPengeluaranKasBankRepo;
 import com.servlet.pengluarankasbank.repo.PengeluaranKasBankRepo;
 import com.servlet.pengluarankasbank.service.PengeluaranKasBankService;
+import com.servlet.report.entity.EntityHelperKasBank;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
@@ -692,6 +694,22 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 			list.add(bank);
 		}
 		return list;
+	}
+
+	@Override
+	public List<EntityHelperKasBank> getDataReportKasBankPengeluaran(Long idcompany, Long idbranch, java.sql.Date fromdate,
+			java.sql.Date todate, Long idbank) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataReportKasBankMapper().schema());
+		sqlBuilder.append(" where ");
+//		sqlBuilder.append(" (mpenerimaan.idcompany = ? and mpenerimaan.idbranch = ?  and mpenerimaan.isactive = true and mpenerimaan.isdelete = false and mpenerimaan.idbank = "+idbank+" and mpenerimaan.receivedate >= '"+fromdate+"'  and mpenerimaan.receivedate <= '"+todate+"' ) ");
+//		sqlBuilder.append(" or ");
+		sqlBuilder.append(" (mpengeluaran.idcompany = ? and mpengeluaran.idbranch = ?  and mpengeluaran.isactive = true and mpengeluaran.isdelete = false and mpengeluaran.idbank = "+idbank+" and mpengeluaran.paymentdate >= '"+fromdate+"'  and mpengeluaran.paymentdate <= '"+todate+"' ) ");
+//		sqlBuilder.append(" order by mpenerimaan.receivedate , mpengeluaran.paymentdate asc ");
+		
+		System.out.println("StringBuilder = "+sqlBuilder.toString());
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataReportKasBankMapper(), queryParameters);
 	}
 
 }

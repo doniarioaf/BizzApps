@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import com.servlet.bankaccount.service.BankAccountService;
 import com.servlet.coa.service.CoaService;
-import com.servlet.invoice.entity.InvoiceData;
 import com.servlet.invoice.service.InvoiceService;
 import com.servlet.parametermanggala.service.ParameterManggalaService;
 import com.servlet.penerimaankasbank.entity.BodyDetailPenerimaanKasBank;
@@ -25,6 +24,7 @@ import com.servlet.penerimaankasbank.entity.PenerimaanKasBank;
 import com.servlet.penerimaankasbank.entity.PenerimaanKasBankData;
 import com.servlet.penerimaankasbank.entity.PenerimaanKasBankTemplate;
 import com.servlet.penerimaankasbank.entity.PenerimaanPengeluaranData;
+import com.servlet.penerimaankasbank.mapper.GetDataReportKasBankMapper;
 import com.servlet.penerimaankasbank.mapper.GetDetailPenerimaanKasBankData;
 import com.servlet.penerimaankasbank.mapper.GetDetailPenerimaanKasBankJoinTable;
 import com.servlet.penerimaankasbank.mapper.GetPenerimaanKasBankJoinBank;
@@ -35,6 +35,7 @@ import com.servlet.penerimaankasbank.mapper.GetTotalAmount;
 import com.servlet.penerimaankasbank.repo.DetailPenerimaanKasBankRepo;
 import com.servlet.penerimaankasbank.repo.PenerimaanKasBankRepo;
 import com.servlet.penerimaankasbank.service.PenerimaanKasBankService;
+import com.servlet.report.entity.EntityHelperKasBank;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
@@ -521,7 +522,7 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 		sqlBuilder.append(" (data.idcompany = ? and data.idbranch = ?  and data.isactive = true and data.isdelete = false and data.idbank = "+idbank+" and data.receivedate >= '"+fromdate+"'  and data.receivedate <= '"+todate+"' ) ");
 		sqlBuilder.append(" or ");
 		sqlBuilder.append(" (pengeluaran.idcompany = "+idcompany+" and pengeluaran.idbranch = "+idbranch+"  and pengeluaran.isactive = true and pengeluaran.isdelete = false and pengeluaran.idbank = "+idbank+" and pengeluaran.paymentdate >= '"+fromdate+"'  and pengeluaran.paymentdate <= '"+todate+"' ) ");
-		sqlBuilder.append(" order by data.receivedate , pengeluaran.paymentdate desc ");
+		sqlBuilder.append(" order by data.receivedate , pengeluaran.paymentdate asc ");
 		
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetPenerimaanPengeluaranData(), queryParameters);
@@ -591,6 +592,22 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 			return list.get(0);
 		}
 		return 0.0;
+	}
+
+	@Override
+	public List<EntityHelperKasBank> getDataReportKasBankPenerimaan(Long idcompany, Long idbranch, java.sql.Date fromdate,
+			java.sql.Date todate, Long idbank) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataReportKasBankMapper().schema());
+		sqlBuilder.append(" where ");
+		sqlBuilder.append(" (mpenerimaan.idcompany = ? and mpenerimaan.idbranch = ?  and mpenerimaan.isactive = true and mpenerimaan.isdelete = false and mpenerimaan.idbank = "+idbank+" and mpenerimaan.receivedate >= '"+fromdate+"'  and mpenerimaan.receivedate <= '"+todate+"' ) ");
+//		sqlBuilder.append(" or ");
+//		sqlBuilder.append(" (mpengeluaran.idcompany = "+idcompany+" and mpengeluaran.idbranch = "+idbranch+"  and mpengeluaran.isactive = true and mpengeluaran.isdelete = false and mpengeluaran.idbank = "+idbank+" and mpengeluaran.paymentdate >= '"+fromdate+"'  and mpengeluaran.paymentdate <= '"+todate+"' ) ");
+//		sqlBuilder.append(" order by mpenerimaan.receivedate , mpengeluaran.paymentdate asc ");
+		
+		System.out.println("StringBuilder = "+sqlBuilder.toString());
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataReportKasBankMapper(), queryParameters);
 	}
 	
 	

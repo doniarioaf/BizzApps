@@ -622,6 +622,7 @@ public class WorkOrderHandler implements WorkOrderService{
 				sqlBuilder.append(" and data.idcustomer = "+idcustomer+" ");
 			}
 		}
+		sqlBuilder.append(" order by data.nodocument ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch,status};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderDropdownData(), queryParameters);
 	}

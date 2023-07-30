@@ -9,6 +9,7 @@ import com.servlet.pengluarankasbank.entity.DetailPengeluaranKasBankData;
 import com.servlet.pengluarankasbank.entity.PengeluaranHeaderAndDetail;
 import com.servlet.pengluarankasbank.entity.PengeluaranKasBankData;
 import com.servlet.pengluarankasbank.entity.PengeluaranKasBankTemplate;
+import com.servlet.report.entity.EntityHelperKasBank;
 import com.servlet.shared.ReturnData;
 import com.servlet.vendor.entity.DetailVendorBankData;
 
@@ -29,4 +30,5 @@ public interface PengeluaranKasBankService {
 	Double summaryAmountPengeluaranForSummaryKegiatanTruck(Long idcompany,Long idbranch, Long idwo,Long idcustomer,Long idemployee, Long idinvoiceitem,Long idpaymentitem, Long idasset);
 	List<DetailVendorBankData> getListBankVendor(Long id,Long idcompany,Long idbranch);
 	List<DetailVendorBankData> getEmpAccBankById(Long idcompany,Long idbranch,Long id);
+	List<EntityHelperKasBank> getDataReportKasBankPengeluaran(Long idcompany,Long idbranch,Date fromdate, Date todate,Long idbank);
 }
