@@ -20,6 +20,7 @@ import com.servlet.invoice.entity.Invoice;
 import com.servlet.invoice.entity.InvoiceData;
 import com.servlet.invoice.entity.InvoiceTemplate;
 import com.servlet.invoice.entity.PrintInvoiceData;
+import com.servlet.invoice.mapper.GetDataNotJoin;
 import com.servlet.invoice.mapper.GetDetailInvoicePriceJoinTableData;
 import com.servlet.invoice.mapper.GetInvoiceData;
 import com.servlet.invoice.mapper.GetInvoiceDataJoinTable;
@@ -159,6 +160,7 @@ public class InvoiceHandler implements InvoiceService{
 					table.setTotalinvoice(body.getTotalinvoice());
 					table.setDiskonnota(body.getDiskonnota());
 					table.setPpn(body.getPpn());
+					table.setNilaippn(body.getNilaippn());
 					table.setIsactive(body.isIsactive());
 	
 					table.setIsdelete(false);
@@ -224,6 +226,7 @@ public class InvoiceHandler implements InvoiceService{
 				table.setIdinvoicetype(body.getIdinvoicetype());
 				table.setDiskonnota(body.getDiskonnota());
 				table.setPpn(body.getPpn());
+				table.setNilaippn(body.getNilaippn());
 				table.setTotalinvoice(body.getTotalinvoice());
 				table.setIsactive(body.isIsactive());
 				table.setUpdateby(iduser.toString());
@@ -555,5 +558,14 @@ public class InvoiceHandler implements InvoiceService{
 		sqlBuilder.append(" where data.idwo = ? and data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false and data.nodocument not like '%INVDP%' ");
 		final Object[] queryParameters = new Object[] {idwo,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceData(), queryParameters);
+	}
+	
+	@Override
+	public List<InvoiceData> checkInvoiceByIdWo(Long idcompany, Long idbranch, Long idwo) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataNotJoin().schema());
+		sqlBuilder.append(" where data.idwo = ? and data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {idwo,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataNotJoin(), queryParameters);
 	}
 }

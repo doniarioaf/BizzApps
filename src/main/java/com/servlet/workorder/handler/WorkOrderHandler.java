@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.servlet.customermanggala.entity.CustomerManggalaData;
 import com.servlet.customermanggala.service.CustomerManggalaService;
+import com.servlet.invoice.service.InvoiceService;
 import com.servlet.parameter.entity.ParameterData;
 import com.servlet.parameter.service.ParameterService;
 import com.servlet.partai.service.PartaiService;
@@ -80,6 +81,8 @@ public class WorkOrderHandler implements WorkOrderService{
 	private FileStorageService fileStorageService;
 	@Autowired
 	private DocumentWorkOrderRepo documentWorkOrderRepo ;
+	@Autowired
+	private InvoiceService invoiceService;
 	
 	@Override
 	public List<WorkOrderData> getListAll(Long idcompany, Long idbranch) {

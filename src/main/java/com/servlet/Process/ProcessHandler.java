@@ -1774,7 +1774,7 @@ public class ProcessHandler implements ProcessService{
 					mapParam.put("type", "INVOICE");
 					mapParam.put("idcustomer", idcustomer);
 					
-					val.setData(workOrderService.getListWOByStatus(auth.getIdcompany(), auth.getIdbranch(),"OPEN", mapParam));
+					val.setData(workOrderService.getListWOByStatus(auth.getIdcompany(), auth.getIdbranch(),"CLOSED", mapParam));
 				}else if(type.equals("SEACRH_SURATJALAN")) {
 					long idwo = (long) param.get("idwo");
 					val.setData(suratJalanService.getListByIdWO(auth.getIdcompany(), auth.getIdbranch(),idwo));

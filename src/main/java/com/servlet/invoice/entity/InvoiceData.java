@@ -33,7 +33,14 @@ public class InvoiceData {
 	private List<PenerimaanKasBankData> listpenerimaan;
 	private List<DetailPenerimaanKasBankData> detailspenerimaan;
 	private Double ppn;
+	private Double nilaippn;
 	
+	public Double getNilaippn() {
+		return nilaippn;
+	}
+	public void setNilaippn(Double nilaippn) {
+		this.nilaippn = nilaippn;
+	}
 	public String getNoajuwo() {
 		return noajuwo;
 	}

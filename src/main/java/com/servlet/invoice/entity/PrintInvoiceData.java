@@ -30,7 +30,14 @@ public class PrintInvoiceData {
 	private String keteranganinvoice3;
 	private String namapenagih;
 	private String ppn;
+	private Double nilaippn;
 	
+	public Double getNilaippn() {
+		return nilaippn;
+	}
+	public void setNilaippn(Double nilaippn) {
+		this.nilaippn = nilaippn;
+	}
 	public Double getSummarypenerimaanDP() {
 		return summarypenerimaanDP;
 	}

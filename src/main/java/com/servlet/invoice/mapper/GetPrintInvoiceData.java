@@ -16,7 +16,7 @@ public class GetPrintInvoiceData implements RowMapper<PrintInvoiceData>{
 		final StringBuilder sqlBuilder = new StringBuilder(400);
 		sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.tanggal as tanggal, data.idcustomer as idcustomer, data.refno as refno, ");
 		sqlBuilder.append("data.deliveredto as deliveredto, data.deliverydate as deliverydate, data.idwo as idwo, data.idsuratjalan as idsuratjalan, ");
-		sqlBuilder.append("data.idinvoicetype as idinvoicetype, data.totalinvoice as totalinvoice, data.isactive as isactive, data.diskonnota as diskonnota, data.ppn as ppn, wo.nobl as wonobl, ");
+		sqlBuilder.append("data.idinvoicetype as idinvoicetype, data.totalinvoice as totalinvoice, data.isactive as isactive, data.diskonnota as diskonnota, data.ppn as ppn, wo.nobl as wonobl,data.nilaippn as nilaippn, ");
 		sqlBuilder.append("wh.nama as whname, sj.tanggalkembali as sjtanggalkembali ");
 		sqlBuilder.append("from m_invoice as data ");
 		sqlBuilder.append("left join m_workorder as wo on wo.id = data.idwo ");
@@ -47,6 +47,7 @@ public class GetPrintInvoiceData implements RowMapper<PrintInvoiceData>{
 //		final boolean isactive = rs.getBoolean("isactive");
 		final Double diskonnota = rs.getDouble("diskonnota");
 		final Double ppn = rs.getDouble("ppn");
+		final Double nilaippn = rs.getDouble("nilaippn");
 		final String wonobl = rs.getString("wonobl");
 		final String whname = rs.getString("whname");
 		
@@ -64,6 +65,7 @@ public class GetPrintInvoiceData implements RowMapper<PrintInvoiceData>{
 		data.setIdinvoicetype(idinvoicetype);
 		data.setPpn(ppn != null ?ppn.toString():"0");
 		data.setNobl(wonobl);
+		data.setNilaippn(nilaippn);
 		return data;
 	}
 
