@@ -59,7 +59,67 @@ public class BodyAsset {
 	private String sparepartbuntut_ban_status;
 	private String sparepartbuntut_lainnya_nama;
 	private String sparepartbuntut_lainnya_keterangan;
+	
+	private String sparepartkepala_filter_type;
+	private String sparepartkepala_filter_posisi;
+	private String sparepartkepala_bohlam_type;
+	private String sparepartkepala_selang_type;
+	private String sparepartbuntut_filter_type;
+	private String sparepartbuntut_filter_posisi;
+	private String sparepartbuntut_bohlam_type;
+	private String sparepartbuntut_selang_type;
+	
 	private boolean isactive;
+	
+	
+	public String getSparepartkepala_filter_type() {
+		return sparepartkepala_filter_type;
+	}
+	public void setSparepartkepala_filter_type(String sparepartkepala_filter_type) {
+		this.sparepartkepala_filter_type = sparepartkepala_filter_type;
+	}
+	public String getSparepartkepala_filter_posisi() {
+		return sparepartkepala_filter_posisi;
+	}
+	public void setSparepartkepala_filter_posisi(String sparepartkepala_filter_posisi) {
+		this.sparepartkepala_filter_posisi = sparepartkepala_filter_posisi;
+	}
+	public String getSparepartkepala_bohlam_type() {
+		return sparepartkepala_bohlam_type;
+	}
+	public void setSparepartkepala_bohlam_type(String sparepartkepala_bohlam_type) {
+		this.sparepartkepala_bohlam_type = sparepartkepala_bohlam_type;
+	}
+	public String getSparepartkepala_selang_type() {
+		return sparepartkepala_selang_type;
+	}
+	public void setSparepartkepala_selang_type(String sparepartkepala_selang_type) {
+		this.sparepartkepala_selang_type = sparepartkepala_selang_type;
+	}
+	public String getSparepartbuntut_filter_type() {
+		return sparepartbuntut_filter_type;
+	}
+	public void setSparepartbuntut_filter_type(String sparepartbuntut_filter_type) {
+		this.sparepartbuntut_filter_type = sparepartbuntut_filter_type;
+	}
+	public String getSparepartbuntut_filter_posisi() {
+		return sparepartbuntut_filter_posisi;
+	}
+	public void setSparepartbuntut_filter_posisi(String sparepartbuntut_filter_posisi) {
+		this.sparepartbuntut_filter_posisi = sparepartbuntut_filter_posisi;
+	}
+	public String getSparepartbuntut_bohlam_type() {
+		return sparepartbuntut_bohlam_type;
+	}
+	public void setSparepartbuntut_bohlam_type(String sparepartbuntut_bohlam_type) {
+		this.sparepartbuntut_bohlam_type = sparepartbuntut_bohlam_type;
+	}
+	public String getSparepartbuntut_selang_type() {
+		return sparepartbuntut_selang_type;
+	}
+	public void setSparepartbuntut_selang_type(String sparepartbuntut_selang_type) {
+		this.sparepartbuntut_selang_type = sparepartbuntut_selang_type;
+	}
 	public String getKodeasset() {
 		return kodeasset;
 	}

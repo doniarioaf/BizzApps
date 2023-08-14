@@ -11,7 +11,8 @@ public class GetDetailPengeluaranKasBankData implements RowMapper<DetailPengelua
 	public GetDetailPengeluaranKasBankData() {
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
-		sqlBuilder.append("data.idpengeluarankasbank as idpengeluarankasbank,data.idcoa as idcoa, data.catatan as catatan, data.amount as amount, data.idasset as idasset, data.idinvoiceitem as idinvoiceitem, invtype.nama as invtypenama ");
+		sqlBuilder.append("data.idpengeluarankasbank as idpengeluarankasbank,data.idcoa as idcoa, data.catatan as catatan, data.amount as amount, data.idasset as idasset, data.idinvoiceitem as idinvoiceitem, invtype.nama as invtypenama, ");
+		sqlBuilder.append("data.idpaymentitem as idpaymentitem, data.idassetsparepart as idassetsparepart, data.sparepartassettype as sparepartassettype ");
 		sqlBuilder.append("from detail_pengeluaran_kas_bank as data ");
 		sqlBuilder.append("left join m_invoice_type as invtype on invtype.id = data.idinvoiceitem ");
 		
@@ -33,7 +34,9 @@ public class GetDetailPengeluaranKasBankData implements RowMapper<DetailPengelua
 		final Long idinvoiceitem = rs.getLong("idinvoiceitem");
 		final Long idpengeluarankasbank = rs.getLong("idpengeluarankasbank");
 		final String invtypenama = rs.getString("invtypenama");
-		
+		final Long idpaymentitem = rs.getLong("idpaymentitem");
+		final Long idassetsparepart = rs.getLong("idassetsparepart");
+		final String sparepartassettype = rs.getString("sparepartassettype");
 		
 		DetailPengeluaranKasBankData data = new DetailPengeluaranKasBankData();
 		data.setIdcoa(idcoa);
@@ -45,6 +48,9 @@ public class GetDetailPengeluaranKasBankData implements RowMapper<DetailPengelua
 		data.setIdinvoiceitem(idinvoiceitem);
 		data.setInvoiceitemName(invtypenama);
 		data.setIdpengeluarankasbank(idpengeluarankasbank);
+		data.setIdpaymentitem(idpaymentitem);
+		data.setIdassetsparepart(idassetsparepart);
+		data.setSparepartassettype(sparepartassettype);
 		return data;
 	}
 

@@ -12,6 +12,8 @@ public class DetailWorkOrderPK implements Serializable{
 	private Long idpartai;
 	private Long idcompany;
     private Long idbranch;
+    private String nocontainer;
+	private String noseal;
 	public long getIdworkorder() {
 		return idworkorder;
 	}
@@ -35,5 +37,17 @@ public class DetailWorkOrderPK implements Serializable{
 	}
 	public void setIdbranch(Long idbranch) {
 		this.idbranch = idbranch;
+	}
+	public String getNocontainer() {
+		return nocontainer;
+	}
+	public void setNocontainer(String nocontainer) {
+		this.nocontainer = nocontainer;
+	}
+	public String getNoseal() {
+		return noseal;
+	}
+	public void setNoseal(String noseal) {
+		this.noseal = noseal;
 	}
 }

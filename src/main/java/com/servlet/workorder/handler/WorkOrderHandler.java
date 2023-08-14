@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.servlet.customermanggala.entity.CustomerManggalaData;
 import com.servlet.customermanggala.service.CustomerManggalaService;
+import com.servlet.invoice.service.InvoiceService;
 import com.servlet.parameter.entity.ParameterData;
 import com.servlet.parameter.service.ParameterService;
 import com.servlet.partai.service.PartaiService;
@@ -80,6 +81,8 @@ public class WorkOrderHandler implements WorkOrderService{
 	private FileStorageService fileStorageService;
 	@Autowired
 	private DocumentWorkOrderRepo documentWorkOrderRepo ;
+	@Autowired
+	private InvoiceService invoiceService;
 	
 	@Override
 	public List<WorkOrderData> getListAll(Long idcompany, Long idbranch) {
@@ -163,28 +166,34 @@ public class WorkOrderHandler implements WorkOrderService{
 					table.setNodocument(docNumber);
 					table.setTanggal(new java.sql.Date(body.getTanggal()));
 					table.setIdcustomer(body.getIdcustomer());
-					table.setNamacargo(body.getNamacargo());
 					table.setStatus(body.getStatus());
 					table.setJeniswo(body.getJeniswo());
-					table.setModatransportasi(body.getModatransportasi());
-					table.setEtd(new java.sql.Date(body.getEtd()));
-					table.setEta(new java.sql.Date(body.getEta()));
-					table.setPortasal(body.getPortasal());
-					table.setPorttujuan(body.getPorttujuan());
-					table.setJalur(body.getJalur());
-					table.setNoaju(body.getNoaju());
-					table.setNopen(body.getNopen());
-					table.setTanggalnopen(body.getTanggalnopen().longValue() > 0? new java.sql.Date(body.getTanggalnopen()):null);
-					table.setNobl(body.getNobl());
-					table.setTanggalbl(body.getTanggalbl().longValue() > 0? new java.sql.Date(body.getTanggalbl()):null);
-					table.setPelayaran(body.getPelayaran());
-					table.setImportir(body.getImportir());
-					table.setEksportir(body.getEksportir());
-					table.setQq(body.getQq());
-					table.setVoyagenumber(body.getVoyagenumber());
-					table.setTanggalsppb_npe(body.getTanggalsppb_npe().longValue() > 0? new java.sql.Date(body.getTanggalsppb_npe()):null);
 					table.setDepo(body.getDepo());
+					
+					if(!body.getJeniswo().equals("TR")) {
+						table.setNamacargo(body.getNamacargo());
+						table.setModatransportasi(body.getModatransportasi());
+						table.setEtd(new java.sql.Date(body.getEtd()));
+						table.setEta(new java.sql.Date(body.getEta()));
+						table.setPortasal(body.getPortasal());
+						table.setPorttujuan(body.getPorttujuan());
+						table.setJalur(body.getJalur());
+						table.setNoaju(body.getNoaju());
+						table.setNopen(body.getNopen());
+						table.setTanggalnopen(body.getTanggalnopen().longValue() > 0? new java.sql.Date(body.getTanggalnopen()):null);
+						table.setNobl(body.getNobl());
+						table.setTanggalbl(body.getTanggalbl().longValue() > 0? new java.sql.Date(body.getTanggalbl()):null);
+						table.setPelayaran(body.getPelayaran());
+						table.setImportir(body.getImportir());
+						table.setEksportir(body.getEksportir());
+						table.setQq(body.getQq());
+						table.setVoyagenumber(body.getVoyagenumber());
+						table.setTanggalsppb_npe(body.getTanggalsppb_npe().longValue() > 0? new java.sql.Date(body.getTanggalsppb_npe()):null);
+						
+						
+					}
 					table.setIdvendordepo(body.getIdvendordepo());
+					
 					table.setInvoiceno("");
 					table.setIsactive(body.isIsactive());
 					table.setIsdelete(false);
@@ -236,27 +245,54 @@ public class WorkOrderHandler implements WorkOrderService{
 				if(value != null) {
 					Timestamp ts = new Timestamp(new Date().getTime());
 					WorkOrder table = repository.getById(id);
-					table.setNamacargo(body.getNamacargo());
 					table.setStatus(body.getStatus());
 					table.setJeniswo(body.getJeniswo());
-					table.setModatransportasi(body.getModatransportasi());
-					table.setEtd(new java.sql.Date(body.getEtd()));
-					table.setEta(new java.sql.Date(body.getEta()));
-					table.setPortasal(body.getPortasal());
-					table.setPorttujuan(body.getPorttujuan());
-					table.setJalur(body.getJalur());
-					table.setNoaju(body.getNoaju());
-					table.setNopen(body.getNopen());
-					table.setTanggalnopen(body.getTanggalnopen().longValue() > 0 ?new java.sql.Date(body.getTanggalnopen()):null);
-					table.setNobl(body.getNobl());
-					table.setTanggalbl(body.getTanggalbl().longValue() > 0? new java.sql.Date(body.getTanggalbl()):null);
-					table.setPelayaran(body.getPelayaran());
-					table.setImportir(body.getImportir());
-					table.setEksportir(body.getEksportir());
-					table.setQq(body.getQq());
-					table.setVoyagenumber(body.getVoyagenumber());
-					table.setTanggalsppb_npe(body.getTanggalsppb_npe().longValue() > 0? new java.sql.Date(body.getTanggalsppb_npe()):null);
 					table.setDepo(body.getDepo());
+					
+					if(body.getJeniswo().equals("TR")) {
+						table.setNamacargo(null);
+						table.setModatransportasi(null);
+						table.setEtd(null);
+						table.setEta(null);
+						table.setPortasal(null);
+						table.setPorttujuan(null);
+						table.setJalur(null);
+						table.setNoaju(null);
+						table.setNopen(null);
+						table.setTanggalnopen(null);
+						table.setNobl(null);
+						table.setTanggalbl(null);
+						table.setPelayaran(null);
+						table.setImportir(null);
+						table.setEksportir(null);
+						table.setQq(null);
+						table.setVoyagenumber(null);
+						table.setTanggalsppb_npe(null);
+						
+//						table.setIdvendordepo(null);
+					}else {
+						table.setNamacargo(body.getNamacargo());
+						table.setModatransportasi(body.getModatransportasi());
+						table.setEtd(new java.sql.Date(body.getEtd()));
+						table.setEta(new java.sql.Date(body.getEta()));
+						table.setPortasal(body.getPortasal());
+						table.setPorttujuan(body.getPorttujuan());
+						table.setJalur(body.getJalur());
+						table.setNoaju(body.getNoaju());
+						table.setNopen(body.getNopen());
+						table.setTanggalnopen(body.getTanggalnopen().longValue() > 0 ?new java.sql.Date(body.getTanggalnopen()):null);
+						table.setNobl(body.getNobl());
+						table.setTanggalbl(body.getTanggalbl().longValue() > 0? new java.sql.Date(body.getTanggalbl()):null);
+						table.setPelayaran(body.getPelayaran());
+						table.setImportir(body.getImportir());
+						table.setEksportir(body.getEksportir());
+						table.setQq(body.getQq());
+						table.setVoyagenumber(body.getVoyagenumber());
+						table.setTanggalsppb_npe(body.getTanggalsppb_npe().longValue() > 0? new java.sql.Date(body.getTanggalsppb_npe()):null);
+						
+						
+					}
+					table.setStatus(body.getStatus());
 					table.setIdvendordepo(body.getIdvendordepo());
 					table.setIsactive(body.isIsactive());
 					table.setUpdateby(iduser.toString());
@@ -359,14 +395,25 @@ public class WorkOrderHandler implements WorkOrderService{
 					detailWorkOrderPK.setIdbranch(idbranch);
 					detailWorkOrderPK.setIdworkorder(idsave);
 					detailWorkOrderPK.setIdpartai(detail.getIdpartai());
+					String noContainer = detail.getNocontainer();
+					if(detail.getNocontainer().equals("")) {
+						noContainer = "NC-NODATA-"+idsave+"-"+detail.getIdpartai()+"-"+i;
+					}
+					detailWorkOrderPK.setNocontainer(noContainer);
+					
+					String noSeal = detail.getNoseal();
+					if(detail.getNoseal().equals("")) {
+						noSeal = "NS-NODATA-"+idsave+"-"+detail.getIdpartai()+"-"+i;
+					}
+					
+					detailWorkOrderPK.setNoseal(noSeal);
 					
 					DetailWorkOrder detailWorkOrder = new DetailWorkOrder();
 					detailWorkOrder.setDetailWorkOrderPK(detailWorkOrderPK);
 					detailWorkOrder.setBarang(detail.getBarang());
 					detailWorkOrder.setJumlahkg(detail.getJumlahkg());
 					detailWorkOrder.setJumlahkoli(detail.getJumlahkoli());
-					detailWorkOrder.setNocontainer(detail.getNocontainer());
-					detailWorkOrder.setNoseal(detail.getNoseal());
+					
 					detailWorkOrderRepo.saveAndFlush(detailWorkOrder);
 				}
 			}
@@ -386,7 +433,7 @@ public class WorkOrderHandler implements WorkOrderService{
 	public List<WorkOrderDropDownData> getListDropDown(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetWorkOrderDropdownData().schema());
-		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false and data.jeniswo != 'JS' and data.status = 'OPEN' order by cust.customername ");
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false and data.jeniswo != 'JS' and data.status = 'OPEN' order by data.nodocument ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderDropdownData(), queryParameters);
 	}
@@ -541,7 +588,7 @@ public class WorkOrderHandler implements WorkOrderService{
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetWorkOrderJoinTableData().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
 		if(param.getReportName().equals(ConstantReportName.BONGKARMUATDEPO)) {
-			sqlBuilder.append(" and data.tanggal >= '"+new java.sql.Date(param.getFromDate())+"'  and data.tanggal <= '"+new java.sql.Date(param.getToDate())+"' ");
+			sqlBuilder.append(" and data.tanggalsppb_npe >= '"+new java.sql.Date(param.getFromDate())+"'  and data.tanggalsppb_npe <= '"+new java.sql.Date(param.getToDate())+"' order by data.id asc ");
 		}else if(param.getReportName().equals(ConstantReportName.STATUSINVOICE)) {
 			sqlBuilder.append(" and data.tanggal >= '"+new java.sql.Date(param.getFromDate())+"'  and data.tanggal <= '"+new java.sql.Date(param.getToDate())+"' ");
 			if(!param.getStatus().equals("")) {
@@ -578,6 +625,7 @@ public class WorkOrderHandler implements WorkOrderService{
 				sqlBuilder.append(" and data.idcustomer = "+idcustomer+" ");
 			}
 		}
+		sqlBuilder.append(" order by data.nodocument ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch,status};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderDropdownData(), queryParameters);
 	}
@@ -686,7 +734,7 @@ public class WorkOrderHandler implements WorkOrderService{
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetWorkOrderJoinTableData().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
-		sqlBuilder.append(" and data.tanggal >= '"+new java.sql.Date(param.getFromDate())+"'  and data.tanggal <= '"+new java.sql.Date(param.getToDate())+"' ");
+		sqlBuilder.append(" and data.status = 'CLOSED' and data.tanggal >= '"+new java.sql.Date(param.getFromDate())+"'  and data.tanggal <= '"+new java.sql.Date(param.getToDate())+"' ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderJoinTableData(), queryParameters);
 	}
@@ -702,6 +750,48 @@ public class WorkOrderHandler implements WorkOrderService{
 		sqlBuilder.append(" order by cust.customername ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderDropdownData(), queryParameters);
+	}
+
+	@Override
+	public List<DetailWorkOrderData> getListContainerByIdWorkOrderForSuratJalan(Long idcompany, Long idbranch,
+			Long idworkorder) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailWorkOrderJoinTable().schema());
+		sqlBuilder.append(" where data.idworkorder = ? and data.idcompany = ? and data.idbranch = ? ");
+		sqlBuilder.append(" and data.nocontainer in (select sj.nocantainer from t_surat_jalan as sj where sj.status in ('OPEN_SJ') and sj.isdelete = false and sj.idworkorder = "+idworkorder+" ) ");
+		
+		final Object[] queryParameters = new Object[] {idworkorder,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailWorkOrderJoinTable(), queryParameters);
+	}
+
+	@Override
+	public ReturnData updateWorkOrderStatus(Long idcompany, Long idbranch,Long iduser, Long id, BodyWorkOrder body) {
+		// TODO Auto-generated method stub
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
+		long idsave = 0;
+		if(validations.size() == 0) {
+			try {
+					Timestamp ts = new Timestamp(new Date().getTime());
+					WorkOrder table = repository.getById(id);
+					table.setStatus(body.getStatus());
+					
+					table.setUpdateby(iduser.toString());
+					table.setUpdatedate(ts);
+					idsave = repository.saveAndFlush(table).getId();
+				
+			}catch (Exception e) {
+				// TODO: handle exception
+				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
+				validations.add(msg);
+				e.printStackTrace();
+			}
+			
+		}
+		ReturnData data = new ReturnData();
+		data.setId(idsave);
+		data.setSuccess(validations.size() > 0?false:true);
+		data.setValidations(validations);
+		return data;
 	}
 
 }

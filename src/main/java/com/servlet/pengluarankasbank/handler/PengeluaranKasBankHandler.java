@@ -4,17 +4,29 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.servlet.asset.entity.Asset;
+import com.servlet.asset.entity.AssetMappingData;
+import com.servlet.asset.entity.HistoryAssetMapping;
+import com.servlet.asset.entity.HistoryAssetMappingData;
+import com.servlet.asset.repo.AssetRepo;
+import com.servlet.asset.repo.HistoryAssetMappingRepo;
 import com.servlet.asset.service.AssetService;
 import com.servlet.bankaccount.service.BankAccountService;
 import com.servlet.coa.service.CoaService;
+import com.servlet.employeemanggala.entity.EmployeManggalaData;
+import com.servlet.employeemanggala.service.EmployeeManggalaService;
 import com.servlet.invoicetype.entity.ParamInvTypeDropDown;
 import com.servlet.invoicetype.service.InvoiceTypeService;
+import com.servlet.parameter.service.ParameterService;
 import com.servlet.parametermanggala.service.ParameterManggalaService;
+import com.servlet.paymenttype.service.PaymentTypeService;
+import com.servlet.pengluarankasbank.mapper.GetDataReportKasBankMapper;
 import com.servlet.pengluarankasbank.entity.BodyDetailPengeluaranKasBank;
 import com.servlet.pengluarankasbank.entity.BodyPengeluaranKasBank;
 import com.servlet.pengluarankasbank.entity.DetailPengeluaranKasBank;
@@ -26,17 +38,22 @@ import com.servlet.pengluarankasbank.entity.PengeluaranKasBankTemplate;
 import com.servlet.pengluarankasbank.entity.PengluaranKasBank;
 import com.servlet.pengluarankasbank.mapper.GetDetailPengeluaranKasBankData;
 import com.servlet.pengluarankasbank.mapper.GetDetailPengeluaranKasBankJoinTable;
+import com.servlet.pengluarankasbank.mapper.GetListPengeluaranKasBank;
+import com.servlet.pengluarankasbank.mapper.GetListPengeluaranKasBankData;
 import com.servlet.pengluarankasbank.mapper.GetPengeluaranKasBankData;
 import com.servlet.pengluarankasbank.mapper.GetPengeluaranKasBankJoinTable;
 import com.servlet.pengluarankasbank.mapper.GetTotalAmount;
 import com.servlet.pengluarankasbank.repo.DetailPengeluaranKasBankRepo;
 import com.servlet.pengluarankasbank.repo.PengeluaranKasBankRepo;
 import com.servlet.pengluarankasbank.service.PengeluaranKasBankService;
+import com.servlet.report.entity.EntityHelperKasBank;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.vendor.entity.DetailVendorBankData;
+import com.servlet.vendor.service.VendorService;
 import com.servlet.workorder.entity.ParamDropDownWO;
 import com.servlet.workorder.service.WorkOrderService;
 
@@ -62,13 +79,29 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 	private InvoiceTypeService invoiceTypeService;
 	@Autowired
 	private AssetService assetService;
+	@Autowired
+	private ParameterService parameterService;
+	@Autowired
+	private PaymentTypeService paymentTypeService;
+	@Autowired
+	private HistoryAssetMappingRepo historyAssetMappingRepo;
+	@Autowired
+	private AssetRepo assetRepo;
+	@Autowired
+	private VendorService vendorService;
+	@Autowired
+	private EmployeeManggalaService employeeManggalaService;
+	
+	private final String PAYMENTTO_EMPLOYEE = "EMPLOYEE";
+	private final String PAYMENTTO_CUSTOMER = "CUSTOMER";
+	private final String PAYMENTTO_VENDOR = "VENDOR";
 	
 	
 	@Override
 	public List<PengeluaranKasBankData> getListAll(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPengeluaranKasBankData().schema());
-		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false ");
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false order by data.nodocument desc ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetPengeluaranKasBankData(), queryParameters);
 	}
@@ -76,10 +109,10 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 	@Override
 	public List<PengeluaranKasBankData> getListActive(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
-		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPengeluaranKasBankData().schema());
-		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListPengeluaranKasBankData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false order by data.nodocument desc ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
-		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetPengeluaranKasBankData(), queryParameters);
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListPengeluaranKasBankData(), queryParameters);
 	}
 
 	@Override
@@ -93,6 +126,11 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 			PengeluaranKasBankData val = list.get(0);
 			val.setDetails(getDetails(idcompany,idbranch,id));
 			val.setDisablededitordelete(compareDateDocWithParameter(idcompany,idbranch,val.getPaymentdate()));
+			if(val.getPaymentto().equals(PAYMENTTO_VENDOR)) {
+				val.setListBank(getListBankVendor(val.getIdvendor(),idcompany,idbranch));
+			}else if(val.getPaymentto().equals(PAYMENTTO_EMPLOYEE)) {
+				val.setListBank(getEmpAccBankById(idcompany,idbranch,val.getIdemployee()));
+			}
 			return val;
 		}
 		return null;
@@ -125,6 +163,21 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 				table.setKeterangan(body.getKeterangan());
 				table.setIsactive(body.isIsactive());
 				table.setIdwo(body.getIdwo());
+				
+				if(body.getPaymentto().equals(PAYMENTTO_CUSTOMER)) {
+					table.setIdcustomer(body.getIdcustomer());
+					table.setIdemployee(null);
+					table.setIdvendor(null);
+				}else if(body.getPaymentto().equals(PAYMENTTO_EMPLOYEE)) {
+					table.setIdcustomer(null);
+					table.setIdemployee(body.getIdemployee());
+					table.setIdvendor(null);
+				}else if(body.getPaymentto().equals(PAYMENTTO_VENDOR)) {
+					table.setIdcustomer(null);
+					table.setIdemployee(null);
+					table.setIdvendor(body.getIdvendor());
+				}
+				table.setIdpaymenttype(body.getIdpaymenttype());
 				table.setIsdelete(false);
 				table.setCreatedby(iduser.toString());
 				table.setCreateddate(ts);
@@ -138,7 +191,7 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 					e.printStackTrace();
 				}
 				if(idsave > 0) {
-					putDetail(body.getDetails(), idcompany, idbranch, idsave, "ADD");
+					putDetail(body.getDetails(), idcompany, idbranch, idsave, "ADD",iduser);
 				}
 				
 			}catch (Exception e) {
@@ -178,12 +231,27 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 					table.setKeterangan(body.getKeterangan());
 					table.setIdwo(body.getIdwo());
 					table.setIsactive(body.isIsactive());
+					
+					if(body.getPaymentto().equals(PAYMENTTO_CUSTOMER)) {
+						table.setIdcustomer(body.getIdcustomer());
+						table.setIdemployee(null);
+						table.setIdvendor(null);
+					}else if(body.getPaymentto().equals(PAYMENTTO_EMPLOYEE)) {
+						table.setIdcustomer(null);
+						table.setIdemployee(body.getIdemployee());
+						table.setIdvendor(null);
+					}else if(body.getPaymentto().equals(PAYMENTTO_VENDOR)) {
+						table.setIdcustomer(null);
+						table.setIdemployee(null);
+						table.setIdvendor(body.getIdvendor());
+					}
+					table.setIdpaymenttype(body.getIdpaymenttype());
 					table.setUpdateby(iduser.toString());
 					table.setUpdatedate(ts);
 					
 					idsave = repository.saveAndFlush(table).getId();
 					
-					putDetail(body.getDetails(), idcompany, idbranch, idsave, "EDIT");
+					putDetail(body.getDetails(), idcompany, idbranch, idsave, "EDIT",iduser);
 				}catch (Exception e) {
 					// TODO: handle exception
 					ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
@@ -219,6 +287,15 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 					table.setDeleteby(iduser.toString());
 					table.setDeletedate(ts);
 					idsave = repository.saveAndFlush(table).getId();
+					
+					List<HistoryAssetMappingData> listHistory = assetService.getListHistoryMappingForPengeluaranKasBank(idcompany,idbranch,id,idsave);
+					if(listHistory != null && listHistory.size() > 0) {
+						HistoryAssetMappingData history = listHistory.get(0);
+						HistoryAssetMapping tablehis = historyAssetMappingRepo.getById(history.getId());
+						tablehis.setIsdelete(true);
+						historyAssetMappingRepo.saveAndFlush(tablehis);
+						
+					}
 				}catch (Exception e) {
 					// TODO: handle exception
 					ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
@@ -252,6 +329,12 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 			PengeluaranKasBankData val = list.get(0);
 			val.setDetails(getDetails(idcompany,idbranch,id));
 			val.setTemplate(setTemplate(idcompany,idbranch));
+						
+			if(val.getPaymentto().equals(PAYMENTTO_VENDOR)) {
+				val.setListBank(getListBankVendor(val.getIdvendor(),idcompany,idbranch));
+			}else if(val.getPaymentto().equals(PAYMENTTO_EMPLOYEE)) {
+				val.setListBank(getEmpAccBankById(idcompany,idbranch,val.getIdemployee()));
+			}
 			return val;
 		}
 		return null;
@@ -286,20 +369,24 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		template.setWoOptions(workOrderService.getListDropDownByParam(idcompany, idbranch, paramwo));
 		template.setInvoiceItemOptions(invoiceTypeService.getListDropDownInvoiceType(idcompany, idbranch, paramInvType));
 		template.setAssetOptions(assetService.getListAssetForPengeluaran(idcompany, idbranch));
+		template.setPaymenttypeOptions(parameterService.getListParameterByGrup("PAYMENTITEM_TYPE"));
+		template.setAssetSparePartOptions(assetService.getListAssetSparePartForPengeluaran(idcompany, idbranch));
+		template.setSpareparttypeOptions(parameterService.getListParameterByGrup("JENIS_SPAREPART"));
+		template.setPaymentItemOptions(paymentTypeService.getListActive(idcompany, idbranch));
 		return template;
 	}
 	
-	private String putDetail(BodyDetailPengeluaranKasBank[] details,Long idcompany, Long idbranch,long idsave,String action) {
+	private String putDetail(BodyDetailPengeluaranKasBank[] details,Long idcompany, Long idbranch,long idsave,String action,long iduser) {
 		//detailPengeluaranKasBankRepo
-		if(action.equals("EDIT")) {
-			detailPengeluaranKasBankRepo.deleteAllDetail(idsave, idcompany, idbranch);
-		}
-		
+//		if(action.equals("EDIT")) {
+//			detailPengeluaranKasBankRepo.deleteAllDetail(idsave, idcompany, idbranch);
+//		}
+		Timestamp ts = new Timestamp(new Date().getTime());
 		if(details != null) {
 			if(details.length > 0) {
 				long count = 1;
-				for(int i=0; i < details.length; i++) {
-					BodyDetailPengeluaranKasBank detail = details[i];
+//				for(int i=0; i < details.length; i++) {
+					BodyDetailPengeluaranKasBank detail = details[0];//details[i];
 					
 					DetailPengeluaranKasBankPK pk = new DetailPengeluaranKasBankPK();
 					pk.setCounter(count);
@@ -308,16 +395,128 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 					pk.setIdpengeluarankasbank(idsave);
 					
 					DetailPengeluaranKasBank detailPengeluaranKasBank = new DetailPengeluaranKasBank();
+					List<HistoryAssetMappingData> listHistory = new ArrayList<HistoryAssetMappingData>();
+					if(action.equals("EDIT")) {
+						detailPengeluaranKasBank = detailPengeluaranKasBankRepo.getById(pk);
+						Long idasset = null;
+						if(detailPengeluaranKasBank != null ) {
+							if(detailPengeluaranKasBank.getIdasset() != null && detailPengeluaranKasBank.getIdasset() != 0) {
+								idasset = detailPengeluaranKasBank.getIdasset();
+							}
+						}
+						listHistory = assetService.getListHistoryMappingForPengeluaranKasBank(idcompany,idbranch,idasset,idsave);
+					}
+					
 					detailPengeluaranKasBank.setDetailPengeluaranKasBankPK(pk);
 					detailPengeluaranKasBank.setIdcoa(detail.getIdcoa());
 					detailPengeluaranKasBank.setCatatan(detail.getCatatan());
 					detailPengeluaranKasBank.setAmount(detail.getAmount());
 					detailPengeluaranKasBank.setIdasset(detail.getIdasset());
 					detailPengeluaranKasBank.setIdinvoiceitem(detail.getIdinvoiceitem());
+					detailPengeluaranKasBank.setIdpaymentitem(detail.getIdpaymentitem());
+					detailPengeluaranKasBank.setSparepartassettype(detail.getSparepartassettype());
+					detailPengeluaranKasBank.setIdassetsparepart(detail.getIdassetsparepart());
 					
 					detailPengeluaranKasBankRepo.saveAndFlush(detailPengeluaranKasBank);
+					
+					Long idassetSparepart = null;
+					if(detail.getIdassetsparepart() == null) {
+						idassetSparepart = 0L;
+					}else {
+						idassetSparepart = detail.getIdassetsparepart();
+					}
+					String type = "ARMADA";
+					if(idassetSparepart != null && idassetSparepart != 0) {
+						type = "SPAREPART";
+					}
+					
+					boolean isDelete = false;
+					if(detail.getIdasset() == null) {
+						isDelete = true;
+					}
+					
+					if(listHistory != null && listHistory.size() > 0) {
+						HistoryAssetMappingData history = listHistory.get(0);
+						if(isDelete) {
+							historyAssetMappingRepo.deleteById(history.getId());
+						}else {
+							
+							HistoryAssetMapping table = historyAssetMappingRepo.getById(history.getId());
+							
+							table.setIdasset(detail.getIdasset());
+							if(idassetSparepart == 0L) {
+								table.setAfter(detail.getIdasset());
+							}else {
+								table.setAfter(idassetSparepart);
+							}
+							
+							table.setType(type);
+							if(history.getIdasset() != detail.getIdasset() || history.getAfter() != idassetSparepart) {
+								table.setTanggal(ts);
+							}
+							table.setIduser(iduser);
+							
+							Optional<Asset> optAsset = assetRepo.findById(detail.getIdasset());
+							Long Idassetkepala = null;
+							if(optAsset.isPresent()) {
+								Asset asset = optAsset.get();
+								if(asset.getAssettype().equals("KEPALA")) {
+									Idassetkepala = detail.getIdasset();
+//									table.setIdassetkepala(detail.getIdasset());
+								}else if(asset.getAssettype().equals("BUNTUT")) {
+								List<AssetMappingData>	list = assetService.getListAssetMappingByIdAsset(idcompany,idbranch,detail.getIdasset());
+									if(list != null && list.size() > 0) {
+										AssetMappingData detList = list.get(0);
+										Idassetkepala = detList.getIdasset();
+//										table.setIdassetkepala(detList.getIdasset());
+									}
+								}
+							}
+							
+							table.setIdassetkepala(Idassetkepala);
+							historyAssetMappingRepo.saveAndFlush(table);
+						}
+						
+						
+					}else {
+						if(!isDelete) {
+							HistoryAssetMapping table = new HistoryAssetMapping();
+							table.setIdasset(detail.getIdasset());
+							table.setIdcompany(idcompany);
+							table.setIdbranch(idbranch);
+							table.setIduser(iduser);
+							table.setBefore(0L);
+							table.setAfter(idassetSparepart);
+							table.setType(type);
+							table.setTanggal(ts);
+							table.setIdpengeluarankasbank(idsave);
+							table.setIsdelete(false);
+							
+							Optional<Asset> optAsset = assetRepo.findById(detail.getIdasset());
+							Long Idassetkepala = null;
+							if(optAsset.isPresent()) {
+								Asset asset = optAsset.get();
+								if(asset.getAssettype().equals("KEPALA")) {
+									Idassetkepala = detail.getIdasset();
+//									table.setIdassetkepala(detail.getIdasset());
+								}else if(asset.getAssettype().equals("BUNTUT")) {
+								List<AssetMappingData>	list = assetService.getListAssetMappingByIdAsset(idcompany,idbranch,detail.getIdasset());
+									if(list != null && list.size() > 0) {
+										AssetMappingData detList = list.get(0);
+										Idassetkepala = detList.getIdasset();
+//										table.setIdassetkepala(detList.getIdasset());
+									}
+								}
+							}
+							
+							table.setIdassetkepala(Idassetkepala);
+							
+							historyAssetMappingRepo.saveAndFlush(table);
+						}
+						
+					}
 					count++;
-				}
+//				}
 			}
 		}
 		
@@ -431,6 +630,86 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		data.setDetails(details);
 		
 		return data;
+	}
+
+	@Override
+	public Double summaryAmountPengeluaranForSummaryKegiatanTruck(Long idcompany, Long idbranch, Long idwo, Long idcustomer, Long idemployee, Long idinvoiceitem, Long idpaymentitem,
+			Long idasset) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetTotalAmount().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? ");
+			final StringBuilder sqlBuilderMaster = new StringBuilder(" and data.idpengeluarankasbank in (select pkb.id from m_pengeluaran_kas_bank as pkb where pkb.isactive = true and pkb.isdelete = false and pkb.idwo = "+idwo+" ");
+			sqlBuilderMaster.append(" and pkb.idemployee = "+idemployee+" ");
+//			if(idemployee != null) {
+//				sqlBuilderMaster.append(" and pkb.idemployee = "+idemployee+" ");
+//			}else {
+//				sqlBuilderMaster.append(" and pkb.idcustomer = "+idcustomer+" ");
+//			}
+			sqlBuilderMaster.append(" ) ");
+		
+			if(idasset != null) {
+				sqlBuilder.append(" and data.idasset = "+idasset+" ");
+			}
+			if(idinvoiceitem != null) {
+				sqlBuilder.append(" and data.idinvoiceitem = "+idinvoiceitem+" ");
+			}
+			if(idpaymentitem != null) {
+				sqlBuilder.append(" and data.idpaymentitem = "+idpaymentitem+" ");
+			}
+			sqlBuilder.append(sqlBuilderMaster.toString());
+			
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmount(), queryParameters);
+		if(list != null && list.size() > 0) {
+			return list.get(0);
+		}
+		return 0.0;
+	}
+
+	@Override
+	public List<PengeluaranKasBankData> getListAllJoin(Long idcompany, Long idbranch) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListPengeluaranKasBank().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false order by data.nodocument desc ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListPengeluaranKasBank(), queryParameters);
+	}
+
+	@Override
+	public List<DetailVendorBankData> getListBankVendor(Long id, Long idcompany, Long idbranch) {
+		// TODO Auto-generated method stub
+		return vendorService.getListBankVendor(id, idcompany, idbranch);
+	}
+
+	@Override
+	public List<DetailVendorBankData> getEmpAccBankById(Long idcompany, Long idbranch, Long id) {
+		// TODO Auto-generated method stub
+		List<DetailVendorBankData> list = new ArrayList<DetailVendorBankData>();
+		EmployeManggalaData emp = employeeManggalaService.getAccBankById(idcompany, idbranch, id);
+		if(emp != null) {
+			DetailVendorBankData bank = new DetailVendorBankData();
+			bank.setAtasnama(emp.getAtasnama());
+			bank.setBank(emp.getNamabank());
+			bank.setNorek(emp.getNorekening());
+			list.add(bank);
+		}
+		return list;
+	}
+
+	@Override
+	public List<EntityHelperKasBank> getDataReportKasBankPengeluaran(Long idcompany, Long idbranch, java.sql.Date fromdate,
+			java.sql.Date todate, Long idbank) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataReportKasBankMapper().schema());
+		sqlBuilder.append(" where ");
+//		sqlBuilder.append(" (mpenerimaan.idcompany = ? and mpenerimaan.idbranch = ?  and mpenerimaan.isactive = true and mpenerimaan.isdelete = false and mpenerimaan.idbank = "+idbank+" and mpenerimaan.receivedate >= '"+fromdate+"'  and mpenerimaan.receivedate <= '"+todate+"' ) ");
+//		sqlBuilder.append(" or ");
+		sqlBuilder.append(" (mpengeluaran.idcompany = ? and mpengeluaran.idbranch = ?  and mpengeluaran.isactive = true and mpengeluaran.isdelete = false and mpengeluaran.idbank = "+idbank+" and mpengeluaran.paymentdate >= '"+fromdate+"'  and mpengeluaran.paymentdate <= '"+todate+"' ) ");
+//		sqlBuilder.append(" order by mpenerimaan.receivedate , mpengeluaran.paymentdate asc ");
+		
+		System.out.println("StringBuilder = "+sqlBuilder.toString());
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataReportKasBankMapper(), queryParameters);
 	}
 
 }

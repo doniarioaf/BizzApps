@@ -18,6 +18,36 @@ public class WarehouseData {
 	private String customername;
 	private boolean isactive;
 	private WarehouseTemplate template;
+	private Long district;
+	private String districtname;
+	private String alamat2;
+	private String alamat3;
+	
+	public String getAlamat2() {
+		return alamat2;
+	}
+	public void setAlamat2(String alamat2) {
+		this.alamat2 = alamat2;
+	}
+	public String getAlamat3() {
+		return alamat3;
+	}
+	public void setAlamat3(String alamat3) {
+		this.alamat3 = alamat3;
+	}
+	
+	public String getDistrictname() {
+		return districtname;
+	}
+	public void setDistrictname(String districtname) {
+		this.districtname = districtname;
+	}
+	public Long getDistrict() {
+		return district;
+	}
+	public void setDistrict(Long district) {
+		this.district = district;
+	}
 	public Long getId() {
 		return id;
 	}

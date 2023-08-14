@@ -94,6 +94,15 @@ public class AddressApi {
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
+	@GetMapping("/postalcodebydistrict")
+	ResponseEntity<Response> getListPostalCodeByDistrict(@RequestHeader(ConstansKey.AUTH) String authorization,@RequestParam long districtid) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "POSTALCODE_BY_DISTRICT");
+		param.put("districtid", districtid);
+		Response response = securityService.response(ConstansPermission.READ_ADDRESS,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
 	@GetMapping("/districtbypostalcode")
 	ResponseEntity<Response> getListDistricByPostalCode(@RequestHeader(ConstansKey.AUTH) String authorization,@RequestParam long postalcode) {
 		HashMap<String, Object> param = new HashMap<String, Object>();

@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.servlet.address.service.CityService;
+import com.servlet.address.service.DistrictService;
 import com.servlet.address.service.PostalCodeService;
 import com.servlet.address.service.ProvinceService;
 import com.servlet.parameter.service.ParameterService;
@@ -18,6 +19,7 @@ import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 import com.servlet.vendor.entity.BodyDetailVendorBank;
 import com.servlet.vendor.entity.BodyDetailVendorContact;
+import com.servlet.vendor.entity.BodySearchVendor;
 import com.servlet.vendor.entity.BodyVendor;
 import com.servlet.vendor.entity.DetailVendorBank;
 import com.servlet.vendor.entity.DetailVendorBankData;
@@ -59,6 +61,8 @@ public class VendorHandler implements VendorService{
 	private DetailVendorBankRepo detailVendorBankRepo;
 	@Autowired
 	private DetailVendorContactRepo detailVendorContactRepo;
+	@Autowired
+	private DistrictService districtService;
 	
 	@Override
 	public List<VendorListData> getListAll(Long idcompany, Long idbranch) {
@@ -87,6 +91,7 @@ public class VendorHandler implements VendorService{
 	private VendorTemplate getVendorTemplate(long idcompany, long idbranch) {
 		VendorTemplate data = new VendorTemplate();
 		data.setCityOptions(cityService.getListCity());
+		data.setDistrictOptions(districtService.getListDistrict());
 		data.setProvinceOptions(provinceService.getListProvince());
 		data.setPanggilanOptions(parameterService.getListParameterByGrup("PANGGILAN"));
 		data.setBadanUsahaOptions(parameterService.getListParameterByGrup("LEVEL_PERUSAHAAN"));
@@ -142,9 +147,12 @@ public class VendorHandler implements VendorService{
 				table.setAlias(body.getAlias());
 				table.setNpwp(body.getNpwp());
 				table.setAddress(body.getAddress());
+				table.setAlamat2(body.getAlamat2());
+				table.setAlamat3(body.getAlamat3());
 				table.setProvinsi(body.getProvinsi());
 				table.setKota(body.getKota());
 				table.setKodepos(body.getKodepos());
+				table.setDistrict(body.getDistrict());
 				table.setIsactive(body.isIsactive());
 				table.setIsdelete(false);
 				table.setCreatedby(iduser.toString());
@@ -187,9 +195,12 @@ public class VendorHandler implements VendorService{
 					table.setAlias(body.getAlias());
 					table.setNpwp(body.getNpwp());
 					table.setAddress(body.getAddress());
+					table.setAlamat2(body.getAlamat2());
+					table.setAlamat3(body.getAlamat3());
 					table.setProvinsi(body.getProvinsi());
 					table.setKota(body.getKota());
 					table.setKodepos(body.getKodepos());
+					table.setDistrict(body.getDistrict());
 					table.setIsactive(body.isIsactive());
 					
 					table.setUpdateby(iduser.toString());
@@ -326,6 +337,22 @@ public class VendorHandler implements VendorService{
 			return list;
 		}
 		return null;
+	}
+
+	@Override
+	public List<VendorListData> getListSearchVendor(Long idcompany, Long idbranch, BodySearchVendor body) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetVendorListData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		sqlBuilder.append(" and (lower(data.nama) like '%"+body.getName().toLowerCase()+"%' or lower(data.alias) like '%"+body.getName().toLowerCase()+"%') ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetVendorListData(), queryParameters);
+	}
+
+	@Override
+	public List<DetailVendorBankData> getListBankVendor(Long id,Long idcompany, Long idbranch) {
+		// TODO Auto-generated method stub
+		return getListBank(id,idcompany,idbranch);
 	}
 
 }

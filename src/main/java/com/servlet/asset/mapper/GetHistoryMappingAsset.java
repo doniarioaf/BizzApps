@@ -17,9 +17,11 @@ public class GetHistoryMappingAsset implements RowMapper<HistoryAssetMappingData
 		sqlBuilder.append("data.id as id, data.idasset as idasset, data.before as before, data.after as after, data.type as type, data.iduser as iduser, data.tanggal as tanggal, data.idassetmapping as idassetmapping, ");
 		sqlBuilder.append("assetafter.kodeasset as kodeasset,assetafter.assettype as assettype,  ");
 		sqlBuilder.append("assetafter.kepala_nama as kepala_nama,assetafter.buntut_nama as buntut_nama,  ");
-		sqlBuilder.append("assetafter.sparepartkepala_nama as sparepartkepala_nama,assetafter.sparepartbuntut_nama as sparepartbuntut_nama  ");
+		sqlBuilder.append("assetafter.sparepartkepala_nama as sparepartkepala_nama,assetafter.sparepartbuntut_nama as sparepartbuntut_nama,  ");
+		sqlBuilder.append("pengeluarankasbank.nodocument as nodocument,data.idpengeluarankasbank as idpengeluarankasbank  ");
 		sqlBuilder.append("from history_asset_mapping as data ");
 		sqlBuilder.append("left join m_asset as assetafter on assetafter.id = data.after ");
+		sqlBuilder.append("left join m_pengeluaran_kas_bank as pengeluarankasbank on pengeluarankasbank.id = data.idpengeluarankasbank ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}
@@ -45,6 +47,8 @@ public class GetHistoryMappingAsset implements RowMapper<HistoryAssetMappingData
 		final String sparepartkepala_nama = rs.getString("sparepartkepala_nama");
 		final String sparepartbuntut_nama = rs.getString("sparepartbuntut_nama");
 		final Long idassetmapping = rs.getLong("idassetmapping");
+		final Long idpengeluarankasbank = rs.getLong("idpengeluarankasbank");
+		final String nodocument = rs.getString("nodocument");
 		
 		
 		HistoryAssetMappingData data = new HistoryAssetMappingData();
@@ -62,6 +66,8 @@ public class GetHistoryMappingAsset implements RowMapper<HistoryAssetMappingData
 		data.setSparepartkepala_nama(sparepartkepala_nama);
 		data.setSparepartbuntut_nama(sparepartbuntut_nama);
 		data.setIdassetmapping(idassetmapping);
+		data.setIdpengeluarankasbank(idpengeluarankasbank);
+		data.setNoDocPengeluaranKasBank(nodocument);
 		return data;
 	}
 

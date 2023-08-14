@@ -3,6 +3,8 @@ package com.servlet.pengluarankasbank.entity;
 import java.sql.Date;
 import java.util.List;
 
+import com.servlet.vendor.entity.DetailVendorBankData;
+
 public class PengeluaranKasBankData {
 	private Long id;
 	private String nodocument;
@@ -19,6 +21,77 @@ public class PengeluaranKasBankData {
 	private boolean disablededitordelete;
 	private Long idwo;
 	private String nodocumentWO;
+	private String noAjuWO;
+	private Long idcustomer;
+	private String customerName;
+	private Long idvendor;
+	private String vendorName;
+	private Long idemployee;
+	private String employeeName;
+	private String idpaymenttype;
+	private String paymenttypename;
+	private List<DetailVendorBankData> listBank;
+	
+	public List<DetailVendorBankData> getListBank() {
+		return listBank;
+	}
+	public void setListBank(List<DetailVendorBankData> listBank) {
+		this.listBank = listBank;
+	}
+	public String getNoAjuWO() {
+		return noAjuWO;
+	}
+	public void setNoAjuWO(String noAjuWO) {
+		this.noAjuWO = noAjuWO;
+	}
+	public String getIdpaymenttype() {
+		return idpaymenttype;
+	}
+	public void setIdpaymenttype(String idpaymenttype) {
+		this.idpaymenttype = idpaymenttype;
+	}
+	public String getPaymenttypename() {
+		return paymenttypename;
+	}
+	public void setPaymenttypename(String paymenttypename) {
+		this.paymenttypename = paymenttypename;
+	}
+	public Long getIdcustomer() {
+		return idcustomer;
+	}
+	public void setIdcustomer(Long idcustomer) {
+		this.idcustomer = idcustomer;
+	}
+	public String getCustomerName() {
+		return customerName;
+	}
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
+	public Long getIdvendor() {
+		return idvendor;
+	}
+	public void setIdvendor(Long idvendor) {
+		this.idvendor = idvendor;
+	}
+	public String getVendorName() {
+		return vendorName;
+	}
+	public void setVendorName(String vendorName) {
+		this.vendorName = vendorName;
+	}
+	public Long getIdemployee() {
+		return idemployee;
+	}
+	public void setIdemployee(Long idemployee) {
+		this.idemployee = idemployee;
+	}
+	public String getEmployeeName() {
+		return employeeName;
+	}
+	public void setEmployeeName(String employeeName) {
+		this.employeeName = employeeName;
+	}
 	public String getNodocumentWO() {
 		return nodocumentWO;
 	}

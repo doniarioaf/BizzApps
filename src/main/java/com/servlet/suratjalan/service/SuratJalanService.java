@@ -27,4 +27,6 @@ public interface SuratJalanService {
 	PenandaanSuratJalanTemplate getPenandaanSuratJalanTemplate(Long idcompany,Long idbranch);
 	HashMap<String, Object> checkSuratjalan(Long idcompany,Long idbranch,Long id);
 	List<SuratJalanDropDown> getListByIdWO(Long idcompany,Long idbranch,Long idwo);
+	HashMap<String, Object> getListSuratJalanByWO(Long idcompany,Long idbranch,Long idwo);
+	List<SuratJalanData> getListSuratJalanForSummaryKegiatanTruck(Long idcompany,Long idbranch,Long fromDate,Long thruDate,Long idwo,Long idasset,Long idemployee_supir);
 }

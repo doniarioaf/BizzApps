@@ -2,6 +2,7 @@ package com.servlet.invoice.entity;
 
 public class DetailInvoicePriceData {
 	private Long idwarehouse;
+	private String warehouseName;
 	private Long idinvoicetype;
 	private String invoicetypename;
 	private String jalur;
@@ -14,6 +15,12 @@ public class DetailInvoicePriceData {
 	private Double subtotal;
 	private Long idpengeluarankasbank;
 	private String nodocumentpengeluaran;
+	public String getWarehouseName() {
+		return warehouseName;
+	}
+	public void setWarehouseName(String warehouseName) {
+		this.warehouseName = warehouseName;
+	}
 	public String getNodocumentpengeluaran() {
 		return nodocumentpengeluaran;
 	}

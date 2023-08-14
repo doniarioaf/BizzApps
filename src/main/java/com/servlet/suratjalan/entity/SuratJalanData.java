@@ -21,6 +21,7 @@ public class SuratJalanData {
 	private String warehousecontactname;
 	private String warehousecontactno;
 	private String warehouseaddress;
+	private String warehousekecamatan;
 	private String catatan;
 	private String nocantainer;
 	private String containerpartai;
@@ -34,6 +35,7 @@ public class SuratJalanData {
 	private String supirname;
 	private Long idasset;
 	private String assetname;
+	private String nopolisi;
 	private Long idvendormobil;
 	private String vendormobilname;
 	private String lembur;
@@ -41,6 +43,19 @@ public class SuratJalanData {
 	private Date tanggalkembali;
 	private SuratJalanTemplate template;
 	private List<HistorySuratJalanData> history;
+	
+	public String getWarehousekecamatan() {
+		return warehousekecamatan;
+	}
+	public void setWarehousekecamatan(String warehousekecamatan) {
+		this.warehousekecamatan = warehousekecamatan;
+	}
+	public String getNopolisi() {
+		return nopolisi;
+	}
+	public void setNopolisi(String nopolisi) {
+		this.nopolisi = nopolisi;
+	}
 	public SuratJalanTemplate getTemplate() {
 		return template;
 	}

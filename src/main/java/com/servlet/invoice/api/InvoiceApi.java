@@ -93,6 +93,24 @@ public class InvoiceApi {
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
+	@GetMapping("/getdistrict/{postalcode}")
+	ResponseEntity<Response> getDistrict(@PathVariable long postalcode,@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "GETDISTRICT");
+		param.put("postalcode", postalcode);
+		Response response = securityService.response(ConstansPermission.READ_INVOICE,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@GetMapping("/suratjalan/{idwo}")
+	ResponseEntity<Response> getSuratJalanByWO(@PathVariable long idwo,@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "GETSURATJALANBYWO");
+		param.put("idwo", idwo);
+		Response response = securityService.response(ConstansPermission.READ_INVOICE,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
 	@PostMapping("/searchpricelist")
 	ResponseEntity<Response> searchPriceList(@RequestBody @Validated BodySearchInvoicePriceList body,@RequestHeader(ConstansKey.AUTH) String authorization) {
 		HashMap<String, Object> param = new HashMap<String, Object>();

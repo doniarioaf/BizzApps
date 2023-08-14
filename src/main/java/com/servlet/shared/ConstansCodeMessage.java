@@ -37,6 +37,10 @@ public class ConstansCodeMessage {
 	//license company sudah expired
 	public static final String COMPANY_LICENSE_EXPIRED = "company.license.expired";
 	
+	//Mac Addreess
+	public static final String MAC_ADDRESS_NOT_SAME = "mac.address.not.same";
+	public static final String MAC_ADDRESS_NOT_FOUND = "mac.address.not.found";
+	
 	//jika code ini muncul, ini bukan error, hanya untuk info 
 	//disarankan menampilkan alert di UI web ataupun UI android, sebagai pengingat
 	public static final String COMPANY_LICENSE_ALERT_EXPIRED = "company.license.alert.expired";

@@ -238,6 +238,11 @@ public class AssetHandler implements AssetService{
 		table.setSparepartbuntut_lainnya_nama("");
 		table.setSparepartbuntut_lainnya_keterangan("");
 		
+		table.setSparepartbuntut_filter_posisi("");
+		table.setSparepartbuntut_filter_type("");
+		table.setSparepartbuntut_bohlam_type("");
+		table.setSparepartbuntut_selang_type("");
+		
 		if(body.getSparepartbuntut_jenis().equals("BAN")) {
 			table.setSparepartbuntut_ban_nama(body.getSparepartbuntut_ban_nama());
 			table.setSparepartbuntut_ban_keterangan(body.getSparepartbuntut_ban_keterangan());
@@ -254,6 +259,13 @@ public class AssetHandler implements AssetService{
 		}else if(body.getSparepartbuntut_jenis().equals("LAINNYA")) {
 			table.setSparepartbuntut_lainnya_nama(body.getSparepartbuntut_lainnya_nama());
 			table.setSparepartbuntut_lainnya_keterangan(body.getSparepartbuntut_lainnya_keterangan());
+		}else if(body.getSparepartbuntut_jenis().equals("FILTER")) {
+			table.setSparepartbuntut_filter_posisi(body.getSparepartbuntut_filter_posisi());
+			table.setSparepartbuntut_filter_type(body.getSparepartbuntut_filter_type());
+		}else if(body.getSparepartbuntut_jenis().equals("BOHLAM")) {
+			table.setSparepartbuntut_bohlam_type(body.getSparepartbuntut_bohlam_type());
+		}else if(body.getSparepartbuntut_jenis().equals("SELANG")) {
+			table.setSparepartbuntut_selang_type(body.getSparepartbuntut_selang_type());
 		}
 		
 		
@@ -273,6 +285,11 @@ public class AssetHandler implements AssetService{
 		table.setSparepartkepala_ban_status("");
 		table.setSparepartkepala_lainnya_nama("");
 		table.setSparepartkepala_lainnya_keterangan("");
+		
+		table.setSparepartkepala_filter_posisi("");
+		table.setSparepartkepala_filter_type("");
+		table.setSparepartkepala_bohlam_type("");
+		table.setSparepartkepala_selang_type("");
 		
 		table.setBuntut_nama("");
 		table.setBuntut_nobuntut("");
@@ -328,6 +345,11 @@ public class AssetHandler implements AssetService{
 		table.setSparepartkepala_lainnya_nama("");
 		table.setSparepartkepala_lainnya_keterangan("");
 		
+		table.setSparepartkepala_filter_posisi("");
+		table.setSparepartkepala_filter_type("");
+		table.setSparepartkepala_bohlam_type("");
+		table.setSparepartkepala_selang_type("");
+		
 		if(body.getSparepartkepala_jenis().equals("BAN")) {
 			table.setSparepartkepala_ban_nama(body.getSparepartkepala_ban_nama());
 			table.setSparepartkepala_ban_keterangan(body.getSparepartkepala_ban_keterangan());
@@ -344,6 +366,13 @@ public class AssetHandler implements AssetService{
 		}else if(body.getSparepartkepala_jenis().equals("LAINNYA")) {
 			table.setSparepartkepala_lainnya_nama(body.getSparepartkepala_lainnya_nama());
 			table.setSparepartkepala_lainnya_keterangan(body.getSparepartkepala_lainnya_keterangan());
+		}else if(body.getSparepartkepala_jenis().equals("FILTER")) {
+			table.setSparepartkepala_filter_posisi(body.getSparepartkepala_filter_posisi());
+			table.setSparepartkepala_filter_type(body.getSparepartkepala_filter_type());
+		}else if(body.getSparepartkepala_jenis().equals("BOHLAM")) {
+			table.setSparepartkepala_bohlam_type(body.getSparepartkepala_bohlam_type());
+		}else if(body.getSparepartkepala_jenis().equals("SELANG")) {
+			table.setSparepartkepala_selang_type(body.getSparepartkepala_selang_type());
 		}
 		
 		
@@ -363,6 +392,11 @@ public class AssetHandler implements AssetService{
 		table.setSparepartbuntut_ban_status("");
 		table.setSparepartbuntut_lainnya_nama("");
 		table.setSparepartbuntut_lainnya_keterangan("");
+		
+		table.setSparepartbuntut_filter_posisi("");
+		table.setSparepartbuntut_filter_type("");
+		table.setSparepartbuntut_bohlam_type("");
+		table.setSparepartbuntut_selang_type("");
 		
 		table.setBuntut_nama("");
 		table.setBuntut_nobuntut("");
@@ -458,6 +492,16 @@ public class AssetHandler implements AssetService{
 		table.setSparepartbuntut_ban_status("");
 		table.setSparepartbuntut_lainnya_nama("");
 		table.setSparepartbuntut_lainnya_keterangan("");
+		
+		table.setSparepartkepala_filter_posisi("");
+		table.setSparepartkepala_filter_type("");
+		table.setSparepartkepala_bohlam_type("");
+		table.setSparepartkepala_selang_type("");
+		
+		table.setSparepartbuntut_filter_posisi("");
+		table.setSparepartbuntut_filter_type("");
+		table.setSparepartbuntut_bohlam_type("");
+		table.setSparepartbuntut_selang_type("");
 
 		return table;
 	}
@@ -525,7 +569,17 @@ public class AssetHandler implements AssetService{
 		table.setSparepartbuntut_ban_status("");
 		table.setSparepartbuntut_lainnya_nama("");
 		table.setSparepartbuntut_lainnya_keterangan("");
-
+		
+		table.setSparepartkepala_filter_posisi("");
+		table.setSparepartkepala_filter_type("");
+		table.setSparepartkepala_bohlam_type("");
+		table.setSparepartkepala_selang_type("");
+		
+		table.setSparepartbuntut_filter_posisi("");
+		table.setSparepartbuntut_filter_type("");
+		table.setSparepartbuntut_bohlam_type("");
+		table.setSparepartbuntut_selang_type("");
+		
 		return table;
 	}
 
@@ -543,6 +597,11 @@ public class AssetHandler implements AssetService{
 		data.setUkuranBanOptions(parameterService.getListParameterByGrup("UKURAN_BAN"));
 		data.setStatusBanOptions(parameterService.getListParameterByGrup("STATUS_BAN"));
 		data.setBentukBearingOptions(parameterService.getListParameterByGrup("BENTUKBEARING"));
+		
+		data.setSparepartPosisiFilterOptions(parameterService.getListParameterByGrup("SPAREPART_POSISI_FILTER"));
+		data.setSparepartFilterTypeOptions(parameterService.getListParameterByGrup("SPAREPART_FILTER_TIPE"));
+		data.setSparepartBohlamTypeOptions(parameterService.getListParameterByGrup("SPAREPART_BOHLAM_TIPE"));
+		data.setSparepartSelangTypeOptions(parameterService.getListParameterByGrup("SPAREPART_SELANG_TIPE"));
 		return data;
 	}
 
@@ -602,6 +661,24 @@ public class AssetHandler implements AssetService{
 					tableHistory.setType(body.getType());
 					tableHistory.setTanggal(ts);
 					tableHistory.setIdassetmapping(idsave);
+					
+					Optional<Asset> optAsset = repository.findById(body.getIdasset().longValue());
+					Long Idassetkepala = null;
+					if(optAsset.isPresent()) {
+						Asset asset = optAsset.get();
+						if(asset.getAssettype().equals("KEPALA")) {
+							Idassetkepala = body.getIdasset();
+//							tableHistory.setIdassetkepala(body.getIdasset());
+						}else if(asset.getAssettype().equals("BUNTUT")) {
+						List<AssetMappingData>	list = getListAssetMappingByIdAsset(idcompany,idbranch,body.getIdasset());
+							if(list != null && list.size() > 0) {
+								AssetMappingData detList = list.get(0);
+								Idassetkepala = detList.getIdasset();
+//								tableHistory.setIdassetkepala(detList.getIdasset());
+							}
+						}
+					}
+					tableHistory.setIdassetkepala(Idassetkepala);
 					historyAssetMappingRepo.saveAndFlush(tableHistory);
 				}
 				
@@ -676,7 +753,6 @@ public class AssetHandler implements AssetService{
 			sqlBuilder.append(" and ");
 			sqlBuilder.append(" data.id not in (select am.idasset_mapping from m_asset_mapping as am) ");
 		}
-		System.out.println("sqlBuilder "+sqlBuilder.toString());
 		
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetAssetData(), queryParameters);
@@ -686,7 +762,7 @@ public class AssetHandler implements AssetService{
 	public List<HistoryAssetMappingData> getListHistoryMapping(Long idcompany, Long idbranch, Long id) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetHistoryMappingAsset().schema());
-		sqlBuilder.append(" where data.idasset = ? and data.idcompany = ? and data.idbranch = ? order by data.id desc ");
+		sqlBuilder.append(" where data.idasset = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false order by data.id desc ");
 		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetHistoryMappingAsset(), queryParameters);
 	}
@@ -696,6 +772,15 @@ public class AssetHandler implements AssetService{
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetAssetMapping().schema());
 		sqlBuilder.append(" where data.idasset = ? and data.idcompany = ? and data.idbranch = ?  ");
 		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetAssetMapping(), queryParameters);
+	}
+	
+	@Override
+	public List<AssetMappingData> getListAssetMappingByIdAsset(Long idcompany, Long idbranch, Long idasset) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetAssetMapping().schema());
+		sqlBuilder.append(" where data.idasset_mapping = ? and data.idcompany = ? and data.idbranch = ? ");
+		final Object[] queryParameters = new Object[] {idasset,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetAssetMapping(), queryParameters);
 	}
 
@@ -732,6 +817,61 @@ public class AssetHandler implements AssetService{
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false and data.isactive = true and data.assettype in ('KEPALA','BUNTUT') ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetAssetData(), queryParameters);
+	}
+
+	@Override
+	public List<AssetData> getListAssetSparePartForPengeluaran(Long idcompany, Long idbranch) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetAssetData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false and data.isactive = true and data.assettype in ('SP_KEPALA','SP_BUNTUT') ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetAssetData(), queryParameters);
+	}
+
+	@Override
+	public List<HistoryAssetMappingData> getListHistoryMappingForPengeluaranKasBank(Long idcompany, Long idbranch,
+			Long idasset, Long idpengeluaran) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetHistoryMappingAsset().schema());
+		sqlBuilder.append(" where data.idasset = ? and data.idcompany = ? and data.idbranch = ? and data.idpengeluarankasbank = ? and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {idasset,idcompany,idbranch,idpengeluaran};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetHistoryMappingAsset(), queryParameters);
+	}
+
+	@Override
+	public List<AssetData> getListAssetByAssetType(Long idcompany, Long idbranch, String assetType, Long id) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetAssetData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.assettype = ?  and data.isdelete = false and data.isactive = true ");
+		if(id != null) {
+			sqlBuilder.append(" and data.id = "+id+" ");
+		}
+		final Object[] queryParameters = new Object[] {idcompany,idbranch,assetType};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetAssetData(), queryParameters);
+	}
+
+	@Override
+	public List<HistoryAssetMappingData> getListHistoryMappingReportHistoryTruck(Long idcompany, Long idbranch,
+			Long idasset, Long idassetmapping, Long from, Long thru,boolean checkIsNullIdPengeluaranKasBank, Long idassetkepala) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetHistoryMappingAsset().schema());
+		sqlBuilder.append(" where data.idasset = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		if(idassetmapping != null) {
+			sqlBuilder.append(" and data.after in ("+idasset+","+idassetmapping+") ");
+		}
+		sqlBuilder.append(" and data.after != 0 ");
+		
+		sqlBuilder.append(" and to_date(to_char(data.tanggal, 'YYYY-MM-DD'),'YYYY-MM-DD') >= '"+new java.sql.Date(from)+"'  and to_date(to_char(data.tanggal, 'YYYY-MM-DD'),'YYYY-MM-DD') <= '"+new java.sql.Date(thru)+"' ");
+		if(checkIsNullIdPengeluaranKasBank) {
+			sqlBuilder.append(" and data.idpengeluarankasbank notnull ");
+		}
+		if(idassetkepala != null) {
+			sqlBuilder.append(" and data.idassetkepala = "+idassetkepala+" ");
+		}
+		sqlBuilder.append(" order by data.id desc ");
+				
+		final Object[] queryParameters = new Object[] {idasset,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetHistoryMappingAsset(), queryParameters);
 	}
 
 }

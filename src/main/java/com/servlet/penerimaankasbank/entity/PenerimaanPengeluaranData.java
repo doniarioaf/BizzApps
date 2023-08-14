@@ -22,6 +22,43 @@ public class PenerimaanPengeluaranData {
 	private String pengeluaran_bankName;
 	private String pengeluaran_paymentto;
 	private String pengeluaran_keterangan;
+	private String pengeluaran_customername;
+	private String pengeluaran_vendorname;
+	private String pengeluaran_employeename;
+	private String pengeluaran_nowo;
+	private String pengeluaran_noaju;
+	
+	
+	public String getPengeluaran_nowo() {
+		return pengeluaran_nowo;
+	}
+	public void setPengeluaran_nowo(String pengeluaran_nowo) {
+		this.pengeluaran_nowo = pengeluaran_nowo;
+	}
+	public String getPengeluaran_noaju() {
+		return pengeluaran_noaju;
+	}
+	public void setPengeluaran_noaju(String pengeluaran_noaju) {
+		this.pengeluaran_noaju = pengeluaran_noaju;
+	}
+	public String getPengeluaran_customername() {
+		return pengeluaran_customername;
+	}
+	public void setPengeluaran_customername(String pengeluaran_customername) {
+		this.pengeluaran_customername = pengeluaran_customername;
+	}
+	public String getPengeluaran_vendorname() {
+		return pengeluaran_vendorname;
+	}
+	public void setPengeluaran_vendorname(String pengeluaran_vendorname) {
+		this.pengeluaran_vendorname = pengeluaran_vendorname;
+	}
+	public String getPengeluaran_employeename() {
+		return pengeluaran_employeename;
+	}
+	public void setPengeluaran_employeename(String pengeluaran_employeename) {
+		this.pengeluaran_employeename = pengeluaran_employeename;
+	}
 	public Long getPenerimaan_id() {
 		return penerimaan_id;
 	}
@@ -129,5 +166,20 @@ public class PenerimaanPengeluaranData {
 	}
 	public void setPengeluaran_keterangan(String pengeluaran_keterangan) {
 		this.pengeluaran_keterangan = pengeluaran_keterangan;
+	}
+	@Override
+	public String toString() {
+		return "PenerimaanPengeluaranData [penerimaan_id=" + penerimaan_id + ", penerimaan_nodocument="
+				+ penerimaan_nodocument + ", penerimaan_receivedate=" + penerimaan_receivedate
+				+ ", penerimaan_receivefrom=" + penerimaan_receivefrom + ", penerimaan_idcoa=" + penerimaan_idcoa
+				+ ", penerimaan_coaName=" + penerimaan_coaName + ", penerimaan_idbank=" + penerimaan_idbank
+				+ ", penerimaan_bankName=" + penerimaan_bankName + ", penerimaan_keterangan=" + penerimaan_keterangan
+				+ ", pengeluaran_id=" + pengeluaran_id + ", pengeluaran_nodocument=" + pengeluaran_nodocument
+				+ ", pengeluaran_paymentdate=" + pengeluaran_paymentdate + ", pengeluaran_idcoa=" + pengeluaran_idcoa
+				+ ", pengeluaran_coaName=" + pengeluaran_coaName + ", pengeluaran_idbank=" + pengeluaran_idbank
+				+ ", pengeluaran_bankName=" + pengeluaran_bankName + ", pengeluaran_paymentto=" + pengeluaran_paymentto
+				+ ", pengeluaran_keterangan=" + pengeluaran_keterangan + ", pengeluaran_customername="
+				+ pengeluaran_customername + ", pengeluaran_vendorname=" + pengeluaran_vendorname
+				+ ", pengeluaran_employeename=" + pengeluaran_employeename + "]";
 	}
 }

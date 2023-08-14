@@ -7,6 +7,13 @@ public class LicenseData {
 	private long limitusermobile;
 	private long limituserweb;
 	private Timestamp expired;
+	private String macaddress;
+	public String getMacaddress() {
+		return macaddress;
+	}
+	public void setMacaddress(String macaddress) {
+		this.macaddress = macaddress;
+	}
 	public long getIdcompany() {
 		return idcompany;
 	}

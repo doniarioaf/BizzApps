@@ -5,11 +5,13 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.servlet.employeemanggala.entity.BodyEmployeeManggala;
+import com.servlet.employeemanggala.entity.BodySearhEmpl;
 import com.servlet.employeemanggala.entity.DetailEmployeeManggalaInfoFamilyData;
 import com.servlet.employeemanggala.entity.EmployeManggalaData;
 import com.servlet.employeemanggala.entity.EmployeManggalaDataList;
 import com.servlet.employeemanggala.entity.EmployeManggalaDataListParam;
 import com.servlet.employeemanggala.entity.EmployeeManggalaTemplate;
+import com.servlet.employeemanggala.entity.EmployeeSearchData;
 import com.servlet.shared.ReturnData;
 
 public interface EmployeeManggalaService {
@@ -23,5 +25,6 @@ public interface EmployeeManggalaService {
 	List<DetailEmployeeManggalaInfoFamilyData> getListDetailInfoFamily(Long idcompany,Long idbranch,Long id);
 	ReturnData uploadImageEmployeeManggala(Long idcompany,Long idbranch,Long iduser,Long id,MultipartFile file);
 	List<EmployeManggalaDataList> getListEmployeeSupir(Long idcompany,Long idbranch);
-	
+	List<EmployeeSearchData> getListEmployeeSearch(Long idcompany,Long idbranch,BodySearhEmpl body);
+	EmployeManggalaData getAccBankById(Long idcompany,Long idbranch,Long id);
 }

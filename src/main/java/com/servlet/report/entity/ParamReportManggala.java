@@ -6,6 +6,27 @@ public class ParamReportManggala {
 	private String status;
 	private Long idbank;
 	private String typeReport;
+	private Long idAsset;
+	private Long idEmployee;
+	private Long idAssetSparepart;
+	public Long getIdAssetSparepart() {
+		return idAssetSparepart;
+	}
+	public void setIdAssetSparepart(Long idAssetSparepart) {
+		this.idAssetSparepart = idAssetSparepart;
+	}
+	public Long getIdAsset() {
+		return idAsset;
+	}
+	public void setIdAsset(Long idAsset) {
+		this.idAsset = idAsset;
+	}
+	public Long getIdEmployee() {
+		return idEmployee;
+	}
+	public void setIdEmployee(Long idEmployee) {
+		this.idEmployee = idEmployee;
+	}
 	public Long getFromDate() {
 		return fromDate;
 	}

@@ -14,9 +14,10 @@ public class GetPaymentTypeData implements RowMapper<PaymentTypeData>{
 	public GetPaymentTypeData() {
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
-		sqlBuilder.append("data.id as id, data.paymenttype as paymenttype, data.nama as nama, data.isactive as isactive, param.codename as codename ");
+		sqlBuilder.append("data.id as id, data.paymenttype as paymenttype, data.nama as nama, data.isactive as isactive, param.codename as codename, coa.nama as coaname, data.idcoa as idcoa ");
 		sqlBuilder.append("from m_payment_type as data ");
 		sqlBuilder.append("left join m_parameter as param on param.code = data.paymenttype and param.grup = 'PAYMENTITEM_TYPE' ");
+		sqlBuilder.append("left join m_coa as coa on coa.id = data.idcoa ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}
@@ -33,6 +34,8 @@ public class GetPaymentTypeData implements RowMapper<PaymentTypeData>{
 		final String codename = rs.getString("codename");
 		final String nama = rs.getString("nama");
 		final boolean isactive = rs.getBoolean("isactive");
+		final String coaname = rs.getString("coaname");
+		final Long idcoa = rs.getLong("idcoa");
 		
 		PaymentTypeData data = new PaymentTypeData();
 		data.setId(id);
@@ -40,6 +43,8 @@ public class GetPaymentTypeData implements RowMapper<PaymentTypeData>{
 		data.setPaymenttypename(codename);
 		data.setNama(nama);
 		data.setIsactive(isactive);
+		data.setCoaName(coaname);
+		data.setIdcoa(idcoa);
 		return data;
 	}
 

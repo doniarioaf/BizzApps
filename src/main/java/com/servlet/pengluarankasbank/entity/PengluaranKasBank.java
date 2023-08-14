@@ -35,6 +35,34 @@ private static final long serialVersionUID = 1L;
 	private String deleteby;
 	private Timestamp deletedate;
 	private Long idwo;
+	private Long idcustomer;
+	private Long idvendor;
+	private Long idemployee;
+	private String idpaymenttype;
+	public String getIdpaymenttype() {
+		return idpaymenttype;
+	}
+	public void setIdpaymenttype(String idpaymenttype) {
+		this.idpaymenttype = idpaymenttype;
+	}
+	public Long getIdcustomer() {
+		return idcustomer;
+	}
+	public void setIdcustomer(Long idcustomer) {
+		this.idcustomer = idcustomer;
+	}
+	public Long getIdvendor() {
+		return idvendor;
+	}
+	public void setIdvendor(Long idvendor) {
+		this.idvendor = idvendor;
+	}
+	public Long getIdemployee() {
+		return idemployee;
+	}
+	public void setIdemployee(Long idemployee) {
+		this.idemployee = idemployee;
+	}
 	public Long getIdwo() {
 		return idwo;
 	}

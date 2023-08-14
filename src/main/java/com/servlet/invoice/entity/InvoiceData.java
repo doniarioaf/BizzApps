@@ -17,7 +17,9 @@ public class InvoiceData {
 	private Date deliverydate;
 	private Long idwo;
 	private String noocumentwo;
+	private String noajuwo;
 	private String jalurwo;
+	private String jalurname;
 	private Long idsuratjalan;
 	private String noocumentsuratjalan;
 	private Long idwarehousesuratjalan;
@@ -30,6 +32,34 @@ public class InvoiceData {
 	private List<DetailInvoicePriceData> detailsprice;
 	private List<PenerimaanKasBankData> listpenerimaan;
 	private List<DetailPenerimaanKasBankData> detailspenerimaan;
+	private Double ppn;
+	private Double nilaippn;
+	
+	public Double getNilaippn() {
+		return nilaippn;
+	}
+	public void setNilaippn(Double nilaippn) {
+		this.nilaippn = nilaippn;
+	}
+	public String getNoajuwo() {
+		return noajuwo;
+	}
+	public void setNoajuwo(String noajuwo) {
+		this.noajuwo = noajuwo;
+	}
+	public Double getPpn() {
+		return ppn;
+	}
+	public void setPpn(Double ppn) {
+		this.ppn = ppn;
+	}
+	
+	public String getJalurname() {
+		return jalurname;
+	}
+	public void setJalurname(String jalurname) {
+		this.jalurname = jalurname;
+	}
 	public Long getId() {
 		return id;
 	}

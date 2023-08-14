@@ -147,6 +147,7 @@ public class ConstansPermission {
 	public static final String CREATE_WORKORDER = "CREATE_WORKORDER";
 	public static final String EDIT_WORKORDER = "EDIT_WORKORDER";
 	public static final String DELETE_WORKORDER = "DELETE_WORKORDER";
+	public static final String EDIT_WORKORDER_STATUS = "EDIT_WORKORDER_STATUS";
 	
 	public static final String READ_SURATJALAN = "READ_SURATJALAN";
 	public static final String CREATE_SURATJALAN = "CREATE_SURATJALAN";
@@ -186,6 +187,8 @@ public class ConstansPermission {
 	public static final String READ_REPORT_STATUS_INVOICE = "READ_REPORT_STATUS_INVOICE";
 	public static final String READ_REPORT_KAS_BANK = "READ_REPORT_KAS_BANK";
 	public static final String READ_REPORT_LABA_RUGI = "READ_REPORT_LABA_RUGI";
+	public static final String READ_REPORT_SUMMARY_KEGIATAN_TRUCK = "READ_REPORT_SUMMARY_KEGIATAN_TRUCK";
+	public static final String READ_REPORT_HISTORY_TRUCK = "READ_REPORT_HISTORY_TRUCK";
 
 	
 	

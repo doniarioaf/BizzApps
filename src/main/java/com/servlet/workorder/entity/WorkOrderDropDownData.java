@@ -9,6 +9,14 @@ public class WorkOrderDropDownData {
 	private String nobl;
 	private String noaju;
 	private String jalur;
+	private String jalurname;
+	
+	public String getJalurname() {
+		return jalurname;
+	}
+	public void setJalurname(String jalurname) {
+		this.jalurname = jalurname;
+	}
 	public Long getId() {
 		return id;
 	}

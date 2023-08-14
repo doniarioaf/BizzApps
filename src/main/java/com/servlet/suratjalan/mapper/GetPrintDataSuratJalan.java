@@ -19,8 +19,8 @@ private String schemaSql;
 		sqlBuilder.append("data.idwarehouse as idwarehouse, data.catatan as catatan, data.nocantainer as nocantainer, data.status as status, ");
 		sqlBuilder.append("wo.jeniswo as jeniswo ,wo.nodocument as nodocumentwo, wo.nobl as nobl, wo.noaju as noaju,wo.namacargo as namacargo, vendordepowo.nama as wodepo, ");
 		sqlBuilder.append("cust.customername as customername, paramstatus.codename as statusname, cust.alamat as custalamat, cust.provinsi as custprovinsi, cust.kota as custkota, cust.kodepos as custkodepos, ");
-		sqlBuilder.append("warehouse.nama as warehousename, warehouse.contactnumber as contactname, warehouse.contacthp as contacthp, warehouse.alamat as alamat, ");
-		sqlBuilder.append("partai.name as partainame, detailworkorder.jumlahkoli as jumlahkoli, detailworkorder.jumlahkg as jumlahkg ");
+		sqlBuilder.append("warehouse.nama as warehousename, warehouse.contactnumber as contactname, warehouse.contacthp as contacthp, warehouse.alamat as alamat, warehouse.ancerancer as ancerancer, warehouse.note as warehousenote, ");
+		sqlBuilder.append("partai.name as partainame, detailworkorder.jumlahkoli as jumlahkoli, detailworkorder.jumlahkg as jumlahkg, paramwotype.codename as wotypename ");
 		
 		sqlBuilder.append("from t_surat_jalan as data ");
 		sqlBuilder.append("left join m_customer_manggala as cust on cust.id = data.idcustomer ");
@@ -30,6 +30,7 @@ private String schemaSql;
 		sqlBuilder.append("left join detail_work_order as detailworkorder on detailworkorder.idworkorder = data.idworkorder and detailworkorder.nocontainer = data.nocantainer  ");
 		sqlBuilder.append("left join m_partai as partai on partai.id = detailworkorder.idpartai ");
 		sqlBuilder.append("left join m_parameter as paramstatus on paramstatus.code = data.status and paramstatus.grup ='STATUS_SURATJALAN' ");
+		sqlBuilder.append("left join m_parameter as paramwotype on paramwotype.code = wo.jeniswo and paramwotype.grup ='WO_TYPE' ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}
@@ -70,7 +71,9 @@ private String schemaSql;
 		final String custkodepos = rs.getString("custkodepos");
 		final String wodepo = rs.getString("wodepo");
 		final String jeniswo = rs.getString("jeniswo");
-		
+		final String wotypename = rs.getString("wotypename");
+		final String ancerancer = rs.getString("ancerancer");
+		final String warehousenote = rs.getString("warehousenote");
 		
 		
 		PrintData data = new PrintData();
@@ -103,6 +106,9 @@ private String schemaSql;
 		data.setCustomerKodePos(custkodepos);
 		data.setDepoWO(wodepo);
 		data.setWoType(jeniswo);
+		data.setWoTypeName(wotypename);
+		data.setWarehouseancerancer(ancerancer);
+		data.setWarehousecatatan(warehousenote);
 		return data;
 	}
 

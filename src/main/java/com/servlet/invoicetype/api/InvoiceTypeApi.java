@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.servlet.invoicetype.entity.BodyInvoiceType;
+import com.servlet.mapping.entity.BodyMapping;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConstansPermission;
@@ -43,6 +44,23 @@ public class InvoiceTypeApi {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("type", "DETAIL");
 		param.put("id", id);
+		Response response = securityService.response(ConstansPermission.READ_INVOICETYPE,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@GetMapping("/listmapping")
+	ResponseEntity<Response> getMapping(@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "GETMAPPING");
+		Response response = securityService.response(ConstansPermission.READ_INVOICETYPE,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@PostMapping("/mapping")
+	ResponseEntity<Response> createMapping(@RequestBody @Validated BodyMapping body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "MAPPING");
+		param.put("body", body);
 		Response response = securityService.response(ConstansPermission.READ_INVOICETYPE,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}

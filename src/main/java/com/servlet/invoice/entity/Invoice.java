@@ -39,6 +39,20 @@ public class Invoice implements Serializable{
 	private String deleteby;
 	private Timestamp deletedate;
 	private Double diskonnota;
+	private Double ppn;
+	private Double nilaippn;
+	public Double getNilaippn() {
+		return nilaippn;
+	}
+	public void setNilaippn(Double nilaippn) {
+		this.nilaippn = nilaippn;
+	}
+	public Double getPpn() {
+		return ppn;
+	}
+	public void setPpn(Double ppn) {
+		this.ppn = ppn;
+	}
 	public Long getId() {
 		return id;
 	}

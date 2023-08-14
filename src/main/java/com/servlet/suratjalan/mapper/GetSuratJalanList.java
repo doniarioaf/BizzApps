@@ -15,7 +15,7 @@ public class GetSuratJalanList implements RowMapper<SuratJalanData>{
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
 		sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.tanggal as tanggal, data.nocantainer as nocantainer, data.status as status, ");
-		sqlBuilder.append("cust.customername as customername, wo.namacargo as namacargo, param.codename as statusname ");
+		sqlBuilder.append("cust.customername as customername, wo.namacargo as namacargo, param.codename as statusname, wo.noaju as noajuwo, wo.nodocument as nodocumentwo ");
 		sqlBuilder.append("from t_surat_jalan as data ");
 		sqlBuilder.append("left join m_customer_manggala as cust on cust.id = data.idcustomer ");
 		sqlBuilder.append("left join m_workorder as wo on wo.id = data.idworkorder ");
@@ -39,6 +39,9 @@ public class GetSuratJalanList implements RowMapper<SuratJalanData>{
 		final String namacargo = rs.getString("namacargo");
 		final String status = rs.getString("status");
 		final String statusname = rs.getString("statusname");
+		final String noajuwo = rs.getString("noajuwo");
+		final String nodocumentwo = rs.getString("nodocumentwo");
+		
 		
 		SuratJalanData data = new SuratJalanData();
 		data.setId(id);
@@ -49,6 +52,8 @@ public class GetSuratJalanList implements RowMapper<SuratJalanData>{
 		data.setNamacargoWO(namacargo);
 		data.setStatus(status);
 		data.setStatusname(statusname);
+		data.setNoajuWO(noajuwo);
+		data.setNodocumentWO(nodocumentwo);
 		return data;
 	}
 

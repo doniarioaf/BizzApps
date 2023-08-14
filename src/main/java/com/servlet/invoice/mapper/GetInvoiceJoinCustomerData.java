@@ -17,9 +17,11 @@ private String schemaSql;
 		sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.tanggal as tanggal, data.idcustomer as idcustomer, data.refno as refno, ");
 		sqlBuilder.append("data.deliveredto as deliveredto, data.deliverydate as deliverydate, data.idwo as idwo, data.idsuratjalan as idsuratjalan, ");
 		sqlBuilder.append("data.idinvoicetype as idinvoicetype, data.totalinvoice as totalinvoice, data.isactive as isactive, data.diskonnota as diskonnota, ");
-		sqlBuilder.append("cust.customername as customername ");
+		sqlBuilder.append("cust.customername as customername, ");
+		sqlBuilder.append("wo.nodocument as nodocumentwo , wo.noaju as noajuwo  ");
 		sqlBuilder.append("from m_invoice as data ");
 		sqlBuilder.append("left join m_customer_manggala as cust on cust.id = data.idcustomer ");
+		sqlBuilder.append("left join m_workorder as wo on wo.id = data.idwo ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}
@@ -45,6 +47,8 @@ private String schemaSql;
 		final boolean isactive = rs.getBoolean("isactive");
 		final Double diskonnota = rs.getDouble("diskonnota");
 		final String customername = rs.getString("customername");
+		final String nodocumentwo = rs.getString("nodocumentwo");
+		final String noajuwo = rs.getString("noajuwo");
 		
 		
 		InvoiceData data = new InvoiceData();
@@ -57,7 +61,8 @@ private String schemaSql;
 		data.setDeliveredto(deliveredto);
 		data.setDeliverydate(deliverydate);
 		data.setIdwo(idwo);
-		data.setNoocumentwo("");
+		data.setNoocumentwo(nodocumentwo);
+		data.setNoajuwo(noajuwo);
 		data.setIdsuratjalan(idsuratjalan);
 		data.setNoocumentsuratjalan("");
 		data.setIdinvoicetype(idinvoicetype);

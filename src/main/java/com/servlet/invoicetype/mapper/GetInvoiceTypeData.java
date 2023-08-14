@@ -14,9 +14,10 @@ public class GetInvoiceTypeData implements RowMapper<InvoiceTypeData>{
 	public GetInvoiceTypeData() {
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
-		sqlBuilder.append("data.id as id, data.invoicetype as invoicetype, data.nama as nama, data.isactive as isactive, param.codename as codename ");
+		sqlBuilder.append("data.id as id, data.invoicetype as invoicetype, data.nama as nama, data.isactive as isactive, param.codename as codename, data.idcoa as idcoa, coa.nama as coaname ");
 		sqlBuilder.append("from m_invoice_type as data ");
 		sqlBuilder.append("left join m_parameter as param on param.code = data.invoicetype and param.grup = 'INVOICETYPE' ");
+		sqlBuilder.append("left join m_coa as coa on coa.id = data.idcoa ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}
@@ -34,6 +35,8 @@ public class GetInvoiceTypeData implements RowMapper<InvoiceTypeData>{
 		final String codename = rs.getString("codename");
 		final String nama = rs.getString("nama");
 		final boolean isactive = rs.getBoolean("isactive");
+		final Long idcoa = rs.getLong("idcoa");
+		final String coaname = rs.getString("coaname");
 		
 		InvoiceTypeData data = new InvoiceTypeData();
 		data.setId(id);
@@ -41,6 +44,8 @@ public class GetInvoiceTypeData implements RowMapper<InvoiceTypeData>{
 		data.setInvoicetypename(codename);
 		data.setNama(nama);
 		data.setIsactive(isactive);
+		data.setIdcoa(idcoa);
+		data.setCoaName(coaname);
 		return data;
 	}
 

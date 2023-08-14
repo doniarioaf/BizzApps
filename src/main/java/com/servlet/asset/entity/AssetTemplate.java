@@ -17,6 +17,36 @@ public class AssetTemplate {
 	private List<ParameterData> jenisBanOptions;
 	private List<ParameterData> ukuranBanOptions;
 	private List<ParameterData> statusBanOptions;
+	private List<ParameterData> sparepartPosisiFilterOptions;
+	private List<ParameterData> sparepartFilterTypeOptions;
+	private List<ParameterData> sparepartBohlamTypeOptions;
+	private List<ParameterData> sparepartSelangTypeOptions;
+	
+	
+	public List<ParameterData> getSparepartPosisiFilterOptions() {
+		return sparepartPosisiFilterOptions;
+	}
+	public void setSparepartPosisiFilterOptions(List<ParameterData> sparepartPosisiFilterOptions) {
+		this.sparepartPosisiFilterOptions = sparepartPosisiFilterOptions;
+	}
+	public List<ParameterData> getSparepartFilterTypeOptions() {
+		return sparepartFilterTypeOptions;
+	}
+	public void setSparepartFilterTypeOptions(List<ParameterData> sparepartFilterTypeOptions) {
+		this.sparepartFilterTypeOptions = sparepartFilterTypeOptions;
+	}
+	public List<ParameterData> getSparepartBohlamTypeOptions() {
+		return sparepartBohlamTypeOptions;
+	}
+	public void setSparepartBohlamTypeOptions(List<ParameterData> sparepartBohlamTypeOptions) {
+		this.sparepartBohlamTypeOptions = sparepartBohlamTypeOptions;
+	}
+	public List<ParameterData> getSparepartSelangTypeOptions() {
+		return sparepartSelangTypeOptions;
+	}
+	public void setSparepartSelangTypeOptions(List<ParameterData> sparepartSelangTypeOptions) {
+		this.sparepartSelangTypeOptions = sparepartSelangTypeOptions;
+	}
 	public List<ParameterData> getAssetTypeOptions() {
 		return assetTypeOptions;
 	}

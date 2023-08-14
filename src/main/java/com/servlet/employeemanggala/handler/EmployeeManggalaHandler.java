@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.servlet.employeemanggala.entity.BodyDetailEmployeeManggalaInfoFamily;
 import com.servlet.employeemanggala.entity.BodyEmployeeManggala;
+import com.servlet.employeemanggala.entity.BodySearhEmpl;
 import com.servlet.employeemanggala.entity.DetailEmployeeManggalaInfoFamily;
 import com.servlet.employeemanggala.entity.DetailEmployeeManggalaInfoFamilyData;
 import com.servlet.employeemanggala.entity.DetailEmployeeManggalaInfoFamilyPK;
@@ -21,9 +22,11 @@ import com.servlet.employeemanggala.entity.EmployeManggalaDataList;
 import com.servlet.employeemanggala.entity.EmployeManggalaDataListParam;
 import com.servlet.employeemanggala.entity.EmployeeManggala;
 import com.servlet.employeemanggala.entity.EmployeeManggalaTemplate;
+import com.servlet.employeemanggala.entity.EmployeeSearchData;
 import com.servlet.employeemanggala.mapper.GetDetailEmployeeManggalaInfoFamilyData;
 import com.servlet.employeemanggala.mapper.GetEmployeeManggalaData;
 import com.servlet.employeemanggala.mapper.GetEmployeeManggalaDataList;
+import com.servlet.employeemanggala.mapper.GetEmployeeManggalaSeacrhData;
 import com.servlet.employeemanggala.repo.DetailEmployeeManggalaInfoFamilyRepo;
 import com.servlet.employeemanggala.repo.EmployeeManggalaRepo;
 import com.servlet.employeemanggala.service.EmployeeManggalaService;
@@ -157,6 +160,8 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 				table.setNama(body.getNama());
 				table.setNoidentitas(body.getNoidentitas());
 				table.setAlamat(body.getAlamat());
+				table.setAlamat2(body.getAlamat2());
+				table.setAlamat3(body.getAlamat3());
 				table.setTanggallahir(new java.sql.Date(body.getTanggallahir()));
 				table.setStatus(body.getStatus());
 				if(body.getStatus().equals("MENIKAH")) {
@@ -235,6 +240,8 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 					table.setNama(body.getNama());
 					table.setNoidentitas(body.getNoidentitas());
 					table.setAlamat(body.getAlamat());
+					table.setAlamat2(body.getAlamat2());
+					table.setAlamat3(body.getAlamat3());
 					table.setTanggallahir(new java.sql.Date(body.getTanggallahir()));
 					table.setStatus(body.getStatus());
 					if(body.getStatus().equals("MENIKAH")) {
@@ -472,6 +479,33 @@ public class EmployeeManggalaHandler implements EmployeeManggalaService{
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false and data.jabatan != 'STAF' and data.statuskaryawan != 'BERHENTI' order by data.id ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetEmployeeManggalaDataList(), queryParameters);
+	}
+
+	@Override
+	public List<EmployeeSearchData> getListEmployeeSearch(Long idcompany, Long idbranch, BodySearhEmpl body) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetEmployeeManggalaSeacrhData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		sqlBuilder.append(" and lower(data.nama) like '%"+body.getNama().toLowerCase()+"%' and data.statuskaryawan not in ('BERHENTI') ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetEmployeeManggalaSeacrhData(), queryParameters);
+	}
+
+	@Override
+	public EmployeManggalaData getAccBankById(Long idcompany, Long idbranch, Long id) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetEmployeeManggalaData().schema());
+		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+		List<EmployeManggalaData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetEmployeeManggalaData(), queryParameters);
+		if(list != null && list.size() > 0) {
+			EmployeManggalaData val = new EmployeManggalaData();
+			val.setNamabank(list.get(0).getNamabank());
+			val.setNorekening(list.get(0).getNorekening());
+			val.setAtasnama(list.get(0).getAtasnama());
+			return val;
+		}
+		return null;
 	}
 
 }

@@ -14,7 +14,7 @@ public class GetDataCustomerManggala implements RowMapper<CustomerManggalaData>{
 	public GetDataCustomerManggala() {
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
-		sqlBuilder.append("data.id as id, data.customertype as customertype, data.customername as customername, data.alias as alias, data.alamat as alamat, data.provinsi as provinsi, data.kota as kota, data.kodepos as kodepos, data.npwp as npwp, data.nib as nib, data.isactive as isactive, data.telpkantor as telpkantor ");
+		sqlBuilder.append("data.id as id, data.customertype as customertype, data.customername as customername, data.alias as alias, data.alamat as alamat, data.provinsi as provinsi, data.kota as kota, data.kodepos as kodepos, data.npwp as npwp, data.nib as nib, data.isactive as isactive, data.telpkantor as telpkantor, data.district as district, data.alamat2 as alamat2, data.alamat3 as alamat3 ");
 		sqlBuilder.append("from m_customer_manggala as data ");
 		
 		this.schemaSql = sqlBuilder.toString();
@@ -39,6 +39,9 @@ public class GetDataCustomerManggala implements RowMapper<CustomerManggalaData>{
 		final String nib = rs.getString("nib");
 		final boolean isactive = rs.getBoolean("isactive");
 		final String telpkantor = rs.getString("telpkantor");
+		final Long district = rs.getLong("district");
+		final String alamat2 = rs.getString("alamat2");
+		final String alamat3 = rs.getString("alamat3");
 		
 		CustomerManggalaData data = new CustomerManggalaData();
 		data.setId(id);
@@ -56,6 +59,9 @@ public class GetDataCustomerManggala implements RowMapper<CustomerManggalaData>{
 		data.setNib(nib);
 		data.setIsactive(isactive);
 		data.setTelpkantor(telpkantor);
+		data.setDistrict(district);
+		data.setAlamat2(alamat2);
+		data.setAlamat3(alamat3);
 		return data;
 	}
 

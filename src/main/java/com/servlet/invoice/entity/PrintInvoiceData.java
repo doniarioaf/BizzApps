@@ -12,7 +12,9 @@ public class PrintInvoiceData {
 	private String nodocument;
 	private Date tanggal;
 	private Long idcustomer;
+	private Long idwo;
 	private String refno;
+	private String nobl;
 	private String deliveredto;
 	private String idinvoicetype;
 	private Date deliverydate;
@@ -22,11 +24,38 @@ public class PrintInvoiceData {
 	private List<DetailInvoicePriceData> detailsprice;
 	private List<PenerimaanKasBankData> listpenerimaan;
 	private List<DetailPenerimaanKasBankData> detailspenerimaan;
+	private Double summarypenerimaanDP;
 	private String keteranganinvoice1;
 	private String keteranganinvoice2;
 	private String keteranganinvoice3;
 	private String namapenagih;
 	private String ppn;
+	private Double nilaippn;
+	
+	public Double getNilaippn() {
+		return nilaippn;
+	}
+	public void setNilaippn(Double nilaippn) {
+		this.nilaippn = nilaippn;
+	}
+	public Double getSummarypenerimaanDP() {
+		return summarypenerimaanDP;
+	}
+	public void setSummarypenerimaanDP(Double summarypenerimaanDP) {
+		this.summarypenerimaanDP = summarypenerimaanDP;
+	}
+	public String getNobl() {
+		return nobl;
+	}
+	public void setNobl(String nobl) {
+		this.nobl = nobl;
+	}
+	public Long getIdwo() {
+		return idwo;
+	}
+	public void setIdwo(Long idwo) {
+		this.idwo = idwo;
+	}
 	public Long getId() {
 		return id;
 	}
