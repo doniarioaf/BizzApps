@@ -25,6 +25,7 @@ public class InfoHeader implements Serializable{
 	private long idcustomertype;
 	private boolean isdelete;
 	private boolean isactive;
+	private long idproject;
 	public long getId() {
 		return id;
 	}
@@ -78,5 +79,11 @@ public class InfoHeader implements Serializable{
 	}
 	public void setIsactive(boolean isactive) {
 		this.isactive = isactive;
+	}
+	public long getIdproject() {
+		return idproject;
+	}
+	public void setIdproject(long idproject) {
+		this.idproject = idproject;
 	}
 }

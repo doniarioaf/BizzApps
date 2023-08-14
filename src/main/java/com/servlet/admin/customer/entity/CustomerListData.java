@@ -5,6 +5,7 @@ public class CustomerListData {
 	private String nama;
 	private String address;
 	private String phone;
+	private String customercode;
 	public long getId() {
 		return id;
 	}
@@ -28,6 +29,12 @@ public class CustomerListData {
 	}
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+	public String getCustomercode() {
+		return customercode;
+	}
+	public void setCustomercode(String customercode) {
+		this.customercode = customercode;
 	}
 
 }

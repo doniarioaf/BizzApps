@@ -14,7 +14,7 @@ public class GetCustomerList implements RowMapper<CustomerListData>{
 	public GetCustomerList() {
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
-		sqlBuilder.append("data.id as id, data.nama as nama,data.address as address,data.phone as phone ");
+		sqlBuilder.append("data.id as id, data.nama as nama,data.address as address,data.phone as phone, data.customercode as customercode ");
 		sqlBuilder.append("from m_customer as data ");
 		
 		this.schemaSql = sqlBuilder.toString();
@@ -31,13 +31,14 @@ public class GetCustomerList implements RowMapper<CustomerListData>{
 		final String nama = rs.getString("nama");
 		final String address = rs.getString("address");
 		final String phone = rs.getString("phone");
+		final String customercode = rs.getString("customercode");
 		
 		CustomerListData data = new CustomerListData();
 		data.setId(id);
 		data.setNama(nama);
 		data.setAddress(address);
 		data.setPhone(phone);
-		
+		data.setCustomercode(customercode);
 		return data;
 	}
 

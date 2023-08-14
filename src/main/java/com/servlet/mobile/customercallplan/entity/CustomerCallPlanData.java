@@ -12,6 +12,8 @@ public class CustomerCallPlanData {
 	private String phone;
 	private String latitude;
 	private String longitude;
+	private String customercode;
+	private String contactperson;
 	public long getId() {
 		return id;
 	}
@@ -77,5 +79,17 @@ public class CustomerCallPlanData {
 	}
 	public void setLongitude(String longitude) {
 		this.longitude = longitude;
+	}
+	public String getCustomercode() {
+		return customercode;
+	}
+	public void setCustomercode(String customercode) {
+		this.customercode = customercode;
+	}
+	public String getContactperson() {
+		return contactperson;
+	}
+	public void setContactperson(String contactperson) {
+		this.contactperson = contactperson;
 	}
 }

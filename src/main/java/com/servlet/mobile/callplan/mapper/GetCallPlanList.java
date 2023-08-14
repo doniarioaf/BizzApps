@@ -4,8 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
-
-import com.servlet.admin.customer.entity.CustomerListData;
 import com.servlet.mobile.callplan.entity.CallPlanListData;
 
 public class GetCallPlanList implements RowMapper<CallPlanListData>{
@@ -33,11 +31,13 @@ public class GetCallPlanList implements RowMapper<CallPlanListData>{
 		final Long id = rs.getLong("id");
 		final String nama = rs.getString("nama");
 		final String description = rs.getString("description");
+		final Long idproject = rs.getLong("idproject");
 		
 		CallPlanListData data = new CallPlanListData();
 		data.setId(id);
 		data.setNama(nama);
 		data.setDescription(description);
+		data.setIdproject(idproject == null ?0:idproject);
 		return data;
 	}
 

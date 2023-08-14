@@ -4,6 +4,7 @@ public class ProjectData {
 	private long id;
 	private String nama;
 	private String description;
+	private String projectnumber;
 	public long getId() {
 		return id;
 	}
@@ -21,5 +22,11 @@ public class ProjectData {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	public String getProjectnumber() {
+		return projectnumber;
+	}
+	public void setProjectnumber(String projectnumber) {
+		this.projectnumber = projectnumber;
 	}
 }

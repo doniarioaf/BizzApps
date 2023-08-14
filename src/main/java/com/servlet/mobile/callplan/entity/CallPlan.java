@@ -24,6 +24,7 @@ private static final long serialVersionUID = 1L;
 	private Timestamp created;
 	private Timestamp modified;
 	private boolean isdelete;
+	private long idproject;
 	public long getId() {
 		return id;
 	}
@@ -71,5 +72,11 @@ private static final long serialVersionUID = 1L;
 	}
 	public void setIsdelete(boolean isdelete) {
 		this.isdelete = isdelete;
+	}
+	public long getIdproject() {
+		return idproject;
+	}
+	public void setIdproject(long idproject) {
+		this.idproject = idproject;
 	}
 }

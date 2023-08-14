@@ -14,6 +14,7 @@ public class GetCountSizeListUserMobileCallPlanByIdUserMobile implements RowMapp
 		final StringBuilder sqlBuilder = new StringBuilder(400);
 		sqlBuilder.append("idcallplan from m_user_mobile_call_plan as mccp ");
 		sqlBuilder.append("join m_call_plan as mc on mc.id = mccp.idcallplan ");
+		sqlBuilder.append("join m_project as mp on mp.id = mc.idproject and mp.isdelete = false ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}

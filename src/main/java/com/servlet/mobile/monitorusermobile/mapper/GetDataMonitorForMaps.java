@@ -20,7 +20,7 @@ public class GetDataMonitorForMaps implements RowMapper<DataMonitorForMaps>{
 		sqlBuilder.append("cust.nama as custnama , custtype.nama as custtypenama ");
 		sqlBuilder.append("from m_monitor_user_mobile as monitor ");
 		sqlBuilder.append("join m_customer as cust on cust.id = monitor.idcustomer ");
-		sqlBuilder.append("join m_customer_type as custtype on custtype.id = cust.idcustomertype ");
+		sqlBuilder.append("left join m_customer_type as custtype on custtype.id = cust.idcustomertype ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}

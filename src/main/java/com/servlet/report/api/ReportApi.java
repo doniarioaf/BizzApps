@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -38,6 +39,9 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.servlet.report.entity.BodyGetMaps;
 import com.servlet.report.entity.BodyReportMonitoring;
+import com.servlet.report.entity.ManggalaStatusInvoice;
+import com.servlet.report.entity.Manggala_BodyReportBongkarMuatDanDepo;
+import com.servlet.report.entity.ParamReportManggala;
 import com.servlet.report.entity.ReportToPDF;
 import com.servlet.report.service.ReportService;
 import com.servlet.security.service.SecurityService;
@@ -85,12 +89,13 @@ public class ReportApi {
 	}
 	
 	@GetMapping("/monitoring")
-	ResponseEntity<Response> getReportMonitoringExcel(HttpServletResponse response,@RequestHeader(ConstansKey.AUTH) String authorization,@RequestParam String idusermobile,@RequestParam String from,@RequestParam String thru,@RequestParam String type) throws IOException {
+	ResponseEntity<Response> getReportMonitoringExcel(HttpServletResponse response,@RequestHeader(ConstansKey.AUTH) String authorization,@RequestParam String idusermobile,@RequestParam String from,@RequestParam String thru,@RequestParam String type,@RequestParam long project) throws IOException {
 		BodyReportMonitoring body = new BodyReportMonitoring();
 		body.setIdusermobile(idusermobile);
 		body.setFromdate(from);
 		body.setTodate(thru);
 		body.setTypereport(type);
+		body.setIdproject(project);
 		
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("type", "REPORT");
@@ -101,21 +106,269 @@ public class ReportApi {
 			if(type.equals("XLSX")) {
 				XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
 				export(response, workbook);
-				return ResponseEntity.ok().build();
+//				return ResponseEntity.ok().build();
+			}else if(type.equals("PPT")){
+				XMLSlideShow ppt = (XMLSlideShow) response1.getData();
+				exportPPT(response,ppt);
 			}else {
+			
 				//PDF
 				ReportToPDF pdf = (ReportToPDF) response1.getData();
 				exportToPdf(response,pdf.getDocument(),pdf.getTable());
-				return ResponseEntity.ok().build();
+//				return ResponseEntity.ok().build();
 			}
-			
+			return ResponseEntity.ok().build();
 		}else {
 			return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
 		}
 		
 	}
 	
-	public void export(HttpServletResponse response,XSSFWorkbook workbook) throws IOException {
+	@GetMapping("/manggala/bongkarmuatdepo")
+	ResponseEntity<Response> getReportBongkarMuatDepo(HttpServletResponse response,@RequestHeader(ConstansKey.AUTH) String authorization,@RequestParam long from,@RequestParam long thru,@RequestParam String type) throws IOException {
+		Manggala_BodyReportBongkarMuatDanDepo body = new Manggala_BodyReportBongkarMuatDanDepo();
+		body.setFromDate(from);
+		body.setToDate(thru);
+		body.setTypeReport(type);
+		
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "REPORT");
+		param.put("body", body);
+		
+		Response response1 = securityService.response(ConstansPermission.READ_REPORT_BONGKARMUATDEPO,param,authorization);
+		if(response1.getHttpcode() == HttpStatus.OK.value()) {
+			if(type.equals("XLSX")) {
+				XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+				export(response, workbook);
+//				return ResponseEntity.ok().build();
+			}else if(type.equals("PPT")){
+				XMLSlideShow ppt = (XMLSlideShow) response1.getData();
+				exportPPT(response,ppt);
+			}else {
+			
+				//PDF
+				ReportToPDF pdf = (ReportToPDF) response1.getData();
+				exportToPdf(response,pdf.getDocument(),pdf.getTable());
+//				return ResponseEntity.ok().build();
+			}
+			return ResponseEntity.ok().build();
+		}else {
+			return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
+		}
+		
+	}
+	
+	
+	@GetMapping("/manggala/statusinvoice")
+	ResponseEntity<Response> getReportStatusInvoice(HttpServletResponse response,@RequestHeader(ConstansKey.AUTH) String authorization,@RequestParam long from,@RequestParam long thru,@RequestParam String status,@RequestParam String type) throws IOException {
+		ManggalaStatusInvoice body = new ManggalaStatusInvoice();
+		body.setFromDate(from);
+		body.setToDate(thru);
+		body.setStatus(status);
+		body.setTypeReport(type);
+		
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "REPORT");
+		param.put("body", body);
+		
+		Response response1 = securityService.response(ConstansPermission.READ_REPORT_STATUS_INVOICE,param,authorization);
+		if(response1.getHttpcode() == HttpStatus.OK.value()) {
+			if(type.equals("XLSX")) {
+				XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+				export(response, workbook);
+//				return ResponseEntity.ok().build();
+			}else if(type.equals("PPT")){
+				XMLSlideShow ppt = (XMLSlideShow) response1.getData();
+				exportPPT(response,ppt);
+			}else {
+			
+				//PDF
+				ReportToPDF pdf = (ReportToPDF) response1.getData();
+				exportToPdf(response,pdf.getDocument(),pdf.getTable());
+//				return ResponseEntity.ok().build();
+			}
+			return ResponseEntity.ok().build();
+		}else {
+			return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
+		}
+		
+	}
+	
+	@GetMapping("/manggala/labarugi/template")
+	ResponseEntity<Response> getListTemplateLabaRugi(@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "TEMPLATE");
+		Response response = securityService.response(ConstansPermission.READ_REPORT_LABA_RUGI,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@GetMapping("/manggala/labarugi")
+	ResponseEntity<Response> getReportLabaRugi(HttpServletResponse response,@RequestHeader(ConstansKey.AUTH) String authorization,@RequestParam long from,@RequestParam long thru,@RequestParam Long idbank,@RequestParam String type) throws IOException {
+		ParamReportManggala body = new ParamReportManggala();
+		body.setFromDate(from);
+		body.setToDate(thru);
+		body.setIdbank(idbank);
+		body.setTypeReport(type);
+		
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "REPORT");
+		param.put("body", body);
+		
+		Response response1 = securityService.response(ConstansPermission.READ_REPORT_LABA_RUGI,param,authorization);
+		if(response1.getHttpcode() == HttpStatus.OK.value()) {
+			if(type.equals("XLSX")) {
+				XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+				export(response, workbook);
+//				return ResponseEntity.ok().build();
+			}else if(type.equals("PPT")){
+				XMLSlideShow ppt = (XMLSlideShow) response1.getData();
+				exportPPT(response,ppt);
+			}else {
+			
+				//PDF
+				ReportToPDF pdf = (ReportToPDF) response1.getData();
+				exportToPdf(response,pdf.getDocument(),pdf.getTable());
+//				return ResponseEntity.ok().build();
+			}
+			return ResponseEntity.ok().build();
+		}else {
+			return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
+		}
+		
+	}
+	
+	@GetMapping("/manggala/kasbank/template")
+	ResponseEntity<Response> getList(@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "TEMPLATE");
+		Response response = securityService.response(ConstansPermission.READ_REPORT_KAS_BANK,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@GetMapping("/manggala/kasbank")
+	ResponseEntity<Response> getReportKasBank(HttpServletResponse response,@RequestHeader(ConstansKey.AUTH) String authorization,@RequestParam long from,@RequestParam long thru,@RequestParam Long idbank,@RequestParam String type) throws IOException {
+		ParamReportManggala body = new ParamReportManggala();
+		body.setFromDate(from);
+		body.setToDate(thru);
+		body.setIdbank(idbank);
+		body.setTypeReport(type);
+		
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "REPORT");
+		param.put("body", body);
+		
+		Response response1 = securityService.response(ConstansPermission.READ_REPORT_KAS_BANK,param,authorization);
+		if(response1.getHttpcode() == HttpStatus.OK.value()) {
+			if(type.equals("XLSX")) {
+				XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+				export(response, workbook);
+//				return ResponseEntity.ok().build();
+			}else if(type.equals("PPT")){
+				XMLSlideShow ppt = (XMLSlideShow) response1.getData();
+				exportPPT(response,ppt);
+			}else {
+			
+				//PDF
+				ReportToPDF pdf = (ReportToPDF) response1.getData();
+				exportToPdf(response,pdf.getDocument(),pdf.getTable());
+//				return ResponseEntity.ok().build();
+			}
+			return ResponseEntity.ok().build();
+		}else {
+			return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
+		}
+		
+	}
+	
+	@GetMapping("/manggala/summarykegiatantruk/template")
+	ResponseEntity<Response> getListTemplateSummaryKegiatanTruct(@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "TEMPLATE");
+		Response response = securityService.response(ConstansPermission.READ_REPORT_SUMMARY_KEGIATAN_TRUCK,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@GetMapping("/manggala/summarykegiatantruk")
+	ResponseEntity<Response> getReportSummaryKegiatanTruck(HttpServletResponse response,@RequestHeader(ConstansKey.AUTH) String authorization,@RequestParam long from,@RequestParam long thru,@RequestParam Long idasset,@RequestParam Long idsupir,@RequestParam String type) throws IOException {
+		ParamReportManggala body = new ParamReportManggala();
+		body.setFromDate(from);
+		body.setToDate(thru);
+		body.setIdAsset(idasset != 0?idasset:null);
+		body.setIdEmployee(idsupir != 0?idsupir:null);
+		body.setTypeReport(type);
+		
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "REPORT");
+		param.put("body", body);
+		
+		Response response1 = securityService.response(ConstansPermission.READ_REPORT_SUMMARY_KEGIATAN_TRUCK,param,authorization);
+		if(response1.getHttpcode() == HttpStatus.OK.value()) {
+			if(type.equals("XLSX")) {
+				XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+				export(response, workbook);
+//				return ResponseEntity.ok().build();
+			}else if(type.equals("PPT")){
+				XMLSlideShow ppt = (XMLSlideShow) response1.getData();
+				exportPPT(response,ppt);
+			}else {
+			
+				//PDF
+				ReportToPDF pdf = (ReportToPDF) response1.getData();
+				exportToPdf(response,pdf.getDocument(),pdf.getTable());
+//				return ResponseEntity.ok().build();
+			}
+			return ResponseEntity.ok().build();
+		}else {
+			return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
+		}
+		
+	}
+	
+	@GetMapping("/manggala/historytruck/template")
+	ResponseEntity<Response> getListTemplateHistoryTruck(@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "TEMPLATE");
+		Response response = securityService.response(ConstansPermission.READ_REPORT_HISTORY_TRUCK,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@GetMapping("/manggala/historytruck")
+	ResponseEntity<Response> getReportHistoryTruck(HttpServletResponse response,@RequestHeader(ConstansKey.AUTH) String authorization,@RequestParam long from,@RequestParam long thru,@RequestParam Long idasset,@RequestParam Long idassetsparepart,@RequestParam String type) throws IOException {
+		ParamReportManggala body = new ParamReportManggala();
+		body.setFromDate(from);
+		body.setToDate(thru);
+		body.setIdAsset(idasset != 0?idasset:null);
+		body.setIdAssetSparepart(idassetsparepart != 0?idassetsparepart:null);
+		body.setTypeReport(type);
+		
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "REPORT");
+		param.put("body", body);
+		
+		Response response1 = securityService.response(ConstansPermission.READ_REPORT_HISTORY_TRUCK,param,authorization);
+		if(response1.getHttpcode() == HttpStatus.OK.value()) {
+			if(type.equals("XLSX")) {
+				XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+				export(response, workbook);
+//				return ResponseEntity.ok().build();
+			}else if(type.equals("PPT")){
+				XMLSlideShow ppt = (XMLSlideShow) response1.getData();
+				exportPPT(response,ppt);
+			}else {
+			
+				//PDF
+				ReportToPDF pdf = (ReportToPDF) response1.getData();
+				exportToPdf(response,pdf.getDocument(),pdf.getTable());
+//				return ResponseEntity.ok().build();
+			}
+			return ResponseEntity.ok().build();
+		}else {
+			return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
+		}
+		
+	}
+	
+	private void export(HttpServletResponse response,XSSFWorkbook workbook) throws IOException {
         ServletOutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);
         workbook.close();
@@ -124,7 +377,16 @@ public class ReportApi {
          
     }
 	
-	public void exportToPdf(HttpServletResponse response,Document document,PdfPTable table) throws IOException {
+	private void exportPPT(HttpServletResponse response,XMLSlideShow ppt) throws IOException {
+        ServletOutputStream outputStream = response.getOutputStream();
+        ppt.write(outputStream);
+        ppt.close();
+         
+        outputStream.close();
+         
+    }
+	
+	private void exportToPdf(HttpServletResponse response,Document document,PdfPTable table) throws IOException {
         ServletOutputStream outputStream = response.getOutputStream();
         try {
 			PdfWriter.getInstance(document, outputStream);

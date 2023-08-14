@@ -20,6 +20,7 @@ public class BodyListMonitorUserMobile {
 	private String photo6;
 	private String photo7;
 	private String photo8;
+	private long idcallplan;
 	private List<BodyInfoDetail> infodetails;
 	public List<BodyInfoDetail> getInfodetails() {
 		return infodetails;
@@ -128,5 +129,11 @@ public class BodyListMonitorUserMobile {
 	}
 	public void setPhoto8(String photo8) {
 		this.photo8 = photo8;
+	}
+	public long getIdcallplan() {
+		return idcallplan;
+	}
+	public void setIdcallplan(long idcallplan) {
+		this.idcallplan = idcallplan;
 	}
 }

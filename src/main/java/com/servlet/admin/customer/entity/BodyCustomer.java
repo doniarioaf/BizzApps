@@ -11,6 +11,8 @@ public class BodyCustomer {
 	private String phone;
 	private String latitude;
 	private String longitude;
+	private String contactperson;
+	private String customercode;
 	public long getIdcustomertype() {
 		return idcustomertype;
 	}
@@ -70,6 +72,18 @@ public class BodyCustomer {
 	}
 	public void setLongitude(String longitude) {
 		this.longitude = longitude;
+	}
+	public String getContactperson() {
+		return contactperson;
+	}
+	public void setContactperson(String contactperson) {
+		this.contactperson = contactperson;
+	}
+	public String getCustomercode() {
+		return customercode;
+	}
+	public void setCustomercode(String customercode) {
+		this.customercode = customercode;
 	}
 
 }

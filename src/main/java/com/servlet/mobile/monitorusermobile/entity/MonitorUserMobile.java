@@ -39,6 +39,7 @@ public class MonitorUserMobile implements Serializable{
 	private String photo8;
 	private Timestamp created;
 	private Timestamp modified;
+	private long idcallplan;
 	public long getId() {
 		return id;
 	}
@@ -176,5 +177,11 @@ public class MonitorUserMobile implements Serializable{
 	}
 	public void setModified(Timestamp modified) {
 		this.modified = modified;
+	}
+	public long getIdcallplan() {
+		return idcallplan;
+	}
+	public void setIdcallplan(long idcallplan) {
+		this.idcallplan = idcallplan;
 	}
 }

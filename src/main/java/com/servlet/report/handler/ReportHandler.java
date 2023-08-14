@@ -1,6 +1,8 @@
 package com.servlet.report.handler;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -21,6 +23,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.apache.poi.sl.usermodel.PictureData;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -31,6 +34,16 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.util.Units;
+import org.apache.poi.xslf.usermodel.SlideLayout;
+import org.apache.poi.xslf.usermodel.XMLSlideShow;
+import org.apache.poi.xslf.usermodel.XSLFPictureData;
+import org.apache.poi.xslf.usermodel.XSLFPictureShape;
+import org.apache.poi.xslf.usermodel.XSLFSlide;
+import org.apache.poi.xslf.usermodel.XSLFSlideLayout;
+import org.apache.poi.xslf.usermodel.XSLFSlideMaster;
+import org.apache.poi.xslf.usermodel.XSLFTextParagraph;
+import org.apache.poi.xslf.usermodel.XSLFTextRun;
+import org.apache.poi.xslf.usermodel.XSLFTextShape;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -55,18 +68,22 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.servlet.admin.usermobile.entity.UserMobileListData;
 import com.servlet.admin.usermobile.service.UserMobileService;
+import com.servlet.mobile.callplan.service.CallPlanService;
 import com.servlet.mobile.infoheader.entity.InfoHeaderData;
 import com.servlet.mobile.infoheader.service.InfoHeaderService;
 import com.servlet.mobile.monitorusermobile.entity.DataMonitorForMaps;
 import com.servlet.mobile.monitorusermobile.service.MonitorUserMobileService;
 import com.servlet.mobile.monitorusermobileinfo.entity.DetailInfo;
 import com.servlet.mobile.monitorusermobileinfo.service.MonitorUserMobileInfoService;
+import com.servlet.mobile.project.service.ProjectService;
 import com.servlet.report.entity.BodyGetMaps;
 import com.servlet.report.entity.BodyReportMonitoring;
 import com.servlet.report.entity.MonitoringData;
 import com.servlet.report.entity.ReportToPDF;
+import com.servlet.report.entity.ReportToPPT;
 import com.servlet.report.entity.ReportWorkBookExcel;
 import com.servlet.report.entity.TemplateMaps;
+import com.servlet.report.entity.TemplateReport;
 import com.servlet.report.mapper.getMonitoringData;
 import com.servlet.report.service.ReportService;
 
@@ -84,6 +101,10 @@ public class ReportHandler implements ReportService {
 	private MonitorUserMobileService monitorUserMobileService;
 	@Autowired
 	private InfoHeaderService infoHeaderService;
+	@Autowired
+	private ProjectService projectService;
+	@Autowired
+	private CallPlanService callPlanService;
 	
 	@Override
 	public ReportWorkBookExcel getReportMonitoringData(BodyReportMonitoring body, long idcompany, long idbranch) {
@@ -117,21 +138,22 @@ public class ReportHandler implements ReportService {
 	        rowcount = 1;
 	        Row row = sheet.createRow(rowcount);
 	        
-	        createCell(row, 0, "Customer", style,sheet);      
-	        createCell(row, 1, "Tanggal", style,sheet);       
-	        createCell(row, 2, "Check In Time", style,sheet);    
-	        createCell(row, 3, "Check Out Time", style,sheet);
-	        createCell(row, 4, "Photo 1", style,sheet);
-	        createCell(row, 5, "Photo 2", style,sheet);
-	        createCell(row, 6, "Photo 3", style,sheet);
-	        createCell(row, 7, "Photo 4", style,sheet);
-	        createCell(row, 8, "Photo 5", style,sheet);
-	        createCell(row, 9, "Is Photo 1", style,sheet);
-	        createCell(row, 10, "Is Photo 2", style,sheet);
-	        createCell(row, 11, "Is Photo 3", style,sheet);
-	        createCell(row, 12, "Is Photo 4", style,sheet);
-	        createCell(row, 13, "Is Photo 5", style,sheet);
-	        int rowHeader = 14;
+	        createCell(row, 0, "Customer", style,sheet);
+	        createCell(row, 1, "Project", style,sheet);
+	        createCell(row, 2, "Tanggal", style,sheet);       
+	        createCell(row, 3, "Check In Time", style,sheet);    
+	        createCell(row, 4, "Check Out Time", style,sheet);
+	        createCell(row, 5, "Photo 1", style,sheet);
+	        createCell(row, 6, "Photo 2", style,sheet);
+	        createCell(row, 7, "Photo 3", style,sheet);
+	        createCell(row, 8, "Photo 4", style,sheet);
+	        createCell(row, 9, "Photo 5", style,sheet);
+//	        createCell(row, 10, "Is Photo 1", style,sheet);
+//	        createCell(row, 11, "Is Photo 2", style,sheet);
+//	        createCell(row, 12, "Is Photo 3", style,sheet);
+//	        createCell(row, 13, "Is Photo 4", style,sheet);
+//	        createCell(row, 14, "Is Photo 5", style,sheet);
+	        int rowHeader = 10;
 	        
 			List<MonitoringData> list = getListMonitoringData(user.getId(),body,idcompany,idbranch);
 			List<Integer> listQuestionExistInMonitoring = new ArrayList<>();
@@ -187,7 +209,8 @@ public class ReportHandler implements ReportService {
 					Row rowMonitor = sheet.createRow(rowcount++);
 					rowMonitor.setHeight(s);
 					int columnCount = 0;
-					createCell(rowMonitor, columnCount++, monitor.getNamacustomer(), style,sheet);
+					createCell(rowMonitor, columnCount++, monitor.getNamacustomer()+"( "+monitor.getCustomercode()+" )", style,sheet);
+					createCell(rowMonitor, columnCount++, callPlanService.getProjectNameByIdCallPlan(monitor.getIdcallplan(), idcompany, idbranch), style,sheet);
 					createCell(rowMonitor, columnCount++, monitor.getTanggal().toString(), style,sheet);
 					createCell(rowMonitor, columnCount++, monitor.getCheckintime(), style,sheet);
 					createCell(rowMonitor, columnCount++, monitor.getCheckouttime(), style,sheet);
@@ -202,8 +225,8 @@ public class ReportHandler implements ReportService {
 					anchor.setAnchorType( ClientAnchor.AnchorType.MOVE_AND_RESIZE );
 					
 					Integer objIntPhoto1 = decodeToImageExcel(monitor.getPhoto1(),workbook);
-					int widhtPhoto = 50;
-					int heightPhoto = 50;
+					int widhtPhoto = 200;
+					int heightPhoto = 200;
 					if(objIntPhoto1 != null) {
 						int kolom = columnCount++;
 						Cell celPhoto = rowMonitor.createCell(kolom);
@@ -291,11 +314,11 @@ public class ReportHandler implements ReportService {
 						createCell(rowMonitor, columnCount++, "", style,sheet);
 					}
 
-					createCell(rowMonitor, columnCount++, monitor.getPhoto1() != null && !monitor.getPhoto1().equals("")?"Y":"N", style,sheet);
-					createCell(rowMonitor, columnCount++, monitor.getPhoto2() != null && !monitor.getPhoto2().equals("")?"Y":"N", style,sheet);
-					createCell(rowMonitor, columnCount++, monitor.getPhoto3() != null && !monitor.getPhoto3().equals("")?"Y":"N", style,sheet);
-					createCell(rowMonitor, columnCount++, monitor.getPhoto4() != null && !monitor.getPhoto4().equals("")?"Y":"N", style,sheet);
-					createCell(rowMonitor, columnCount++, monitor.getPhoto5() != null && !monitor.getPhoto5().equals("")?"Y":"N", style,sheet);
+//					createCell(rowMonitor, columnCount++, monitor.getPhoto1() != null && !monitor.getPhoto1().equals("")?"Y":"N", style,sheet);
+//					createCell(rowMonitor, columnCount++, monitor.getPhoto2() != null && !monitor.getPhoto2().equals("")?"Y":"N", style,sheet);
+//					createCell(rowMonitor, columnCount++, monitor.getPhoto3() != null && !monitor.getPhoto3().equals("")?"Y":"N", style,sheet);
+//					createCell(rowMonitor, columnCount++, monitor.getPhoto4() != null && !monitor.getPhoto4().equals("")?"Y":"N", style,sheet);
+//					createCell(rowMonitor, columnCount++, monitor.getPhoto5() != null && !monitor.getPhoto5().equals("")?"Y":"N", style,sheet);
 					
 					//set Value Info
 //					List<Long> listInfo = hashMonitorUserMobileInfo.get(monitor.getIdmonitoring());
@@ -356,25 +379,87 @@ public class ReportHandler implements ReportService {
 	private List<MonitoringData> getListMonitoringData(long idusermobile,BodyReportMonitoring body, long idcompany, long idbranch) {
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new getMonitoringData().schema());
 		sqlBuilder.append(" where monitor.idusermobile = ? and monitor.idcompany = ? and monitor.idbranch = ? and monitor.tanggal >= '"+body.getFromdate()+"' and monitor.tanggal <= '"+body.getTodate()+"' ");
-		sqlBuilder.append(" order by monitor.idusermobile");
+		if(body.getIdproject() > 0) {
+			String selectIdCallPlan = "select id from m_call_plan where idproject = "+body.getIdproject()+" and idcompany = "+idcompany+" and idbranch = "+idbranch+" ";
+//			String selectIdCustCallPlan = "select idcustomer from m_customer_call_plan where idcallplan in ("+selectIdCallPlan+") ";
+			sqlBuilder.append(" and monitor.idcustomer in (select idcustomer from m_customer_project as mcp where mcp.idproject="+body.getIdproject()+" and mcp.idcompany="+idcompany+" and mcp.idbranch="+idbranch+" ) ");
+			sqlBuilder.append(" and monitor.idcallplan in ("+selectIdCallPlan+") ");
+		}
+		sqlBuilder.append(" order by monitor.idusermobile,monitor.idproject,monitor.tanggal desc ");
 		final Object[] queryParameters = new Object[] { idusermobile,idcompany,idbranch };
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new getMonitoringData(), queryParameters);
 	}
 	
 	private void createCell(Row row, int columnCount, Object value, CellStyle style,XSSFSheet sheet) {
         sheet.autoSizeColumn(columnCount);
+        
         Cell cell = row.createCell(columnCount);
         if (value instanceof Integer) {
             cell.setCellValue((Integer) value);
         } else if (value instanceof Boolean) {
             cell.setCellValue((Boolean) value);
         }else {
-            cell.setCellValue((String) value);
+        	String textval = (String) value;
+        	int numberOfLines = textval.split("\n").length;
+        	row.setHeightInPoints((2+numberOfLines) * sheet.getDefaultRowHeightInPoints());
+        	style.setWrapText(true);
+            cell.setCellValue(textval);
         }
         cell.setCellStyle(style);
     }
 	
 	private Integer decodeToImageExcel(String imageString,XSSFWorkbook workbook){
+		if(imageString != null && !imageString.equals("")) {
+			try {
+			byte[] imagebyte = Base64.getDecoder().decode(imageString.getBytes(StandardCharsets.UTF_8));
+			
+			ByteArrayInputStream bis = new ByteArrayInputStream(imagebyte);
+			BufferedImage image = ImageIO.read(bis);
+			
+			int scaledWidth = 1000;
+            int scaledHeight = 1000;
+            
+			// creates output image
+	        BufferedImage outputImage = new BufferedImage(scaledWidth,
+	        		scaledHeight, image.getType());
+	        
+	     // scales the input image to the output image
+	        
+	        Graphics2D g2d = outputImage.createGraphics();
+	        g2d.drawImage(image, 0, 0, scaledWidth, scaledHeight, null);
+	        g2d.dispose();
+	        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	        
+	     // writes to output file
+	        ImageIO.write(outputImage, "png", baos);
+	        byte[] imagebytev2 = baos.toByteArray();
+	        
+			bis.close();
+			
+			// write the image to a file
+			File outputfile = new File("image.png");
+			try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(outputfile))) {
+//	            outputStream.write(imagebyte);
+				outputStream.write(imagebytev2);
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+			
+			InputStream is = new FileInputStream(outputfile);
+			byte[] bytes = IOUtils.toByteArray(is);
+			int pictureIdx = workbook.addPicture(bytes, Workbook.PICTURE_TYPE_JPEG);
+			
+			return pictureIdx;
+			}catch (IOException e) {
+				// TODO: handle exception
+				return null;
+			} 
+		}
+		
+		return null;
+	}
+	
+	private XSLFPictureData decodeToImagePPT(String imageString,XMLSlideShow ppt){
 		if(imageString != null && !imageString.equals("")) {
 			try {
 			byte[] imagebyte = Base64.getDecoder().decode(imageString.getBytes(StandardCharsets.UTF_8));
@@ -413,7 +498,8 @@ public class ReportHandler implements ReportService {
 			
 			InputStream is = new FileInputStream(outputfile);
 			byte[] bytes = IOUtils.toByteArray(is);
-			int pictureIdx = workbook.addPicture(bytes, Workbook.PICTURE_TYPE_JPEG);
+//			PictureData.PictureType.PNG
+			XSLFPictureData pictureIdx = ppt.addPicture(bytes, PictureData.PictureType.PNG);
 			
 			return pictureIdx;
 			}catch (IOException e) {
@@ -471,7 +557,7 @@ public class ReportHandler implements ReportService {
         }
         
         
-        PdfPTable table = new PdfPTable(10 + countInfo);
+        PdfPTable table = new PdfPTable(11 + countInfo);
         try {
         	document.open();
         	document.add(Chunk.NEWLINE);
@@ -493,6 +579,12 @@ public class ReportHandler implements ReportService {
             table.addCell(hcell);
             
             hcell = new PdfPCell(new Phrase("Customer", headFont));
+            hcell.setBackgroundColor(BaseColor.CYAN);
+            widthKolom = addElementWidth(widthKolom, 3);
+            hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(hcell);
+            
+            hcell = new PdfPCell(new Phrase("Project", headFont));
             hcell.setBackgroundColor(BaseColor.CYAN);
             widthKolom = addElementWidth(widthKolom, 3);
             hcell.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -584,7 +676,13 @@ public class ReportHandler implements ReportService {
             			valueCell.setHorizontalAlignment(Element.ALIGN_CENTER);
                     	table.addCell(valueCell);
                     	
-                    	valueCell = new PdfPCell(new Phrase(monitor.getNamacustomer()));
+                    	valueCell = new PdfPCell(new Phrase(monitor.getNamacustomer()+" ( "+monitor.getCustomercode()+" ) "));
+                    	valueCell.setPaddingLeft(2);
+                    	valueCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                    	valueCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    	table.addCell(valueCell);
+                    	
+                    	valueCell = new PdfPCell(new Phrase(callPlanService.getProjectNameByIdCallPlan(monitor.getIdcallplan(), idcompany, idbranch)));
                     	valueCell.setPaddingLeft(2);
                     	valueCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
                     	valueCell.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -734,7 +832,167 @@ public class ReportHandler implements ReportService {
 		// TODO Auto-generated method stub
 		TemplateMaps data = new TemplateMaps();
 		data.setUsermobileoptions(userMobileService.getListAllUserMobile(idcompany, idbranch));
+		data.setProjectoptions(projectService.getAllListProject(idcompany, idbranch));
 		return data;
+	}
+
+	@Override
+	public TemplateReport getTemplateReport(long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		TemplateReport data = new TemplateReport();
+		data.setUserMobileOptions(userMobileService.getListAllUserMobileForMonitoring("ALL",idcompany, idbranch));
+		data.setProjectoptions(projectService.getAllListProject(idcompany, idbranch));
+		return data;
+	}
+
+	
+	@Override
+	public ReportToPPT getReportMonitoringDataPPT(BodyReportMonitoring body,long idcompany, long idbranch) {
+		// TODO Auto-generated method stub
+		ReportToPPT reportToPPT = new ReportToPPT();
+		XMLSlideShow ppt = new XMLSlideShow();
+		List<UserMobileListData> listuser = userMobileService.getListAllUserMobileForMonitoring(body.getIdusermobile(), idcompany, idbranch);
+		for(UserMobileListData user : listuser) {
+			List<MonitoringData> list = getListMonitoringData(user.getId(),body,idcompany,idbranch);
+			if(list != null && list.size() > 0) {
+				for(MonitoringData monitor : list) {
+					XSLFSlideMaster slideMaster = ppt.getSlideMasters().get(0);
+		  
+					XSLFSlideLayout slidelayout = slideMaster.getLayout(SlideLayout.TITLE_AND_CONTENT);
+		  
+					XSLFSlide slide = ppt.createSlide(slidelayout);
+					
+					XSLFTextShape titleslide = slide.getPlaceholder(0);  
+					titleslide.setText(""); 
+		  
+					XSLFTextShape bodyslide = slide.getPlaceholder(1);
+		        
+					bodyslide.clearText();
+					
+					XSLFTextParagraph paragraph = bodyslide.addNewTextParagraph();
+					
+					XSLFTextRun line = paragraph.addNewTextRun();
+					line.setText("User : "+monitor.getNamauser());
+					line.setFontColor(Color.BLACK);
+					line.setFontSize(20.0);
+			        paragraph.addLineBreak();
+			        
+			        line = paragraph.addNewTextRun();
+					line.setText("Customer : "+monitor.getNamacustomer());
+					line.setFontColor(Color.BLACK);
+					line.setFontSize(20.0);
+			        paragraph.addLineBreak();
+			        
+			        line = paragraph.addNewTextRun();
+					line.setText("Project : "+callPlanService.getProjectNameByIdCallPlan(monitor.getIdcallplan(), idcompany, idbranch));
+					line.setFontColor(Color.BLACK);
+					line.setFontSize(20.0);
+			        paragraph.addLineBreak();
+			        
+			        line = paragraph.addNewTextRun();
+					line.setText("Contact Number : "+monitor.getPhone());
+					line.setFontColor(Color.BLACK);
+					line.setFontSize(20.0);
+			        paragraph.addLineBreak();
+			        
+			        line = paragraph.addNewTextRun();
+					line.setText("Contact Person : "+monitor.getContactperson());
+					line.setFontColor(Color.BLACK);
+					line.setFontSize(20.0);
+			        paragraph.addLineBreak();
+			        
+			        line = paragraph.addNewTextRun();
+					line.setText("Customer Code : "+monitor.getCustomercode());
+					line.setFontColor(Color.BLACK);
+					line.setFontSize(20.0);
+			        paragraph.addLineBreak();
+			        
+			        line = paragraph.addNewTextRun();
+					line.setText("Provinsi : "+monitor.getProvinsi());
+					line.setFontColor(Color.BLACK);
+					line.setFontSize(20.0);
+			        paragraph.addLineBreak();
+			        
+			        line = paragraph.addNewTextRun();
+					line.setText("City : "+monitor.getCity());
+					line.setFontColor(Color.BLACK);
+					line.setFontSize(20.0);
+			        paragraph.addLineBreak();
+			        
+			        line = paragraph.addNewTextRun();
+					line.setText("Area : "+monitor.getAreaname());
+					line.setFontColor(Color.BLACK);
+					line.setFontSize(20.0);
+			        paragraph.addLineBreak();
+			        
+			        line = paragraph.addNewTextRun();
+					line.setText("SubArea : "+monitor.getSubarename());
+					line.setFontColor(Color.BLACK);
+					line.setFontSize(20.0);
+			        paragraph.addLineBreak();
+			        
+			        int width = 130;
+			        int height = 130;
+			        int photoke = 1;
+			        if(monitor.getPhoto1() != null && !monitor.getPhoto1().equals("")) {
+			        	XSLFPictureData idx1 = decodeToImagePPT(monitor.getPhoto1(), ppt);
+			        	setPicturePPT(photoke,slide,idx1,width,height);
+			        	photoke++;
+			        }
+			        
+			        if(monitor.getPhoto2() != null && !monitor.getPhoto2().equals("")) {
+			        	XSLFPictureData idx1 = decodeToImagePPT(monitor.getPhoto2(), ppt);
+			        	setPicturePPT(photoke,slide,idx1,width,height);
+			        	photoke++;
+			        }
+			        
+			        if(monitor.getPhoto3() != null && !monitor.getPhoto3().equals("")) {
+			        	XSLFPictureData idx1 = decodeToImagePPT(monitor.getPhoto3(), ppt);
+			        	setPicturePPT(photoke,slide,idx1,width,height);
+			        	photoke++;
+			        }
+			        
+			        if(monitor.getPhoto4() != null && !monitor.getPhoto4().equals("")) {
+			        	XSLFPictureData idx1 = decodeToImagePPT(monitor.getPhoto4(), ppt);
+			        	setPicturePPT(photoke,slide,idx1,width,height);
+			        	photoke++;
+			        }
+			        
+			        if(monitor.getPhoto5() != null && !monitor.getPhoto5().equals("")) {
+			        	XSLFPictureData idx1 = decodeToImagePPT(monitor.getPhoto5(), ppt);
+			        	setPicturePPT(photoke,slide,idx1,width,height);
+			        	photoke++;
+			        }
+		  
+				}
+			}
+		}
+	      
+		reportToPPT.setPpt(ppt);
+		return reportToPPT;
+	}
+	
+	private void setPicturePPT(int photoke,XSLFSlide slide,XSLFPictureData idx1,int width,int height) {
+		//Recangle(x-corrdinate,y-coordinate,width, height);
+        //y cordinat = atas bawah
+        //x cordinat = kiri kanan
+		if(photoke == 1) {
+			XSLFPictureShape pic1 = slide.createPicture(idx1);
+	        pic1.setAnchor(new Rectangle(400, 120, width, height));
+		}else if(photoke == 2) {
+			XSLFPictureShape pic2 = slide.createPicture(idx1);
+	        pic2.setAnchor(new Rectangle(550, 120, width, height));
+		}else if(photoke == 3) {
+			XSLFPictureShape pic3 = slide.createPicture(idx1);
+	        pic3.setAnchor(new Rectangle(400, 260, width, height));
+		}else if(photoke == 4) {
+			XSLFPictureShape pic4 = slide.createPicture(idx1);
+	        pic4.setAnchor(new Rectangle(550, 260, width, height));
+		}else if(photoke == 5) {
+			XSLFPictureShape pic5 = slide.createPicture(idx1);
+	        pic5.setAnchor(new Rectangle(400, 400, width, height));
+		}
+		
 	}
 
 }
