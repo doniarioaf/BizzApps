@@ -29,11 +29,6 @@ import com.servlet.admin.usermobilerole.entity.UserMobileRole;
 import com.servlet.admin.usermobilerole.entity.UserMobileRoleData;
 import com.servlet.admin.usermobilerole.entity.UserMobileRolePK;
 import com.servlet.admin.usermobilerole.service.UserMobileRoleService;
-import com.servlet.mobile.callplan.service.CallPlanService;
-import com.servlet.mobile.usermobilecallplan.entity.UserMobileCallPlan;
-import com.servlet.mobile.usermobilecallplan.entity.UserMobileCallPlanData;
-import com.servlet.mobile.usermobilecallplan.entity.UserMobileCallPlanPK;
-import com.servlet.mobile.usermobilecallplan.service.UserMobileCallPlanService;
 import com.servlet.security.entity.AuthorizationData;
 import com.servlet.security.entity.SecurityLicenseData;
 import com.servlet.security.service.SecurityService;
@@ -55,10 +50,6 @@ public class UserMobileHandler implements UserMobileService{
 	SecurityService securityService;
 	@Autowired
 	UserMobileRoleService userMobileRoleService;
-	@Autowired
-	UserMobileCallPlanService userMobileCallPlanService;
-	@Autowired
-	CallPlanService callPlanService;
 	@Autowired
 	RoleService roleService;
 	
@@ -223,21 +214,6 @@ public class UserMobileHandler implements UserMobileService{
 				}
 				userMobileRoleService.saveUserMobileRoleList(listsave);
 			}
-			
-			List<UserMobileCallPlan> listcallplansave = new ArrayList<UserMobileCallPlan>();
-			if(usermobile.getCallplans().length > 0) {
-				for (int i = 0; i < usermobile.getCallplans().length; i++) {
-					UserMobileCallPlanPK pk = new UserMobileCallPlanPK();
-					pk.setIdcompany(idcompany);
-					pk.setIdbranch(idbranch);
-					pk.setIdusermobile(user.getId());
-					pk.setIdcallplan(usermobile.getCallplans()[i]);
-					UserMobileCallPlan usermobilecallplan = new UserMobileCallPlan();
-					usermobilecallplan.setUserMobileCallPlanPK(pk);
-					listcallplansave.add(usermobilecallplan);
-				}
-				userMobileCallPlanService.saveUserMobileCallPlanList(listcallplansave);
-			}
 		}
 		
 		ReturnData data = new ReturnData();
@@ -288,19 +264,6 @@ public class UserMobileHandler implements UserMobileService{
 				userMobileRoleService.deleteAllUserMobileRolePKPK(listdelete);
 			}
 			
-			List<UserMobileCallPlanPK> listcallplandelete = new ArrayList<UserMobileCallPlanPK>();
-			List<UserMobileCallPlanData> listcallplanuser = new ArrayList<UserMobileCallPlanData>(userMobileCallPlanService.getListUserMobileCallPlan(id));
-			if(listcallplanuser.size() > 0) {
-				for(UserMobileCallPlanData userMobileCallPlanData : listcallplanuser) {
-					UserMobileCallPlanPK pk = new UserMobileCallPlanPK();
-					pk.setIdcompany(table.getIdcompany());
-					pk.setIdbranch(table.getIdbranch());
-					pk.setIdcallplan(userMobileCallPlanData.getIdcallplan());
-					pk.setIdusermobile(id);
-					listcallplandelete.add(pk);
-				}
-				userMobileCallPlanService.deleteAllUserMobileCallPlanByListPK(listcallplandelete);
-			}
 			
 			List<UserMobileRole> listsave = new ArrayList<UserMobileRole>();
 			if(usermobile.getRoles().length > 0) {
@@ -313,21 +276,6 @@ public class UserMobileHandler implements UserMobileService{
 					listsave.add(userMobileRole);
 				}
 				userMobileRoleService.saveUserMobileRoleList(listsave);
-			}
-			
-			List<UserMobileCallPlan> listuserMobileCallPlansave = new ArrayList<UserMobileCallPlan>();
-			if(usermobile.getCallplans().length > 0) {
-				for (int i = 0; i < usermobile.getCallplans().length; i++) {
-					UserMobileCallPlanPK pk = new UserMobileCallPlanPK();
-					pk.setIdcompany(table.getIdcompany());
-					pk.setIdbranch(table.getIdbranch());
-					pk.setIdcallplan(usermobile.getCallplans()[i]);
-					pk.setIdusermobile(id);
-					UserMobileCallPlan userMobileCallPlan = new UserMobileCallPlan();
-					userMobileCallPlan.setUserMobileCallPlanPK(pk);
-					listuserMobileCallPlansave.add(userMobileCallPlan);
-				}
-				userMobileCallPlanService.saveUserMobileCallPlanList(listuserMobileCallPlansave);
 			}
 	}
 		
@@ -345,13 +293,11 @@ public class UserMobileHandler implements UserMobileService{
 		List<UserMobile> list = repository.getUserById(id, idcompany, idbranch);
 		if(list != null && list.size() > 0) {
 			List<UserMobileRoleData> listroleuser = new ArrayList<UserMobileRoleData>(userMobileRoleService.getListUserMobileRole(id));
-			List<UserMobileCallPlanData> listcallplans = new ArrayList<UserMobileCallPlanData>(userMobileCallPlanService.getListUserMobileCallPlan(id));
 			UserMobile data = list.get(0);
 			data.setToken("");
 			UserDetailMobile user = new UserDetailMobile();
 			user.setUser(data);
 			user.setRoles(listroleuser);
-			user.setCallplans(listcallplans);
 			return user;
 		}
 		return null;
@@ -408,7 +354,6 @@ public class UserMobileHandler implements UserMobileService{
 	public TemplateUserMobile getTemplateUserMobile(long idcompany, long idbranch) {
 		// TODO Auto-generated method stub
 		TemplateUserMobile data = new TemplateUserMobile();
-		data.setCallplanoptions(callPlanService.getAllListCallPlan(idcompany, idbranch));
 		data.setRoleoptions(roleService.getAllListRole(idcompany, idbranch));
 		return data;
 	}
