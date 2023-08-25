@@ -12,14 +12,15 @@ import com.servlet.report.entity.EntityHelperKasBank;
 import com.servlet.shared.ReturnData;
 
 public interface PenerimaanKasBankService {
-	List<PenerimaanKasBankData> getListAll(Long idcompany,Long idbranch);
+	List<PenerimaanKasBankData> getListAll(Long idcompany,Long idbranch, Long iduser);
+	List<PenerimaanKasBankData> getListAllCheckBank(Long idcompany,Long idbranch, Long iduser);
 	List<PenerimaanKasBankData> getListActive(Long idcompany,Long idbranch);
-	PenerimaanKasBankData getById(Long idcompany,Long idbranch,Long id);
+	PenerimaanKasBankData getById(Long idcompany,Long idbranch,Long id, Long iduser);
 	ReturnData saveData(Long idcompany,Long idbranch,Long iduser,BodyPenerimaanKasBank body);
 	ReturnData updateData(Long idcompany,Long idbranch,Long iduser,Long id,BodyPenerimaanKasBank body);
 	ReturnData deleteData(Long idcompany,Long idbranch,Long iduser,Long id);
-	PenerimaanKasBankTemplate getTemplate(Long idcompany,Long idbranch);
-	PenerimaanKasBankData getByIdWithTemplate(Long idcompany,Long idbranch,Long id);
+	PenerimaanKasBankTemplate getTemplate(Long idcompany,Long idbranch,Long iduser);
+	PenerimaanKasBankData getByIdWithTemplate(Long idcompany,Long idbranch,Long id, Long iduser);
 	List<DetailPenerimaanKasBankData> getListDetailByIdInvoice(Long idcompany,Long idbranch,Long idInvoice);
 	List<PenerimaanKasBankData> getListByDetailIdInvoice(Long idcompany,Long idbranch,Long idinvoice);
 	List<DetailPenerimaanKasBankData> getListDetailByIdWO(Long idcompany,Long idbranch,Long idWo);

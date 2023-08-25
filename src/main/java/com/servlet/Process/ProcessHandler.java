@@ -3,6 +3,7 @@ package com.servlet.Process;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,6 +106,7 @@ import com.servlet.suratjalan.entity.BodyStatusSuratJalan;
 import com.servlet.suratjalan.entity.BodySuratJalan;
 import com.servlet.suratjalan.service.SuratJalanService;
 import com.servlet.user.entity.BodyUserApps;
+import com.servlet.user.entity.UserPermissionData;
 import com.servlet.user.service.UserAppsService;
 import com.servlet.vendor.entity.BodySearchVendor;
 import com.servlet.vendor.entity.BodyVendor;
@@ -1710,30 +1712,30 @@ public class ProcessHandler implements ProcessService{
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				String type = (String) param.get("type");
 				if(type.equals("ALL")) {
-					val.setData(penerimaanKasBankService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(penerimaanKasBankService.getListAllCheckBank(auth.getIdcompany(), auth.getIdbranch(), auth.getId()));
 				}else if(type.equals("TEMPLATE")) {
-					val.setData(penerimaanKasBankService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(penerimaanKasBankService.getTemplate(auth.getIdcompany(), auth.getIdbranch(), auth.getId()));
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
-					val.setData(penerimaanKasBankService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+					val.setData(penerimaanKasBankService.getById(auth.getIdcompany(), auth.getIdbranch(),id, auth.getId()));
 				}else if(type.equals("TEMPLATE_ID")) {
 					long id = (long) param.get("id");
-					val.setData(penerimaanKasBankService.getByIdWithTemplate(auth.getIdcompany(), auth.getIdbranch(),id));
+					val.setData(penerimaanKasBankService.getByIdWithTemplate(auth.getIdcompany(), auth.getIdbranch(),id, auth.getId()));
 				}
 				
 			}else if(codepermission.equals(ConstansPermission.READ_PENGELUARAN_KASBANK)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				String type = (String) param.get("type");
 				if(type.equals("ALL")) {
-					val.setData(pengeluaranKasBankService.getListActive(auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(pengeluaranKasBankService.getListActiveCheckBank(auth.getIdcompany(), auth.getIdbranch(), auth.getId()));
 				}else if(type.equals("TEMPLATE")) {
-					val.setData(pengeluaranKasBankService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(pengeluaranKasBankService.getTemplate(auth.getIdcompany(), auth.getIdbranch(), auth.getId()));
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
-					val.setData(pengeluaranKasBankService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+					val.setData(pengeluaranKasBankService.getByIdCheckBank(auth.getIdcompany(), auth.getIdbranch(),id, auth.getId()));
 				}else if(type.equals("TEMPLATE_ID")) {
 					long id = (long) param.get("id");
-					val.setData(pengeluaranKasBankService.getByIdWithTemplate(auth.getIdcompany(), auth.getIdbranch(),id));
+					val.setData(pengeluaranKasBankService.getByIdWithTemplate(auth.getIdcompany(), auth.getIdbranch(),id, auth.getId()));
 				}else if(type.equals("SEARCHDATACUSTOMER")) {
 					BodySearch body = (BodySearch) param.get("body");
 					val.setData(customerManggalaService.getListSearchCustomer(auth.getIdcompany(), auth.getIdbranch(), body));
@@ -1836,7 +1838,7 @@ public class ProcessHandler implements ProcessService{
 				if(type.equals("REPORT")) {
 					ParamReportManggala body = (ParamReportManggala) param.get("body");
 					if(body.getTypeReport().equals("XLSX")) {
-						val.setData(reportServiceManggala.getReportKasBank(body, auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
+						val.setData(reportServiceManggala.getReportKasBank(body, auth.getIdcompany(), auth.getIdbranch(), auth.getId()).getWorkbook());
 					}
 //					else if(body.getTypereport().equals("PPT")) {
 //						val.setData(reportService.getReportMonitoringDataPPT(body,auth.getIdcompany(), auth.getIdbranch()).getPpt());
@@ -1845,7 +1847,21 @@ public class ProcessHandler implements ProcessService{
 //					}
 					
 				}else if(type.equals("TEMPLATE")) {
-					val.setData(bankAccountService.getListActiveBankAccount(auth.getIdcompany(), auth.getIdbranch()));
+					boolean flagpermission = false;
+					List<UserPermissionData> listPermission =  new ArrayList<UserPermissionData>(userAppsService.getListUserPermission(auth.getId()));
+					if(listPermission != null && listPermission.size() > 0) {
+						for(UserPermissionData permissiondata : listPermission) {
+							if(permissiondata.getPermissioncode().equals("SUPERUSER")) {
+//								flagpermission = true;
+								break;
+							}else if(permissiondata.getPermissioncode().equals(ConstansPermission.READ_FINANCING_JUNIOR)) {
+								flagpermission = true;
+								break;
+							}
+						}
+					}
+					
+					val.setData(bankAccountService.getListActiveBankAccountCheckFinanceJunior(auth.getIdcompany(), auth.getIdbranch(), flagpermission));
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_REPORT_LABA_RUGI)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;

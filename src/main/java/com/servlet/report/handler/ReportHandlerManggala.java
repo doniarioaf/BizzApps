@@ -55,10 +55,13 @@ import com.servlet.report.entity.ParamReportManggala;
 import com.servlet.report.entity.ReportSummaryKegiatanTructTemplate;
 import com.servlet.report.entity.ReportWorkBookExcel;
 import com.servlet.report.service.ReportServiceManggala;
+import com.servlet.shared.ConstansPermission;
 import com.servlet.shared.ConstantReportName;
 import com.servlet.shared.GlobalFunc;
 import com.servlet.suratjalan.entity.SuratJalanData;
 import com.servlet.suratjalan.service.SuratJalanService;
+import com.servlet.user.entity.UserPermissionData;
+import com.servlet.user.service.UserAppsService;
 import com.servlet.workorder.entity.DetailWorkOrderData;
 import com.servlet.workorder.entity.ParamWoReport;
 import com.servlet.workorder.entity.WorkOrderData;
@@ -92,6 +95,8 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 	private DistrictRepo districtRepo;
 	@Autowired
 	private MappingService mappingservice;
+	@Autowired
+	private UserAppsService userAppsService;
 	
 	@Override
 	public ReportWorkBookExcel getReportBongkarMuatDanDepo(Manggala_BodyReportBongkarMuatDanDepo body, long idcompany,
@@ -501,7 +506,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 	}
 
 	@Override
-	public ReportWorkBookExcel getReportKasBank(ParamReportManggala body, long idcompany, long idbranch) {
+	public ReportWorkBookExcel getReportKasBank(ParamReportManggala body, long idcompany, long idbranch,long iduser) {
 		// TODO Auto-generated method stub
 		ReportWorkBookExcel data = new ReportWorkBookExcel();
 		XSSFWorkbook workbook = new XSSFWorkbook();
@@ -547,20 +552,34 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 		Date dtDateBeforeFrom = new Date(tsDateBeforeFrom.getTime());
 		
 		long idbank = body.getIdbank() != null?body.getIdbank():0;
+		if(idbank != 0) {
+			boolean checkFinanceJunior = checkFinanceJunior(iduser);
+		}
 		BankAccountData bankData = bankAccountService.getByIdForReport(idcompany, idbranch, idbank);
 		double saldoAwalBank = 0.0;
 		if(bankData != null) {
-			if(bankData.getSaldoawal() != null) {
+			boolean checkFinanceJunior = checkFinanceJunior(iduser);
+			if(checkFinanceJunior) {
+				if(!bankData.isShowfinancejunior()) {
+					idbank = 0;
+				}
+			}
+			
+			if(bankData.getSaldoawal() != null && idbank != 0) {
 				saldoAwalBank = bankData.getSaldoawal();
 			}
 		}
 		
-		//56169461 = 01-Jan-70
-		Double saldoPenerimaan = penerimaanKasBankService.summaryAmountPenerimaanByDate(idcompany, idbranch, new Date(56169461L), dtDateBeforeFrom, null,idbank);
-		saldoPenerimaan = saldoPenerimaan != null? saldoPenerimaan:0.0;
-		Double saldoPengeluaraan = pengeluaranKasBankService.summaryAmountPengeluaranByDate(idcompany, idbranch, new Date(56169461L), dtDateBeforeFrom, null,idbank);
-		saldoPengeluaraan = saldoPengeluaraan != null ? saldoPengeluaraan:0.0;
-		double totalSaldoAwal = saldoAwalBank + saldoPenerimaan - saldoPengeluaraan; 
+		double totalSaldoAwal = 0.0;
+		if(idbank != 0) {
+			//56169461 = 01-Jan-70
+			Double saldoPenerimaan = penerimaanKasBankService.summaryAmountPenerimaanByDate(idcompany, idbranch, new Date(56169461L), dtDateBeforeFrom, null,idbank);
+			saldoPenerimaan = saldoPenerimaan != null? saldoPenerimaan:0.0;
+			Double saldoPengeluaraan = pengeluaranKasBankService.summaryAmountPengeluaranByDate(idcompany, idbranch, new Date(56169461L), dtDateBeforeFrom, null,idbank);
+			saldoPengeluaraan = saldoPengeluaraan != null ? saldoPengeluaraan:0.0;
+			totalSaldoAwal = saldoAwalBank + saldoPenerimaan - saldoPengeluaraan;
+		}
+		 
         Row rowTitle = sheet.createRow(1);
         createCell(rowTitle, 0, "Laporan Kas/Bank", style,sheet);
         Row rowPeriode = sheet.createRow(2);
@@ -1810,5 +1829,22 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 			val = history.getSparepartkepala_nama(); 
 		}
 		return val;
+	}
+	
+	private boolean checkFinanceJunior(Long iduser) {
+		boolean flagpermission = false;
+		List<UserPermissionData> listPermission =  new ArrayList<UserPermissionData>(userAppsService.getListUserPermission(iduser));
+		if(listPermission != null && listPermission.size() > 0) {
+			for(UserPermissionData permissiondata : listPermission) {
+				if(permissiondata.getPermissioncode().equals("SUPERUSER")) {
+//					flagpermission = true;
+					break;
+				}else if(permissiondata.getPermissioncode().equals(ConstansPermission.READ_FINANCING_JUNIOR)) {
+					flagpermission = true;
+					break;
+				}
+			}
+		}
+		return flagpermission;
 	}
 }

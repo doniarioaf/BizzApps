@@ -17,6 +17,7 @@ import com.servlet.asset.entity.HistoryAssetMappingData;
 import com.servlet.asset.repo.AssetRepo;
 import com.servlet.asset.repo.HistoryAssetMappingRepo;
 import com.servlet.asset.service.AssetService;
+import com.servlet.bankaccount.entity.BankAccount;
 import com.servlet.bankaccount.service.BankAccountService;
 import com.servlet.coa.service.CoaService;
 import com.servlet.employeemanggala.entity.EmployeManggalaData;
@@ -49,9 +50,12 @@ import com.servlet.pengluarankasbank.service.PengeluaranKasBankService;
 import com.servlet.report.entity.EntityHelperKasBank;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
+import com.servlet.shared.ConstansPermission;
 import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.user.entity.UserPermissionData;
+import com.servlet.user.service.UserAppsService;
 import com.servlet.vendor.entity.DetailVendorBankData;
 import com.servlet.vendor.service.VendorService;
 import com.servlet.workorder.entity.ParamDropDownWO;
@@ -91,6 +95,8 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 	private VendorService vendorService;
 	@Autowired
 	private EmployeeManggalaService employeeManggalaService;
+	@Autowired
+	private UserAppsService userAppsService;
 	
 	private final String PAYMENTTO_EMPLOYEE = "EMPLOYEE";
 	private final String PAYMENTTO_CUSTOMER = "CUSTOMER";
@@ -111,6 +117,20 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListPengeluaranKasBankData().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false order by data.nodocument desc ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListPengeluaranKasBankData(), queryParameters);
+	}
+	
+	@Override
+	public List<PengeluaranKasBankData> getListActiveCheckBank(Long idcompany, Long idbranch,Long iduser) {
+		// TODO Auto-generated method stub
+		boolean checkFinanceJunior = checkFinanceJunior(iduser);
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListPengeluaranKasBankData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		if(checkFinanceJunior) {
+			sqlBuilder.append(" and bank.showfinancejunior = true ");
+		}
+		sqlBuilder.append(" order by data.nodocument desc ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListPengeluaranKasBankData(), queryParameters);
 	}
@@ -135,6 +155,31 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		}
 		return null;
 	}
+	
+	@Override
+	public PengeluaranKasBankData getByIdCheckBank(Long idcompany, Long idbranch, Long id, Long iduser) {
+		// TODO Auto-generated method stub
+		boolean checkFinanceJunior = checkFinanceJunior(iduser);
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPengeluaranKasBankJoinTable().schema());
+		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		if(checkFinanceJunior) {
+			sqlBuilder.append(" and bank.showfinancejunior = true ");
+		}
+		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+		List<PengeluaranKasBankData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetPengeluaranKasBankJoinTable(), queryParameters);
+		if(list != null && list.size() > 0) {
+			PengeluaranKasBankData val = list.get(0);
+			val.setDetails(getDetails(idcompany,idbranch,id));
+			val.setDisablededitordelete(compareDateDocWithParameter(idcompany,idbranch,val.getPaymentdate()));
+			if(val.getPaymentto().equals(PAYMENTTO_VENDOR)) {
+				val.setListBank(getListBankVendor(val.getIdvendor(),idcompany,idbranch));
+			}else if(val.getPaymentto().equals(PAYMENTTO_EMPLOYEE)) {
+				val.setListBank(getEmpAccBankById(idcompany,idbranch,val.getIdemployee()));
+			}
+			return val;
+		}
+		return null;
+	}
 
 	@Override
 	public ReturnData saveData(Long idcompany, Long idbranch, Long iduser, BodyPengeluaranKasBank body) {
@@ -143,12 +188,26 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		long idsave = 0;
 		Date date = new Date();
 		Timestamp ts = new Timestamp(date.getTime());
-		String docNumber = runningNumberService.getDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_PENGELUARANKASBANK, ts);
-		if(docNumber.equals("")) {
-			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_GENERATE_DOC_NUMBER,"Gagal Generate Document Number");
-			validations.add(msg);
+		
+		boolean checkFinanceJunior = checkFinanceJunior(iduser);
+		if(checkFinanceJunior) {
+			BankAccount bank = bankAccountService.getId(body.getIdbank());
+			if(bank != null && bank.getId() != 0) {
+				if(!bank.isShowfinancejunior()) {
+					ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_SAVE_BANK_FINANCE_JUNIOR,"Gagal Save");
+					validations.add(msg);
+				}
+			}
 		}
 		
+		String docNumber = "";
+		if(validations.size() == 0) {
+			docNumber = runningNumberService.getDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_PENGELUARANKASBANK, ts);
+			if(docNumber.equals("")) {
+				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_GENERATE_DOC_NUMBER,"Gagal Generate Document Number");
+				validations.add(msg);
+			}
+		}
 		if(validations.size() == 0) {
 			try {
 				try {
@@ -220,6 +279,20 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_PENGELUARAN_DATE_CLOSEBOOK,"Tidak Bisa Edit/Delete, Sudah Tutup Buku");
 				validations.add(msg);
 			}
+			
+			if(validations.size() == 0 ) {
+				boolean checkFinanceJunior = checkFinanceJunior(iduser);
+				if(checkFinanceJunior) {
+					BankAccount bank = bankAccountService.getId(body.getIdbank());
+					if(bank != null && bank.getId() != 0) {
+						if(!bank.isShowfinancejunior()) {
+							ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_SAVE_BANK_FINANCE_JUNIOR,"Gagal Save");
+							validations.add(msg);
+						}
+					}
+				}
+			}
+			
 			if(validations.size() == 0) {
 				try {
 					Timestamp ts = new Timestamp(new Date().getTime());
@@ -313,13 +386,13 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 	}
 
 	@Override
-	public PengeluaranKasBankTemplate getTemplate(Long idcompany, Long idbranch) {
+	public PengeluaranKasBankTemplate getTemplate(Long idcompany, Long idbranch, Long iduser) {
 		// TODO Auto-generated method stub
-		return setTemplate(idcompany,idbranch);
+		return setTemplate(idcompany,idbranch, iduser);
 	}
 
 	@Override
-	public PengeluaranKasBankData getByIdWithTemplate(Long idcompany, Long idbranch, Long id) {
+	public PengeluaranKasBankData getByIdWithTemplate(Long idcompany, Long idbranch, Long id, Long iduser) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPengeluaranKasBankData().schema());
 		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
@@ -328,7 +401,7 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		if(list != null && list.size() > 0) {
 			PengeluaranKasBankData val = list.get(0);
 			val.setDetails(getDetails(idcompany,idbranch,id));
-			val.setTemplate(setTemplate(idcompany,idbranch));
+			val.setTemplate(setTemplate(idcompany,idbranch, iduser));
 						
 			if(val.getPaymentto().equals(PAYMENTTO_VENDOR)) {
 				val.setListBank(getListBankVendor(val.getIdvendor(),idcompany,idbranch));
@@ -354,7 +427,9 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		return null;
 	}
 	
-	private PengeluaranKasBankTemplate setTemplate(Long idcompany, Long idbranch) {
+	private PengeluaranKasBankTemplate setTemplate(Long idcompany, Long idbranch, Long iduser) {
+		boolean checkFinanceJunior = checkFinanceJunior(iduser);
+		
 		ParamDropDownWO paramwo = new ParamDropDownWO();
 		paramwo.setStatus("OPEN");
 		paramwo.setMenu("PENGELUARAN_KAS_BANK");
@@ -364,7 +439,7 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		paramInvType.setMenu("PENGELUARAN_KAS_BANK");
 		
 		PengeluaranKasBankTemplate template = new PengeluaranKasBankTemplate();
-		template.setBankOptions(bankAccountService.getListActiveBankAccount(idcompany, idbranch));
+		template.setBankOptions(bankAccountService.getListActiveBankAccountCheckFinanceJunior(idcompany, idbranch, checkFinanceJunior));
 		template.setCoaOptions(coaService.getListActiveCOA(idcompany, idbranch));
 		template.setWoOptions(workOrderService.getListDropDownByParam(idcompany, idbranch, paramwo));
 		template.setInvoiceItemOptions(invoiceTypeService.getListDropDownInvoiceType(idcompany, idbranch, paramInvType));
@@ -707,9 +782,24 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		sqlBuilder.append(" (mpengeluaran.idcompany = ? and mpengeluaran.idbranch = ?  and mpengeluaran.isactive = true and mpengeluaran.isdelete = false and mpengeluaran.idbank = "+idbank+" and mpengeluaran.paymentdate >= '"+fromdate+"'  and mpengeluaran.paymentdate <= '"+todate+"' ) ");
 //		sqlBuilder.append(" order by mpenerimaan.receivedate , mpengeluaran.paymentdate asc ");
 		
-		System.out.println("StringBuilder = "+sqlBuilder.toString());
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataReportKasBankMapper(), queryParameters);
 	}
-
+	
+	private boolean checkFinanceJunior(Long iduser) {
+		boolean flagpermission = false;
+		List<UserPermissionData> listPermission =  new ArrayList<UserPermissionData>(userAppsService.getListUserPermission(iduser));
+		if(listPermission != null && listPermission.size() > 0) {
+			for(UserPermissionData permissiondata : listPermission) {
+				if(permissiondata.getPermissioncode().equals("SUPERUSER")) {
+//					flagpermission = true;
+					break;
+				}else if(permissiondata.getPermissioncode().equals(ConstansPermission.READ_FINANCING_JUNIOR)) {
+					flagpermission = true;
+					break;
+				}
+			}
+		}
+		return flagpermission;
+	}
 }

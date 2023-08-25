@@ -27,7 +27,7 @@ private String schemaSql;
 		
 		sqlBuilder.append("from detail_pengeluaran_kas_bank as dpengeluaran ");
 		sqlBuilder.append("left join m_pengeluaran_kas_bank as mpengeluaran on mpengeluaran.id = dpengeluaran.idpengeluarankasbank ");
-		sqlBuilder.append("left join m_coa as coapengeluaran on coapengeluaran.id = mpengeluaran.idcoa ");
+		sqlBuilder.append("left join m_coa as coapengeluaran on coapengeluaran.id = dpengeluaran.idcoa ");
 		sqlBuilder.append("left join m_workorder as workorderpengeluaran on workorderpengeluaran.id = mpengeluaran.idwo ");
 		
 		sqlBuilder.append("left join m_customer_manggala as cust on cust.id = mpengeluaran.idcustomer ");
@@ -131,7 +131,7 @@ private String schemaSql;
 		data.setPengeluaran_vendorname(pengeluaranvendorname);
 		data.setPengeluaran_employeename(pengeluaranempname);
 		data.setPengeluaranAmount(pengeluaranamount);
-		
+		data.setPengeluaranketerangan(pengeluaranketerangan);
 		return data;
 	}
 }

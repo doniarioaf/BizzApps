@@ -43,7 +43,11 @@ public class BankAccountHandler implements BankAccountService{
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataBankAccount(), queryParameters);
 	}
-
+	
+	@Override
+	public BankAccount getId(Long id) {
+		return repository.getById(id);
+	}
 	@Override
 	public BankAccountData getById(Long idcompany, Long idbranch, Long id,Long iduser) {
 		// TODO Auto-generated method stub
@@ -108,6 +112,7 @@ public class BankAccountHandler implements BankAccountService{
 				table.setCatatan2(body.getCatatan2());
 				table.setIsactive(body.isIsactive());
 				table.setNamabank(body.getNamabank());
+				table.setShowfinancejunior(body.isShowfinancejunior());
 				table.setIsdelete(false);
 				table.setCreatedby(iduser.toString());
 				table.setCreateddate(ts);
@@ -177,6 +182,7 @@ public class BankAccountHandler implements BankAccountService{
 				table.setCatatan2(body.getCatatan2());
 				table.setIsactive(body.isIsactive());
 				table.setNamabank(body.getNamabank());
+				table.setShowfinancejunior(body.isShowfinancejunior());
 				table.setUpdateby(iduser.toString());
 				table.setUpdatedate(ts);
 				
@@ -259,6 +265,18 @@ public class BankAccountHandler implements BankAccountService{
 			
 		}
 		return null;
+	}
+	
+	@Override
+	public List<BankAccountData> getListActiveBankAccountCheckFinanceJunior(Long idcompany, Long idbranch,boolean isFinanceJunior) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataBankAccount().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		if(isFinanceJunior) {
+			sqlBuilder.append(" and data.showfinancejunior = true ");
+		}
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataBankAccount(), queryParameters);
 	}
 
 }

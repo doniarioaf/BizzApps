@@ -35,7 +35,14 @@ public class BankAccount implements Serializable{
 	private String deleteby;
 	private Timestamp deletedate;
 	private Double saldoawal;
+	private boolean showfinancejunior;
 	
+	public boolean isShowfinancejunior() {
+		return showfinancejunior;
+	}
+	public void setShowfinancejunior(boolean showfinancejunior) {
+		this.showfinancejunior = showfinancejunior;
+	}
 	public Long getId() {
 		return id;
 	}

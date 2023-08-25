@@ -12,6 +12,14 @@ public class BankAccountData {
 	private boolean isactive;
 	private String namabank;
 	private Double saldoawal;
+	private boolean showfinancejunior;
+	
+	public boolean isShowfinancejunior() {
+		return showfinancejunior;
+	}
+	public void setShowfinancejunior(boolean showfinancejunior) {
+		this.showfinancejunior = showfinancejunior;
+	}
 	public Long getId() {
 		return id;
 	}

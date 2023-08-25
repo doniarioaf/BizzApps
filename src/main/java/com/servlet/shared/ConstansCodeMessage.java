@@ -103,5 +103,6 @@ public class ConstansCodeMessage {
 	public static final String VALIDASI_PENERIMAAN_DATE_CLOSEBOOK = "validation.penerimaan.date.closebook";
 	public static final String VALIDASI_PENGELUARAN_DATE_CLOSEBOOK = "validation.pengeluaran.date.closebook";
 	public static final String VALIDASI_INVOICE_WO_EXIST_REIMBURSEMENT = "validation.invoice.wo.exist.reimbursement";
+	public static final String VALIDASI_SAVE_BANK_FINANCE_JUNIOR = "validation.save.bank.financejunior";
 	
 }

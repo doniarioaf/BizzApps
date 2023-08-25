@@ -25,7 +25,7 @@ public class GetDataReportKasBankMapper implements RowMapper<EntityHelperKasBank
 		sqlBuilder.append("dpenerimaan.amount as penerimaanamount ");
 		sqlBuilder.append("from detail_penerimaan_kas_bank as dpenerimaan ");
 		sqlBuilder.append("left join m_penerimaan_kas_bank as mpenerimaan on mpenerimaan.id = dpenerimaan.idpenerimaankasbank ");
-		sqlBuilder.append("left join m_coa as coapenerimaan on coapenerimaan.id = mpenerimaan.idcoa ");
+		sqlBuilder.append("left join m_coa as coapenerimaan on coapenerimaan.id = dpenerimaan.idcoa ");
 		sqlBuilder.append("left join m_workorder as workorderpenerimaan on workorderpenerimaan.id = dpenerimaan.idworkorder ");
 		sqlBuilder.append("left join m_invoice as invoicepenerimaan on invoicepenerimaan.id = dpenerimaan.idinvoice ");
 		

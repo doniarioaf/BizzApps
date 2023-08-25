@@ -189,6 +189,11 @@ public class ConstansPermission {
 	public static final String READ_REPORT_LABA_RUGI = "READ_REPORT_LABA_RUGI";
 	public static final String READ_REPORT_SUMMARY_KEGIATAN_TRUCK = "READ_REPORT_SUMMARY_KEGIATAN_TRUCK";
 	public static final String READ_REPORT_HISTORY_TRUCK = "READ_REPORT_HISTORY_TRUCK";
+	
+	public static final String READ_FINANCING_JUNIOR = "READ_FINANCING_JUNIOR";
+	public static final String CREATE_FINANCING_JUNIOR = "CREATE_FINANCING_JUNIOR";
+	public static final String EDIT_FINANCING_JUNIOR = "EDIT_FINANCING_JUNIOR";
+	public static final String DELETE_FINANCING_JUNIOR = "DELETE_FINANCING_JUNIOR";
 
 	
 	

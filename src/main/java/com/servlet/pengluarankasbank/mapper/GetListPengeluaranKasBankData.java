@@ -20,6 +20,7 @@ public class GetListPengeluaranKasBankData implements RowMapper<PengeluaranKasBa
 		sqlBuilder.append("from m_pengeluaran_kas_bank as data ");
 		sqlBuilder.append("left join m_vendor as vendor on vendor.id = data.idvendor ");
 		sqlBuilder.append("left join m_workorder as wo on wo.id = data.idwo ");
+		sqlBuilder.append("left join m_bank_account as bank on bank.id = data.idbank ");
 		
 		
 		this.schemaSql = sqlBuilder.toString();

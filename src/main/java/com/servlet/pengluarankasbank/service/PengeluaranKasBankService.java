@@ -16,13 +16,15 @@ import com.servlet.vendor.entity.DetailVendorBankData;
 public interface PengeluaranKasBankService {
 	List<PengeluaranKasBankData> getListAll(Long idcompany,Long idbranch);
 	List<PengeluaranKasBankData> getListActive(Long idcompany,Long idbranch);
+	List<PengeluaranKasBankData> getListActiveCheckBank(Long idcompany,Long idbranch,Long iduser);
 	List<PengeluaranKasBankData> getListAllJoin(Long idcompany,Long idbranch);
 	PengeluaranKasBankData getById(Long idcompany,Long idbranch,Long id);
+	PengeluaranKasBankData getByIdCheckBank(Long idcompany,Long idbranch,Long id, Long iduser);
 	ReturnData saveData(Long idcompany,Long idbranch,Long iduser,BodyPengeluaranKasBank body);
 	ReturnData updateData(Long idcompany,Long idbranch,Long iduser,Long id,BodyPengeluaranKasBank body);
 	ReturnData deleteData(Long idcompany,Long idbranch,Long iduser,Long id);
-	PengeluaranKasBankTemplate getTemplate(Long idcompany,Long idbranch);
-	PengeluaranKasBankData getByIdWithTemplate(Long idcompany,Long idbranch,Long id);
+	PengeluaranKasBankTemplate getTemplate(Long idcompany,Long idbranch, Long iduser);
+	PengeluaranKasBankData getByIdWithTemplate(Long idcompany,Long idbranch,Long id, Long iduser);
 	Double summaryAmountPengeluaranByDate(Long idcompany,Long idbranch,Date fromdate, Date todate, Long idpengeluaran, Long idbank);
 	List<DetailPengeluaranKasBankData> getListDetailById(Long idcompany,Long idbranch,Long id);
 	Double summaryAmountPengeluaranByIdWo(Long idcompany,Long idbranch,Date fromdate, Date todate, Long idwo,Long idbank);
