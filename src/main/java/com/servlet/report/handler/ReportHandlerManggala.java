@@ -8,7 +8,6 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -518,12 +517,14 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 		
 		CellStyle style = workbook.createCellStyle();
 		CellStyle styleAmount = workbook.createCellStyle();
+		CellStyle styleInteger = workbook.createCellStyle();
         XSSFFont font = workbook.createFont();
         font.setBold(true);
         font.setFontHeight(12);
         style.setFont(font);
         styleAmount.setFont(font);
         
+        String formatAmount = "#,###.00";
 		
         String dateFrom = "";
 		try {
@@ -627,9 +628,9 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 			styleAmount = workbook.createCellStyle();
 	        styleAmount.setFont(font);
 			if(compare == 0) {
-				styleAmount.setDataFormat(format.getFormat("#,###"));
+				styleAmount.setDataFormat(format.getFormat(formatAmount));
 			}else {
-				styleAmount.setDataFormat(format.getFormat("#,###.##"));
+				styleAmount.setDataFormat(format.getFormat(formatAmount));
 			}
 			
 			
@@ -704,7 +705,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style,sheet);
-						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoAju(), style,sheet);
+						createCell(rowData, columnCount++, (dataKasBank.getPenerimaannoAju() != null && !dataKasBank.getPenerimaannoAju().equals("") ? new Integer(dataKasBank.getPenerimaannoAju()):""), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoInvoice(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaannamaCustomer(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaanketerangan(), style,sheet);
@@ -715,9 +716,9 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						styleAmount = workbook.createCellStyle();
 				        styleAmount.setFont(font);
 						if(compare == 0) {
-							styleAmount.setDataFormat(format.getFormat("#,###"));
+							styleAmount.setDataFormat(format.getFormat(formatAmount));
 						}else {
-							styleAmount.setDataFormat(format.getFormat("#,###.##"));
+							styleAmount.setDataFormat(format.getFormat(formatAmount));
 						}
 						createCell(rowData, columnCount++, saldoUangMasuk, styleAmount,sheet,7000);
 						createCell(rowData, columnCount++, "", style,sheet);
@@ -728,9 +729,9 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						styleAmount = workbook.createCellStyle();
 				        styleAmount.setFont(font);
 						if(compare == 0) {
-							styleAmount.setDataFormat(format.getFormat("#,###"));
+							styleAmount.setDataFormat(format.getFormat(formatAmount));
 						}else {
-							styleAmount.setDataFormat(format.getFormat("#,###.##"));
+							styleAmount.setDataFormat(format.getFormat(formatAmount));
 						}
 						createCell(rowData, columnCount++, saldo, styleAmount,sheet,7000);
 						
@@ -751,7 +752,10 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, dataKasBank.getPengeluarannoVoucher(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPengeluarancoa(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPengeluarannoWO(), style,sheet);
-						createCell(rowData, columnCount++, dataKasBank.getPengeluarannoAju(), style,sheet);
+						
+				        
+						createCell(rowData, columnCount++, (dataKasBank.getPengeluarannoAju() != null && !dataKasBank.getPengeluarannoAju().equals("") ? new Integer(dataKasBank.getPengeluarannoAju()):""), style,sheet);
+//						createCell(rowData, columnCount++, dataKasBank.getPengeluarannoAju(), style,sheet);
 						createCell(rowData, columnCount++, "", style,sheet);
 						createCell(rowData, columnCount++, pengeluaranNamaPaymentTo, style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPengeluaranketerangan(), style,sheet);
@@ -762,9 +766,9 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						styleAmount = workbook.createCellStyle();
 				        styleAmount.setFont(font);
 						if(compare == 0) {
-							styleAmount.setDataFormat(format.getFormat("#,###"));
+							styleAmount.setDataFormat(format.getFormat(formatAmount));
 						}else {
-							styleAmount.setDataFormat(format.getFormat("#,###.##"));
+							styleAmount.setDataFormat(format.getFormat(formatAmount));
 						}
 						createCell(rowData, columnCount++, "", style,sheet);
 						createCell(rowData, columnCount++, saldoUangKeluar, styleAmount,sheet,7000);
@@ -776,9 +780,9 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						styleAmount = workbook.createCellStyle();
 				        styleAmount.setFont(font);
 						if(compare == 0) {
-							styleAmount.setDataFormat(format.getFormat("#,###"));
+							styleAmount.setDataFormat(format.getFormat(formatAmount));
 						}else {
-							styleAmount.setDataFormat(format.getFormat("#,###.##"));
+							styleAmount.setDataFormat(format.getFormat(formatAmount));
 						}
 						createCell(rowData, columnCount++, saldo, styleAmount,sheet,7000);
 						
@@ -787,7 +791,8 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style,sheet);
-						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoAju(), style,sheet);
+//						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoAju(), style,sheet);
+						createCell(rowData, columnCount++, (dataKasBank.getPenerimaannoAju() != null && !dataKasBank.getPenerimaannoAju().equals("") ? new Integer(dataKasBank.getPenerimaannoAju()):""), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoInvoice(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaannamaCustomer(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaanketerangan(), style,sheet);
@@ -798,9 +803,9 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						styleAmount = workbook.createCellStyle();
 				        styleAmount.setFont(font);
 						if(compare == 0) {
-							styleAmount.setDataFormat(format.getFormat("#,###"));
+							styleAmount.setDataFormat(format.getFormat(formatAmount));
 						}else {
-							styleAmount.setDataFormat(format.getFormat("#,###.##"));
+							styleAmount.setDataFormat(format.getFormat(formatAmount));
 						}
 						createCell(rowData, columnCount++, saldoUangMasuk, styleAmount,sheet,7000);
 						createCell(rowData, columnCount++, "", style,sheet);
@@ -811,9 +816,9 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						styleAmount = workbook.createCellStyle();
 				        styleAmount.setFont(font);
 						if(compare == 0) {
-							styleAmount.setDataFormat(format.getFormat("#,###"));
+							styleAmount.setDataFormat(format.getFormat(formatAmount));
 						}else {
-							styleAmount.setDataFormat(format.getFormat("#,###.##"));
+							styleAmount.setDataFormat(format.getFormat(formatAmount));
 						}
 						createCell(rowData, columnCount++, saldo, styleAmount,sheet,7000);
 					}else if(dataKasBank.getPengeluaranid() != null && dataKasBank.getPengeluaranid() != 0) {
@@ -830,7 +835,8 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, dataKasBank.getPengeluarannoVoucher(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPengeluarancoa(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPengeluarannoWO(), style,sheet);
-						createCell(rowData, columnCount++, dataKasBank.getPengeluarannoAju(), style,sheet);
+//						createCell(rowData, columnCount++, dataKasBank.getPengeluarannoAju(), style,sheet);
+						createCell(rowData, columnCount++, (dataKasBank.getPengeluarannoAju() != null && !dataKasBank.getPengeluarannoAju().equals("") ? new Integer(dataKasBank.getPengeluarannoAju()):""), style,sheet);
 						createCell(rowData, columnCount++, "", style,sheet);
 						createCell(rowData, columnCount++, pengeluaranNamaPaymentTo, style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPengeluaranketerangan(), style,sheet);
@@ -841,12 +847,12 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						styleAmount = workbook.createCellStyle();
 				        styleAmount.setFont(font);
 						if(compare == 0) {
-							styleAmount.setDataFormat(format.getFormat("#,###"));
+							styleAmount.setDataFormat(format.getFormat(formatAmount));
 						}else {
-							styleAmount.setDataFormat(format.getFormat("#,###.##"));
+							styleAmount.setDataFormat(format.getFormat(formatAmount));
 						}
 						createCell(rowData, columnCount++, "", style,sheet);
-						createCell(rowData, columnCount++, saldoUangKeluar, styleAmount,sheet,7000);
+						createCell(rowData, columnCount++, saldoUangKeluar.doubleValue(), styleAmount,sheet,7000);
 						
 						totalSaldoAwal = totalSaldoAwal - saldoUangKeluar.doubleValue();
 						double saldo = totalSaldoAwal;
@@ -855,9 +861,9 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						styleAmount = workbook.createCellStyle();
 				        styleAmount.setFont(font);
 						if(compare == 0) {
-							styleAmount.setDataFormat(format.getFormat("#,###"));
+							styleAmount.setDataFormat(format.getFormat(formatAmount));
 						}else {
-							styleAmount.setDataFormat(format.getFormat("#,###.##"));
+							styleAmount.setDataFormat(format.getFormat(formatAmount));
 						}
 						createCell(rowData, columnCount++, saldo, styleAmount,sheet,7000);
 						

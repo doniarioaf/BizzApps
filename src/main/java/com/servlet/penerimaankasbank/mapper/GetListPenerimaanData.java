@@ -8,22 +8,23 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.servlet.penerimaankasbank.entity.PenerimaanKasBankData;
 
-public class GetPenerimaanKasBankJoinTable implements RowMapper<PenerimaanKasBankData>{
+public class GetListPenerimaanData implements RowMapper<PenerimaanKasBankData>{
 	private String schemaSql;
 	
-	public GetPenerimaanKasBankJoinTable() {
+	public GetListPenerimaanData() {
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
 		sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.receivedate as receivedate, data.receivefrom as receivefrom, data.idcoa as idcoa, ");
-		sqlBuilder.append("data.idbank as idbank, data.keterangan as keterangan, data.isactive as isactive, coa.nama as coaname,	bank.namabank as namabank, ");
+		sqlBuilder.append("data.idbank as idbank, data.keterangan as keterangan, data.isactive as isactive,	bank.namabank as namabank, ");
 		sqlBuilder.append("data.idcustomer as idcustomer, data.idvendor as idvendor, data.idemployee as idemployee, ");
 		sqlBuilder.append("vendor.nama as vendornama, data.idreceivetype as idreceivetype, cust.customername as customername, emp.nama as empnama  ");
+		
 		sqlBuilder.append("from m_penerimaan_kas_bank as data ");
-		sqlBuilder.append("left join m_coa as coa on coa.id = data.idcoa ");
 		sqlBuilder.append("left join m_bank_account as bank on bank.id = data.idbank ");
 		sqlBuilder.append("left join m_vendor as vendor on vendor.id = data.idvendor ");
 		sqlBuilder.append("left join m_customer_manggala as cust on cust.id = data.idcustomer ");
 		sqlBuilder.append("left join m_employee_manggala as emp on emp.id = data.idemployee ");
+		
 		
 		this.schemaSql = sqlBuilder.toString();
 	}
@@ -43,7 +44,7 @@ public class GetPenerimaanKasBankJoinTable implements RowMapper<PenerimaanKasBan
 		final Long idbank = rs.getLong("idbank");
 		final String keterangan = rs.getString("keterangan");
 		final boolean isactive = rs.getBoolean("isactive");
-		final String coaname = rs.getString("coaname");
+		final String coaname = "";//rs.getString("coaname");
 		final String namabank = rs.getString("namabank");
 		
 		final Long idcustomer = rs.getLong("idcustomer");
@@ -75,5 +76,4 @@ public class GetPenerimaanKasBankJoinTable implements RowMapper<PenerimaanKasBan
 		data.setEmployeeName(empnama);
 		return data;
 	}
-
 }

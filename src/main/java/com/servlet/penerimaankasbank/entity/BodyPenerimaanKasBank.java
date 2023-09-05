@@ -8,8 +8,37 @@ public class BodyPenerimaanKasBank {
 	private Long idbank;
 	private String keterangan;
 	private boolean isactive;
+	private Long idcustomer;
+	private Long idvendor;
+	private Long idemployee;
+	private String idreceivetype;
 	private BodyDetailPenerimaanKasBank[] details;
 	
+	
+	public Long getIdcustomer() {
+		return idcustomer;
+	}
+	public void setIdcustomer(Long idcustomer) {
+		this.idcustomer = idcustomer;
+	}
+	public Long getIdvendor() {
+		return idvendor;
+	}
+	public void setIdvendor(Long idvendor) {
+		this.idvendor = idvendor;
+	}
+	public Long getIdemployee() {
+		return idemployee;
+	}
+	public void setIdemployee(Long idemployee) {
+		this.idemployee = idemployee;
+	}
+	public String getIdreceivetype() {
+		return idreceivetype;
+	}
+	public void setIdreceivetype(String idreceivetype) {
+		this.idreceivetype = idreceivetype;
+	}
 	public Long getReceivedate() {
 		return receivedate;
 	}

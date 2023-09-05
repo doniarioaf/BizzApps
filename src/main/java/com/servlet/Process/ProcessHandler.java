@@ -1798,6 +1798,9 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("GETSURATJALANBYWO")) {
 					long idwo = (long) param.get("idwo");
 					val.setData(suratJalanService.getListSuratJalanByWO(auth.getIdcompany(), auth.getIdbranch(),idwo));
+				}else if(type.equals("GETINVOICEDPBYWO")) {
+					long idwo = (long) param.get("idwo");
+					val.setData(invoiceService.getListInvoiceDPByIdWo(auth.getIdcompany(), auth.getIdbranch(),idwo));
 				}
 				
 			}else if(codepermission.equals(ConstansPermission.READ_ASSET)) {

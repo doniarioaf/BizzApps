@@ -34,7 +34,14 @@ public class InvoiceData {
 	private List<DetailPenerimaanKasBankData> detailspenerimaan;
 	private Double ppn;
 	private Double nilaippn;
+	private List<InvoiceDPData> listDP;
 	
+	public List<InvoiceDPData> getListDP() {
+		return listDP;
+	}
+	public void setListDP(List<InvoiceDPData> listDP) {
+		this.listDP = listDP;
+	}
 	public Double getNilaippn() {
 		return nilaippn;
 	}

@@ -17,6 +17,64 @@ public class PenerimaanKasBankData {
 	private List<DetailPenerimaanKasBankData> details;
 	private PenerimaanKasBankTemplate template;
 	private boolean disablededitordelete;
+	
+	private Long idcustomer;
+	private String customerName;
+	private Long idvendor;
+	private String vendorName;
+	private Long idemployee;
+	private String employeeName;
+	private String idreceivetype;
+	private String receivetypename;
+	
+	public Long getIdcustomer() {
+		return idcustomer;
+	}
+	public void setIdcustomer(Long idcustomer) {
+		this.idcustomer = idcustomer;
+	}
+	public String getCustomerName() {
+		return customerName;
+	}
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
+	public Long getIdvendor() {
+		return idvendor;
+	}
+	public void setIdvendor(Long idvendor) {
+		this.idvendor = idvendor;
+	}
+	public String getVendorName() {
+		return vendorName;
+	}
+	public void setVendorName(String vendorName) {
+		this.vendorName = vendorName;
+	}
+	public Long getIdemployee() {
+		return idemployee;
+	}
+	public void setIdemployee(Long idemployee) {
+		this.idemployee = idemployee;
+	}
+	public String getEmployeeName() {
+		return employeeName;
+	}
+	public void setEmployeeName(String employeeName) {
+		this.employeeName = employeeName;
+	}
+	public String getIdreceivetype() {
+		return idreceivetype;
+	}
+	public void setIdreceivetype(String idreceivetype) {
+		this.idreceivetype = idreceivetype;
+	}
+	public String getReceivetypename() {
+		return receivetypename;
+	}
+	public void setReceivetypename(String receivetypename) {
+		this.receivetypename = receivetypename;
+	}
 	public Long getId() {
 		return id;
 	}

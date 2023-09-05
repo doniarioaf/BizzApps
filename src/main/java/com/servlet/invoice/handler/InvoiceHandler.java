@@ -17,11 +17,13 @@ import com.servlet.invoice.entity.DetailInvoicePrice;
 import com.servlet.invoice.entity.DetailInvoicePriceData;
 import com.servlet.invoice.entity.DetailInvoicePricePK;
 import com.servlet.invoice.entity.Invoice;
+import com.servlet.invoice.entity.InvoiceDPData;
 import com.servlet.invoice.entity.InvoiceData;
 import com.servlet.invoice.entity.InvoiceTemplate;
 import com.servlet.invoice.entity.PrintInvoiceData;
 import com.servlet.invoice.mapper.GetDataNotJoin;
 import com.servlet.invoice.mapper.GetDetailInvoicePriceJoinTableData;
+import com.servlet.invoice.mapper.GetInvoiceDPData;
 import com.servlet.invoice.mapper.GetInvoiceData;
 import com.servlet.invoice.mapper.GetInvoiceDataJoinTable;
 import com.servlet.invoice.mapper.GetInvoiceDataJoinWorkOrder;
@@ -110,6 +112,7 @@ public class InvoiceHandler implements InvoiceService{
 			val.setDetailsprice(getDetailsInvoicePrice(idcompany, idbranch, id));
 			val.setListpenerimaan(penerimaanKasBankService.getListByDetailIdInvoice(idcompany, idbranch, id));
 			val.setDetailspenerimaan(penerimaanKasBankService.getListDetailByIdInvoice(idcompany, idbranch, id));
+			val.setListDP(getListInvoiceDPByIdWo(idcompany, idbranch, val.getIdwo()));
 //			val.setTemplate(getTemplate(idcompany, idbranch));
 			return val;
 		}
@@ -478,6 +481,7 @@ public class InvoiceHandler implements InvoiceService{
 			InvoiceData val = list.get(0);
 			val.setDetailsprice(getDetailsInvoicePrice(idcompany, idbranch, id));
 			val.setTemplate(getTemplateWithData(idcompany, idbranch,val));
+			val.setListDP(getListInvoiceDPByIdWo(idcompany,idbranch,val.getIdwo()));
 			return val;
 		}
 		return null;
@@ -531,12 +535,13 @@ public class InvoiceHandler implements InvoiceService{
 			PrintInvoiceData val = list.get(0);
 			val.setCustomer(customerManggalaService.getDataCustomerForPrintInvoice(idcompany, idbranch, val.getIdcustomer()));
 			val.setDetailsprice(getDetailsInvoicePriceForPrint(idcompany, idbranch, id));
-			val.setListpenerimaan(penerimaanKasBankService.getListByDetailIdInvoice(idcompany, idbranch, id));
+//			val.setListpenerimaan(penerimaanKasBankService.getListByDetailIdInvoice(idcompany, idbranch, id));
 			val.setDetailspenerimaan(penerimaanKasBankService.getListDetailByIdInvoice(idcompany, idbranch, id));
 			val.setKeteranganinvoice1(parameterManggalaService.getValueByParamName(idcompany,idbranch,"KETERANGANINVOICE1","TEXT").getStrValue());
 			val.setKeteranganinvoice2(parameterManggalaService.getValueByParamName(idcompany,idbranch,"KETERANGANINVOICE2","TEXT").getStrValue());
 			val.setKeteranganinvoice3(parameterManggalaService.getValueByParamName(idcompany,idbranch,"KETERANGANINVOICE3","TEXT").getStrValue());
 			val.setNamapenagih(parameterManggalaService.getValueByParamName(idcompany,idbranch,"NAMAPENAGIH","TEXT").getStrValue());
+			val.setListDP(getListInvoiceDPByIdWo(idcompany, idbranch, val.getIdwo()));
 //			if(val.getIdinvoicetype().equals("JASA")) {
 //				val.setSummarypenerimaanDP(penerimaanKasBankService.getSummaryDetailDPByIdWO(idcompany, idbranch, val.getIdwo()));
 //			}
@@ -567,5 +572,14 @@ public class InvoiceHandler implements InvoiceService{
 		sqlBuilder.append(" where data.idwo = ? and data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
 		final Object[] queryParameters = new Object[] {idwo,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataNotJoin(), queryParameters);
+	}
+
+	@Override
+	public List<InvoiceDPData> getListInvoiceDPByIdWo(Long idcompany, Long idbranch, Long idwo) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetInvoiceDPData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.idwo = ? and data.idinvoicetype = 'DP' and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch,idwo};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceDPData(), queryParameters);
 	}
 }

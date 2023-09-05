@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.servlet.invoice.entity.BodyInvoice;
 import com.servlet.invoice.entity.BodySearch;
+import com.servlet.invoice.entity.InvoiceDPData;
 import com.servlet.invoice.entity.InvoiceData;
 import com.servlet.invoice.entity.InvoiceTemplate;
 import com.servlet.invoice.entity.PrintInvoiceData;
@@ -22,4 +23,5 @@ public interface InvoiceService {
 	PrintInvoiceData printInvoice(Long idcompany,Long idbranch,Long id);
 	List<InvoiceData> getListInvoiceByIdWo(Long idcompany,Long idbranch,Long idwo);
 	List<InvoiceData> checkInvoiceByIdWo(Long idcompany,Long idbranch,Long idwo);
+	List<InvoiceDPData> getListInvoiceDPByIdWo(Long idcompany,Long idbranch,Long idwo);
 }

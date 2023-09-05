@@ -34,6 +34,36 @@ public class PenerimaanKasBank implements Serializable{
 	private Timestamp updatedate;
 	private String deleteby;
 	private Timestamp deletedate;
+	private Long idcustomer;
+	private Long idvendor;
+	private Long idemployee;
+	private String idreceivetype;
+	
+	
+	public Long getIdcustomer() {
+		return idcustomer;
+	}
+	public void setIdcustomer(Long idcustomer) {
+		this.idcustomer = idcustomer;
+	}
+	public Long getIdvendor() {
+		return idvendor;
+	}
+	public void setIdvendor(Long idvendor) {
+		this.idvendor = idvendor;
+	}
+	public Long getIdemployee() {
+		return idemployee;
+	}
+	public void setIdemployee(Long idemployee) {
+		this.idemployee = idemployee;
+	}
+	public String getIdreceivetype() {
+		return idreceivetype;
+	}
+	public void setIdreceivetype(String idreceivetype) {
+		this.idreceivetype = idreceivetype;
+	}
 	public Long getId() {
 		return id;
 	}

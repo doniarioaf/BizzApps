@@ -185,6 +185,18 @@ public class EntityHelperKasBank implements Comparable<EntityHelperKasBank> {
 	@Override
 	public int compareTo(EntityHelperKasBank o) {
 		// TODO Auto-generated method stub
+		if(this.tanggalTransaksi.getTime() == o.getTanggalTransaksi().getTime()) {
+//			if(o.getPenerimaannoVoucher() != null && o.getPengeluarannoVoucher() != null) {
+//				return this.getPenerimaannoVoucher().compareTo(this.getPengeluarannoVoucher());
+//			}
+			if(o.getPengeluarannoVoucher() != null) {
+				return this.getPengeluarannoVoucher().compareTo(o.getPengeluarannoVoucher());
+			}
+			else if(o.getPenerimaannoVoucher() != null) {
+				return this.getPenerimaannoVoucher().compareTo(o.getPenerimaannoVoucher());
+			}else
+				return "".compareTo("");
+		}
 		return new Long(this.tanggalTransaksi.getTime() - o.getTanggalTransaksi().getTime()).intValue();
 	}
 	
