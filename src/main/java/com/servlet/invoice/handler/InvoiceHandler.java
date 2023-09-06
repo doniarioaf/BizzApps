@@ -501,6 +501,10 @@ public class InvoiceHandler implements InvoiceService{
 			if(body.getIdwo().intValue() > 0) {
 				sqlBuilder.append(" and data.idwo = "+body.getIdwo()+" ");
 			}
+			
+			if(body.getIdcustomer() != null) {
+				sqlBuilder.append(" and data.idcustomer = "+body.getIdcustomer()+" ");
+			}
 			sqlBuilder.append(" and data.nodocument not like '%INVDP%'  ");
 			
 //			if(body.getIdpenerimaan() != null) {

@@ -5,6 +5,14 @@ public class BodySearch {
 	private String namacustomer;
 	private String namacargo;
 	private Long idwo;
+	private Long idcustomer;
+	
+	public Long getIdcustomer() {
+		return idcustomer;
+	}
+	public void setIdcustomer(Long idcustomer) {
+		this.idcustomer = idcustomer;
+	}
 	public String getNodocument() {
 		return nodocument;
 	}

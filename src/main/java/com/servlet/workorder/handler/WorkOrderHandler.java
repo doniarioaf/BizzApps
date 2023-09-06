@@ -685,6 +685,10 @@ public class WorkOrderHandler implements WorkOrderService{
 			sqlBuilder.append(" data.id = "+body.getIdwo()+" ");
 		}
 		
+		if(body.getIdcustomer() != null) {
+			sqlBuilder.append(" and data.idcustomer = "+body.getIdcustomer());
+		}
+		
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderJoinCustomerData(), queryParameters);
 	}

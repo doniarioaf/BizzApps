@@ -6,6 +6,14 @@ public class BodySearch {
 	private Long idwo;
 	private String type;
 	private Long idpenerimaan;
+	private Long idcustomer;
+	
+	public Long getIdcustomer() {
+		return idcustomer;
+	}
+	public void setIdcustomer(Long idcustomer) {
+		this.idcustomer = idcustomer;
+	}
 	public Long getIdpenerimaan() {
 		return idpenerimaan;
 	}
