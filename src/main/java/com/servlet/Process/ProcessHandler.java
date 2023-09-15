@@ -1777,6 +1777,16 @@ public class ProcessHandler implements ProcessService{
 					mapParam.put("idcustomer", idcustomer);
 					
 					val.setData(workOrderService.getListWOByStatus(auth.getIdcompany(), auth.getIdbranch(),"CLOSED", mapParam));
+				}else if(type.equals("SEACRHWO_EDIT_FIRST_LOAD")) {
+					long idcustomer = (long) param.get("idcustomer");
+					long idwo = (long) param.get("idwo");
+					
+					HashMap<String, Object> mapParam = new HashMap<String, Object>();
+					mapParam.put("type", "INVOICE_EDIT_FIRST_LOAD");
+					mapParam.put("idcustomer", idcustomer);
+					mapParam.put("idwo", idwo);
+					
+					val.setData(workOrderService.getListWOByStatus(auth.getIdcompany(), auth.getIdbranch(),"CLOSED", mapParam));
 				}else if(type.equals("SEACRH_SURATJALAN")) {
 					long idwo = (long) param.get("idwo");
 					val.setData(suratJalanService.getListByIdWO(auth.getIdcompany(), auth.getIdbranch(),idwo));

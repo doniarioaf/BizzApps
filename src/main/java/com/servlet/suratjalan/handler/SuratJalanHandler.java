@@ -410,12 +410,12 @@ public class SuratJalanHandler implements SuratJalanService{
 			}
 			val.setCustomerDistrict(districtName);
 			
-			String companyName = "";
-			ParameterManggalaData parameter = parameterManggalaService.getByParamName(idcompany, idbranch, "COMPANYNAME");
-			if(parameter != null) {
-				companyName = parameter.getParamvalue();
-			}
-			val.setCompanyname(companyName);
+//			String companyName = "";
+//			ParameterManggalaData parameter = parameterManggalaService.getByParamName(idcompany, idbranch, "COMPANYNAME");
+//			if(parameter != null) {
+//				companyName = parameter.getParamvalue();
+//			}
+//			val.setCompanyname(companyName);
 			return val;
 		}
 		return null;

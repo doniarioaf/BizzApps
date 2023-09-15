@@ -22,6 +22,9 @@ public class PrintData {
 	private String customerSubDistrict;
 	private String customerKodePos;
 	private String customerAddress;
+	private String customerAddress2;
+	private String customerAddress3;
+	private String customertype;
 	private String keterangan;
 	private Long idwarehouse;
 	private String warehousename;
@@ -38,8 +41,48 @@ public class PrintData {
 	private String status;
 	private String statusname;
 	private String companyname;
+	private String nosealwo;
+	private String compnama;
+	private String compaddress;
 	
 	
+	
+	public String getCompnama() {
+		return compnama;
+	}
+	public void setCompnama(String compnama) {
+		this.compnama = compnama;
+	}
+	public String getCompaddress() {
+		return compaddress;
+	}
+	public void setCompaddress(String compaddress) {
+		this.compaddress = compaddress;
+	}
+	public String getCustomertype() {
+		return customertype;
+	}
+	public void setCustomertype(String customertype) {
+		this.customertype = customertype;
+	}
+	public String getNosealwo() {
+		return nosealwo;
+	}
+	public void setNosealwo(String nosealwo) {
+		this.nosealwo = nosealwo;
+	}
+	public String getCustomerAddress2() {
+		return customerAddress2;
+	}
+	public void setCustomerAddress2(String customerAddress2) {
+		this.customerAddress2 = customerAddress2;
+	}
+	public String getCustomerAddress3() {
+		return customerAddress3;
+	}
+	public void setCustomerAddress3(String customerAddress3) {
+		this.customerAddress3 = customerAddress3;
+	}
 	public String getWarehousecatatan() {
 		return warehousecatatan;
 	}

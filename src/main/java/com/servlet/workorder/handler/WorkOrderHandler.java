@@ -623,6 +623,11 @@ public class WorkOrderHandler implements WorkOrderService{
 			}else if(type.equals("INVOICE")) {
 				Long idcustomer = (Long) mapParam.get("idcustomer");
 				sqlBuilder.append(" and data.idcustomer = "+idcustomer+" ");
+			}else if(type.equals("INVOICE_EDIT_FIRST_LOAD")) {
+				Long idcustomer = (Long) mapParam.get("idcustomer");
+				Long idwo = (Long) mapParam.get("idwo");
+				sqlBuilder.append(" and data.idcustomer = "+idcustomer+" ");
+				sqlBuilder.append(" or data.id = "+idwo);
 			}
 		}
 		sqlBuilder.append(" order by data.nodocument ");

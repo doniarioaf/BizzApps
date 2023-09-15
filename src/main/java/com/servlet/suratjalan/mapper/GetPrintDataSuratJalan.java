@@ -18,9 +18,10 @@ private String schemaSql;
 		sqlBuilder.append("data.idworkorder as idworkorder, data.idcustomer as idcustomer, data.keterangan as keterangan, ");
 		sqlBuilder.append("data.idwarehouse as idwarehouse, data.catatan as catatan, data.nocantainer as nocantainer, data.status as status, ");
 		sqlBuilder.append("wo.jeniswo as jeniswo ,wo.nodocument as nodocumentwo, wo.nobl as nobl, wo.noaju as noaju,wo.namacargo as namacargo, vendordepowo.nama as wodepo, ");
-		sqlBuilder.append("cust.customername as customername, paramstatus.codename as statusname, cust.alamat as custalamat, cust.provinsi as custprovinsi, cust.kota as custkota, cust.kodepos as custkodepos, ");
+		sqlBuilder.append("cust.customername as customername,cust.customertype as customertype, paramstatus.codename as statusname, cust.alamat as custalamat,cust.alamat2 as custalamat2,cust.alamat3 as custalamat3, cust.provinsi as custprovinsi, cust.kota as custkota, cust.kodepos as custkodepos, ");
 		sqlBuilder.append("warehouse.nama as warehousename, warehouse.contactnumber as contactname, warehouse.contacthp as contacthp, warehouse.alamat as alamat, warehouse.ancerancer as ancerancer, warehouse.note as warehousenote, ");
-		sqlBuilder.append("partai.name as partainame, detailworkorder.jumlahkoli as jumlahkoli, detailworkorder.jumlahkg as jumlahkg, paramwotype.codename as wotypename ");
+		sqlBuilder.append("partai.name as partainame, detailworkorder.jumlahkoli as jumlahkoli, detailworkorder.jumlahkg as jumlahkg, paramwotype.codename as wotypename, detailworkorder.noseal as nosealwo, ");
+		sqlBuilder.append("comp.nama as compnama,comp.address as compaddress ");
 		
 		sqlBuilder.append("from t_surat_jalan as data ");
 		sqlBuilder.append("left join m_customer_manggala as cust on cust.id = data.idcustomer ");
@@ -31,6 +32,7 @@ private String schemaSql;
 		sqlBuilder.append("left join m_partai as partai on partai.id = detailworkorder.idpartai ");
 		sqlBuilder.append("left join m_parameter as paramstatus on paramstatus.code = data.status and paramstatus.grup ='STATUS_SURATJALAN' ");
 		sqlBuilder.append("left join m_parameter as paramwotype on paramwotype.code = wo.jeniswo and paramwotype.grup ='WO_TYPE' ");
+		sqlBuilder.append("left join m_company as comp on comp.id = data.idcompany ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}
@@ -66,6 +68,8 @@ private String schemaSql;
 		final String warehousename = rs.getString("warehousename");
 		final String statusname = rs.getString("statusname");
 		final String custalamat = rs.getString("custalamat");
+		final String custalamat2 = rs.getString("custalamat2");
+		final String custalamat3 = rs.getString("custalamat3");
 		final String custprovinsi = rs.getString("custprovinsi");
 		final String custkota = rs.getString("custkota");
 		final String custkodepos = rs.getString("custkodepos");
@@ -74,7 +78,10 @@ private String schemaSql;
 		final String wotypename = rs.getString("wotypename");
 		final String ancerancer = rs.getString("ancerancer");
 		final String warehousenote = rs.getString("warehousenote");
-		
+		final String nosealwo = rs.getString("nosealwo");
+		final String customertype = rs.getString("customertype");
+		final String compnama = rs.getString("compnama");
+		final String compaddress = rs.getString("compaddress");
 		
 		PrintData data = new PrintData();
 		data.setId(id);
@@ -101,6 +108,8 @@ private String schemaSql;
 		data.setStatusname(statusname);
 		data.setWarehousename(warehousename);
 		data.setCustomerAddress(custalamat);
+		data.setCustomerAddress2(custalamat2);
+		data.setCustomerAddress3(custalamat3);
 		data.setCustomerProvince(custprovinsi);
 		data.setCustomerCity(custkota);
 		data.setCustomerKodePos(custkodepos);
@@ -109,6 +118,11 @@ private String schemaSql;
 		data.setWoTypeName(wotypename);
 		data.setWarehouseancerancer(ancerancer);
 		data.setWarehousecatatan(warehousenote);
+		data.setNosealwo(nosealwo);
+		data.setCustomertype(customertype);
+		data.setCompanyname(compnama);
+		data.setCompnama(compnama);
+		data.setCompaddress(compaddress);
 		return data;
 	}
 
