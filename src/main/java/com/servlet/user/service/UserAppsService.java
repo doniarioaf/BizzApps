@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import com.servlet.shared.ReturnData;
+import com.servlet.user.entity.BodyEditPass;
 import com.servlet.user.entity.BodyUserApps;
 import com.servlet.user.entity.ReturnLoginApps;
 import com.servlet.user.entity.TemplateInternalUser;
@@ -24,4 +25,5 @@ public interface UserAppsService {
 	ReturnData deleteUserApss(long id);
 	TemplateInternalUser getTemplate(long idcompany,long idbranch);
 	ReturnData logout(long id);
+	ReturnData editPass(BodyEditPass bodyEditPass);
 }

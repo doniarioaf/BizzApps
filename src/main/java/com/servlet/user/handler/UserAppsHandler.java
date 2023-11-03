@@ -24,6 +24,7 @@ import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConvertJson;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.user.entity.BodyEditPass;
 import com.servlet.user.entity.BodyUserApps;
 import com.servlet.user.entity.ReturnLoginApps;
 import com.servlet.user.entity.TemplateInternalUser;
@@ -333,6 +334,29 @@ public class UserAppsHandler implements UserAppsService{
 		ReturnData data = new ReturnData();
 		data.setId(user.getId());
 		data.setSuccess(true);
+		return data;
+	}
+
+	@Override
+	public ReturnData editPass(BodyEditPass bodyEditPass) {
+		// TODO Auto-generated method stub
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
+		List<UserApps> list = repository.getUserLoginByUsername(bodyEditPass.getUsername());
+		AESEncryptionDecryption aesEncryptionDecryption = new AESEncryptionDecryption();
+		long idreturn = 0;
+		for(UserApps user : list) {
+			String passwordDB = aesEncryptionDecryption.decrypt(user.getPassword());
+			if(passwordDB.equals(bodyEditPass.getPassword())) {
+				String passwordChangeDB = aesEncryptionDecryption.encrypt(bodyEditPass.getPasswordchange());
+				UserApps table = repository.getById(user.getId());
+				table.setPassword(passwordChangeDB);
+				idreturn = repository.saveAndFlush(table).getId();
+			}
+		}
+		ReturnData data = new ReturnData();
+		data.setId(idreturn);
+		data.setSuccess(validations.size() > 0?false:true);
+		data.setValidations(validations);
 		return data;
 	}
 

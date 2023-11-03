@@ -152,7 +152,7 @@ public class SecurityHandler implements SecurityService{
 			value.setHttpcode(HttpStatus.OK.value());
 		}else if(authorization != null && !authorization.equals("")){
 			AuthorizationEntity auth = checking(codepermission,authorization);
-			if(auth.isIsvalid() || codepermission.equals(ConstansPermission.DELETE_COMPANYY) || codepermission.equals(ConstansPermission.LOGOUT)) {
+			if(auth.isIsvalid() || codepermission.equals(ConstansPermission.DELETE_COMPANYY) || codepermission.equals(ConstansPermission.EDIT_USER_PASSSSS) || codepermission.equals(ConstansPermission.LOGOUT)) {
 				Gson gson = new Gson();
 				AESEncryptionDecryption aesEncryptionDecryption = new AESEncryptionDecryption();
 				
@@ -175,7 +175,7 @@ public class SecurityHandler implements SecurityService{
 						}else {
 							value.setData(data);
 						}
-						if(!codepermission.equals(ConstansPermission.DELETE_COMPANYY) && !auth.getUsername().equals("")) {
+						if(!codepermission.equals(ConstansPermission.EDIT_USER_PASSSSS) && !codepermission.equals(ConstansPermission.DELETE_COMPANYY) && !auth.getUsername().equals("")) {
 							setLogs(auth.getIdcompany(), auth.getIdbranch(), auth.getUsername(), codepermission, "SUCCESS");
 						}
 						
@@ -185,7 +185,7 @@ public class SecurityHandler implements SecurityService{
 							value.setData(tempdata.getData());
 							value.setValidations(tempdata.getValidations());
 							
-							if(!codepermission.equals(ConstansPermission.DELETE_COMPANYY) && !auth.getUsername().equals("")) {
+							if(!codepermission.equals(ConstansPermission.EDIT_USER_PASSSSS) && !codepermission.equals(ConstansPermission.DELETE_COMPANYY) && !auth.getUsername().equals("")) {
 								setLogs(auth.getIdcompany(), auth.getIdbranch(), auth.getUsername(), codepermission, "SUCCESS");
 							}
 						}else {
@@ -195,7 +195,7 @@ public class SecurityHandler implements SecurityService{
 							value.setHttpcode(tempdata.getHttpcode());
 							value.setValidations(tempdata.getValidations());
 							
-							if(!codepermission.equals(ConstansPermission.DELETE_COMPANYY) && !auth.getUsername().equals("")) {
+							if(!codepermission.equals(ConstansPermission.EDIT_USER_PASSSSS) && !codepermission.equals(ConstansPermission.DELETE_COMPANYY) && !auth.getUsername().equals("")) {
 								if(tempdata.getValidations().size() > 0) {
 									setLogs(auth.getIdcompany(), auth.getIdbranch(), auth.getUsername(), codepermission, "Failed ("+tempdata.getValidations().get(0).getMessage()+")");
 								}else {
@@ -216,7 +216,7 @@ public class SecurityHandler implements SecurityService{
 					value.setData(null);
 					value.setHttpcode(HttpStatus.INTERNAL_SERVER_ERROR.value());
 					
-					if(!codepermission.equals(ConstansPermission.DELETE_COMPANYY)) {
+					if(!codepermission.equals(ConstansPermission.EDIT_USER_PASSSSS) && !codepermission.equals(ConstansPermission.DELETE_COMPANYY)) {
 						setLogs(auth.getIdcompany(), auth.getIdbranch(), auth.getUsername(), codepermission, "Failed (Internal Server Error)");
 					}
 					

@@ -105,6 +105,7 @@ import com.servlet.shared.ValidationDataMessage;
 import com.servlet.suratjalan.entity.BodyStatusSuratJalan;
 import com.servlet.suratjalan.entity.BodySuratJalan;
 import com.servlet.suratjalan.service.SuratJalanService;
+import com.servlet.user.entity.BodyEditPass;
 import com.servlet.user.entity.BodyUserApps;
 import com.servlet.user.entity.UserPermissionData;
 import com.servlet.user.service.UserAppsService;
@@ -287,6 +288,19 @@ public class ProcessHandler implements ProcessService{
 			}else if(codepermission.equals(ConstansPermission.CREATE_USER)) {
 				BodyUserApps body = (BodyUserApps) data;
 				ReturnData valReturn = userAppsService.saveUserApps(body,auth.getIdcompany(),auth.getIdbranch());
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+//				val.setData(userAppsService.saveUserApps(body,auth.getIdcompany(),auth.getIdbranch()));
+//				val = userAppsService.saveUserApps(body,auth.getIdcompany(),auth.getIdbranch());
+			}else if(codepermission.equals(ConstansPermission.EDIT_USER_PASSSSS)) {
+				BodyEditPass body = (BodyEditPass) data;
+				ReturnData valReturn = userAppsService.editPass(body);
 				if(valReturn.isSuccess()) {
 					val.setData(valReturn.getId());
 				}else {
