@@ -17,7 +17,9 @@ private String schemaSql;
 		sqlBuilder.append("mpengeluaran.id as pengeluaranid, ");
 		sqlBuilder.append("mpengeluaran.paymentdate as pengeluarantanggaltransaksi, ");
 		sqlBuilder.append("mpengeluaran.nodocument as pengeluarannodocument, ");
-		sqlBuilder.append("coapengeluaran.nama as pengeluarancoanama, ");
+//		sqlBuilder.append("coapengeluaran.nama as pengeluarancoanama, ");
+		sqlBuilder.append("invitem.nama as invitemnama, ");
+		sqlBuilder.append("payitem.nama as payitemnama, ");
 		sqlBuilder.append("workorderpengeluaran.nodocument as pengeluarannodocumentwo, ");
 		sqlBuilder.append("workorderpengeluaran.noaju as pengeluarannoaju, ");
 		sqlBuilder.append("mpengeluaran.paymentto as pengeluaranpaymentto, ");
@@ -27,8 +29,10 @@ private String schemaSql;
 		
 		sqlBuilder.append("from detail_pengeluaran_kas_bank as dpengeluaran ");
 		sqlBuilder.append("left join m_pengeluaran_kas_bank as mpengeluaran on mpengeluaran.id = dpengeluaran.idpengeluarankasbank ");
-		sqlBuilder.append("left join m_coa as coapengeluaran on coapengeluaran.id = dpengeluaran.idcoa ");
+//		sqlBuilder.append("left join m_coa as coapengeluaran on coapengeluaran.id = dpengeluaran.idcoa ");
 		sqlBuilder.append("left join m_workorder as workorderpengeluaran on workorderpengeluaran.id = mpengeluaran.idwo ");
+		sqlBuilder.append("left join m_invoice_type as invitem on invitem.id = dpengeluaran.idinvoiceitem ");
+		sqlBuilder.append("left join m_payment_type as payitem on payitem.id = dpengeluaran.idpaymentitem ");
 		
 		sqlBuilder.append("left join m_customer_manggala as cust on cust.id = mpengeluaran.idcustomer ");
 		sqlBuilder.append("left join m_employee_manggala as emp on emp.id = mpengeluaran.idemployee ");
@@ -83,7 +87,7 @@ private String schemaSql;
 		final String pengeluarannodocument = rs.getString("pengeluarannodocument");
 		
 //		final String penerimaancoanama = rs.getString("penerimaancoanama");
-		final String pengeluarancoanama = rs.getString("pengeluarancoanama");
+//		final String pengeluarancoanama = rs.getString("pengeluarancoanama");
 		
 //		final String penerimaannodocumentwo = rs.getString("penerimaannodocumentwo");
 		final String pengeluarannodocumentwo = rs.getString("pengeluarannodocumentwo");
@@ -107,6 +111,9 @@ private String schemaSql;
 //		final Double penerimaanamount = rs.getDouble("penerimaanamount");
 		final Double pengeluaranamount = rs.getDouble("pengeluaranamount");
 		
+		final String invitemnama = rs.getString("invitemnama");
+		final String payitemnama = rs.getString("payitemnama");
+		
 		EntityHelperKasBank data = new EntityHelperKasBank();
 		data.setPenerimaanid(0L);
 		data.setPenerimaantanggalTransaksi(null);
@@ -122,7 +129,7 @@ private String schemaSql;
 		data.setPengeluaranid(pengeluaranid);
 		data.setPengeluarantanggalTransaksi(pengeluarantanggaltransaksi);
 		data.setPengeluarannoVoucher(pengeluarannodocument);
-		data.setPengeluarancoa(pengeluarancoanama);
+//		data.setPengeluarancoa(pengeluarancoanama);
 		data.setPengeluarannoWO(pengeluarannodocumentwo);
 		data.setPengeluarannoAju(pengeluarannoaju);
 		data.setPengeluarannoInvoice("");
@@ -132,6 +139,8 @@ private String schemaSql;
 		data.setPengeluaran_employeename(pengeluaranempname);
 		data.setPengeluaranAmount(pengeluaranamount);
 		data.setPengeluaranketerangan(pengeluaranketerangan);
+		data.setPengeluaran_invItemName(invitemnama);
+		data.setPengeluaran_payItemName(payitemnama);
 		return data;
 	}
 }

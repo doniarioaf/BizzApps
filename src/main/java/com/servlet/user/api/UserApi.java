@@ -68,6 +68,15 @@ public class UserApi {
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
+	@PutMapping("/changepassword/{id}")
+	ResponseEntity<Response> changePassword(@PathVariable long id,@RequestBody @Validated BodyEditPass body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("id", id);
+		param.put("BodyUserApps", body);
+		Response response = securityService.response(ConstansPermission.EDIT_CHANGE_PASSWORD_USER,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
 	@DeleteMapping("{id}")
 	ResponseEntity<Response> deleteRole(@PathVariable long id, @RequestHeader(ConstansKey.AUTH) String authorization) {
 		Response response = securityService.response(ConstansPermission.DELETE_USER,id,authorization);

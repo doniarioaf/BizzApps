@@ -594,7 +594,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
         
         createCell(row, 0, "Tanggal Transaksi", style,sheet);
         createCell(row, 1, "No. Voucher", style,sheet);
-        createCell(row, 2, "COA", style,sheet);
+        createCell(row, 2, "Transaksi", style,sheet);
         createCell(row, 3, "No. WO yang dibayar", style,sheet);
         createCell(row, 4, "Nomor AJU", style,sheet);
         createCell(row, 5, "No. Invoice", style,sheet);
@@ -680,7 +680,8 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						dataKasBankSort.setPengeluarannoInvoice("");
 						dataKasBankSort.setPengeluaranketerangan(dataKasBank.getPengeluaranketerangan());
 						dataKasBankSort.setPengeluaranAmount(dataKasBank.getPengeluaranAmount());
-						
+						dataKasBankSort.setPengeluaran_invItemName(dataKasBank.getPengeluaran_invItemName());
+						dataKasBankSort.setPengeluaran_payItemName(dataKasBank.getPengeluaran_payItemName());
 						listKasBankSort.add(dataKasBankSort);
 
 					}
@@ -833,7 +834,15 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						
 						createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPengeluarantanggalTransaksi(),""), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPengeluarannoVoucher(), style,sheet);
-						createCell(rowData, columnCount++, dataKasBank.getPengeluarancoa(), style,sheet);
+						
+						String transaksiName = "";
+						if(dataKasBank.getPengeluaran_invItemName() != null && !dataKasBank.getPengeluaran_invItemName().equals("")) {
+							transaksiName = dataKasBank.getPengeluaran_invItemName(); 
+						}else if(dataKasBank.getPengeluaran_payItemName() != null && !dataKasBank.getPengeluaran_payItemName().equals("")) {
+							transaksiName = dataKasBank.getPengeluaran_payItemName(); 
+						} 
+						createCell(rowData, columnCount++, transaksiName, style,sheet);
+//						createCell(rowData, columnCount++, dataKasBank.getPengeluarancoa(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPengeluarannoWO(), style,sheet);
 //						createCell(rowData, columnCount++, dataKasBank.getPengeluarannoAju(), style,sheet);
 						createCell(rowData, columnCount++, (dataKasBank.getPengeluarannoAju() != null && !dataKasBank.getPengeluarannoAju().equals("") ? new Integer(dataKasBank.getPengeluarannoAju()):""), style,sheet);

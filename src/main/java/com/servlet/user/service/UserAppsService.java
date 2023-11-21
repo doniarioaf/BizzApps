@@ -26,4 +26,5 @@ public interface UserAppsService {
 	TemplateInternalUser getTemplate(long idcompany,long idbranch);
 	ReturnData logout(long id);
 	ReturnData editPass(BodyEditPass bodyEditPass);
+	ReturnData changePassword(long id,BodyEditPass bodyEditPass);
 }

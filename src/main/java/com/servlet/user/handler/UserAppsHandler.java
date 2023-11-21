@@ -215,7 +215,9 @@ public class UserAppsHandler implements UserAppsService{
 //			data.setToken("");
 //			data.setIdcompany(0);
 //			data.setIdbranch(0);
-			
+			if(data.getUsername().equalsIgnoreCase("superuser")) {
+				return null;
+			}
 			UserDataDetail datadetail = new UserDataDetail();
 			datadetail.setId(data.getId());
 			datadetail.setUsername(data.getUsername());
@@ -290,7 +292,7 @@ public class UserAppsHandler implements UserAppsService{
 	public List<UserListData> getListAllUser(long idcompany, long idbranch) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListAllUser().schema());
-		sqlBuilder.append(" where mua.idcompany = ? and mua.idbranch = ? and mua.isdelete = false ");
+		sqlBuilder.append(" where mua.idcompany = ? and mua.idbranch = ? and mua.isdelete = false and mua.username != 'superuser' ");
 		final Object[] queryParameters = new Object[] { idcompany , idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListAllUser(), queryParameters);
 	}
@@ -350,6 +352,32 @@ public class UserAppsHandler implements UserAppsService{
 				String passwordChangeDB = aesEncryptionDecryption.encrypt(bodyEditPass.getPasswordchange());
 				UserApps table = repository.getById(user.getId());
 				table.setPassword(passwordChangeDB);
+				idreturn = repository.saveAndFlush(table).getId();
+			}
+		}
+		ReturnData data = new ReturnData();
+		data.setId(idreturn);
+		data.setSuccess(validations.size() > 0?false:true);
+		data.setValidations(validations);
+		return data;
+	}
+
+	@Override
+	public ReturnData changePassword(long id, BodyEditPass bodyEditPass) {
+		// TODO Auto-generated method stub
+		AESEncryptionDecryption aesEncryptionDecryption = new AESEncryptionDecryption();
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
+		Timestamp ts = new Timestamp(new Date().getTime());
+		UserApps table = repository.getById(id);
+		long idreturn = 0;
+		if(table != null) {
+			String usernameDB = table.getUsername();
+			String passwordDB = aesEncryptionDecryption.decrypt(table.getPassword());
+			String passwordPayload = aesEncryptionDecryption.decrypt(bodyEditPass.getPassword());
+			if(usernameDB.equals(bodyEditPass.getUsername()) && passwordDB.equals(passwordPayload)) {
+				String passwordChange = aesEncryptionDecryption.encrypt(bodyEditPass.getPasswordchange());
+				table.setPassword(passwordChange);
+				table.setModified(ts);
 				idreturn = repository.saveAndFlush(table).getId();
 			}
 		}

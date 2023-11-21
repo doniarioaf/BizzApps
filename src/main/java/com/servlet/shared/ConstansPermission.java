@@ -23,6 +23,7 @@ public class ConstansPermission {
 	public static final String EDIT_USER = "EDIT_USER";
 	public static final String DELETE_USER = "DELETE_USER";
 	public static final String EDIT_USER_PASSSSS = "EDIT_USER_PASSSSS";
+	public static final String EDIT_CHANGE_PASSWORD_USER = "EDIT_CHANGE_PASSWORD_USER";
 	
 	public static final String READ_USER_MOBILE = "READ_USER_MOBILE";
 	public static final String CREATE_USER_MOBILE = "CREATE_USER_MOBILE";

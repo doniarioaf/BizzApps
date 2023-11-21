@@ -320,6 +320,21 @@ public class ProcessHandler implements ProcessService{
 			}else if(codepermission.equals(ConstansPermission.DELETE_USER)) {
 				long id = (long) data;
 				val.setData(userAppsService.deleteUserApss(id));
+			}else if(codepermission.equals(ConstansPermission.EDIT_CHANGE_PASSWORD_USER)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				BodyEditPass body = (BodyEditPass) param.get("BodyUserApps");
+				long id = (long) param.get("id");
+				
+				ReturnData valReturn = userAppsService.changePassword(id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+//				val.setData(customerService.updateCustomer(id, body, auth.getIdcompany(),auth.getIdbranch()));
 			}else if(codepermission.equals(ConstansPermission.CREATE_USER_MOBILE)) {
 				BodyUserMobile body = (BodyUserMobile) data;
 				ReturnData valReturn = userMobileService.saveUserMobile(body,auth.getIdcompany(),auth.getIdbranch());

@@ -28,6 +28,8 @@ public class EntityHelperKasBank implements Comparable<EntityHelperKasBank> {
 	private String pengeluaran_vendorname;
 	private String pengeluaran_employeename;
 	private double pengeluaranAmount;
+	private String pengeluaran_invItemName;
+	private String pengeluaran_payItemName;
 	
 	private Date tanggalTransaksi;
 	
@@ -181,6 +183,19 @@ public class EntityHelperKasBank implements Comparable<EntityHelperKasBank> {
 	}
 	public void setPengeluaranAmount(double pengeluaranAmount) {
 		this.pengeluaranAmount = pengeluaranAmount;
+	}
+	
+	public String getPengeluaran_invItemName() {
+		return pengeluaran_invItemName;
+	}
+	public void setPengeluaran_invItemName(String pengeluaran_invItemName) {
+		this.pengeluaran_invItemName = pengeluaran_invItemName;
+	}
+	public String getPengeluaran_payItemName() {
+		return pengeluaran_payItemName;
+	}
+	public void setPengeluaran_payItemName(String pengeluaran_payItemName) {
+		this.pengeluaran_payItemName = pengeluaran_payItemName;
 	}
 	@Override
 	public int compareTo(EntityHelperKasBank o) {
