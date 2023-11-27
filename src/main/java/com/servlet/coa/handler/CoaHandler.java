@@ -34,7 +34,7 @@ public class CoaHandler implements CoaService{
 	public List<CoaData> getListAll(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetCoaData().schema());
-		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false ");
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false and data.isshowlist = true ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetCoaData(), queryParameters);
 	}
@@ -43,7 +43,7 @@ public class CoaHandler implements CoaService{
 	public CoaData getById(Long idcompany, Long idbranch, Long id) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetCoaData().schema());
-		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false and data.isshowlist = true ");
 		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
 		List<CoaData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetCoaData(), queryParameters);
 		if(list != null && list.size() > 0) {
@@ -70,6 +70,7 @@ public class CoaHandler implements CoaService{
 				table.setIsactive(body.isIsactive());
 				table.setIsdelete(false);
 				table.setCreatedby(iduser.toString());
+				table.setIsshowlist(false);
 				table.setCreateddate(ts);
 				
 				idsave = repository.saveAndFlush(table).getId();
@@ -90,7 +91,7 @@ public class CoaHandler implements CoaService{
 	public List<CoaData> getListActiveCOA(Long idcompany, Long idbranch) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetCoaData().schema());
-		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false and data.isshowlist = true ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetCoaData(), queryParameters);
 	}
