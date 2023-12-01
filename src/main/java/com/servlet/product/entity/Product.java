@@ -34,6 +34,9 @@ public class Product implements Serializable{
 	private String deleteby;
 	private Timestamp deletedate;
 	private boolean isdelete;
+	private String image;
+	private String barcode;
+	
 	public Long getId() {
 		return id;
 	}
@@ -141,6 +144,18 @@ public class Product implements Serializable{
 	}
 	public void setIsdelete(boolean isdelete) {
 		this.isdelete = isdelete;
+	}
+	public String getImage() {
+		return image;
+	}
+	public void setImage(String image) {
+		this.image = image;
+	}
+	public String getBarcode() {
+		return barcode;
+	}
+	public void setBarcode(String barcode) {
+		this.barcode = barcode;
 	}
 
 }

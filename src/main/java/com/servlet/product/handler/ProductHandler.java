@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.servlet.product.entity.BodyProduct;
 import com.servlet.product.entity.Product;
 import com.servlet.product.entity.ProductData;
+import com.servlet.product.mapper.GetProductAllColumn;
 import com.servlet.product.mapper.GetProductList;
 import com.servlet.product.repo.ProductRepo;
 import com.servlet.product.service.ProductService;
@@ -38,7 +40,7 @@ public class ProductHandler implements ProductService{
 	@Override
 	public ProductData getById(long idcompany, long idbranch, long id) {
 		// TODO Auto-generated method stub
-		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetProductList().schema());
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetProductAllColumn().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		List<ProductData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetProductList(), queryParameters);
@@ -58,6 +60,7 @@ public class ProductHandler implements ProductService{
 		if(validations.size() == 0) {
 			try {
 			Timestamp ts = new Timestamp(new Date().getTime());
+			
 			Product table = new Product();
 			table.setIdcompany(idcompany);
 			table.setIdbranch(idbranch);
@@ -72,6 +75,12 @@ public class ProductHandler implements ProductService{
 			table.setIsdelete(false);
 			table.setCreateddate(ts);
 			table.setCreatedby(iduser+"");
+			table.setBarcode(body.getBarcode());
+			if(body.getImage() != null) {
+				byte[] fileencode = Base64.encodeBase64(body.getImage().getBytes());
+		        String result = new String(fileencode);
+		        table.setImage(result);
+			}
 			}catch (Exception e) {
 				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
 				validations.add(msg);
@@ -108,6 +117,13 @@ public class ProductHandler implements ProductService{
 					
 					table.setUpdatedate(ts);
 					table.setUpdateby(iduser+"");
+					
+					table.setBarcode(body.getBarcode());
+					if(body.getImage() != null) {
+						byte[] fileencode = Base64.encodeBase64(body.getImage().getBytes());
+				        String result = new String(fileencode);
+				        table.setImage(result);
+					}
 					
 					idsave = repository.saveAndFlush(table).getId();
 				}catch (Exception e) {

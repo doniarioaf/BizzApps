@@ -1,5 +1,7 @@
 package com.servlet.product.entity;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public class BodyProduct {
 	private String code;
 	private String nama;
@@ -9,6 +11,8 @@ public class BodyProduct {
 	private Double conv2to4;
 	private Double conv3to4;
 	private Double conv4to4;
+	private String barcode;
+	private MultipartFile image;
 	public String getCode() {
 		return code;
 	}
@@ -56,5 +60,17 @@ public class BodyProduct {
 	}
 	public void setConv4to4(Double conv4to4) {
 		this.conv4to4 = conv4to4;
+	}
+	public String getBarcode() {
+		return barcode;
+	}
+	public void setBarcode(String barcode) {
+		this.barcode = barcode;
+	}
+	public MultipartFile getImage() {
+		return image;
+	}
+	public void setImage(MultipartFile image) {
+		this.image = image;
 	}
 }

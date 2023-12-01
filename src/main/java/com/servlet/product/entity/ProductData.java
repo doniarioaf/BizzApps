@@ -10,6 +10,20 @@ public class ProductData {
 	private Double conv2to4;
 	private Double conv3to4;
 	private Double conv4to4;
+	private String image;
+	private String barcode;
+	public String getImage() {
+		return image;
+	}
+	public void setImage(String image) {
+		this.image = image;
+	}
+	public String getBarcode() {
+		return barcode;
+	}
+	public void setBarcode(String barcode) {
+		this.barcode = barcode;
+	}
 	public Long getId() {
 		return id;
 	}
