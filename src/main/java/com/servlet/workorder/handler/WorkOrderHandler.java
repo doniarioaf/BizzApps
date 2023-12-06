@@ -613,7 +613,10 @@ public class WorkOrderHandler implements WorkOrderService{
 	public List<WorkOrderDropDownData> getListWOByStatus(Long idcompany, Long idbranch, String status, Object param) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetWorkOrderDropdownData().schema());
-		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.status = ? and data.isactive = true  and data.isdelete = false ");
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isactive = true  and data.isdelete = false ");
+		if(status != null && !status.equals("")) {
+			sqlBuilder.append(" and data.status = "+status+" ");
+		}
 		if(param != null) {
 			HashMap<String, Object> mapParam = (HashMap<String, Object>) param;
 			String type = (String) mapParam.get("type");
@@ -628,10 +631,14 @@ public class WorkOrderHandler implements WorkOrderService{
 				Long idwo = (Long) mapParam.get("idwo");
 				sqlBuilder.append(" and data.idcustomer = "+idcustomer+" ");
 				sqlBuilder.append(" or data.id = "+idwo);
+			}else if(type.equals("INVOICE-SURATJALAN-CLOSED")) {
+				Long idcustomer = (Long) mapParam.get("idcustomer");
+				sqlBuilder.append(" and data.idcustomer = "+idcustomer+" ");
+				sqlBuilder.append(" and data.id in (select idworkorder from t_surat_jalan as tsj where tsj.idcustomer = "+idcustomer+" and tsj.status = 'CLOSE_SJ' and tsj.isactive = true  and tsj.isdelete = false ) ");
 			}
 		}
 		sqlBuilder.append(" order by data.nodocument ");
-		final Object[] queryParameters = new Object[] {idcompany,idbranch,status};
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderDropdownData(), queryParameters);
 	}
 
