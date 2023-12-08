@@ -615,7 +615,7 @@ public class WorkOrderHandler implements WorkOrderService{
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetWorkOrderDropdownData().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isactive = true  and data.isdelete = false ");
 		if(status != null && !status.equals("")) {
-			sqlBuilder.append(" and data.status = "+status+" ");
+			sqlBuilder.append(" and data.status = '"+status+"' ");
 		}
 		if(param != null) {
 			HashMap<String, Object> mapParam = (HashMap<String, Object>) param;
