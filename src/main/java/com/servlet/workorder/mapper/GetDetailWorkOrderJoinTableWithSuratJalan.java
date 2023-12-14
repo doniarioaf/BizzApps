@@ -19,13 +19,18 @@ public class GetDetailWorkOrderJoinTableWithSuratJalan implements RowMapper<Deta
 		sqlBuilder.append("data.idworkorder as idworkorder, data.idpartai as idpartai, data.jumlahkoli as jumlahkoli, data.jumlahkg as jumlahkg,data.nocontainer as nocontainer, data.noseal as noseal, ");
 		sqlBuilder.append("data.barang as barang, partai.name as partainame, ");
 		sqlBuilder.append("sj.id as idsuratjalan , sj.nodocument as nodocumentsj, sj.tanggal as tanggalsj, sj.tanggalkembali as tanggalkembalisj, sj.lembur as lembursj, emp.nama as namasupir, ");
-		sqlBuilder.append("param.codename as kepemilikanmobil, asset.kepala_nopolisi as kepala_nopolisi ");
+		sqlBuilder.append("param.codename as kepemilikanmobil, asset.kepala_nopolisi as kepala_nopolisi, ");
+		sqlBuilder.append("vendor.nama as vendorname, city.city_name as warehousecity, district.dis_name as warehousekecamatan  ");
 		sqlBuilder.append("from detail_work_order as data ");
 		sqlBuilder.append("left join m_partai as partai on partai.id = data.idpartai ");
 		sqlBuilder.append("left join t_surat_jalan as sj on sj.idworkorder = data.idworkorder and sj.nocantainer = data.nocontainer ");
 		sqlBuilder.append("left join m_employee_manggala as emp on emp.id = sj.idemployee_supir ");
 		sqlBuilder.append("left join m_parameter as param on param.code = sj.kepemilikanmobil and param.grup = 'KEPEMILIKAN_MOBIL_SURAT_JALAN' ");
 		sqlBuilder.append("left join m_asset as asset on asset.id = sj.idasset ");
+		sqlBuilder.append("left join m_vendor as vendor on vendor.id = sj.idvendormobil ");
+		sqlBuilder.append("left join m_warehouse as warehouse on warehouse.id = sj.idwarehouse ");
+		sqlBuilder.append("left join cities as city on city.city_id = CAST (warehouse.city AS INTEGER)  ");
+		sqlBuilder.append("left join districts as district on district.dis_id = CAST (warehouse.kecamatan AS INTEGER) ");
 		
 		this.schemaSql = sqlBuilder.toString();
 	}
@@ -45,6 +50,9 @@ public class GetDetailWorkOrderJoinTableWithSuratJalan implements RowMapper<Deta
 		final String noseal = rs.getString("noseal");
 		final String barang = rs.getString("barang");
 		final String partainame = rs.getString("partainame");
+		final String vendorname = rs.getString("vendorname");
+		final String warehousecity = rs.getString("warehousecity");
+		final String warehousekecamatan = rs.getString("warehousekecamatan");
 		
 		final Long idsuratjalan = rs.getLong("idsuratjalan");
 		final String nodocumentsj = rs.getString("nodocumentsj");
@@ -65,6 +73,9 @@ public class GetDetailWorkOrderJoinTableWithSuratJalan implements RowMapper<Deta
 		woSuratJalan.setNamaSupir(namasupir);
 		woSuratJalan.setKepemilikanmobil(kepemilikanmobil);
 		woSuratJalan.setNoPolisi(kepala_nopolisi);
+		woSuratJalan.setVendormobilname(vendorname);
+		woSuratJalan.setWarehouseCity(warehousecity);
+		woSuratJalan.setWarehouseKecamatan(warehousekecamatan);
 		
 		DetailWorkOrderData data = new DetailWorkOrderData();
 		data.setIdworkorder(idworkorder);

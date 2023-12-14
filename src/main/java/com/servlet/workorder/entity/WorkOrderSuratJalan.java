@@ -12,6 +12,27 @@ public class WorkOrderSuratJalan {
 	private String namaSupir;
 	private String kepemilikanmobil;
 	private String noPolisi;
+	private String vendormobilname;
+	private String warehouseCity;
+	private String warehouseKecamatan;
+	public String getWarehouseCity() {
+		return warehouseCity;
+	}
+	public void setWarehouseCity(String warehouseCity) {
+		this.warehouseCity = warehouseCity;
+	}
+	public String getWarehouseKecamatan() {
+		return warehouseKecamatan;
+	}
+	public void setWarehouseKecamatan(String warehouseKecamatan) {
+		this.warehouseKecamatan = warehouseKecamatan;
+	}
+	public String getVendormobilname() {
+		return vendormobilname;
+	}
+	public void setVendormobilname(String vendormobilname) {
+		this.vendormobilname = vendormobilname;
+	}
 	public Long getIdSuratJalan() {
 		return idSuratJalan;
 	}

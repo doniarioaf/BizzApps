@@ -588,7 +588,7 @@ public class WorkOrderHandler implements WorkOrderService{
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetWorkOrderJoinTableData().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
 		if(param.getReportName().equals(ConstantReportName.BONGKARMUATDEPO)) {
-			sqlBuilder.append(" and data.tanggalsppb_npe >= '"+new java.sql.Date(param.getFromDate())+"'  and data.tanggalsppb_npe <= '"+new java.sql.Date(param.getToDate())+"' order by data.id asc ");
+			sqlBuilder.append(" and data.tanggal >= '"+new java.sql.Date(param.getFromDate())+"'  and data.tanggal <= '"+new java.sql.Date(param.getToDate())+"' order by data.id asc ");
 		}else if(param.getReportName().equals(ConstantReportName.STATUSINVOICE)) {
 			sqlBuilder.append(" and data.tanggal >= '"+new java.sql.Date(param.getFromDate())+"'  and data.tanggal <= '"+new java.sql.Date(param.getToDate())+"' ");
 			if(!param.getStatus().equals("")) {

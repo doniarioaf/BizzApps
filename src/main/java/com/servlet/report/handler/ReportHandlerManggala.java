@@ -23,9 +23,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.servlet.address.entity.City;
 import com.servlet.address.entity.District;
 import com.servlet.address.entity.DistrictData;
 import com.servlet.address.repo.DistrictRepo;
+import com.servlet.address.service.CityService;
 import com.servlet.address.service.DistrictService;
 import com.servlet.asset.entity.Asset;
 import com.servlet.asset.entity.AssetData;
@@ -96,6 +98,8 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 	private MappingService mappingservice;
 	@Autowired
 	private UserAppsService userAppsService;
+	@Autowired
+	private CityService cityService;
 	
 	@Override
 	public ReportWorkBookExcel getReportBongkarMuatDanDepo(Manggala_BodyReportBongkarMuatDanDepo body, long idcompany,
@@ -155,25 +159,28 @@ public class ReportHandlerManggala implements ReportServiceManggala{
         createCell(row, 5, "Exportir", style,sheet);
         createCell(row, 6, "Importir", style,sheet);
         createCell(row, 7, "Jenis WO", style,sheet);
-        createCell(row, 8, "Origin Port", style,sheet);
-        createCell(row, 9, "Destination Port", style,sheet);
-        createCell(row, 10, "ETD", style,sheet);
-        createCell(row, 11, "ETA", style,sheet);
-        createCell(row, 12, "Ves/Voy", style,sheet);
-        createCell(row, 13, "No. BL", style,sheet);
-        createCell(row, 14, "Tanggal NPE/SPPB", style,sheet);
-        createCell(row, 15, "No. Kontainer", style,sheet);
-        createCell(row, 16, "Jenis Kontainer", style,sheet);
-        createCell(row, 17, "Area Kirim (Kecamatan)", style,sheet);
-        createCell(row, 18, "Depo", style,sheet);
-        createCell(row, 19, "Tanggal bongkar/muat di pabrik", style,sheet);
-        createCell(row, 20, "Lembur / Tidak", style,sheet);
-        createCell(row, 21, "No. Mobil", style,sheet);
-        createCell(row, 22, "Nama Supir", style,sheet);
-        createCell(row, 23, "Status Mobil", style,sheet);
-        createCell(row, 24, "Status WO", style,sheet);
+        createCell(row, 8, "Nama Barang", style,sheet);
+        createCell(row, 9, "Origin Port", style,sheet);
+        createCell(row, 10, "Destination Port", style,sheet);
+        createCell(row, 11, "ETD", style,sheet);
+        createCell(row, 12, "ETA", style,sheet);
+        createCell(row, 13, "Ves/Voy", style,sheet);
+        createCell(row, 14, "No. BL", style,sheet);
+        createCell(row, 15, "Tanggal NPE/SPPB", style,sheet);
+        createCell(row, 16, "No. Kontainer", style,sheet);
+        createCell(row, 17, "Jenis Kontainer", style,sheet);
+        createCell(row, 18, "Area Kirim (Kecamatan)", style,sheet);
+        createCell(row, 19, "Depo", style,sheet);
+        createCell(row, 20, "Tanggal bongkar/muat di pabrik", style,sheet);
+        createCell(row, 21, "Lembur / Tidak", style,sheet);
+        createCell(row, 22, "No. Mobil", style,sheet);
+        createCell(row, 23, "Nama Supir", style,sheet);
+        createCell(row, 24, "Status Mobil", style,sheet);
+        createCell(row, 25, "Vendor", style,sheet);
+        createCell(row, 26, "Status WO", style,sheet);
         
 		HashMap<String, String> kodeposMappingKecamatan = new HashMap<String, String>();
+		HashMap<Long, String> kodeposMappingCity = new HashMap<Long, String>();
 		if(listWO != null && listWO.size() > 0) {
 			rowcount = 5;
 			font.setBold(false);
@@ -185,20 +192,37 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 //	        styleData.setFont(font);
 	        
 			for(WorkOrderData wodata : listWO) {
-				String districtName = "";
-				if(wodata.getKodeposCustomer() != null) {
-					String mapKodepos = kodeposMappingKecamatan.get(wodata.getKodeposCustomer());
-					if(mapKodepos == null) {
-						List<DistrictData> listDistrict = districtService.getListDistrictByPostalCode(new Long(wodata.getKodeposCustomer()).longValue());
-						if(listDistrict.size() > 0) {
-							districtName = listDistrict.get(0).getDis_name();
-							kodeposMappingKecamatan.put(wodata.getKodeposCustomer(), districtName);
-						}
-					}else {
-						districtName = mapKodepos;
-					}
-					
-				}
+//				String districtName = "";
+//				String cityName = "";
+//				if(wodata.getKodeposCustomer() != null) {
+//					String mapKodepos = kodeposMappingKecamatan.get(wodata.getKodeposCustomer());
+//					if(mapKodepos == null) {
+//						List<DistrictData> listDistrict = districtService.getListDistrictByPostalCode(new Long(wodata.getKodeposCustomer()).longValue());
+//						if(listDistrict.size() > 0) {
+//							DistrictData distData = listDistrict.get(0);
+//							districtName = distData.getDis_name();
+//							
+//							
+//							String mapCity = kodeposMappingCity.get(distData.getCity_id());
+//							if(mapCity == null) {
+//								City city = cityService.getById(distData.getCity_id());
+//								if(city != null) {
+//									cityName = city.getCity_name();
+//									kodeposMappingCity.put(distData.getCity_id(), cityName);
+//									cityName = ", "+city.getCity_name();
+//								}
+//							}else {
+//								cityName = ", "+mapCity;
+//							}
+//							
+//							districtName += cityName;
+//							kodeposMappingKecamatan.put(wodata.getKodeposCustomer(), districtName);
+//						}
+//					}else {
+//						districtName = mapKodepos;
+//					}
+//					
+//				}
 				List<DetailWorkOrderData> listCont = workOrderService.getListContainerByIdWorkOrderForReport(idcompany,idbranch,wodata.getId());
 				if(listCont != null && listCont.size() > 0) {
 					for(DetailWorkOrderData detailWO : listCont) {
@@ -212,6 +236,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, checkNull(wodata.getEksportirname(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(wodata.getImportirname(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(wodata.getJeniswoCodeName(),wodata.getJeniswo()), style,sheet);
+						createCell(rowData, columnCount++, checkNull(wodata.getNamacargo(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(wodata.getPortasalname(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(wodata.getPorttujuanname(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNullDate(wodata.getEtd(),""), style,sheet);
@@ -221,13 +246,14 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, checkNullDate(wodata.getTanggalsppb_npe(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(detailWO.getNocontainer(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(detailWO.getPartainame(),""), style,sheet);
-						createCell(rowData, columnCount++, checkNull(districtName,""), style,sheet);
+						createCell(rowData, columnCount++, checkNull( (detailWO.getWoSuratJalan().getWarehouseKecamatan() != null? detailWO.getWoSuratJalan().getWarehouseKecamatan()+", "+detailWO.getWoSuratJalan().getWarehouseCity():"" ),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(wodata.getDepo(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNullDate(detailWO.getWoSuratJalan().getTanggalkembali(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(detailWO.getWoSuratJalan().getLembur(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(detailWO.getWoSuratJalan().getNoPolisi(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(detailWO.getWoSuratJalan().getNamaSupir(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(detailWO.getWoSuratJalan().getKepemilikanmobil(),""), style,sheet);
+						createCell(rowData, columnCount++, checkNull(detailWO.getWoSuratJalan().getVendormobilname(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(wodata.getStatus(),""), style,sheet);
 					}
 				}
