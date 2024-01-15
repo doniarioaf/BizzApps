@@ -25,7 +25,8 @@ private String schemaSql;
 		sqlBuilder.append("mpengeluaran.paymentto as pengeluaranpaymentto, ");
 		sqlBuilder.append("cust.customername as pengeluarancustomername, emp.nama as pengeluaranempname, vendor.nama as pengeluaranvendorname, ");
 		sqlBuilder.append("mpengeluaran.keterangan as pengeluaranketerangan, ");
-		sqlBuilder.append("dpengeluaran.amount as pengeluaranamount ");
+		sqlBuilder.append("dpengeluaran.amount as pengeluaranamount, ");
+		sqlBuilder.append("parameterpaymenttype.codename as parameterpaymenttypename ");
 		
 		sqlBuilder.append("from detail_pengeluaran_kas_bank as dpengeluaran ");
 		sqlBuilder.append("left join m_pengeluaran_kas_bank as mpengeluaran on mpengeluaran.id = dpengeluaran.idpengeluarankasbank ");
@@ -37,6 +38,7 @@ private String schemaSql;
 		sqlBuilder.append("left join m_customer_manggala as cust on cust.id = mpengeluaran.idcustomer ");
 		sqlBuilder.append("left join m_employee_manggala as emp on emp.id = mpengeluaran.idemployee ");
 		sqlBuilder.append("left join m_vendor as vendor on vendor.id = mpengeluaran.idvendor ");
+		sqlBuilder.append("left join m_parameter as parameterpaymenttype on parameterpaymenttype.code = mpengeluaran.idpaymenttype ");
 
 		
 //		sqlBuilder.append("mpenerimaan.id as penerimaanid, mpengeluaran.id as pengeluaranid, ");
@@ -113,6 +115,8 @@ private String schemaSql;
 		
 		final String invitemnama = rs.getString("invitemnama");
 		final String payitemnama = rs.getString("payitemnama");
+		final String parameterpaymenttypename = rs.getString("parameterpaymenttypename");
+
 		
 		EntityHelperKasBank data = new EntityHelperKasBank();
 		data.setPenerimaanid(0L);
@@ -141,6 +145,7 @@ private String schemaSql;
 		data.setPengeluaranketerangan(pengeluaranketerangan);
 		data.setPengeluaran_invItemName(invitemnama);
 		data.setPengeluaran_payItemName(payitemnama);
+		data.setPengeluaran_KategoriName(parameterpaymenttypename);
 		return data;
 	}
 }
