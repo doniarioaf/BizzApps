@@ -19,7 +19,7 @@ public class GetInvoiceDataJoinTable implements RowMapper<InvoiceData>{
 		sqlBuilder.append("data.deliveredto as deliveredto, data.deliverydate as deliverydate, data.idwo as idwo, data.idsuratjalan as idsuratjalan, ");
 		sqlBuilder.append("data.idinvoicetype as idinvoicetype, data.totalinvoice as totalinvoice, data.isactive as isactive,data.diskonnota as diskonnota, data.ppn as ppn,data.nilaippn as nilaippn, ");
 		sqlBuilder.append("cust.customername as customername, wo.nodocument as nodocumentwo, sj.nodocument as nodocumentsj, invtype.codename as invtypename, ");
-		sqlBuilder.append("wo.jalur as jalurwo, sj.idwarehouse as idwarehousesj, paramjalur.codename as jalurname ");
+		sqlBuilder.append("wo.jalur as jalurwo, sj.idwarehouse as idwarehousesj, paramjalur.codename as jalurname, data.notes1 as notes1, data.notes2 as notes2 ");
 		sqlBuilder.append("from m_invoice as data ");
 		sqlBuilder.append("left join m_customer_manggala as cust on cust.id = data.idcustomer ");
 		sqlBuilder.append("left join m_workorder as wo on wo.id = data.idwo ");
@@ -59,6 +59,8 @@ public class GetInvoiceDataJoinTable implements RowMapper<InvoiceData>{
 		final String jalurwo = rs.getString("jalurwo");
 		final Long idwarehousesj = rs.getLong("idwarehousesj");
 		final String jalurname = rs.getString("jalurname");
+		final String notes1 = rs.getString("notes1");
+		final String notes2 = rs.getString("notes2");
 		
 		
 		InvoiceData data = new InvoiceData();
@@ -84,6 +86,8 @@ public class GetInvoiceDataJoinTable implements RowMapper<InvoiceData>{
 		data.setIdwarehousesuratjalan(idwarehousesj);
 		data.setPpn(ppn);
 		data.setNilaippn(nilaippn);
+		data.setNotes1(notes1);
+		data.setNotes2(notes2);
 		return data;
 	}
 

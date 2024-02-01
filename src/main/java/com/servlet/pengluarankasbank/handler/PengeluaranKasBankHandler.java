@@ -681,24 +681,30 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		return 0.0;
 	}
 	
-	private List<DetailPengeluaranKasBankData> getListDetailByIdWONotJoin(Long idcompany, Long idbranch, Long idWO) {
+	private List<DetailPengeluaranKasBankData> getListDetailByIdWONotJoin(Long idcompany, Long idbranch, Long idWO, boolean isReimbursement) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailPengeluaranKasBankData().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? ");
 		sqlBuilder.append(" and data.idpengeluarankasbank in (select m.id from m_pengeluaran_kas_bank as m where m.isactive = true  and m.isdelete = false and m.idwo = "+idWO+" ) ");
+		if(isReimbursement){
+			sqlBuilder.append(" and (data.idinvoiceitem != 0 or data.idinvoiceitem notnull) and (data.idinvoice isnull or data.idinvoice > 0) ");
+		}
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPengeluaranKasBankData(), queryParameters);
 	}
 
 	@Override
-	public PengeluaranHeaderAndDetail getListByIdWo(Long idcompany, Long idbranch, Long idWO) {
+	public PengeluaranHeaderAndDetail getListByIdWo(Long idcompany, Long idbranch, Long idWO, boolean isReimbursement) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPengeluaranKasBankData().schema());
 		sqlBuilder.append(" where data.idwo = ? and data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		if(isReimbursement){
+			sqlBuilder.append(" and data.id in (select idpengeluarankasbank from detail_pengeluaran_kas_bank as detail where (detail.idinvoiceitem != 0 or detail.idinvoiceitem notnull) and (detail.idinvoice isnull or detail.idinvoice > 0) ) ");
+		}
 		final Object[] queryParameters = new Object[] {idWO, idcompany,idbranch};
 		List<PengeluaranKasBankData> headers = this.jdbcTemplate.query(sqlBuilder.toString(), new GetPengeluaranKasBankData(), queryParameters);
 		
-		List<DetailPengeluaranKasBankData> details = getListDetailByIdWONotJoin(idcompany, idbranch, idWO);
+		List<DetailPengeluaranKasBankData> details = getListDetailByIdWONotJoin(idcompany, idbranch, idWO,isReimbursement);
 		
 		PengeluaranHeaderAndDetail data = new PengeluaranHeaderAndDetail();
 		data.setHeaders(headers);
@@ -785,7 +791,15 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataReportKasBankMapper(), queryParameters);
 	}
-	
+
+	@Override
+	public List<DetailPengeluaranKasBankData> getListDetailByIdInvoice(Long idcompany, Long idbranch, Long idinvoice) {
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailPengeluaranKasBankData().schema());
+		sqlBuilder.append(" where data.idinvoice = ? ");
+		final Object[] queryParameters = new Object[] {idinvoice};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPengeluaranKasBankData(), queryParameters);
+	}
+
 	private boolean checkFinanceJunior(Long iduser) {
 		boolean flagpermission = false;
 		List<UserPermissionData> listPermission =  new ArrayList<UserPermissionData>(userAppsService.getListUserPermission(iduser));

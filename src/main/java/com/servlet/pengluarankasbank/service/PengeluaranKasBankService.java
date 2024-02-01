@@ -28,9 +28,11 @@ public interface PengeluaranKasBankService {
 	Double summaryAmountPengeluaranByDate(Long idcompany,Long idbranch,Date fromdate, Date todate, Long idpengeluaran, Long idbank);
 	List<DetailPengeluaranKasBankData> getListDetailById(Long idcompany,Long idbranch,Long id);
 	Double summaryAmountPengeluaranByIdWo(Long idcompany,Long idbranch,Date fromdate, Date todate, Long idwo,Long idbank);
-	PengeluaranHeaderAndDetail getListByIdWo(Long idcompany,Long idbranch,Long idWO);
+	PengeluaranHeaderAndDetail getListByIdWo(Long idcompany,Long idbranch,Long idWO, boolean isReimbursement);
 	Double summaryAmountPengeluaranForSummaryKegiatanTruck(Long idcompany,Long idbranch, Long idwo,Long idcustomer,Long idemployee, Long idinvoiceitem,Long idpaymentitem, Long idasset);
 	List<DetailVendorBankData> getListBankVendor(Long id,Long idcompany,Long idbranch);
 	List<DetailVendorBankData> getEmpAccBankById(Long idcompany,Long idbranch,Long id);
 	List<EntityHelperKasBank> getDataReportKasBankPengeluaran(Long idcompany,Long idbranch,Date fromdate, Date todate,Long idbank);
+
+	List<DetailPengeluaranKasBankData> getListDetailByIdInvoice(Long idcompany,Long idbranch,Long idinvoice);
 }

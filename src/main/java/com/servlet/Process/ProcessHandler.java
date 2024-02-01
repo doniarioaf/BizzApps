@@ -1830,7 +1830,7 @@ public class ProcessHandler implements ProcessService{
 					val.setData(invoiceService.printInvoice(auth.getIdcompany(), auth.getIdbranch(),id));
 				}else if(type.equals("SEACRH_PENGELUARAN")) {
 					long idwo = (long) param.get("idwo");
-					val.setData(pengeluaranKasBankService.getListByIdWo(auth.getIdcompany(), auth.getIdbranch(),idwo));
+					val.setData(pengeluaranKasBankService.getListByIdWo(auth.getIdcompany(), auth.getIdbranch(),idwo,true));
 				}else if(type.equals("GETDISTRICT")) {
 					long postalcode = (long) param.get("postalcode");
 					val.setData(districtService.getListDistrictByPostalCode(postalcode));

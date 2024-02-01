@@ -6,6 +6,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import com.servlet.pengluarankasbank.entity.DetailPengeluaranKasBank;
+import com.servlet.pengluarankasbank.entity.DetailPengeluaranKasBankData;
+import com.servlet.pengluarankasbank.entity.DetailPengeluaranKasBankPK;
+import com.servlet.pengluarankasbank.repo.DetailPengeluaranKasBankRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -70,14 +74,19 @@ public class InvoiceHandler implements InvoiceService{
 	private DetailInvoicePriceRepo detailInvoicePriceRepo;
 	@Autowired
 	private PenerimaanKasBankService penerimaanKasBankService;
+
 	@Autowired
 	private DetailPenerimaanKasBankRepo detailPenerimaanKasBankRepo;
+
+	@Autowired
+	private PengeluaranKasBankService pengeluaranKasBankService;
+
+	@Autowired
+	private DetailPengeluaranKasBankRepo detailPengeluaranKasBankRepo;
 	@Autowired
 	private ParameterService parameterService;
 	@Autowired
 	private ParameterManggalaService parameterManggalaService;
-	@Autowired
-	private PengeluaranKasBankService pengeluaranKasBankService;
 	@Autowired
 	private PriceListService priceListService;
 	
@@ -165,6 +174,9 @@ public class InvoiceHandler implements InvoiceService{
 					table.setPpn(body.getPpn());
 					table.setNilaippn(body.getNilaippn());
 					table.setIsactive(body.isIsactive());
+
+					table.setNotes1(body.getNotes1());
+					table.setNotes2(body.getNotes2());
 	
 					table.setIsdelete(false);
 					table.setCreatedby(iduser.toString());
@@ -179,7 +191,13 @@ public class InvoiceHandler implements InvoiceService{
 				}
 				if(idsave > 0) {
 					putDetail(body.getDetailsprice(), idcompany, idbranch, idsave, "ADD");
-					updateToPenerimaanKasBank(idcompany,idbranch,idsave,body.getIdwo(),body.getTotalinvoice(),"ADD");
+					if(body.getIdinvoicetype().equals("REIMBURSEMENT")){
+						updateToPengeluaranKasBank(idcompany,idbranch,idsave,body.getDetailsprice(),"ADD");
+						updateToPenerimaanKasBank(idcompany,idbranch,idsave,body.getIdwo(),body.getTotalinvoice(),"ADD");
+					}else{
+						updateToPenerimaanKasBank(idcompany,idbranch,idsave,body.getIdwo(),body.getTotalinvoice(),"ADD");
+					}
+
 				}
 			}catch (Exception e) {
 				// TODO: handle exception
@@ -231,12 +249,17 @@ public class InvoiceHandler implements InvoiceService{
 				table.setPpn(body.getPpn());
 				table.setNilaippn(body.getNilaippn());
 				table.setTotalinvoice(body.getTotalinvoice());
+				table.setNotes1(body.getNotes1());
+				table.setNotes2(body.getNotes2());
 				table.setIsactive(body.isIsactive());
 				table.setUpdateby(iduser.toString());
 				table.setUpdatedate(ts);
 				idsave = repository.saveAndFlush(table).getId();
 				
 				putDetail(body.getDetailsprice(), idcompany, idbranch, idsave, "EDIT");
+				if(body.getIdinvoicetype().equals("REIMBURSEMENT")){
+					updateToPengeluaranKasBank(idcompany,idbranch,idsave,body.getDetailsprice(),"EDIT");
+				}
 			}catch (Exception e) {
 				// TODO: handle exception
 				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
@@ -270,8 +293,13 @@ public class InvoiceHandler implements InvoiceService{
 					table.setDeleteby(iduser.toString());
 					table.setDeletedate(ts);
 					idsave = repository.saveAndFlush(table).getId();
-					
-					
+
+					if(table.getIdinvoicetype().equals("REIMBURSEMENT")){
+						List<DetailPengeluaranKasBankData> listPengluaran = pengeluaranKasBankService.getListDetailByIdInvoice(idcompany,idbranch,idsave);
+						for(DetailPengeluaranKasBankData data : listPengluaran){
+							updateTableDetailPengeluaran(idcompany,idbranch,data.getIdpengeluarankasbank(),null);
+						}
+					}
 				}catch (Exception e) {
 					// TODO: handle exception
 					ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
@@ -389,7 +417,7 @@ public class InvoiceHandler implements InvoiceService{
 				data.setSuratJalanOptions(suratJalanService.getListSuratJalanByWO(idcompany,idbranch,datainv.getIdwo()));
 				data.setSearchSuratJalanOptions(suratJalanService.getListByIdWO(idcompany,idbranch,datainv.getIdwo()));
 				if(datainv.getIdinvoicetype().equals("REIMBURSEMENT")) {
-					data.setSearchPengeluaranOptions(pengeluaranKasBankService.getListByIdWo(idcompany,idbranch,datainv.getIdwo()));
+					data.setSearchPengeluaranOptions(pengeluaranKasBankService.getListByIdWo(idcompany,idbranch,datainv.getIdwo(),true));
 				}else {
 					Long idwarehouse = datainv.getIdwarehousesuratjalan() != null?datainv.getIdwarehousesuratjalan():0L;
 					data.setSearchPricelistOptions(priceListService.getListPriceListByIdCustomer(idcompany, idbranch, datainv.getIdcustomer(), idwarehouse, datainv.getIdinvoicetype(), datainv.getJalurwo()));
@@ -435,7 +463,71 @@ public class InvoiceHandler implements InvoiceService{
 		}
 		return "";
 	}
-	
+
+	private String updateToPengeluaranKasBank(long idcompany,long idbranch,Long idsave,BodyDetailInvoicePrice[] details,String action) {
+		if(details != null) {
+			if(details.length > 0) {
+				if(action.equals("ADD")){
+					for(int i=0; i < details.length; i++) {
+						BodyDetailInvoicePrice detail = details[i];
+						updateTableDetailPengeluaran(idcompany,idbranch,detail.getIdpengeluarankasbank(),idsave);
+					}
+				}else if(action.equals("EDIT")){
+					List<DetailPengeluaranKasBankData> listPengluaran = pengeluaranKasBankService.getListDetailByIdInvoice(idcompany,idbranch,idsave);
+					if(listPengluaran != null && listPengluaran.size() > 0){
+						for(DetailPengeluaranKasBankData data : listPengluaran){
+							boolean flagHapus = true;
+							for(int i=0; i < details.length; i++) {
+								BodyDetailInvoicePrice detail = details[i];
+
+								if(detail.getIdpengeluarankasbank() == data.getIdpengeluarankasbank()){
+									flagHapus = false;
+									break;
+								}
+							}
+							if(flagHapus){
+								updateTableDetailPengeluaran(idcompany,idbranch,data.getIdpengeluarankasbank(),null);
+							}
+						}
+
+						for(int i=0; i < details.length; i++) {
+							BodyDetailInvoicePrice detail = details[i];
+							boolean flagAdd = true;
+							for(DetailPengeluaranKasBankData data : listPengluaran){
+								if(detail.getIdpengeluarankasbank() == data.getIdpengeluarankasbank()){
+									flagAdd = false;
+									break;
+								}
+							}
+							if(flagAdd){
+								updateTableDetailPengeluaran(idcompany,idbranch,detail.getIdpengeluarankasbank(),idsave);
+							}
+						}
+					}
+				}
+
+			}
+		}
+
+
+		return "";
+	}
+
+	private String updateTableDetailPengeluaran(Long idcompany,Long idbranch,Long idpengeluaran,Long idinvoice){
+		DetailPengeluaranKasBankPK pk = new DetailPengeluaranKasBankPK();
+		pk.setIdcompany(idcompany);
+		pk.setIdbranch(idbranch);
+		pk.setCounter(1L);
+		pk.setIdpengeluarankasbank(idpengeluaran);
+
+		DetailPengeluaranKasBank table = detailPengeluaranKasBankRepo.getById(pk);
+		if(table != null){
+			table.setIdinvoice(idinvoice);
+			detailPengeluaranKasBankRepo.saveAndFlush(table);
+		}
+		return "";
+	}
+
 	private String updateToPenerimaanKasBank(long idcompany,long idbranch,Long idsave,Long idwo,Double totalInvoice,String action) {
 		if(idwo != null && totalInvoice != null) {
 			if(idwo.intValue() > 0) {

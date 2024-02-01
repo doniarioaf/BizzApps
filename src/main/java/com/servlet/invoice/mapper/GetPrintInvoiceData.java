@@ -17,7 +17,7 @@ public class GetPrintInvoiceData implements RowMapper<PrintInvoiceData>{
 		sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.tanggal as tanggal, data.idcustomer as idcustomer, data.refno as refno, ");
 		sqlBuilder.append("data.deliveredto as deliveredto, data.deliverydate as deliverydate, data.idwo as idwo, data.idsuratjalan as idsuratjalan, ");
 		sqlBuilder.append("data.idinvoicetype as idinvoicetype, data.totalinvoice as totalinvoice, data.isactive as isactive, data.diskonnota as diskonnota, data.ppn as ppn, wo.nobl as wonobl,data.nilaippn as nilaippn, ");
-		sqlBuilder.append("wh.nama as whname, sj.tanggalkembali as sjtanggalkembali ");
+		sqlBuilder.append("wh.nama as whname, sj.tanggalkembali as sjtanggalkembali, data.notes1 as notes1, data.notes2 as notes2 ");
 		sqlBuilder.append("from m_invoice as data ");
 		sqlBuilder.append("left join m_workorder as wo on wo.id = data.idwo ");
 		sqlBuilder.append("left join t_surat_jalan as sj on sj.id = data.idsuratjalan ");
@@ -50,7 +50,9 @@ public class GetPrintInvoiceData implements RowMapper<PrintInvoiceData>{
 		final Double nilaippn = rs.getDouble("nilaippn");
 		final String wonobl = rs.getString("wonobl");
 		final String whname = rs.getString("whname");
-		
+		final String notes1 = rs.getString("notes1");
+		final String notes2 = rs.getString("notes2");
+
 		PrintInvoiceData data = new PrintInvoiceData();
 		data.setId(id);
 		data.setIdwo(idwo);
@@ -66,6 +68,8 @@ public class GetPrintInvoiceData implements RowMapper<PrintInvoiceData>{
 		data.setPpn(ppn != null ?ppn.toString():"0");
 		data.setNobl(wonobl);
 		data.setNilaippn(nilaippn);
+		data.setNotes1(notes1);
+		data.setNotes2(notes2);
 		return data;
 	}
 

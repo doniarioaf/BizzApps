@@ -22,6 +22,16 @@ public class DetailPengeluaranKasBank implements Serializable{
 	private Long idpaymentitem;
 	private Long idassetsparepart;
 	private String sparepartassettype;
+	private Long idinvoice;
+
+	public Long getIdinvoice() {
+		return idinvoice;
+	}
+
+	public void setIdinvoice(Long idinvoice) {
+		this.idinvoice = idinvoice;
+	}
+
 	public Long getIdpaymentitem() {
 		return idpaymentitem;
 	}
