@@ -994,7 +994,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
         createCell(row, 0, "No. WO", style,sheet);
         createCell(row, 1, "Tanggal WO", style,sheet);
         createCell(row, 2, "No. AJU", style,sheet);
-        createCell(row, 3, "Nama Cutomer", style,sheet);
+        createCell(row, 3, "Nama Customer", style,sheet);
         createCell(row, 4, "Jenis WO", style,sheet);
         createCell(row, 5, "Port", style,sheet);
         createCell(row, 6, "Tanggal Invoice", style,sheet);

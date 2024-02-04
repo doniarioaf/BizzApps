@@ -147,6 +147,15 @@ public class InvoiceApi {
 		Response response = securityService.response(ConstansPermission.READ_INVOICE,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
+
+	@GetMapping("/getListInvoiceNotPaid/{idwo}")
+	ResponseEntity<Response> getListInvoiceNotPaid(@PathVariable long idwo,@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "INVOICE_NOT_PAID");
+		param.put("idwo", idwo);
+		Response response = securityService.response(ConstansPermission.READ_INVOICE,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
 	
 	@PostMapping("/searchcustomer")
 	ResponseEntity<Response> searchData(@RequestBody @Validated BodySearch body, @RequestHeader(ConstansKey.AUTH) String authorization) {

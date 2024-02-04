@@ -13,8 +13,16 @@ public class BodyPenerimaanKasBank {
 	private Long idemployee;
 	private String idreceivetype;
 	private BodyDetailPenerimaanKasBank[] details;
-	
-	
+
+	private Long idwo;
+	public Long getIdwo() {
+		return idwo;
+	}
+
+	public void setIdwo(Long idwo) {
+		this.idwo = idwo;
+	}
+
 	public Long getIdcustomer() {
 		return idcustomer;
 	}

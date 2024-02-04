@@ -180,16 +180,19 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 				
 				if(body.getIdreceivetype().equals(RECEIVEFROM_CUSTOMER)) {
 					table.setIdcustomer(body.getIdcustomer());
+					table.setIdwo(body.getIdwo());
 					table.setIdemployee(null);
 					table.setIdvendor(null);
 				}else if(body.getIdreceivetype().equals(RECEIVEFROM_EMPLOYEE)) {
 					table.setIdcustomer(null);
 					table.setIdemployee(body.getIdemployee());
 					table.setIdvendor(null);
+					table.setIdwo(null);
 				}else if(body.getIdreceivetype().equals(RECEIVEFROM_VENDOR)) {
 					table.setIdcustomer(null);
 					table.setIdemployee(null);
 					table.setIdvendor(body.getIdvendor());
+					table.setIdwo(null);
 				}
 				table.setIdreceivetype(body.getIdreceivetype());
 				
@@ -267,14 +270,17 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 						table.setIdcustomer(body.getIdcustomer());
 						table.setIdemployee(null);
 						table.setIdvendor(null);
+						table.setIdwo(body.getIdwo());
 					}else if(body.getIdreceivetype().equals(RECEIVEFROM_EMPLOYEE)) {
 						table.setIdcustomer(null);
 						table.setIdemployee(body.getIdemployee());
 						table.setIdvendor(null);
+						table.setIdwo(null);
 					}else if(body.getIdreceivetype().equals(RECEIVEFROM_VENDOR)) {
 						table.setIdcustomer(null);
 						table.setIdemployee(null);
 						table.setIdvendor(body.getIdvendor());
+						table.setIdwo(null);
 					}
 					table.setIdreceivetype(body.getIdreceivetype());
 					
@@ -418,6 +424,8 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 					detailPenerimaanKasBank.setIdinvoice(detail.getIdinvoice());
 					detailPenerimaanKasBank.setIdworkorder(detail.getIdworkorder());
 					detailPenerimaanKasBank.setIsdownpayment(detail.getIsdownpayment());
+					detailPenerimaanKasBank.setPenyesuaian(detail.getPenyesuaian());
+					detailPenerimaanKasBank.setKeterangan_penyesuaian(detail.getKeterangan_penyesuaian());
 					
 					detailPenerimaanKasBankRepo.saveAndFlush(detailPenerimaanKasBank);
 					count++;
@@ -701,8 +709,20 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataReportKasBankMapper(), queryParameters);
 	}
-	
-	
+
+	@Override
+	public Double getSummaryDetailDPByIdInvoice(Long idcompany, Long idbranch, Long idInv) {
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetTotalAmount().schema());
+		sqlBuilder.append(" where data.idinvoice = ? and data.idcompany = ? and data.idbranch = ?  ");
+		final Object[] queryParameters = new Object[] {idInv,idcompany,idbranch};
+		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmount(), queryParameters);
+		if(list != null && list.size() > 0) {
+			return list.get(0);
+		}
+		return 0.0;
+	}
+
+
 	private boolean checkFinanceJunior(Long iduser) {
 		boolean flagpermission = false;
 		List<UserPermissionData> listPermission =  new ArrayList<UserPermissionData>(userAppsService.getListUserPermission(iduser));

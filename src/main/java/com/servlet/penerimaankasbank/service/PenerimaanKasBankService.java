@@ -31,4 +31,5 @@ public interface PenerimaanKasBankService {
 	Double summaryAmountPenerimaanByIdWO(Long idcompany,Long idbranch,Date fromdate, Date todate,Long idwo,Long idbank,String invoiceType);
 	Double getSummaryDetailDPByIdWO(Long idcompany,Long idbranch,Long idWO);
 	List<EntityHelperKasBank> getDataReportKasBankPenerimaan(Long idcompany,Long idbranch,Date fromdate, Date todate,Long idbank);
+	Double getSummaryDetailDPByIdInvoice(Long idcompany,Long idbranch,Long idInv);
 }

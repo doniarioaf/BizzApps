@@ -678,4 +678,26 @@ public class InvoiceHandler implements InvoiceService{
 		final Object[] queryParameters = new Object[] {idcompany,idbranch,idwo};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceDPData(), queryParameters);
 	}
+
+	@Override
+	public List<InvoiceData> getInvoiceYangBelumLunasByWo(Long idcompany, Long idbranch, Long idwo) {
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataNotJoin().schema());
+		sqlBuilder.append(" where data.idwo = ? and data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {idwo,idcompany,idbranch};
+		List<InvoiceData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataNotJoin(), queryParameters);
+		List<InvoiceData> listBelumLunas = new ArrayList<>();
+		if(list != null && list.size() > 0){
+			for(InvoiceData data : list){
+				Double amountInv = data.getTotalinvoice() != null?data.getTotalinvoice().doubleValue():0.0;
+				Double amountKas = penerimaanKasBankService.getSummaryDetailDPByIdInvoice(idcompany,idbranch,data.getId()).doubleValue();
+				if(amountInv > amountKas){
+					listBelumLunas.add(data);
+				}
+
+			}
+		}
+
+
+		return listBelumLunas;
+	}
 }

@@ -26,7 +26,25 @@ public class PenerimaanKasBankData {
 	private String employeeName;
 	private String idreceivetype;
 	private String receivetypename;
-	
+	private String nodocumentWo;
+	private String noajuWo;
+
+	public String getNodocumentWo() {
+		return nodocumentWo;
+	}
+
+	public void setNodocumentWo(String nodocumentWo) {
+		this.nodocumentWo = nodocumentWo;
+	}
+
+	public String getNoajuWo() {
+		return noajuWo;
+	}
+
+	public void setNoajuWo(String noajuWo) {
+		this.noajuWo = noajuWo;
+	}
+
 	public Long getIdcustomer() {
 		return idcustomer;
 	}

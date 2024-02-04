@@ -24,4 +24,6 @@ public interface InvoiceService {
 	List<InvoiceData> getListInvoiceByIdWo(Long idcompany,Long idbranch,Long idwo);
 	List<InvoiceData> checkInvoiceByIdWo(Long idcompany,Long idbranch,Long idwo);
 	List<InvoiceDPData> getListInvoiceDPByIdWo(Long idcompany,Long idbranch,Long idwo);
+
+	List<InvoiceData> getInvoiceYangBelumLunasByWo(Long idcompany,Long idbranch, Long idwo);
 }

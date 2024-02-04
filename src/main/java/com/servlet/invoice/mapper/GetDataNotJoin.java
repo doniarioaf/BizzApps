@@ -13,7 +13,7 @@ public class GetDataNotJoin implements RowMapper<InvoiceData>{
 	public GetDataNotJoin() {
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
-		sqlBuilder.append("data.id as id, data.nodocument as nodocument  ");
+		sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.totalinvoice as totalinvoice  ");
 		sqlBuilder.append("from m_invoice as data ");
 		
 		this.schemaSql = sqlBuilder.toString();
@@ -28,10 +28,12 @@ public class GetDataNotJoin implements RowMapper<InvoiceData>{
 		// TODO Auto-generated method stub
 		final Long id = rs.getLong("id");
 		final String nodocument = rs.getString("nodocument");
+		final Double totalinvoice = rs.getDouble("totalinvoice");
 		
 		InvoiceData data = new InvoiceData();
 		data.setId(id);
 		data.setNodocument(nodocument);
+		data.setTotalinvoice(totalinvoice);
 		
 		return data;
 	}

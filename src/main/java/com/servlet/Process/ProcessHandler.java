@@ -1750,6 +1750,9 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("TEMPLATE_ID")) {
 					long id = (long) param.get("id");
 					val.setData(penerimaanKasBankService.getByIdWithTemplate(auth.getIdcompany(), auth.getIdbranch(),id, auth.getId()));
+				}else if(type.equals("INVOICE_NOT_PAID")) {
+					long idwo = (long) param.get("idwo");
+					val.setData(invoiceService.getInvoiceYangBelumLunasByWo(auth.getIdcompany(), auth.getIdbranch(),idwo));
 				}
 				
 			}else if(codepermission.equals(ConstansPermission.READ_PENGELUARAN_KASBANK)) {
@@ -1840,6 +1843,9 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("GETINVOICEDPBYWO")) {
 					long idwo = (long) param.get("idwo");
 					val.setData(invoiceService.getListInvoiceDPByIdWo(auth.getIdcompany(), auth.getIdbranch(),idwo));
+				}else if(type.equals("INVOICE_NOT_PAID")) {
+					long idwo = (long) param.get("idwo");
+					val.setData(invoiceService.getInvoiceYangBelumLunasByWo(auth.getIdcompany(), auth.getIdbranch(),idwo));
 				}
 				
 			}else if(codepermission.equals(ConstansPermission.READ_ASSET)) {

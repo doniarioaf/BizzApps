@@ -38,8 +38,16 @@ public class PenerimaanKasBank implements Serializable{
 	private Long idvendor;
 	private Long idemployee;
 	private String idreceivetype;
-	
-	
+	private Long idwo;
+
+	public Long getIdwo() {
+		return idwo;
+	}
+
+	public void setIdwo(Long idwo) {
+		this.idwo = idwo;
+	}
+
 	public Long getIdcustomer() {
 		return idcustomer;
 	}
