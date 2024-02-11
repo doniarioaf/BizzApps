@@ -687,7 +687,7 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? ");
 		sqlBuilder.append(" and data.idpengeluarankasbank in (select m.id from m_pengeluaran_kas_bank as m where m.isactive = true  and m.isdelete = false and m.idwo = "+idWO+" ) ");
 		if(isReimbursement){
-			sqlBuilder.append(" and (data.idinvoiceitem != 0 or data.idinvoiceitem notnull) and (data.idinvoice isnull or data.idinvoice > 0) ");
+			sqlBuilder.append(" and (data.idinvoiceitem != 0 or data.idinvoiceitem notnull) and (data.idinvoice isnull or data.idinvoice = 0) ");
 		}
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPengeluaranKasBankData(), queryParameters);
@@ -699,7 +699,7 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPengeluaranKasBankData().schema());
 		sqlBuilder.append(" where data.idwo = ? and data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
 		if(isReimbursement){
-			sqlBuilder.append(" and data.id in (select idpengeluarankasbank from detail_pengeluaran_kas_bank as detail where (detail.idinvoiceitem != 0 or detail.idinvoiceitem notnull) and (detail.idinvoice isnull or detail.idinvoice > 0) ) ");
+			sqlBuilder.append(" and data.id in (select idpengeluarankasbank from detail_pengeluaran_kas_bank as detail where (detail.idinvoiceitem != 0 or detail.idinvoiceitem notnull) and (detail.idinvoice isnull or detail.idinvoice = 0) ) ");
 		}
 		final Object[] queryParameters = new Object[] {idWO, idcompany,idbranch};
 		List<PengeluaranKasBankData> headers = this.jdbcTemplate.query(sqlBuilder.toString(), new GetPengeluaranKasBankData(), queryParameters);
