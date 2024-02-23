@@ -31,6 +31,8 @@ public class PrintData {
 	private String warehousecontactname;
 	private String warehousecontactno;
 	private String warehouseaddress;
+	private String warehouseaddress2;
+	private String warehouseaddress3;
 	private String warehouseancerancer;
 	private String warehousecatatan;
 	private String catatan;
@@ -44,9 +46,23 @@ public class PrintData {
 	private String nosealwo;
 	private String compnama;
 	private String compaddress;
-	
-	
-	
+
+	public String getWarehouseaddress2() {
+		return warehouseaddress2;
+	}
+
+	public void setWarehouseaddress2(String warehouseaddress2) {
+		this.warehouseaddress2 = warehouseaddress2;
+	}
+
+	public String getWarehouseaddress3() {
+		return warehouseaddress3;
+	}
+
+	public void setWarehouseaddress3(String warehouseaddress3) {
+		this.warehouseaddress3 = warehouseaddress3;
+	}
+
 	public String getCompnama() {
 		return compnama;
 	}
