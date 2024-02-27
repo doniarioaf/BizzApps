@@ -17,9 +17,11 @@ public class GetListPenerimaanData implements RowMapper<PenerimaanKasBankData>{
 		sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.receivedate as receivedate, data.receivefrom as receivefrom, data.idcoa as idcoa, ");
 		sqlBuilder.append("data.idbank as idbank, data.keterangan as keterangan, data.isactive as isactive,	bank.namabank as namabank, ");
 		sqlBuilder.append("data.idcustomer as idcustomer, data.idvendor as idvendor, data.idemployee as idemployee, ");
-		sqlBuilder.append("vendor.nama as vendornama, data.idreceivetype as idreceivetype, cust.customername as customername, emp.nama as empnama  ");
+		sqlBuilder.append("vendor.nama as vendornama, data.idreceivetype as idreceivetype, cust.customername as customername, emp.nama as empnama,  ");
+		sqlBuilder.append("wo.noaju as noajuwo, wo.nodocument as nodocumentwo ");
 		
 		sqlBuilder.append("from m_penerimaan_kas_bank as data ");
+		sqlBuilder.append("left join m_workorder as wo on wo.id = data.idwo ");
 		sqlBuilder.append("left join m_bank_account as bank on bank.id = data.idbank ");
 		sqlBuilder.append("left join m_vendor as vendor on vendor.id = data.idvendor ");
 		sqlBuilder.append("left join m_customer_manggala as cust on cust.id = data.idcustomer ");
@@ -54,9 +56,16 @@ public class GetListPenerimaanData implements RowMapper<PenerimaanKasBankData>{
 		final String idreceivetype = rs.getString("idreceivetype");
 		final String customername = rs.getString("customername");
 		final String empnama = rs.getString("empnama");
+
+		final String noajuwo = rs.getString("noajuwo");
+		final String nodocumentwo = rs.getString("nodocumentwo");
+
 		
 		PenerimaanKasBankData data = new PenerimaanKasBankData();
 		data.setId(id);
+		data.setNodocumentWo(nodocumentwo);
+		data.setNoajuWo(noajuwo);
+
 		data.setNodocument(nodocument);
 		data.setReceivedate(receivedate);
 		data.setReceivefrom(receivefrom);

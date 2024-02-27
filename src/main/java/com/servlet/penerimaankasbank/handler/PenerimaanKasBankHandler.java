@@ -545,7 +545,7 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 	public List<DetailPenerimaanKasBankData> getListDetailByIdInvoice(Long idcompany, Long idbranch, Long idInvoice) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailPenerimaanKasBankData().schema());
-		sqlBuilder.append(" where data.idinvoice = ? and data.idcompany = ? and data.idbranch = ? ");
+		sqlBuilder.append(" where data.idinvoice = ? and data.idcompany = ? and data.idbranch = ? and data.idpenerimaankasbank in (select penerimaan.id from m_penerimaan_kas_bank as penerimaan where penerimaan.isdelete = false ) ");
 		final Object[] queryParameters = new Object[] {idInvoice,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPenerimaanKasBankData(), queryParameters);
 	}
