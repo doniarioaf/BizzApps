@@ -4,9 +4,18 @@ public class BodySearch {
 	private String nodocument;
 	private String namacustomer;
 	private String namacargo;
+	private String noaju;
 	private Long idwo;
 	private Long idcustomer;
-	
+
+	public String getNoaju() {
+		return noaju;
+	}
+
+	public void setNoaju(String noaju) {
+		this.noaju = noaju;
+	}
+
 	public Long getIdcustomer() {
 		return idcustomer;
 	}

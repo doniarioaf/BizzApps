@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import com.servlet.penerimaankasbank.entity.*;
+import com.servlet.penerimaankasbank.mapper.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -16,24 +18,6 @@ import com.servlet.bankaccount.service.BankAccountService;
 import com.servlet.coa.service.CoaService;
 import com.servlet.invoice.service.InvoiceService;
 import com.servlet.parametermanggala.service.ParameterManggalaService;
-import com.servlet.penerimaankasbank.entity.BodyDetailPenerimaanKasBank;
-import com.servlet.penerimaankasbank.entity.BodyPenerimaanKasBank;
-import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBank;
-import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBankData;
-import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBankPK;
-import com.servlet.penerimaankasbank.entity.PenerimaanKasBank;
-import com.servlet.penerimaankasbank.entity.PenerimaanKasBankData;
-import com.servlet.penerimaankasbank.entity.PenerimaanKasBankTemplate;
-import com.servlet.penerimaankasbank.entity.PenerimaanPengeluaranData;
-import com.servlet.penerimaankasbank.mapper.GetDataReportKasBankMapper;
-import com.servlet.penerimaankasbank.mapper.GetDetailPenerimaanKasBankData;
-import com.servlet.penerimaankasbank.mapper.GetDetailPenerimaanKasBankJoinTable;
-import com.servlet.penerimaankasbank.mapper.GetListPenerimaanData;
-import com.servlet.penerimaankasbank.mapper.GetPenerimaanKasBankJoinBank;
-import com.servlet.penerimaankasbank.mapper.GetPenerimaanKasBankJoinTable;
-import com.servlet.penerimaankasbank.mapper.GetPenerimaanKasBankNotJoinTable;
-import com.servlet.penerimaankasbank.mapper.GetPenerimaanPengeluaranData;
-import com.servlet.penerimaankasbank.mapper.GetTotalAmount;
 import com.servlet.penerimaankasbank.repo.DetailPenerimaanKasBankRepo;
 import com.servlet.penerimaankasbank.repo.PenerimaanKasBankRepo;
 import com.servlet.penerimaankasbank.service.PenerimaanKasBankService;
@@ -738,6 +722,19 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 			}
 		}
 		return flagpermission;
+	}
+
+	@Override
+	public List<DetailPenerimaanKasBankDataLabaRugi> getListDetailReportLabaRugi(Long idcompany, Long idbranch, Long idInvoice, Long idbank) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataDetailPenerimaanReportLabaRugi().schema());
+		sqlBuilder.append(" where data.idinvoice = ? and data.idcompany = ? and data.idbranch = ? and penerimaan.isdelete = false ");
+		if(idbank != null){
+			sqlBuilder.append(" and penerimaan.idbank = "+idbank+" ");
+		}
+		sqlBuilder.append(" order by penerimaan.receivedate ");
+		final Object[] queryParameters = new Object[] {idInvoice,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataDetailPenerimaanReportLabaRugi(), queryParameters);
 	}
 
 }

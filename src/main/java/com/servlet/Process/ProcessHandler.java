@@ -1917,7 +1917,7 @@ public class ProcessHandler implements ProcessService{
 				if(type.equals("REPORT")) {
 					ParamReportManggala body = (ParamReportManggala) param.get("body");
 					if(body.getTypeReport().equals("XLSX")) {
-						val.setData(reportServiceManggala.getReportLabaRugi(body, auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
+						val.setData(reportServiceManggala.getReportLabaRugi2(body, auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
 					}
 //					else if(body.getTypereport().equals("PPT")) {
 //						val.setData(reportService.getReportMonitoringDataPPT(body,auth.getIdcompany(), auth.getIdbranch()).getPpt());

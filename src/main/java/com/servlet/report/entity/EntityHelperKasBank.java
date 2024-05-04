@@ -14,6 +14,7 @@ public class EntityHelperKasBank implements Comparable<EntityHelperKasBank> {
 	private String penerimaanketerangan;
 	private double penerimaanAmount;
 	private String penerimaanKategoriName;
+	private Double penerimaanPenyesuain;
 	
 	private Long pengeluaranid;
 	private Date pengeluarantanggalTransaksi;
@@ -34,6 +35,14 @@ public class EntityHelperKasBank implements Comparable<EntityHelperKasBank> {
 	private String pengeluaran_KategoriName;
 	
 	private Date tanggalTransaksi;
+
+	public Double getPenerimaanPenyesuain() {
+		return penerimaanPenyesuain;
+	}
+
+	public void setPenerimaanPenyesuain(Double penerimaanPenyesuain) {
+		this.penerimaanPenyesuain = penerimaanPenyesuain;
+	}
 
 	public String getPenerimaanKategoriName() {
 		return penerimaanKategoriName;

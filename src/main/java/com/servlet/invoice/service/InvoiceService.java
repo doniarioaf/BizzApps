@@ -21,7 +21,7 @@ public interface InvoiceService {
 	InvoiceData getByIdWithTemplate(Long idcompany,Long idbranch,Long id);
 	List<InvoiceData> getListSearchInvoice(Long idcompany,Long idbranch,BodySearch body);
 	PrintInvoiceData printInvoice(Long idcompany,Long idbranch,Long id);
-	List<InvoiceData> getListInvoiceByIdWo(Long idcompany,Long idbranch,Long idwo);
+	List<InvoiceData> getListInvoiceByIdWo(Long idcompany,Long idbranch,Long idwo,boolean docDPtermasuk);
 	List<InvoiceData> checkInvoiceByIdWo(Long idcompany,Long idbranch,Long idwo);
 	List<InvoiceDPData> getListInvoiceDPByIdWo(Long idcompany,Long idbranch,Long idwo);
 

@@ -3,11 +3,7 @@ package com.servlet.penerimaankasbank.service;
 import java.sql.Date;
 import java.util.List;
 
-import com.servlet.penerimaankasbank.entity.BodyPenerimaanKasBank;
-import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBankData;
-import com.servlet.penerimaankasbank.entity.PenerimaanKasBankData;
-import com.servlet.penerimaankasbank.entity.PenerimaanKasBankTemplate;
-import com.servlet.penerimaankasbank.entity.PenerimaanPengeluaranData;
+import com.servlet.penerimaankasbank.entity.*;
 import com.servlet.report.entity.EntityHelperKasBank;
 import com.servlet.shared.ReturnData;
 
@@ -32,4 +28,5 @@ public interface PenerimaanKasBankService {
 	Double getSummaryDetailDPByIdWO(Long idcompany,Long idbranch,Long idWO);
 	List<EntityHelperKasBank> getDataReportKasBankPenerimaan(Long idcompany,Long idbranch,Date fromdate, Date todate,Long idbank);
 	Double getSummaryDetailDPByIdInvoice(Long idcompany,Long idbranch,Long idInv);
+	List<DetailPenerimaanKasBankDataLabaRugi> getListDetailReportLabaRugi(Long idcompany, Long idbranch, Long idInvoice, Long idbank);
 }

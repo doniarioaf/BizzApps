@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import com.servlet.workorder.mapper.*;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -44,14 +45,6 @@ import com.servlet.workorder.entity.WorkOrder;
 import com.servlet.workorder.entity.WorkOrderData;
 import com.servlet.workorder.entity.WorkOrderDropDownData;
 import com.servlet.workorder.entity.WorkOrderTemplate;
-import com.servlet.workorder.mapper.GetDetailWorkOrderForReportStatusInvoice;
-import com.servlet.workorder.mapper.GetDetailWorkOrderJoinTable;
-import com.servlet.workorder.mapper.GetDetailWorkOrderJoinTableWithSuratJalan;
-import com.servlet.workorder.mapper.GetListDocumentWorkOrderData;
-import com.servlet.workorder.mapper.GetWorkOrderDropdownData;
-import com.servlet.workorder.mapper.GetWorkOrderJoinCustomerData;
-import com.servlet.workorder.mapper.GetWorkOrderJoinTableData;
-import com.servlet.workorder.mapper.GetWorkOrderNotJoinTableData;
 import com.servlet.workorder.repo.DetailWorkOrderRepo;
 import com.servlet.workorder.repo.DocumentWorkOrderRepo;
 import com.servlet.workorder.repo.WorkOrderRepo;
@@ -691,6 +684,7 @@ public class WorkOrderHandler implements WorkOrderService{
 			sqlBuilder.append(" ( ");
 			sqlBuilder.append(" lower(data.nodocument) like '%"+body.getNodocument().toLowerCase()+"%' ");
 			sqlBuilder.append(" or lower(data.namacargo) like '%"+body.getNamacargo().toLowerCase()+"%' ");
+			sqlBuilder.append(" or lower(data.noaju) like '%"+body.getNoaju().toLowerCase()+"%' ");
 			sqlBuilder.append(" or data.idcustomer in (select id from m_customer_manggala as cust where lower(cust.customername) like '%"+body.getNamacustomer().toLowerCase()+"%' )  ");
 			sqlBuilder.append(" ) ");
 		}else {
@@ -748,11 +742,13 @@ public class WorkOrderHandler implements WorkOrderService{
 	@Override
 	public List<WorkOrderData> getListDataWoForReportLabaRugi(Long idcompany,Long idbranch,ParamReportManggala param) {
 		// TODO Auto-generated method stub
-		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetWorkOrderJoinTableData().schema());
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new WorkOrderReportLabaRugi().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
-		sqlBuilder.append(" and data.status = 'CLOSED' and data.tanggal >= '"+new java.sql.Date(param.getFromDate())+"'  and data.tanggal <= '"+new java.sql.Date(param.getToDate())+"' ");
+
+		sqlBuilder.append(" and data.id in (select idwo from m_penerimaan_kas_bank as penerimaan where penerimaan.receivedate >= '"+new java.sql.Date(param.getFromDate())+"'  and penerimaan.receivedate <= '"+new java.sql.Date(param.getToDate())+"' ) ");
+		sqlBuilder.append(" order by data.noaju ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
-		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetWorkOrderJoinTableData(), queryParameters);
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new WorkOrderReportLabaRugi(), queryParameters);
 	}
 
 	@Override

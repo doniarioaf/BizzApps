@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.servlet.pengluarankasbank.entity.*;
+import com.servlet.pengluarankasbank.mapper.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -27,23 +29,6 @@ import com.servlet.invoicetype.service.InvoiceTypeService;
 import com.servlet.parameter.service.ParameterService;
 import com.servlet.parametermanggala.service.ParameterManggalaService;
 import com.servlet.paymenttype.service.PaymentTypeService;
-import com.servlet.pengluarankasbank.mapper.GetDataReportKasBankMapper;
-import com.servlet.pengluarankasbank.entity.BodyDetailPengeluaranKasBank;
-import com.servlet.pengluarankasbank.entity.BodyPengeluaranKasBank;
-import com.servlet.pengluarankasbank.entity.DetailPengeluaranKasBank;
-import com.servlet.pengluarankasbank.entity.DetailPengeluaranKasBankData;
-import com.servlet.pengluarankasbank.entity.DetailPengeluaranKasBankPK;
-import com.servlet.pengluarankasbank.entity.PengeluaranHeaderAndDetail;
-import com.servlet.pengluarankasbank.entity.PengeluaranKasBankData;
-import com.servlet.pengluarankasbank.entity.PengeluaranKasBankTemplate;
-import com.servlet.pengluarankasbank.entity.PengluaranKasBank;
-import com.servlet.pengluarankasbank.mapper.GetDetailPengeluaranKasBankData;
-import com.servlet.pengluarankasbank.mapper.GetDetailPengeluaranKasBankJoinTable;
-import com.servlet.pengluarankasbank.mapper.GetListPengeluaranKasBank;
-import com.servlet.pengluarankasbank.mapper.GetListPengeluaranKasBankData;
-import com.servlet.pengluarankasbank.mapper.GetPengeluaranKasBankData;
-import com.servlet.pengluarankasbank.mapper.GetPengeluaranKasBankJoinTable;
-import com.servlet.pengluarankasbank.mapper.GetTotalAmount;
 import com.servlet.pengluarankasbank.repo.DetailPengeluaranKasBankRepo;
 import com.servlet.pengluarankasbank.repo.PengeluaranKasBankRepo;
 import com.servlet.pengluarankasbank.service.PengeluaranKasBankService;
@@ -798,6 +783,17 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 		sqlBuilder.append(" where data.idinvoice = ? ");
 		final Object[] queryParameters = new Object[] {idinvoice};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPengeluaranKasBankData(), queryParameters);
+	}
+
+	@Override
+	public List<PengeluaranReportLabaRugi> getDataPengeluaranReportLabaRugi(Long idcompany, Long idbranch, Long idwo, Long idbank) {
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPengeluaranReportLabaRugi().schema());
+		sqlBuilder.append(" where pengeluaran.idwo = ? ");
+		if(idbank != null){
+			sqlBuilder.append(" and pengeluaran.idbank = "+idbank+" ");
+		}
+		final Object[] queryParameters = new Object[] {idwo};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetPengeluaranReportLabaRugi(), queryParameters);
 	}
 
 	private boolean checkFinanceJunior(Long iduser) {

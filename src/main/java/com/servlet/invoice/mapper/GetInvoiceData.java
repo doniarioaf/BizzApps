@@ -16,7 +16,7 @@ public class GetInvoiceData implements RowMapper<InvoiceData>{
 		final StringBuilder sqlBuilder = new StringBuilder(400);
 		sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.tanggal as tanggal, data.idcustomer as idcustomer, data.refno as refno, ");
 		sqlBuilder.append("data.deliveredto as deliveredto, data.deliverydate as deliverydate, data.idwo as idwo, data.idsuratjalan as idsuratjalan, ");
-		sqlBuilder.append("data.idinvoicetype as idinvoicetype, data.totalinvoice as totalinvoice, data.isactive as isactive, data.diskonnota as diskonnota, ");
+		sqlBuilder.append("data.idinvoicetype as idinvoicetype, data.totalinvoice as totalinvoice, data.isactive as isactive, data.diskonnota as diskonnota, data.nilaippn as nilaippn,");
 		sqlBuilder.append("wo.nodocument as nodocumentwo , wo.noaju as noajuwo  ");
 		sqlBuilder.append("from m_invoice as data ");
 		sqlBuilder.append("left join m_workorder as wo on wo.id = data.idwo ");
@@ -46,8 +46,8 @@ public class GetInvoiceData implements RowMapper<InvoiceData>{
 		final Double diskonnota = rs.getDouble("diskonnota");
 		final String nodocumentwo = rs.getString("nodocumentwo");
 		final String noajuwo = rs.getString("noajuwo");
-		
-		
+		final Double nilaippn = rs.getDouble("nilaippn");
+
 		InvoiceData data = new InvoiceData();
 		data.setId(id);
 		data.setNodocument(nodocument);
@@ -68,6 +68,7 @@ public class GetInvoiceData implements RowMapper<InvoiceData>{
 		data.setTotalinvoice(totalinvoice);
 		data.setIsactive(isactive);
 		data.setDiskonnota(diskonnota);
+		data.setNilaippn(nilaippn);
 		return data;
 	}
 

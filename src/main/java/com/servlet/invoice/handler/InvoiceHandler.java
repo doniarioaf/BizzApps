@@ -653,10 +653,13 @@ public class InvoiceHandler implements InvoiceService{
 	}
 
 	@Override
-	public List<InvoiceData> getListInvoiceByIdWo(Long idcompany, Long idbranch, Long idwo) {
+	public List<InvoiceData> getListInvoiceByIdWo(Long idcompany, Long idbranch, Long idwo,boolean docDPtermasuk) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetInvoiceData().schema());
-		sqlBuilder.append(" where data.idwo = ? and data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false and data.nodocument not like '%INVDP%' ");
+		sqlBuilder.append(" where data.idwo = ? and data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		if(!docDPtermasuk){
+			sqlBuilder.append(" and data.nodocument not like '%INVDP%' ");
+		}
 		final Object[] queryParameters = new Object[] {idwo,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceData(), queryParameters);
 	}
