@@ -21,6 +21,15 @@ public class DetailPenerimaanKasBankDataLabaRugi {
     private String nodocpenerimaan;
     private Date tanggalpenerimaan;
     private String receivefrom;
+    private String namabank;
+
+    public String getNamabank() {
+        return namabank;
+    }
+
+    public void setNamabank(String namabank) {
+        this.namabank = namabank;
+    }
 
     public String getReceivefrom() {
         return receivefrom;

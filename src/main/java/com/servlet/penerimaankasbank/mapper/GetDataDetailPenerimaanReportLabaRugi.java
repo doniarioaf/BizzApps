@@ -15,9 +15,11 @@ public class GetDataDetailPenerimaanReportLabaRugi implements RowMapper<DetailPe
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(400);
         sqlBuilder.append("data.counter as counter, data.idpenerimaankasbank as idpenerimaankasbank, data.idcoa as idcoa, data.catatan as catatan, data.amount as amount, data.isdownpayment as isdownpayment, ");
-        sqlBuilder.append("data.idinvoice as idinvoice, data.idworkorder as idworkorder, penerimaan.nodocument as penerimaannodoc, penerimaan.receivedate as penerimaanreceivedate, penerimaan.receivefrom as penerimaanreceivefrom, data.penyesuaian as penyesuaian ");
+        sqlBuilder.append("data.idinvoice as idinvoice, data.idworkorder as idworkorder, penerimaan.nodocument as penerimaannodoc, penerimaan.receivedate as penerimaanreceivedate, penerimaan.receivefrom as penerimaanreceivefrom, data.penyesuaian as penyesuaian, ");
+        sqlBuilder.append("bank.namabank as namabank ");
         sqlBuilder.append("from detail_penerimaan_kas_bank as data ");
         sqlBuilder.append("left join m_penerimaan_kas_bank as penerimaan on penerimaan.id = data.idpenerimaankasbank ");
+        sqlBuilder.append("left join m_bank_account as bank on bank.id = penerimaan.idbank ");
 
         this.schemaSql = sqlBuilder.toString();
     }
@@ -41,7 +43,8 @@ public class GetDataDetailPenerimaanReportLabaRugi implements RowMapper<DetailPe
         final Date receivedate = rs.getDate("penerimaanreceivedate");
         final String penerimaanreceivefrom = rs.getString("penerimaanreceivefrom");
         final Double penyesuaian = rs.getDouble("penyesuaian");
-
+        final String namabank = rs.getString("namabank");
+        //
 
         DetailPenerimaanKasBankDataLabaRugi data = new DetailPenerimaanKasBankDataLabaRugi();
         data.setIdpenerimaankasbank(idpenerimaankasbank);
@@ -56,6 +59,7 @@ public class GetDataDetailPenerimaanReportLabaRugi implements RowMapper<DetailPe
         data.setTanggalpenerimaan(receivedate);
         data.setReceivefrom(penerimaanreceivefrom);
         data.setPenyesuaian(penyesuaian);
+        data.setNamabank(namabank);
         return data;
     }
 }

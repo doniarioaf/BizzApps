@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import com.servlet.invoice.entity.*;
+import com.servlet.invoice.mapper.*;
 import com.servlet.pengluarankasbank.entity.DetailPengeluaranKasBank;
 import com.servlet.pengluarankasbank.entity.DetailPengeluaranKasBankData;
 import com.servlet.pengluarankasbank.entity.DetailPengeluaranKasBankPK;
@@ -14,25 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import com.servlet.customermanggala.service.CustomerManggalaService;
-import com.servlet.invoice.entity.BodyDetailInvoicePrice;
-import com.servlet.invoice.entity.BodyInvoice;
-import com.servlet.invoice.entity.BodySearch;
-import com.servlet.invoice.entity.DetailInvoicePrice;
-import com.servlet.invoice.entity.DetailInvoicePriceData;
-import com.servlet.invoice.entity.DetailInvoicePricePK;
-import com.servlet.invoice.entity.Invoice;
-import com.servlet.invoice.entity.InvoiceDPData;
-import com.servlet.invoice.entity.InvoiceData;
-import com.servlet.invoice.entity.InvoiceTemplate;
-import com.servlet.invoice.entity.PrintInvoiceData;
-import com.servlet.invoice.mapper.GetDataNotJoin;
-import com.servlet.invoice.mapper.GetDetailInvoicePriceJoinTableData;
-import com.servlet.invoice.mapper.GetInvoiceDPData;
-import com.servlet.invoice.mapper.GetInvoiceData;
-import com.servlet.invoice.mapper.GetInvoiceDataJoinTable;
-import com.servlet.invoice.mapper.GetInvoiceDataJoinWorkOrder;
-import com.servlet.invoice.mapper.GetInvoiceJoinCustomerData;
-import com.servlet.invoice.mapper.GetPrintInvoiceData;
 import com.servlet.invoice.repo.DetailInvoicePriceRepo;
 import com.servlet.invoice.repo.InvoiceRepo;
 import com.servlet.invoice.service.InvoiceService;
@@ -702,5 +685,17 @@ public class InvoiceHandler implements InvoiceService{
 
 
 		return listBelumLunas;
+	}
+
+	@Override
+	public List<InvoiceDataReportLabaRugi> getListInvoiceByIdWoReportLabaRugi(Long idcompany, Long idbranch, Long idwo, boolean docDPtermasuk) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetInvoiceDataReportLabaRugi().schema());
+		sqlBuilder.append(" where data.idwo = ? and data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		if(!docDPtermasuk){
+			sqlBuilder.append(" and data.nodocument not like '%INVDP%' ");
+		}
+		final Object[] queryParameters = new Object[] {idwo,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceDataReportLabaRugi(), queryParameters);
 	}
 }
