@@ -87,4 +87,17 @@ public class GlobalFunc {
 	    }
 		return true;
 	}
+
+	public static int checkCompare(Double value) {
+		if(value != null){
+			String[] split = String.valueOf(value).split("\\.");
+			if(split.length > 1){
+				Double afterComma = Double.parseDouble(split[1]);
+				if(afterComma.doubleValue() > 0){
+					return 1;
+				}
+			}
+		}
+		return 0;
+	}
 }

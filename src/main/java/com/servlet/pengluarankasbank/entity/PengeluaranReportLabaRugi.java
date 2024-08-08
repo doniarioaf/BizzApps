@@ -1,9 +1,29 @@
 package com.servlet.pengluarankasbank.entity;
 
+import java.sql.Date;
+
 public class PengeluaranReportLabaRugi {
     private String noDocument;
     private String keterangan;
     private Double amount;
+    private String namabank;
+    private Date paymentdate;
+
+    public Date getPaymentdate() {
+        return paymentdate;
+    }
+
+    public void setPaymentdate(Date paymentdate) {
+        this.paymentdate = paymentdate;
+    }
+
+    public String getNamabank() {
+        return namabank;
+    }
+
+    public void setNamabank(String namabank) {
+        this.namabank = namabank;
+    }
 
     public String getNoDocument() {
         return noDocument;

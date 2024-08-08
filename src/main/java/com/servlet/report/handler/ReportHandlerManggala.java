@@ -1185,12 +1185,14 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 		createCell(row, 14, "No Faktur Pajak", styleBold,sheet);
 		createCell(row, 15, "Rekening Penerima", styleBold,sheet);
 		createCell(row, 16, "Voucher Keluar", styleBold,sheet);
-		createCell(row, 17, "Keterangan KBK", styleBold,sheet);
-		createCell(row, 18, "Nilai", styleBold,sheet);
-		createCell(row, 19, "L/R", styleBold,sheet);
+		createCell(row, 17, "Tanggal Voucher", styleBold,sheet);
+		createCell(row, 18, "Rekening Pengeluaran", styleBold,sheet);
+		createCell(row, 19, "Keterangan KBK", styleBold,sheet);
+		createCell(row, 20, "Nilai", styleBold,sheet);
+		createCell(row, 21, "L/R", styleBold,sheet);
 
 		List<WorkOrderData> listWO = workOrderService.getListDataWoForReportLabaRugi(idcompany, idbranch, body);
-		System.out.println("listWO "+listWO.size());
+
 		if(listWO != null && listWO.size() > 0) {
 			rowcount = 6;
 			font.setBold(false);
@@ -1203,13 +1205,11 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 				Double SubtotalNilaiInvoice = 0.00;
 				Double SubtotalNilaiPembayaran = 0.00;
 				List<InvoiceDataReportLabaRugi> listInv = invoiceService.getListInvoiceByIdWoReportLabaRugi(idcompany, idbranch, datawo.getId(), true);
-				System.out.println("listInv "+listInv.size());
+
 				if(listInv != null && listInv.size() > 0){
 				for (InvoiceDataReportLabaRugi dataInv : listInv) {
 					List<DetailPenerimaanKasBankDataLabaRugi> listPenerimaan = penerimaanKasBankService.getListDetailReportLabaRugi(idcompany, idbranch, dataInv.getId(), (bankData != null ? bankData.getId() : null));
 
-
-					System.out.println("listPenerimaan "+listPenerimaan.size());
 					if(listPenerimaan != null && listPenerimaan.size() > 0){
 					for (DetailPenerimaanKasBankDataLabaRugi dataPenerimaan : listPenerimaan) {
 						SubtotalNilaiPajak = SubtotalNilaiPajak + (dataInv.getNilaippn() != null?dataInv.getNilaippn():0.0);
@@ -1226,7 +1226,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, dataInv.getNodocument(), style, sheet);
 						createCell(rowData, columnCount++, checkNullDate(dataInv.getTanggal(), ""), style, sheet);
 						Double subTotalInv = dataInv.getTotalinvoice() - (dataInv.getNilaippn() != null?dataInv.getNilaippn():0.0);
-						int compare = new BigDecimal(subTotalInv).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(subTotalInv));
+						int compare = GlobalFunc.checkCompare(subTotalInv);//new BigDecimal(subTotalInv).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(subTotalInv));
 						styleAmount = workbook.createCellStyle();
 						styleAmount.setFont(font);
 						if (compare == 0) {
@@ -1236,7 +1236,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						}
 						createCell(rowData, columnCount++, subTotalInv, styleAmount, sheet, 7000);
 
-						compare = new BigDecimal((dataInv.getNilaippn() != null?dataInv.getNilaippn():0.0)).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal((dataInv.getNilaippn() != null?dataInv.getNilaippn():0.0)));
+						compare = GlobalFunc.checkCompare(dataInv.getNilaippn());//new BigDecimal((dataInv.getNilaippn() != null?dataInv.getNilaippn():0.0)).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal((dataInv.getNilaippn() != null?dataInv.getNilaippn():0.0)));
 						styleAmount = workbook.createCellStyle();
 						styleAmount.setFont(font);
 						if (compare == 0) {
@@ -1246,7 +1246,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						}
 						createCell(rowData, columnCount++, dataInv.getNilaippn(), styleAmount, sheet, 7000);
 
-						compare = new BigDecimal((dataInv.getTotalinvoice() != null?dataInv.getTotalinvoice():0.0)).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal((dataInv.getTotalinvoice() != null?dataInv.getTotalinvoice():0.0)));
+						compare = GlobalFunc.checkCompare(dataInv.getTotalinvoice());//new BigDecimal((dataInv.getTotalinvoice() != null?dataInv.getTotalinvoice():0.0)).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal((dataInv.getTotalinvoice() != null?dataInv.getTotalinvoice():0.0)));
 						styleAmount = workbook.createCellStyle();
 						styleAmount.setFont(font);
 						if (compare == 0) {
@@ -1257,7 +1257,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, dataInv.getTotalinvoice(), styleAmount, sheet, 7000);
 
 						SubtotalNilaiPembayaran = SubtotalNilaiPembayaran + (dataPenerimaan.getPenyesuaian() != null?dataPenerimaan.getPenyesuaian():0.00);
-						compare = new BigDecimal((dataPenerimaan.getPenyesuaian() != null?dataPenerimaan.getPenyesuaian():0.00)).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal((dataPenerimaan.getPenyesuaian() != null?dataPenerimaan.getPenyesuaian():0.00)));
+						compare = GlobalFunc.checkCompare(dataPenerimaan.getPenyesuaian());//new BigDecimal((dataPenerimaan.getPenyesuaian() != null?dataPenerimaan.getPenyesuaian():0.00)).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal((dataPenerimaan.getPenyesuaian() != null?dataPenerimaan.getPenyesuaian():0.00)));
 						styleAmount = workbook.createCellStyle();
 						styleAmount.setFont(font);
 						if (compare == 0) {
@@ -1273,6 +1273,8 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, dataInv.getNotes2(), style, sheet);//No Faktur Pajak
 						createCell(rowData, columnCount++, dataPenerimaan.getNamabank(), style, sheet);
 						createCell(rowData, columnCount++, "", style, sheet);//Voucher Keluar
+						createCell(rowData, columnCount++, "", style, sheet);
+						createCell(rowData, columnCount++, "", style, sheet);
 						createCell(rowData, columnCount++, "", style, sheet);
 						createCell(rowData, columnCount++, "", style, sheet);
 						createCell(rowData, columnCount++, "", style, sheet);
@@ -1293,7 +1295,8 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 					createCell(rowData, columnCount++, "", styleBold, sheet);
 					createCell(rowData, columnCount++, "", styleBold, sheet, 7000);
 
-					int compare = new BigDecimal(SubtotalNilaiPajak).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(SubtotalNilaiPajak));
+
+					int compare = GlobalFunc.checkCompare(SubtotalNilaiPajak);//new BigDecimal(SubtotalNilaiPajak).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(SubtotalNilaiPajak));
 					styleAmount = workbook.createCellStyle();
 					styleAmount.setFont(fontBold);
 					if (compare == 0) {
@@ -1303,7 +1306,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 					}
 					createCell(rowData, columnCount++, SubtotalNilaiPajak, styleAmount, sheet, 7000);
 
-					compare = new BigDecimal(SubtotalNilaiInvoice).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(SubtotalNilaiInvoice));
+					compare = GlobalFunc.checkCompare(SubtotalNilaiInvoice);//new BigDecimal(SubtotalNilaiInvoice).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(SubtotalNilaiInvoice));
 					styleAmount = workbook.createCellStyle();
 					styleAmount.setFont(fontBold);
 					if (compare == 0) {
@@ -1313,7 +1316,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 					}
 					createCell(rowData, columnCount++, SubtotalNilaiInvoice, styleAmount, sheet, 7000);
 
-					compare = new BigDecimal(SubtotalNilaiPembayaran).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(SubtotalNilaiPembayaran));
+					compare = GlobalFunc.checkCompare(SubtotalNilaiPembayaran);//new BigDecimal(SubtotalNilaiPembayaran).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(SubtotalNilaiPembayaran));
 					styleAmount = workbook.createCellStyle();
 					styleAmount.setFont(fontBold);
 					if (compare == 0) {
@@ -1329,6 +1332,8 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 					createCell(rowData, columnCount++, "", style, sheet);//No Faktur Pajak
 					createCell(rowData, columnCount++, "", style, sheet);
 					createCell(rowData, columnCount++, "", style, sheet);//Voucher Keluar
+					createCell(rowData, columnCount++, "", style, sheet);
+					createCell(rowData, columnCount++, "", style, sheet);
 					createCell(rowData, columnCount++, "", style, sheet);
 					createCell(rowData, columnCount++, "", styleAmount, sheet, 7000);
 					createCell(rowData, columnCount++, "", styleAmount, sheet, 7000);
@@ -1362,10 +1367,12 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, "", style,sheet);//No Faktur Pajak
 						createCell(rowData, columnCount++, "", style,sheet);
 						createCell(rowData, columnCount++, dataPengeluaran.getNoDocument(), style,sheet);//Voucher Keluar
+						createCell(rowData, columnCount++, checkNullDate(dataPengeluaran.getPaymentdate(),""), style, sheet);
+						createCell(rowData, columnCount++, dataPengeluaran.getNamabank(), style, sheet);
 						createCell(rowData, columnCount++, dataPengeluaran.getKeterangan(), style,sheet);
 
 						subTotalAmountPengeluaran = subTotalAmountPengeluaran + (dataPengeluaran.getAmount() != null?dataPengeluaran.getAmount():0.0);
-						int compare = new BigDecimal((dataPengeluaran.getAmount() != null?dataPengeluaran.getAmount():0.0)).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal((dataPengeluaran.getAmount() != null?dataPengeluaran.getAmount():0.0)));
+						int compare = GlobalFunc.checkCompare(dataPengeluaran.getAmount());//new BigDecimal((dataPengeluaran.getAmount() != null?dataPengeluaran.getAmount():0.0)).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal((dataPengeluaran.getAmount() != null?dataPengeluaran.getAmount():0.0)));
 						styleAmount = workbook.createCellStyle();
 						styleAmount.setFont(font);
 						if(compare == 0) {
@@ -1401,9 +1408,11 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 					createCell(rowData, columnCount++, "", styleBold,sheet);//No Faktur Pajak
 					createCell(rowData, columnCount++, "", styleBold,sheet);
 					createCell(rowData, columnCount++, "", styleBold,sheet);//Voucher Keluar
+					createCell(rowData, columnCount++, "", style, sheet);
+					createCell(rowData, columnCount++, "", style, sheet);
 					createCell(rowData, columnCount++, "", styleBold,sheet);
 
-					int compare = new BigDecimal(subTotalAmountPengeluaran).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(subTotalAmountPengeluaran));
+					int compare = GlobalFunc.checkCompare(subTotalAmountPengeluaran);//new BigDecimal(subTotalAmountPengeluaran).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(subTotalAmountPengeluaran));
 					styleAmount = workbook.createCellStyle();
 					styleAmount.setFont(fontBold);
 					if(compare == 0) {
@@ -1439,11 +1448,13 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 				createCell(rowData, columnCount++, "", style,sheet);//No Faktur Pajak
 				createCell(rowData, columnCount++, "", style,sheet);
 				createCell(rowData, columnCount++, "", style,sheet);//Voucher Keluar
+				createCell(rowData, columnCount++, "", style, sheet);
+				createCell(rowData, columnCount++, "", style, sheet);
 				createCell(rowData, columnCount++, "", style,sheet);
 				createCell(rowData, columnCount++, "", styleAmount,sheet,7000);
 
 				totalAkhir = totalAkhir + NilaiLabaRugi;
-				int compare = new BigDecimal(NilaiLabaRugi).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(NilaiLabaRugi));
+				int compare = GlobalFunc.checkCompare(NilaiLabaRugi);//new BigDecimal(NilaiLabaRugi).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(NilaiLabaRugi));
 				styleAmount = workbook.createCellStyle();
 				styleAmount.setFont(font);
 				if(compare == 0) {
@@ -1480,9 +1491,11 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 			createCell(rowData, columnCount++, "", styleBold,sheet);//No Faktur Pajak
 			createCell(rowData, columnCount++, "", styleBold,sheet);
 			createCell(rowData, columnCount++, "", styleBold,sheet);//Voucher Keluar
+			createCell(rowData, columnCount++, "", style, sheet);
+			createCell(rowData, columnCount++, "", style, sheet);
 			createCell(rowData, columnCount++, "", styleBold,sheet);
 			createCell(rowData, columnCount++, "", styleBold,sheet,7000);
-			int compare = new BigDecimal(totalAkhir).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(totalAkhir));
+			int compare = GlobalFunc.checkCompare(totalAkhir);//new BigDecimal(totalAkhir).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(totalAkhir));
 			styleAmount = workbook.createCellStyle();
 			styleAmount.setFont(fontBold);
 			if(compare == 0) {

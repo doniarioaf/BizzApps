@@ -697,7 +697,7 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 	@Override
 	public Double getSummaryDetailDPByIdInvoice(Long idcompany, Long idbranch, Long idInv) {
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetTotalAmount().schema());
-		sqlBuilder.append(" where data.idinvoice = ? and data.idcompany = ? and data.idbranch = ?  ");
+		sqlBuilder.append(" where data.idinvoice = ? and data.idcompany = ? and data.idbranch = ? and penerimaan.isdelete = false ");
 		final Object[] queryParameters = new Object[] {idInv,idcompany,idbranch};
 		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmount(), queryParameters);
 		if(list != null && list.size() > 0) {
