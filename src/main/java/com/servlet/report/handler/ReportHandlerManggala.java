@@ -19,6 +19,7 @@ import com.servlet.invoice.entity.InvoiceDataReportLabaRugi;
 import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBankData;
 import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBankDataLabaRugi;
 import com.servlet.pengluarankasbank.entity.PengeluaranReportLabaRugi;
+import com.servlet.suratjalan.entity.HistorySuratJalanData;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -128,7 +129,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 		
 		CellStyle style = workbook.createCellStyle();
         XSSFFont font = workbook.createFont();
-        font.setBold(true);
+        font.setBold(false);
         font.setFontHeight(12);
         style.setFont(font);
         
@@ -166,26 +167,27 @@ public class ReportHandlerManggala implements ReportServiceManggala{
         createCell(row, 6, "Importir", style,sheet);
         createCell(row, 7, "Jenis WO", style,sheet);
 		createCell(row, 8, "Moda", style,sheet);
-        createCell(row, 9, "Nama Barang", style,sheet);
-        createCell(row, 10, "Origin Port", style,sheet);
-        createCell(row, 11, "Destination Port", style,sheet);
-        createCell(row, 12, "ETD", style,sheet);
-        createCell(row, 13, "ETA", style,sheet);
-        createCell(row, 14, "Ves/Voy", style,sheet);
-        createCell(row, 15, "No. BL", style,sheet);
-        createCell(row, 16, "Tanggal NPE/SPPB", style,sheet);
-        createCell(row, 17, "No. Kontainer", style,sheet);
-        createCell(row, 18, "Jenis Kontainer", style,sheet);
-        createCell(row, 19, "Area Kirim (Kecamatan)", style,sheet);
-		createCell(row, 20, "Sarana Pengangkut", style,sheet);
-        createCell(row, 21, "Depo", style,sheet);
-        createCell(row, 22, "Tanggal bongkar/muat di pabrik", style,sheet);
-        createCell(row, 23, "Lembur / Tidak", style,sheet);
-        createCell(row, 24, "No. Mobil", style,sheet);
-        createCell(row, 25, "Nama Supir", style,sheet);
-        createCell(row, 26, "Status Mobil", style,sheet);
-        createCell(row, 27, "Vendor", style,sheet);
-        createCell(row, 28, "Status WO", style,sheet);
+		createCell(row, 9, "Penjaluran", style,sheet);
+        createCell(row, 10, "Nama Barang", style,sheet);
+        createCell(row, 11, "Origin Port", style,sheet);
+        createCell(row, 12, "Destination Port", style,sheet);
+        createCell(row, 13, "ETD", style,sheet);
+        createCell(row, 14, "ETA", style,sheet);
+        createCell(row, 15, "Ves/Voy", style,sheet);
+        createCell(row, 16, "No. BL", style,sheet);
+        createCell(row, 17, "Tanggal NPE/SPPB", style,sheet);
+        createCell(row, 18, "No. Kontainer", style,sheet);
+        createCell(row, 19, "Jenis Kontainer", style,sheet);
+        createCell(row, 20, "Area Kirim (Kecamatan)", style,sheet);
+		createCell(row, 21, "Sarana Pengangkut", style,sheet);
+        createCell(row, 22, "Depo", style,sheet);
+        createCell(row, 23, "Tanggal bongkar/muat di pabrik", style,sheet);
+        createCell(row, 24, "Lembur / Tidak", style,sheet);
+//        createCell(row, 25, "No. Mobil", style,sheet);
+//        createCell(row, 26, "Nama Supir", style,sheet);
+//        createCell(row, 27, "Status Mobil", style,sheet);
+        createCell(row, 25, "Vendor", style,sheet);
+        createCell(row, 26, "Status WO", style,sheet);
         
 		HashMap<String, String> kodeposMappingKecamatan = new HashMap<String, String>();
 		HashMap<Long, String> kodeposMappingCity = new HashMap<Long, String>();
@@ -201,7 +203,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 
 		if(listWO != null && listWO.size() > 0) {
 			rowcount = 5;
-			font.setBold(true);
+			font.setBold(false);
 			font.setFontHeight(9);
 			
 //			CellStyle styleData = workbook.createCellStyle();
@@ -255,6 +257,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, checkNull(wodata.getImportirname(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(wodata.getJeniswoCodeName(),wodata.getJeniswo()), style,sheet);
 						createCell(rowData, columnCount++, checkNull(wodata.getModatransportasiCodeName(),wodata.getModatransportasi()), style,sheet);
+						createCell(rowData, columnCount++, checkNull(wodata.getJalur(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(wodata.getNamacargo(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(wodata.getPortasalname(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(wodata.getPorttujuanname(),""), style,sheet);
@@ -278,11 +281,29 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, checkNull(wodata.getDepo(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNullDate(detailWO.getWoSuratJalan().getTanggalkembali(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(detailWO.getWoSuratJalan().getLembur(),""), style,sheet);
-						createCell(rowData, columnCount++, checkNull(detailWO.getWoSuratJalan().getNoPolisi(),""), style,sheet);
-						createCell(rowData, columnCount++, checkNull(detailWO.getWoSuratJalan().getNamaSupir(),""), style,sheet);
-						createCell(rowData, columnCount++, checkNull(detailWO.getWoSuratJalan().getKepemilikanmobil(),""), style,sheet);
+//						createCell(rowData, columnCount++, checkNull(detailWO.getWoSuratJalan().getNoPolisi(),""), style,sheet);
+//						createCell(rowData, columnCount++, checkNull(detailWO.getWoSuratJalan().getNamaSupir(),""), style,sheet);
+//						createCell(rowData, columnCount++, checkNull(detailWO.getWoSuratJalan().getKepemilikanmobil(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNull(detailWO.getWoSuratJalan().getVendormobilname(),""), style,sheet);
-						createCell(rowData, columnCount++, checkNull(wodata.getStatus(),""), style,sheet);
+						boolean flagShowTanggalCloseSJ = false;
+						if(detailWO.getWoSuratJalan() != null){
+							if(detailWO.getWoSuratJalan().getStatusSuratJalan() != null){
+								if(detailWO.getWoSuratJalan().getStatusSuratJalan().equals("CLOSE_SJ")){
+									List<HistorySuratJalanData> listhistory = suratJalanService.getListHistorySJ(idcompany,idbranch,detailWO.getWoSuratJalan().getIdSuratJalan());
+									if(listhistory != null && listhistory.size() > 0){
+										HistorySuratJalanData dataHistory = listhistory.get(0);
+										createCell(rowData, columnCount++, checkNullTimestamp(dataHistory.getTanggal(),""), style,sheet);
+										flagShowTanggalCloseSJ = true;
+									}
+
+								}
+
+							}
+						}
+						if(!flagShowTanggalCloseSJ){
+							createCell(rowData, columnCount++, checkNull(wodata.getStatus(),""), style,sheet);
+						}
+
 					}
 				}
 			}
@@ -298,7 +319,17 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 	private Object checkNullDate(Date value,Object defaultval) {
 		return value != null?convertDate(value,"dd-MMM-yyyy"):defaultval;
 	}
+	private Object checkNullTimestamp(Timestamp value,Object defaultval) {
+		return value != null?convertTimestamp(value,"dd-MMM-yyyy"):defaultval;
+	}
 	private String convertDate(Date value,String format) {
+		java.util.Date dt = new java.util.Date(value.getTime());
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+//		sdf.applyPattern(NEW_FORMAT);
+		return sdf.format(dt);
+	}
+
+	private String convertTimestamp(Timestamp value,String format) {
 		java.util.Date dt = new java.util.Date(value.getTime());
 		SimpleDateFormat sdf = new SimpleDateFormat(format);
 //		sdf.applyPattern(NEW_FORMAT);
@@ -417,22 +448,24 @@ public class ReportHandlerManggala implements ReportServiceManggala{
         createCell(row, 2, "Nomor AJU", style,sheet);
         createCell(row, 3, "Nama Customer", style,sheet);
         createCell(row, 4, "Jenis WO", style,sheet);
-        createCell(row, 5, "Origin Port", style,sheet);
-        createCell(row, 6, "Destination Port", style,sheet);
-        createCell(row, 7, "ETD", style,sheet);
-        createCell(row, 8, "ETA", style,sheet);
-        createCell(row, 9, "No. BL", style,sheet);
-        createCell(row, 10, "Tanggal NPE/SPPB", style,sheet);
-        createCell(row, 11, "Jumlah Partai", style,sheet);
-        createCell(row, 12, "Lembur/Tidak", style,sheet);
-        createCell(row, 13, "Status WO", style,sheet);
-        createCell(row, 14, "No. Invoice", style,sheet);
-        createCell(row, 15, "Tanggal Invoice", style,sheet);
-        createCell(row, 16, "Invoice Value", style,sheet);
-        createCell(row, 17, "Tanggal Bayar", style,sheet);
-        createCell(row, 18, "Bank", style,sheet);
-        createCell(row, 19, "No Voucher", style,sheet);
-        createCell(row, 20, "Lama Pembayaran", style,sheet);
+		createCell(row, 5, "Moda", style,sheet);
+		createCell(row, 6, "Penjaluran", style,sheet);
+        createCell(row, 7, "Origin Port", style,sheet);
+        createCell(row, 8, "Destination Port", style,sheet);
+        createCell(row, 9, "ETD", style,sheet);
+        createCell(row, 10, "ETA", style,sheet);
+        createCell(row, 11, "No. BL", style,sheet);
+        createCell(row, 12, "Tanggal NPE/SPPB", style,sheet);
+        createCell(row, 13, "Jumlah Partai", style,sheet);
+        createCell(row, 14, "Lembur/Tidak", style,sheet);
+//        createCell(row, 13, "Status WO", style,sheet);
+//        createCell(row, 14, "No. Invoice", style,sheet);
+//        createCell(row, 15, "Tanggal Invoice", style,sheet);
+//        createCell(row, 16, "Invoice Value", style,sheet);
+//        createCell(row, 17, "Tanggal Bayar", style,sheet);
+//        createCell(row, 18, "Bank", style,sheet);
+//        createCell(row, 19, "No Voucher", style,sheet);
+//        createCell(row, 20, "Lama Pembayaran", style,sheet);
         
         if(listWO != null && listWO.size() > 0) {
         	rowcount = 6;
@@ -451,13 +484,20 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, wodata.getNoaju(), style,sheet);
 						createCell(rowData, columnCount++, wodata.getNamaCustomer(), style,sheet);
 						createCell(rowData, columnCount++, wodata.getJeniswo(), style,sheet);
+						createCell(rowData, columnCount++, wodata.getModatransportasi(), style,sheet);
+						createCell(rowData, columnCount++, wodata.getJalurCodeName(), style,sheet);
 						createCell(rowData, columnCount++, wodata.getPortasalname(), style,sheet);
 						createCell(rowData, columnCount++, wodata.getPorttujuanname(), style,sheet);
 						createCell(rowData, columnCount++, checkNullDate(wodata.getEtd(),""), style,sheet);
 						createCell(rowData, columnCount++, checkNullDate(wodata.getEta(),""), style,sheet);
 						createCell(rowData, columnCount++, wodata.getNobl(), style,sheet);
 						createCell(rowData, columnCount++, checkNullDate(wodata.getTanggalsppb_npe(),""), style,sheet);
-						createCell(rowData, columnCount++, listDetailWO.size(), style,sheet);
+						if(wodata.getModatransportasi().equals("UDARA")){
+							createCell(rowData, columnCount++, 99, style,sheet);
+						}else{
+							createCell(rowData, columnCount++, listDetailWO.size(), style,sheet);
+						}
+
 						if(listDetailWO != null && listDetailWO.size() > 0) {
 							//lembur
 							String lembur = "-";
@@ -474,38 +514,38 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 							createCell(rowData, columnCount++, "-", style,sheet);
 						}
 						
-						createCell(rowData, columnCount++, wodata.getStatus(), style,sheet);
-						createCell(rowData, columnCount++, inv.getNodocument(), style,sheet);
-						createCell(rowData, columnCount++, checkNullDate(inv.getTanggal(),""), style,sheet);
+//						createCell(rowData, columnCount++, wodata.getStatus(), style,sheet);
+//						createCell(rowData, columnCount++, inv.getNodocument(), style,sheet);
+//						createCell(rowData, columnCount++, checkNullDate(inv.getTanggal(),""), style,sheet);
+//
+//						// -1 lebih rendah, 0  sama dengan, 1 lebih tinggi
+//						int compare = new BigDecimal(inv.getTotalinvoice()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(inv.getTotalinvoice()));
+//						if(compare == 0) {
+//							styleAmount.setDataFormat(format.getFormat("#,###"));
+//						}else {
+//							styleAmount.setDataFormat(format.getFormat("#,###.##"));
+//						}
+//
+//
+//						createCell(rowData, columnCount++, inv.getTotalinvoice(), styleAmount,sheet,7000);
 						
-						// -1 lebih rendah, 0  sama dengan, 1 lebih tinggi
-						int compare = new BigDecimal(inv.getTotalinvoice()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(inv.getTotalinvoice()));
-						if(compare == 0) {
-							styleAmount.setDataFormat(format.getFormat("#,###"));
-						}else {
-							styleAmount.setDataFormat(format.getFormat("#,###.##"));
-						}
-						
-						
-						createCell(rowData, columnCount++, inv.getTotalinvoice(), styleAmount,sheet,7000);
-						
-						List<PenerimaanKasBankData> listpenerimaan = penerimaanKasBankService.getListByDetailIdInvoiceJoinBank(idcompany,idbranch,inv.getId());
-						if(listpenerimaan != null && listpenerimaan.size() > 0) {
-							PenerimaanKasBankData penerimaan = listpenerimaan.get(0);
-							createCell(rowData, columnCount++, checkNullDate(penerimaan.getReceivedate(),""), style,sheet);
-							createCell(rowData, columnCount++, penerimaan.getBankName(), style,sheet);
-							createCell(rowData, columnCount++, penerimaan.getNodocument(), style,sheet);
-							if(inv.getTanggal() != null && penerimaan.getReceivedate() != null) {
-								createCell(rowData, columnCount++, GlobalFunc.getDiffDate(inv.getTanggal().getTime(), penerimaan.getReceivedate().getTime()), style,sheet);
-							}else {
-								createCell(rowData, columnCount++, "-", style,sheet);
-							}
-						}else {
-							createCell(rowData, columnCount++, "-", style,sheet);
-							createCell(rowData, columnCount++, "-", style,sheet);
-							createCell(rowData, columnCount++, "-", style,sheet);
-							createCell(rowData, columnCount++, "-", style,sheet);
-						}
+//						List<PenerimaanKasBankData> listpenerimaan = penerimaanKasBankService.getListByDetailIdInvoiceJoinBank(idcompany,idbranch,inv.getId());
+//						if(listpenerimaan != null && listpenerimaan.size() > 0) {
+//							PenerimaanKasBankData penerimaan = listpenerimaan.get(0);
+//							createCell(rowData, columnCount++, checkNullDate(penerimaan.getReceivedate(),""), style,sheet);
+//							createCell(rowData, columnCount++, penerimaan.getBankName(), style,sheet);
+//							createCell(rowData, columnCount++, penerimaan.getNodocument(), style,sheet);
+//							if(inv.getTanggal() != null && penerimaan.getReceivedate() != null) {
+//								createCell(rowData, columnCount++, GlobalFunc.getDiffDate(inv.getTanggal().getTime(), penerimaan.getReceivedate().getTime()), style,sheet);
+//							}else {
+//								createCell(rowData, columnCount++, "-", style,sheet);
+//							}
+//						}else {
+//							createCell(rowData, columnCount++, "-", style,sheet);
+//							createCell(rowData, columnCount++, "-", style,sheet);
+//							createCell(rowData, columnCount++, "-", style,sheet);
+//							createCell(rowData, columnCount++, "-", style,sheet);
+//						}
 						
 					}
 				}else {
@@ -516,13 +556,20 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 					createCell(rowData, columnCount++, wodata.getNoaju(), style,sheet);
 					createCell(rowData, columnCount++, wodata.getNamaCustomer(), style,sheet);
 					createCell(rowData, columnCount++, wodata.getJeniswo(), style,sheet);
+					createCell(rowData, columnCount++, wodata.getModatransportasi(), style,sheet);
+					createCell(rowData, columnCount++, wodata.getJalurCodeName(), style,sheet);
 					createCell(rowData, columnCount++, wodata.getPortasalname(), style,sheet);
 					createCell(rowData, columnCount++, wodata.getPorttujuanname(), style,sheet);
 					createCell(rowData, columnCount++, checkNullDate(wodata.getEtd(),""), style,sheet);
 					createCell(rowData, columnCount++, checkNullDate(wodata.getEta(),""), style,sheet);
 					createCell(rowData, columnCount++, wodata.getNobl(), style,sheet);
 					createCell(rowData, columnCount++, checkNullDate(wodata.getTanggalsppb_npe(),""), style,sheet);
-					createCell(rowData, columnCount++, listDetailWO.size(), style,sheet);
+					if(wodata.getModatransportasi().equals("UDARA")){
+						createCell(rowData, columnCount++, 99, style,sheet);
+					}else{
+						createCell(rowData, columnCount++, listDetailWO.size(), style,sheet);
+					}
+
 					if(listDetailWO != null && listDetailWO.size() > 0) {
 						//lembur
 						String lembur = "-";
@@ -539,14 +586,14 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, "-", style,sheet);
 					}
 					
-					createCell(rowData, columnCount++, wodata.getStatus(), style,sheet);
-					createCell(rowData, columnCount++, "-", style,sheet);
-					createCell(rowData, columnCount++, "-", style,sheet);
-					createCell(rowData, columnCount++, "-", style,sheet);
-					createCell(rowData, columnCount++, "-", style,sheet);
-					createCell(rowData, columnCount++, "-", style,sheet);
-					createCell(rowData, columnCount++, "-", style,sheet);
-					createCell(rowData, columnCount++, "-", style,sheet);
+//					createCell(rowData, columnCount++, wodata.getStatus(), style,sheet);
+//					createCell(rowData, columnCount++, "-", style,sheet);
+//					createCell(rowData, columnCount++, "-", style,sheet);
+//					createCell(rowData, columnCount++, "-", style,sheet);
+//					createCell(rowData, columnCount++, "-", style,sheet);
+//					createCell(rowData, columnCount++, "-", style,sheet);
+//					createCell(rowData, columnCount++, "-", style,sheet);
+//					createCell(rowData, columnCount++, "-", style,sheet);
 					
 				}
 				
@@ -1185,7 +1232,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 		createCell(row, 14, "No Faktur Pajak", styleBold,sheet);
 		createCell(row, 15, "Rekening Penerima", styleBold,sheet);
 		createCell(row, 16, "Voucher Keluar", styleBold,sheet);
-		createCell(row, 17, "Tanggal Voucher", styleBold,sheet);
+		createCell(row, 17, "Tanggal Vch KBK", styleBold,sheet);
 		createCell(row, 18, "Rekening Pengeluaran", styleBold,sheet);
 		createCell(row, 19, "Keterangan KBK", styleBold,sheet);
 		createCell(row, 20, "Nilai", styleBold,sheet);

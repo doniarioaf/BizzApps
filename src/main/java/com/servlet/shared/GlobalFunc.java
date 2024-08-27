@@ -1,5 +1,6 @@
 package com.servlet.shared;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -90,7 +91,7 @@ public class GlobalFunc {
 
 	public static int checkCompare(Double value) {
 		if(value != null){
-			String[] split = String.valueOf(value).split("\\.");
+			String[] split = String.valueOf(new BigDecimal(value)).split("\\.");
 			if(split.length > 1){
 				Double afterComma = Double.parseDouble(split[1]);
 				if(afterComma.doubleValue() > 0){

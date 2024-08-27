@@ -15,6 +15,16 @@ public class WorkOrderSuratJalan {
 	private String vendormobilname;
 	private String warehouseCity;
 	private String warehouseKecamatan;
+	private String statusSuratJalan;
+
+	public String getStatusSuratJalan() {
+		return statusSuratJalan;
+	}
+
+	public void setStatusSuratJalan(String statusSuratJalan) {
+		this.statusSuratJalan = statusSuratJalan;
+	}
+
 	public String getWarehouseCity() {
 		return warehouseCity;
 	}

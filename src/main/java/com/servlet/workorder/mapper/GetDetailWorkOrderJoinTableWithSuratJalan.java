@@ -18,7 +18,7 @@ public class GetDetailWorkOrderJoinTableWithSuratJalan implements RowMapper<Deta
 		final StringBuilder sqlBuilder = new StringBuilder(400);
 		sqlBuilder.append("data.idworkorder as idworkorder, data.idpartai as idpartai, data.jumlahkoli as jumlahkoli, data.jumlahkg as jumlahkg,data.nocontainer as nocontainer, data.noseal as noseal, ");
 		sqlBuilder.append("data.barang as barang, partai.name as partainame, ");
-		sqlBuilder.append("sj.id as idsuratjalan , sj.nodocument as nodocumentsj, sj.tanggal as tanggalsj, sj.tanggalkembali as tanggalkembalisj, sj.lembur as lembursj, emp.nama as namasupir, ");
+		sqlBuilder.append("sj.id as idsuratjalan , sj.nodocument as nodocumentsj, sj.tanggal as tanggalsj, sj.tanggalkembali as tanggalkembalisj, sj.lembur as lembursj, emp.nama as namasupir, sj.status as statussj, ");
 		sqlBuilder.append("param.codename as kepemilikanmobil, asset.kepala_nopolisi as kepala_nopolisi, ");
 		sqlBuilder.append("vendor.nama as vendorname, city.city_name as warehousecity, district.dis_name as warehousekecamatan  ");
 		sqlBuilder.append("from detail_work_order as data ");
@@ -62,7 +62,8 @@ public class GetDetailWorkOrderJoinTableWithSuratJalan implements RowMapper<Deta
 		final String namasupir = rs.getString("namasupir");
 		final String kepemilikanmobil = rs.getString("kepemilikanmobil");
 		final String kepala_nopolisi = rs.getString("kepala_nopolisi");
-		
+		final String statussj = rs.getString("statussj");
+
 		
 		WorkOrderSuratJalan woSuratJalan = new WorkOrderSuratJalan();
 		woSuratJalan.setIdSuratJalan(idsuratjalan);
@@ -76,6 +77,7 @@ public class GetDetailWorkOrderJoinTableWithSuratJalan implements RowMapper<Deta
 		woSuratJalan.setVendormobilname(vendorname);
 		woSuratJalan.setWarehouseCity(warehousecity);
 		woSuratJalan.setWarehouseKecamatan(warehousekecamatan);
+		woSuratJalan.setStatusSuratJalan(statussj);
 		
 		DetailWorkOrderData data = new DetailWorkOrderData();
 		data.setIdworkorder(idworkorder);

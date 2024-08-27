@@ -501,4 +501,9 @@ public class SuratJalanHandler implements SuratJalanService{
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataFullSuratJalan(), queryParameters);
 	}
 
+	@Override
+	public List<HistorySuratJalanData> getListHistorySJ(Long idcompany, Long idbranch, Long idsuratjalan) {
+		return getListHistory(idcompany,idbranch,idsuratjalan);
+	}
+
 }
