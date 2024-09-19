@@ -2,11 +2,7 @@ package com.servlet.invoice.service;
 
 import java.util.List;
 
-import com.servlet.invoice.entity.BodyInvoice;
-import com.servlet.invoice.entity.BodySearch;
-import com.servlet.invoice.entity.InvoiceData;
-import com.servlet.invoice.entity.InvoiceTemplate;
-import com.servlet.invoice.entity.PrintInvoiceData;
+import com.servlet.invoice.entity.*;
 import com.servlet.shared.ReturnData;
 
 public interface InvoiceService {
@@ -20,6 +16,10 @@ public interface InvoiceService {
 	InvoiceData getByIdWithTemplate(Long idcompany,Long idbranch,Long id);
 	List<InvoiceData> getListSearchInvoice(Long idcompany,Long idbranch,BodySearch body);
 	PrintInvoiceData printInvoice(Long idcompany,Long idbranch,Long id);
-	List<InvoiceData> getListInvoiceByIdWo(Long idcompany,Long idbranch,Long idwo);
+	List<InvoiceData> getListInvoiceByIdWo(Long idcompany,Long idbranch,Long idwo,boolean docDPtermasuk);
 	List<InvoiceData> checkInvoiceByIdWo(Long idcompany,Long idbranch,Long idwo);
+	List<InvoiceDPData> getListInvoiceDPByIdWo(Long idcompany,Long idbranch,Long idwo);
+
+	List<InvoiceData> getInvoiceYangBelumLunasByWo(Long idcompany,Long idbranch, Long idwo);
+	List<InvoiceDataReportLabaRugi> getListInvoiceByIdWoReportLabaRugi(Long idcompany, Long idbranch, Long idwo, boolean docDPtermasuk);
 }

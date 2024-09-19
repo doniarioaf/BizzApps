@@ -13,6 +13,8 @@ public class EntityHelperKasBank implements Comparable<EntityHelperKasBank> {
 	private String penerimaannamaCustomer;
 	private String penerimaanketerangan;
 	private double penerimaanAmount;
+	private String penerimaanKategoriName;
+	private Double penerimaanPenyesuain;
 	
 	private Long pengeluaranid;
 	private Date pengeluarantanggalTransaksi;
@@ -28,10 +30,36 @@ public class EntityHelperKasBank implements Comparable<EntityHelperKasBank> {
 	private String pengeluaran_vendorname;
 	private String pengeluaran_employeename;
 	private double pengeluaranAmount;
+	private String pengeluaran_invItemName;
+	private String pengeluaran_payItemName;
+	private String pengeluaran_KategoriName;
 	
 	private Date tanggalTransaksi;
-	
-	
+
+	public Double getPenerimaanPenyesuain() {
+		return penerimaanPenyesuain;
+	}
+
+	public void setPenerimaanPenyesuain(Double penerimaanPenyesuain) {
+		this.penerimaanPenyesuain = penerimaanPenyesuain;
+	}
+
+	public String getPenerimaanKategoriName() {
+		return penerimaanKategoriName;
+	}
+
+	public void setPenerimaanKategoriName(String penerimaanKategoriName) {
+		this.penerimaanKategoriName = penerimaanKategoriName;
+	}
+
+	public String getPengeluaran_KategoriName() {
+		return pengeluaran_KategoriName;
+	}
+
+	public void setPengeluaran_KategoriName(String pengeluaran_KategoriName) {
+		this.pengeluaran_KategoriName = pengeluaran_KategoriName;
+	}
+
 	public Date getTanggalTransaksi() {
 		return tanggalTransaksi;
 	}
@@ -182,10 +210,36 @@ public class EntityHelperKasBank implements Comparable<EntityHelperKasBank> {
 	public void setPengeluaranAmount(double pengeluaranAmount) {
 		this.pengeluaranAmount = pengeluaranAmount;
 	}
+	
+	public String getPengeluaran_invItemName() {
+		return pengeluaran_invItemName;
+	}
+	public void setPengeluaran_invItemName(String pengeluaran_invItemName) {
+		this.pengeluaran_invItemName = pengeluaran_invItemName;
+	}
+	public String getPengeluaran_payItemName() {
+		return pengeluaran_payItemName;
+	}
+	public void setPengeluaran_payItemName(String pengeluaran_payItemName) {
+		this.pengeluaran_payItemName = pengeluaran_payItemName;
+	}
 	@Override
 	public int compareTo(EntityHelperKasBank o) {
 		// TODO Auto-generated method stub
-		return new Long(this.tanggalTransaksi.getTime() - o.getTanggalTransaksi().getTime()).intValue();
+		if(this.tanggalTransaksi.getTime() == o.getTanggalTransaksi().getTime()) {
+			if(o.getPenerimaannoVoucher() != null && o.getPengeluarannoVoucher() != null && this.getPenerimaannoVoucher() != null && this.getPengeluarannoVoucher() != null) {
+				return this.getPenerimaannoVoucher().compareTo(this.getPengeluarannoVoucher());
+			}
+			if(o.getPengeluarannoVoucher() != null && this.getPengeluarannoVoucher() != null) {
+				return this.getPengeluarannoVoucher().compareTo(o.getPengeluarannoVoucher());
+			}
+			else if(o.getPenerimaannoVoucher() != null && this.getPenerimaannoVoucher() != null) {
+				return this.getPenerimaannoVoucher().compareTo(o.getPenerimaannoVoucher());
+			}else
+				return "".compareTo("");
+		}
+//		return new Long(this.tanggalTransaksi.getTime() - o.getTanggalTransaksi().getTime()).intValue();
+		return this.tanggalTransaksi.compareTo(o.getTanggalTransaksi());
 	}
 	
 	

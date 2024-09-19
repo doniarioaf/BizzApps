@@ -13,6 +13,25 @@ public class DetailPenerimaanKasBankData {
 	private Long idworkorder;
 	private String nodocworkorder;
 	private String noaju;
+
+	private Double penyesuaian;
+	private String keterangan_penyesuaian;
+
+	public Double getPenyesuaian() {
+		return penyesuaian;
+	}
+
+	public void setPenyesuaian(Double penyesuaian) {
+		this.penyesuaian = penyesuaian;
+	}
+
+	public String getKeterangan_penyesuaian() {
+		return keterangan_penyesuaian;
+	}
+
+	public void setKeterangan_penyesuaian(String keterangan_penyesuaian) {
+		this.keterangan_penyesuaian = keterangan_penyesuaian;
+	}
 	@Override
 	public String toString() {
 		return "DetailPenerimaanKasBankData [idpenerimaankasbank=" + idpenerimaankasbank + ", counter=" + counter

@@ -3,6 +3,7 @@ package com.servlet.Process;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,7 +105,9 @@ import com.servlet.shared.ValidationDataMessage;
 import com.servlet.suratjalan.entity.BodyStatusSuratJalan;
 import com.servlet.suratjalan.entity.BodySuratJalan;
 import com.servlet.suratjalan.service.SuratJalanService;
+import com.servlet.user.entity.BodyEditPass;
 import com.servlet.user.entity.BodyUserApps;
+import com.servlet.user.entity.UserPermissionData;
 import com.servlet.user.service.UserAppsService;
 import com.servlet.vendor.entity.BodySearchVendor;
 import com.servlet.vendor.entity.BodyVendor;
@@ -295,6 +298,19 @@ public class ProcessHandler implements ProcessService{
 				}
 //				val.setData(userAppsService.saveUserApps(body,auth.getIdcompany(),auth.getIdbranch()));
 //				val = userAppsService.saveUserApps(body,auth.getIdcompany(),auth.getIdbranch());
+			}else if(codepermission.equals(ConstansPermission.EDIT_USER_PASSSSS)) {
+				BodyEditPass body = (BodyEditPass) data;
+				ReturnData valReturn = userAppsService.editPass(body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+//				val.setData(userAppsService.saveUserApps(body,auth.getIdcompany(),auth.getIdbranch()));
+//				val = userAppsService.saveUserApps(body,auth.getIdcompany(),auth.getIdbranch());
 			}else if(codepermission.equals(ConstansPermission.EDIT_USER)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				BodyUserApps body = (BodyUserApps) param.get("BodyUserApps");
@@ -304,6 +320,21 @@ public class ProcessHandler implements ProcessService{
 			}else if(codepermission.equals(ConstansPermission.DELETE_USER)) {
 				long id = (long) data;
 				val.setData(userAppsService.deleteUserApss(id));
+			}else if(codepermission.equals(ConstansPermission.EDIT_CHANGE_PASSWORD_USER)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				BodyEditPass body = (BodyEditPass) param.get("BodyUserApps");
+				long id = (long) param.get("id");
+				
+				ReturnData valReturn = userAppsService.changePassword(id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+//				val.setData(customerService.updateCustomer(id, body, auth.getIdcompany(),auth.getIdbranch()));
 			}else if(codepermission.equals(ConstansPermission.CREATE_USER_MOBILE)) {
 				BodyUserMobile body = (BodyUserMobile) data;
 				ReturnData valReturn = userMobileService.saveUserMobile(body,auth.getIdcompany(),auth.getIdbranch());
@@ -1710,30 +1741,33 @@ public class ProcessHandler implements ProcessService{
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				String type = (String) param.get("type");
 				if(type.equals("ALL")) {
-					val.setData(penerimaanKasBankService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(penerimaanKasBankService.getListAllCheckBank(auth.getIdcompany(), auth.getIdbranch(), auth.getId()));
 				}else if(type.equals("TEMPLATE")) {
-					val.setData(penerimaanKasBankService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(penerimaanKasBankService.getTemplate(auth.getIdcompany(), auth.getIdbranch(), auth.getId()));
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
-					val.setData(penerimaanKasBankService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+					val.setData(penerimaanKasBankService.getById(auth.getIdcompany(), auth.getIdbranch(),id, auth.getId()));
 				}else if(type.equals("TEMPLATE_ID")) {
 					long id = (long) param.get("id");
-					val.setData(penerimaanKasBankService.getByIdWithTemplate(auth.getIdcompany(), auth.getIdbranch(),id));
+					val.setData(penerimaanKasBankService.getByIdWithTemplate(auth.getIdcompany(), auth.getIdbranch(),id, auth.getId()));
+				}else if(type.equals("INVOICE_NOT_PAID")) {
+					long idwo = (long) param.get("idwo");
+					val.setData(invoiceService.getInvoiceYangBelumLunasByWo(auth.getIdcompany(), auth.getIdbranch(),idwo));
 				}
 				
 			}else if(codepermission.equals(ConstansPermission.READ_PENGELUARAN_KASBANK)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				String type = (String) param.get("type");
 				if(type.equals("ALL")) {
-					val.setData(pengeluaranKasBankService.getListActive(auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(pengeluaranKasBankService.getListActiveCheckBank(auth.getIdcompany(), auth.getIdbranch(), auth.getId()));
 				}else if(type.equals("TEMPLATE")) {
-					val.setData(pengeluaranKasBankService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(pengeluaranKasBankService.getTemplate(auth.getIdcompany(), auth.getIdbranch(), auth.getId()));
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
-					val.setData(pengeluaranKasBankService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+					val.setData(pengeluaranKasBankService.getByIdCheckBank(auth.getIdcompany(), auth.getIdbranch(),id, auth.getId()));
 				}else if(type.equals("TEMPLATE_ID")) {
 					long id = (long) param.get("id");
-					val.setData(pengeluaranKasBankService.getByIdWithTemplate(auth.getIdcompany(), auth.getIdbranch(),id));
+					val.setData(pengeluaranKasBankService.getByIdWithTemplate(auth.getIdcompany(), auth.getIdbranch(),id, auth.getId()));
 				}else if(type.equals("SEARCHDATACUSTOMER")) {
 					BodySearch body = (BodySearch) param.get("body");
 					val.setData(customerManggalaService.getListSearchCustomer(auth.getIdcompany(), auth.getIdbranch(), body));
@@ -1771,8 +1805,18 @@ public class ProcessHandler implements ProcessService{
 					long idcustomer = (long) param.get("idcustomer");
 					
 					HashMap<String, Object> mapParam = new HashMap<String, Object>();
-					mapParam.put("type", "INVOICE");
+					mapParam.put("type", "INVOICE-SURATJALAN-CLOSED");
 					mapParam.put("idcustomer", idcustomer);
+					
+					val.setData(workOrderService.getListWOByStatus(auth.getIdcompany(), auth.getIdbranch(),"", mapParam));
+				}else if(type.equals("SEACRHWO_EDIT_FIRST_LOAD")) {
+					long idcustomer = (long) param.get("idcustomer");
+					long idwo = (long) param.get("idwo");
+					
+					HashMap<String, Object> mapParam = new HashMap<String, Object>();
+					mapParam.put("type", "INVOICE_EDIT_FIRST_LOAD");
+					mapParam.put("idcustomer", idcustomer);
+					mapParam.put("idwo", idwo);
 					
 					val.setData(workOrderService.getListWOByStatus(auth.getIdcompany(), auth.getIdbranch(),"CLOSED", mapParam));
 				}else if(type.equals("SEACRH_SURATJALAN")) {
@@ -1789,13 +1833,19 @@ public class ProcessHandler implements ProcessService{
 					val.setData(invoiceService.printInvoice(auth.getIdcompany(), auth.getIdbranch(),id));
 				}else if(type.equals("SEACRH_PENGELUARAN")) {
 					long idwo = (long) param.get("idwo");
-					val.setData(pengeluaranKasBankService.getListByIdWo(auth.getIdcompany(), auth.getIdbranch(),idwo));
+					val.setData(pengeluaranKasBankService.getListByIdWo(auth.getIdcompany(), auth.getIdbranch(),idwo,true));
 				}else if(type.equals("GETDISTRICT")) {
 					long postalcode = (long) param.get("postalcode");
 					val.setData(districtService.getListDistrictByPostalCode(postalcode));
 				}else if(type.equals("GETSURATJALANBYWO")) {
 					long idwo = (long) param.get("idwo");
 					val.setData(suratJalanService.getListSuratJalanByWO(auth.getIdcompany(), auth.getIdbranch(),idwo));
+				}else if(type.equals("GETINVOICEDPBYWO")) {
+					long idwo = (long) param.get("idwo");
+					val.setData(invoiceService.getListInvoiceDPByIdWo(auth.getIdcompany(), auth.getIdbranch(),idwo));
+				}else if(type.equals("INVOICE_NOT_PAID")) {
+					long idwo = (long) param.get("idwo");
+					val.setData(invoiceService.getInvoiceYangBelumLunasByWo(auth.getIdcompany(), auth.getIdbranch(),idwo));
 				}
 				
 			}else if(codepermission.equals(ConstansPermission.READ_ASSET)) {
@@ -1836,7 +1886,7 @@ public class ProcessHandler implements ProcessService{
 				if(type.equals("REPORT")) {
 					ParamReportManggala body = (ParamReportManggala) param.get("body");
 					if(body.getTypeReport().equals("XLSX")) {
-						val.setData(reportServiceManggala.getReportKasBank(body, auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
+						val.setData(reportServiceManggala.getReportKasBank(body, auth.getIdcompany(), auth.getIdbranch(), auth.getId()).getWorkbook());
 					}
 //					else if(body.getTypereport().equals("PPT")) {
 //						val.setData(reportService.getReportMonitoringDataPPT(body,auth.getIdcompany(), auth.getIdbranch()).getPpt());
@@ -1845,7 +1895,21 @@ public class ProcessHandler implements ProcessService{
 //					}
 					
 				}else if(type.equals("TEMPLATE")) {
-					val.setData(bankAccountService.getListActiveBankAccount(auth.getIdcompany(), auth.getIdbranch()));
+					boolean flagpermission = false;
+					List<UserPermissionData> listPermission =  new ArrayList<UserPermissionData>(userAppsService.getListUserPermission(auth.getId()));
+					if(listPermission != null && listPermission.size() > 0) {
+						for(UserPermissionData permissiondata : listPermission) {
+							if(permissiondata.getPermissioncode().equals("SUPERUSER")) {
+//								flagpermission = true;
+								break;
+							}else if(permissiondata.getPermissioncode().equals(ConstansPermission.READ_FINANCING_JUNIOR)) {
+								flagpermission = true;
+								break;
+							}
+						}
+					}
+					
+					val.setData(bankAccountService.getListActiveBankAccountCheckFinanceJunior(auth.getIdcompany(), auth.getIdbranch(), flagpermission));
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_REPORT_LABA_RUGI)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
@@ -1853,7 +1917,7 @@ public class ProcessHandler implements ProcessService{
 				if(type.equals("REPORT")) {
 					ParamReportManggala body = (ParamReportManggala) param.get("body");
 					if(body.getTypeReport().equals("XLSX")) {
-						val.setData(reportServiceManggala.getReportLabaRugi(body, auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
+						val.setData(reportServiceManggala.getReportLabaRugi2(body, auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
 					}
 //					else if(body.getTypereport().equals("PPT")) {
 //						val.setData(reportService.getReportMonitoringDataPPT(body,auth.getIdcompany(), auth.getIdbranch()).getPpt());

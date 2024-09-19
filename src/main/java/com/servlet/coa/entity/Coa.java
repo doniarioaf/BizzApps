@@ -31,6 +31,8 @@ public class Coa implements Serializable{
 	private Timestamp updatedate;
 	private String deleteby;
 	private Timestamp deletedate;
+	private boolean isshowlist;
+	
 	public Long getId() {
 		return id;
 	}
@@ -120,5 +122,11 @@ public class Coa implements Serializable{
 	}
 	public void setDeletedate(Timestamp deletedate) {
 		this.deletedate = deletedate;
+	}
+	public boolean isIsshowlist() {
+		return isshowlist;
+	}
+	public void setIsshowlist(boolean isshowlist) {
+		this.isshowlist = isshowlist;
 	}
 }

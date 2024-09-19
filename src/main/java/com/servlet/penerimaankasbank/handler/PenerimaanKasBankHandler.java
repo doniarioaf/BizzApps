@@ -7,40 +7,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import com.servlet.penerimaankasbank.entity.*;
+import com.servlet.penerimaankasbank.mapper.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.servlet.bankaccount.entity.BankAccount;
 import com.servlet.bankaccount.service.BankAccountService;
 import com.servlet.coa.service.CoaService;
 import com.servlet.invoice.service.InvoiceService;
 import com.servlet.parametermanggala.service.ParameterManggalaService;
-import com.servlet.penerimaankasbank.entity.BodyDetailPenerimaanKasBank;
-import com.servlet.penerimaankasbank.entity.BodyPenerimaanKasBank;
-import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBank;
-import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBankData;
-import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBankPK;
-import com.servlet.penerimaankasbank.entity.PenerimaanKasBank;
-import com.servlet.penerimaankasbank.entity.PenerimaanKasBankData;
-import com.servlet.penerimaankasbank.entity.PenerimaanKasBankTemplate;
-import com.servlet.penerimaankasbank.entity.PenerimaanPengeluaranData;
-import com.servlet.penerimaankasbank.mapper.GetDataReportKasBankMapper;
-import com.servlet.penerimaankasbank.mapper.GetDetailPenerimaanKasBankData;
-import com.servlet.penerimaankasbank.mapper.GetDetailPenerimaanKasBankJoinTable;
-import com.servlet.penerimaankasbank.mapper.GetPenerimaanKasBankJoinBank;
-import com.servlet.penerimaankasbank.mapper.GetPenerimaanKasBankJoinTable;
-import com.servlet.penerimaankasbank.mapper.GetPenerimaanKasBankNotJoinTable;
-import com.servlet.penerimaankasbank.mapper.GetPenerimaanPengeluaranData;
-import com.servlet.penerimaankasbank.mapper.GetTotalAmount;
 import com.servlet.penerimaankasbank.repo.DetailPenerimaanKasBankRepo;
 import com.servlet.penerimaankasbank.repo.PenerimaanKasBankRepo;
 import com.servlet.penerimaankasbank.service.PenerimaanKasBankService;
 import com.servlet.report.entity.EntityHelperKasBank;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
+import com.servlet.shared.ConstansPermission;
 import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.user.entity.UserPermissionData;
+import com.servlet.user.service.UserAppsService;
 import com.servlet.workorder.entity.WorkOrder;
 import com.servlet.workorder.entity.WorkOrderData;
 import com.servlet.workorder.repo.WorkOrderRepo;
@@ -68,14 +57,33 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 	private InvoiceService invoiceService;
 	@Autowired
 	private ParameterManggalaService parameterManggalaService;
+	@Autowired
+	private UserAppsService userAppsService;
+	
+	private final String RECEIVEFROM_EMPLOYEE = "EMPLOYEE";
+	private final String RECEIVEFROM_CUSTOMER = "CUSTOMER";
+	private final String RECEIVEFROM_VENDOR = "VENDOR";
 	
 	@Override
-	public List<PenerimaanKasBankData> getListAll(Long idcompany, Long idbranch) {
+	public List<PenerimaanKasBankData> getListAll(Long idcompany, Long idbranch, Long iduser) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPenerimaanKasBankNotJoinTable().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetPenerimaanKasBankNotJoinTable(), queryParameters);
+	}
+	
+	@Override
+	public List<PenerimaanKasBankData> getListAllCheckBank(Long idcompany, Long idbranch, Long iduser) {
+		// TODO Auto-generated method stub
+		boolean checkFinanceJunior = checkFinanceJunior(iduser);
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListPenerimaanData().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.isdelete = false ");
+		if(checkFinanceJunior) {
+			sqlBuilder.append(" and bank.showfinancejunior = true ");
+		}
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListPenerimaanData(), queryParameters);
 	}
 
 	@Override
@@ -88,10 +96,14 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 	}
 
 	@Override
-	public PenerimaanKasBankData getById(Long idcompany, Long idbranch, Long id) {
+	public PenerimaanKasBankData getById(Long idcompany, Long idbranch, Long id, Long iduser) {
 		// TODO Auto-generated method stub
+		boolean checkFinanceJunior = checkFinanceJunior(iduser);
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPenerimaanKasBankJoinTable().schema());
 		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		if(checkFinanceJunior) {
+			sqlBuilder.append(" and bank.showfinancejunior = true ");
+		}
 		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
 		List<PenerimaanKasBankData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetPenerimaanKasBankJoinTable(), queryParameters);
 		if(list != null && list.size() > 0) {
@@ -111,10 +123,25 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 		long idsave = 0;
 		Date date = new Date();
 		Timestamp ts = new Timestamp(date.getTime());
-		String docNumber = runningNumberService.getDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_PENERIMAANKASBANK, ts);
-		if(docNumber.equals("")) {
-			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_GENERATE_DOC_NUMBER,"Gagal Generate Document Number");
-			validations.add(msg);
+		String docNumber = "";
+		
+		boolean checkFinanceJunior = checkFinanceJunior(iduser);
+		if(checkFinanceJunior) {
+			BankAccount bank = bankAccountService.getId(body.getIdbank());
+			if(bank != null && bank.getId() != 0) {
+				if(!bank.isShowfinancejunior()) {
+					ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_SAVE_BANK_FINANCE_JUNIOR,"Gagal Save");
+					validations.add(msg);
+				}
+			}
+		}
+		
+		if(validations.size() == 0) {
+			docNumber = runningNumberService.getDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_PENERIMAANKASBANK, ts);
+			if(docNumber.equals("")) {
+				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_GENERATE_DOC_NUMBER,"Gagal Generate Document Number");
+				validations.add(msg);
+			}
 		}
 		
 		List<ValidationDataMessage> validationsDetails = checkDetail(body.getDetails(), idcompany, idbranch,null,"ADD");
@@ -134,6 +161,25 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 				table.setIdbank(body.getIdbank());
 				table.setKeterangan(body.getKeterangan());
 				table.setIsactive(body.isIsactive());
+				
+				if(body.getIdreceivetype().equals(RECEIVEFROM_CUSTOMER)) {
+					table.setIdcustomer(body.getIdcustomer());
+					table.setIdwo(body.getIdwo());
+					table.setIdemployee(null);
+					table.setIdvendor(null);
+				}else if(body.getIdreceivetype().equals(RECEIVEFROM_EMPLOYEE)) {
+					table.setIdcustomer(null);
+					table.setIdemployee(body.getIdemployee());
+					table.setIdvendor(null);
+					table.setIdwo(null);
+				}else if(body.getIdreceivetype().equals(RECEIVEFROM_VENDOR)) {
+					table.setIdcustomer(null);
+					table.setIdemployee(null);
+					table.setIdvendor(body.getIdvendor());
+					table.setIdwo(null);
+				}
+				table.setIdreceivetype(body.getIdreceivetype());
+				
 				table.setIsdelete(false);
 				table.setCreatedby(iduser.toString());
 				table.setCreateddate(ts);
@@ -180,6 +226,19 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_PENERIMAAN_DATE_CLOSEBOOK,"Tidak Bisa Edit/Delete, Sudah Tutup Buku");
 				validations.add(msg);
 			}
+			
+			if(validations.size() == 0 && validationsDetails.size() == 0) {
+				boolean checkFinanceJunior = checkFinanceJunior(iduser);
+				if(checkFinanceJunior) {
+					BankAccount bank = bankAccountService.getId(body.getIdbank());
+					if(bank != null && bank.getId() != 0) {
+						if(!bank.isShowfinancejunior()) {
+							ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_SAVE_BANK_FINANCE_JUNIOR,"Gagal Save");
+							validations.add(msg);
+						}
+					}
+				}
+			}
 			if(validations.size() == 0 && validationsDetails.size() == 0) {
 				try {
 					Timestamp ts = new Timestamp(new Date().getTime());
@@ -190,6 +249,25 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 					table.setIdbank(body.getIdbank());
 					table.setKeterangan(body.getKeterangan());
 					table.setIsactive(body.isIsactive());
+					
+					if(body.getIdreceivetype().equals(RECEIVEFROM_CUSTOMER)) {
+						table.setIdcustomer(body.getIdcustomer());
+						table.setIdemployee(null);
+						table.setIdvendor(null);
+						table.setIdwo(body.getIdwo());
+					}else if(body.getIdreceivetype().equals(RECEIVEFROM_EMPLOYEE)) {
+						table.setIdcustomer(null);
+						table.setIdemployee(body.getIdemployee());
+						table.setIdvendor(null);
+						table.setIdwo(null);
+					}else if(body.getIdreceivetype().equals(RECEIVEFROM_VENDOR)) {
+						table.setIdcustomer(null);
+						table.setIdemployee(null);
+						table.setIdvendor(body.getIdvendor());
+						table.setIdwo(null);
+					}
+					table.setIdreceivetype(body.getIdreceivetype());
+					
 					table.setUpdateby(iduser.toString());
 					table.setUpdatedate(ts);
 					
@@ -330,6 +408,8 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 					detailPenerimaanKasBank.setIdinvoice(detail.getIdinvoice());
 					detailPenerimaanKasBank.setIdworkorder(detail.getIdworkorder());
 					detailPenerimaanKasBank.setIsdownpayment(detail.getIsdownpayment());
+					detailPenerimaanKasBank.setPenyesuaian(detail.getPenyesuaian());
+					detailPenerimaanKasBank.setKeterangan_penyesuaian(detail.getKeterangan_penyesuaian());
 					
 					detailPenerimaanKasBankRepo.saveAndFlush(detailPenerimaanKasBank);
 					count++;
@@ -375,9 +455,10 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 		return "";
 	}
 	
-	private PenerimaanKasBankTemplate getTemplate(Long idcompany, Long idbranch, Long id) {
+	private PenerimaanKasBankTemplate setTemplate(Long idcompany, Long idbranch, Long id, Long iduser) {
+		boolean checkFinanceJunior = checkFinanceJunior(iduser);
 		PenerimaanKasBankTemplate template = new PenerimaanKasBankTemplate();
-		template.setBankOptions(bankAccountService.getListActiveBankAccount(idcompany, idbranch));
+		template.setBankOptions(bankAccountService.getListActiveBankAccountCheckFinanceJunior(idcompany, idbranch, checkFinanceJunior));
 		template.setCoaOptions(coaService.getListActiveCOA(idcompany, idbranch));
 		if(id != null) {
 			HashMap<String, Object> mapParam = new HashMap<String, Object>();
@@ -419,22 +500,26 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 	}
 
 	@Override
-	public PenerimaanKasBankTemplate getTemplate(Long idcompany, Long idbranch) {
+	public PenerimaanKasBankTemplate getTemplate(Long idcompany, Long idbranch, Long iduser) {
 		// TODO Auto-generated method stub
-		return getTemplate(idcompany,idbranch,null);
+		return setTemplate(idcompany,idbranch,null,iduser);
 	}
 
 	@Override
-	public PenerimaanKasBankData getByIdWithTemplate(Long idcompany, Long idbranch, Long id) {
+	public PenerimaanKasBankData getByIdWithTemplate(Long idcompany, Long idbranch, Long id, Long iduser) {
 		// TODO Auto-generated method stub
-		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPenerimaanKasBankNotJoinTable().schema());
+		boolean checkFinanceJunior = checkFinanceJunior(iduser);
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListPenerimaanData().schema());
 		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		if(checkFinanceJunior) {
+			sqlBuilder.append(" and bank.showfinancejunior = true ");
+		}
 		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
-		List<PenerimaanKasBankData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetPenerimaanKasBankNotJoinTable(), queryParameters);
+		List<PenerimaanKasBankData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetListPenerimaanData(), queryParameters);
 		if(list != null && list.size() > 0) {
 			PenerimaanKasBankData val = list.get(0);
 			val.setDetails(getDetails(idcompany, idbranch, id));
-			val.setTemplate(getTemplate(idcompany, idbranch, id));
+			val.setTemplate(setTemplate(idcompany, idbranch, id,iduser));
 			return val;
 		}
 		return null;
@@ -444,7 +529,7 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 	public List<DetailPenerimaanKasBankData> getListDetailByIdInvoice(Long idcompany, Long idbranch, Long idInvoice) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDetailPenerimaanKasBankData().schema());
-		sqlBuilder.append(" where data.idinvoice = ? and data.idcompany = ? and data.idbranch = ? ");
+		sqlBuilder.append(" where data.idinvoice = ? and data.idcompany = ? and data.idbranch = ? and data.idpenerimaankasbank in (select penerimaan.id from m_penerimaan_kas_bank as penerimaan where penerimaan.isdelete = false ) ");
 		final Object[] queryParameters = new Object[] {idInvoice,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDetailPenerimaanKasBankData(), queryParameters);
 	}
@@ -605,11 +690,51 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 //		sqlBuilder.append(" (mpengeluaran.idcompany = "+idcompany+" and mpengeluaran.idbranch = "+idbranch+"  and mpengeluaran.isactive = true and mpengeluaran.isdelete = false and mpengeluaran.idbank = "+idbank+" and mpengeluaran.paymentdate >= '"+fromdate+"'  and mpengeluaran.paymentdate <= '"+todate+"' ) ");
 //		sqlBuilder.append(" order by mpenerimaan.receivedate , mpengeluaran.paymentdate asc ");
 		
-		System.out.println("StringBuilder = "+sqlBuilder.toString());
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataReportKasBankMapper(), queryParameters);
 	}
-	
-	
+
+	@Override
+	public Double getSummaryDetailDPByIdInvoice(Long idcompany, Long idbranch, Long idInv) {
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetTotalAmount().schema());
+		sqlBuilder.append(" where data.idinvoice = ? and data.idcompany = ? and data.idbranch = ? and penerimaan.isdelete = false ");
+		final Object[] queryParameters = new Object[] {idInv,idcompany,idbranch};
+		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmount(), queryParameters);
+		if(list != null && list.size() > 0) {
+			return list.get(0);
+		}
+		return 0.0;
+	}
+
+
+	private boolean checkFinanceJunior(Long iduser) {
+		boolean flagpermission = false;
+		List<UserPermissionData> listPermission =  new ArrayList<UserPermissionData>(userAppsService.getListUserPermission(iduser));
+		if(listPermission != null && listPermission.size() > 0) {
+			for(UserPermissionData permissiondata : listPermission) {
+				if(permissiondata.getPermissioncode().equals("SUPERUSER")) {
+//					flagpermission = true;
+					break;
+				}else if(permissiondata.getPermissioncode().equals(ConstansPermission.READ_FINANCING_JUNIOR)) {
+					flagpermission = true;
+					break;
+				}
+			}
+		}
+		return flagpermission;
+	}
+
+	@Override
+	public List<DetailPenerimaanKasBankDataLabaRugi> getListDetailReportLabaRugi(Long idcompany, Long idbranch, Long idInvoice, Long idbank) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataDetailPenerimaanReportLabaRugi().schema());
+		sqlBuilder.append(" where data.idinvoice = ? and data.idcompany = ? and data.idbranch = ? and penerimaan.isdelete = false ");
+		if(idbank != null){
+			sqlBuilder.append(" and penerimaan.idbank = "+idbank+" ");
+		}
+		sqlBuilder.append(" order by penerimaan.receivedate ");
+		final Object[] queryParameters = new Object[] {idInvoice,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataDetailPenerimaanReportLabaRugi(), queryParameters);
+	}
 
 }

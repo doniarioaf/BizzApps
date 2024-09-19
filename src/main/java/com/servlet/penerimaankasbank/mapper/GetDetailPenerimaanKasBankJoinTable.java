@@ -15,7 +15,7 @@ public class GetDetailPenerimaanKasBankJoinTable implements RowMapper<DetailPene
 		final StringBuilder sqlBuilder = new StringBuilder(400);
 		sqlBuilder.append("data.idpenerimaankasbank as idpenerimaankasbank, data.idcoa as idcoa, data.catatan as catatan, data.amount as amount, data.isdownpayment as isdownpayment, ");
 		sqlBuilder.append("data.idinvoice as idinvoice, data.idworkorder as idworkorder, coa.nama as coaname, wo.nodocument as wonodocument, ");
-		sqlBuilder.append("inv.nodocument as invnodocument, wo.noaju as wonoaju ");
+		sqlBuilder.append("inv.nodocument as invnodocument, wo.noaju as wonoaju, data.penyesuaian as penyesuaian, data.keterangan_penyesuaian as keterangan_penyesuaian ");
 		sqlBuilder.append("from detail_penerimaan_kas_bank as data ");
 		sqlBuilder.append("left join m_coa as coa on coa.id = data.idcoa ");
 		sqlBuilder.append("left join m_workorder as wo on wo.id = data.idworkorder ");
@@ -41,7 +41,9 @@ public class GetDetailPenerimaanKasBankJoinTable implements RowMapper<DetailPene
 		final String wonodocument = rs.getString("wonodocument");
 		final String invnodocument = rs.getString("invnodocument");
 		final String wonoaju = rs.getString("wonoaju");
-		
+		final Double penyesuaian = rs.getDouble("penyesuaian");
+		final String keterangan_penyesuaian = rs.getString("keterangan_penyesuaian");
+
 		DetailPenerimaanKasBankData data = new DetailPenerimaanKasBankData();
 		data.setIdcoa(idcoa);
 		data.setCoaname(coaname);
@@ -53,6 +55,8 @@ public class GetDetailPenerimaanKasBankJoinTable implements RowMapper<DetailPene
 		data.setNodocinvoice(invnodocument);
 		data.setNodocworkorder(wonodocument);
 		data.setNoaju(wonoaju);
+		data.setPenyesuaian(penyesuaian);
+		data.setKeterangan_penyesuaian(keterangan_penyesuaian);
 		return data;
 	}
 

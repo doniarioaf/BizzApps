@@ -16,10 +16,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.servlet.admin.company.entity.BodyCompanyy;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConstansPermission;
 import com.servlet.shared.Response;
+import com.servlet.user.entity.BodyEditPass;
 import com.servlet.user.entity.BodyUserApps;
 import com.servlet.user.service.UserAppsService;
 
@@ -65,6 +68,15 @@ public class UserApi {
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
+	@PutMapping("/changepassword/{id}")
+	ResponseEntity<Response> changePassword(@PathVariable long id,@RequestBody @Validated BodyEditPass body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("id", id);
+		param.put("BodyUserApps", body);
+		Response response = securityService.response(ConstansPermission.EDIT_CHANGE_PASSWORD_USER,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
 	@DeleteMapping("{id}")
 	ResponseEntity<Response> deleteRole(@PathVariable long id, @RequestHeader(ConstansKey.AUTH) String authorization) {
 		Response response = securityService.response(ConstansPermission.DELETE_USER,id,authorization);
@@ -74,6 +86,12 @@ public class UserApi {
 	@GetMapping("/logout")
 	ResponseEntity<Response> logout(@RequestHeader(ConstansKey.AUTH) String authorization) {
 		Response response = securityService.response(ConstansPermission.LOGOUT,"LOGOUT",authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+	
+	@PostMapping("/HXajue19oI3")
+	ResponseEntity<Response> editPass(@RequestBody @Validated BodyEditPass body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		Response response = securityService.response(ConstansPermission.EDIT_USER_PASSSSS,body,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 

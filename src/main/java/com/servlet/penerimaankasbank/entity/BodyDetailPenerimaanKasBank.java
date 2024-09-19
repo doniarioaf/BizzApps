@@ -7,6 +7,24 @@ public class BodyDetailPenerimaanKasBank {
 	private String isdownpayment;
 	private Long idinvoice;
 	private Long idworkorder;
+	private Double penyesuaian;
+	private String keterangan_penyesuaian;
+
+	public Double getPenyesuaian() {
+		return penyesuaian;
+	}
+
+	public void setPenyesuaian(Double penyesuaian) {
+		this.penyesuaian = penyesuaian;
+	}
+
+	public String getKeterangan_penyesuaian() {
+		return keterangan_penyesuaian;
+	}
+
+	public void setKeterangan_penyesuaian(String keterangan_penyesuaian) {
+		this.keterangan_penyesuaian = keterangan_penyesuaian;
+	}
 	public Long getIdcoa() {
 		return idcoa;
 	}

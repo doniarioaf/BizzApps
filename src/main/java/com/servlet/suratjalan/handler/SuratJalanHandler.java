@@ -410,12 +410,12 @@ public class SuratJalanHandler implements SuratJalanService{
 			}
 			val.setCustomerDistrict(districtName);
 			
-			String companyName = "";
-			ParameterManggalaData parameter = parameterManggalaService.getByParamName(idcompany, idbranch, "COMPANYNAME");
-			if(parameter != null) {
-				companyName = parameter.getParamvalue();
-			}
-			val.setCompanyname(companyName);
+//			String companyName = "";
+//			ParameterManggalaData parameter = parameterManggalaService.getByParamName(idcompany, idbranch, "COMPANYNAME");
+//			if(parameter != null) {
+//				companyName = parameter.getParamvalue();
+//			}
+//			val.setCompanyname(companyName);
 			return val;
 		}
 		return null;
@@ -499,6 +499,11 @@ public class SuratJalanHandler implements SuratJalanService{
 		sqlBuilder.append(" and data.tanggalkembali >= '"+new java.sql.Date(fromDate)+"'  and data.tanggalkembali <= '"+new java.sql.Date(thruDate)+"' ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataFullSuratJalan(), queryParameters);
+	}
+
+	@Override
+	public List<HistorySuratJalanData> getListHistorySJ(Long idcompany, Long idbranch, Long idsuratjalan) {
+		return getListHistory(idcompany,idbranch,idsuratjalan);
 	}
 
 }

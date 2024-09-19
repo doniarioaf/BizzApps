@@ -22,12 +22,17 @@ public class PrintData {
 	private String customerSubDistrict;
 	private String customerKodePos;
 	private String customerAddress;
+	private String customerAddress2;
+	private String customerAddress3;
+	private String customertype;
 	private String keterangan;
 	private Long idwarehouse;
 	private String warehousename;
 	private String warehousecontactname;
 	private String warehousecontactno;
 	private String warehouseaddress;
+	private String warehouseaddress2;
+	private String warehouseaddress3;
 	private String warehouseancerancer;
 	private String warehousecatatan;
 	private String catatan;
@@ -38,8 +43,62 @@ public class PrintData {
 	private String status;
 	private String statusname;
 	private String companyname;
-	
-	
+	private String nosealwo;
+	private String compnama;
+	private String compaddress;
+
+	public String getWarehouseaddress2() {
+		return warehouseaddress2;
+	}
+
+	public void setWarehouseaddress2(String warehouseaddress2) {
+		this.warehouseaddress2 = warehouseaddress2;
+	}
+
+	public String getWarehouseaddress3() {
+		return warehouseaddress3;
+	}
+
+	public void setWarehouseaddress3(String warehouseaddress3) {
+		this.warehouseaddress3 = warehouseaddress3;
+	}
+
+	public String getCompnama() {
+		return compnama;
+	}
+	public void setCompnama(String compnama) {
+		this.compnama = compnama;
+	}
+	public String getCompaddress() {
+		return compaddress;
+	}
+	public void setCompaddress(String compaddress) {
+		this.compaddress = compaddress;
+	}
+	public String getCustomertype() {
+		return customertype;
+	}
+	public void setCustomertype(String customertype) {
+		this.customertype = customertype;
+	}
+	public String getNosealwo() {
+		return nosealwo;
+	}
+	public void setNosealwo(String nosealwo) {
+		this.nosealwo = nosealwo;
+	}
+	public String getCustomerAddress2() {
+		return customerAddress2;
+	}
+	public void setCustomerAddress2(String customerAddress2) {
+		this.customerAddress2 = customerAddress2;
+	}
+	public String getCustomerAddress3() {
+		return customerAddress3;
+	}
+	public void setCustomerAddress3(String customerAddress3) {
+		this.customerAddress3 = customerAddress3;
+	}
 	public String getWarehousecatatan() {
 		return warehousecatatan;
 	}

@@ -4,13 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.servlet.shared.ReturnData;
-import com.servlet.suratjalan.entity.BodyStatusSuratJalan;
-import com.servlet.suratjalan.entity.BodySuratJalan;
-import com.servlet.suratjalan.entity.PenandaanSuratJalanTemplate;
-import com.servlet.suratjalan.entity.PrintData;
-import com.servlet.suratjalan.entity.SuratJalanData;
-import com.servlet.suratjalan.entity.SuratJalanDropDown;
-import com.servlet.suratjalan.entity.SuratJalanTemplate;
+import com.servlet.suratjalan.entity.*;
 
 public interface SuratJalanService {
 	SuratJalanTemplate suratJalanTemplate(long idcompany,long idbranch);
@@ -29,4 +23,5 @@ public interface SuratJalanService {
 	List<SuratJalanDropDown> getListByIdWO(Long idcompany,Long idbranch,Long idwo);
 	HashMap<String, Object> getListSuratJalanByWO(Long idcompany,Long idbranch,Long idwo);
 	List<SuratJalanData> getListSuratJalanForSummaryKegiatanTruck(Long idcompany,Long idbranch,Long fromDate,Long thruDate,Long idwo,Long idasset,Long idemployee_supir);
+	List<HistorySuratJalanData> getListHistorySJ(Long idcompany, Long idbranch, Long idsuratjalan);
 }
