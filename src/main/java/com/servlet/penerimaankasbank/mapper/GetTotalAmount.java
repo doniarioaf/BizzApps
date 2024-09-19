@@ -13,7 +13,8 @@ public class GetTotalAmount implements RowMapper<Double>{
 	public GetTotalAmount() {
 		// TODO Auto-generated constructor stub
 		final StringBuilder sqlBuilder = new StringBuilder(400);
-		sqlBuilder.append("sum(data.amount) as total ");
+//		sqlBuilder.append("sum(data.amount) as total ");
+		sqlBuilder.append("sum(data.penyesuaian) as total ");
 		sqlBuilder.append("from detail_penerimaan_kas_bank as data ");
 		sqlBuilder.append("left join m_penerimaan_kas_bank as penerimaan on penerimaan.id = data.idpenerimaankasbank ");
 		

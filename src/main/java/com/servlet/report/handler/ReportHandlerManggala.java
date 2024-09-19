@@ -681,7 +681,8 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 			saldoPengeluaraan = saldoPengeluaraan != null ? saldoPengeluaraan:0.0;
 			totalSaldoAwal = saldoAwalBank + saldoPenerimaan - saldoPengeluaraan;
 		}
-		 
+
+
         Row rowTitle = sheet.createRow(1);
         createCell(rowTitle, 0, "Laporan Kas/Bank", style,sheet);
         Row rowPeriode = sheet.createRow(2);
