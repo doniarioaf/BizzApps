@@ -756,7 +756,10 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						dataKasBankSort.setPenerimaannoWO(dataKasBank.getPenerimaannoWO());
 						dataKasBankSort.setPenerimaannoAju(dataKasBank.getPenerimaannoAju());
 						dataKasBankSort.setPenerimaannoInvoice(dataKasBank.getPenerimaannoInvoice());
+						dataKasBankSort.setPenerimaanIdReceiveType(dataKasBank.getPenerimaanIdReceiveType());
 						dataKasBankSort.setPenerimaannamaCustomer(dataKasBank.getPenerimaannamaCustomer());
+						dataKasBankSort.setPenerimaanEmployeename(dataKasBank.getPenerimaanEmployeename());
+						dataKasBankSort.setPenerimaanVendorname(dataKasBank.getPenerimaanVendorname());
 						dataKasBankSort.setPenerimaanketerangan(dataKasBank.getPenerimaanketerangan());
 						dataKasBankSort.setPenerimaanAmount(dataKasBank.getPenerimaanAmount());
 						dataKasBankSort.setPenerimaanPenyesuain(dataKasBank.getPenerimaanPenyesuain());
@@ -815,7 +818,15 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style,sheet);
 						createCell(rowData, columnCount++, (dataKasBank.getPenerimaannoAju() != null && !dataKasBank.getPenerimaannoAju().equals("") ? new Integer(dataKasBank.getPenerimaannoAju()):""), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoInvoice(), style,sheet);
-						createCell(rowData, columnCount++, dataKasBank.getPenerimaannamaCustomer(), style,sheet);
+						String penerimaanNama = "";
+						if(dataKasBank.getPenerimaanIdReceiveType().equals("EMPLOYEE")) {
+							penerimaanNama = dataKasBank.getPenerimaanEmployeename();
+						}else if(dataKasBank.getPenerimaanIdReceiveType().equals("CUSTOMER")) {
+							penerimaanNama = dataKasBank.getPenerimaannamaCustomer();
+						}else if(dataKasBank.getPenerimaanIdReceiveType().equals("VENDOR")) {
+							penerimaanNama = dataKasBank.getPenerimaanVendorname();
+						}
+						createCell(rowData, columnCount++, penerimaanNama, style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaanketerangan(), style,sheet);
 						Double saldoUangMasuk = dataKasBank.getPenerimaanPenyesuain();//dataKasBank.getPenerimaanAmount();
 						saldoUangMasuk = saldoUangMasuk != null?saldoUangMasuk:0.0;
@@ -904,7 +915,15 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 //						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoAju(), style,sheet);
 						createCell(rowData, columnCount++, (dataKasBank.getPenerimaannoAju() != null && !dataKasBank.getPenerimaannoAju().equals("") ? new Integer(dataKasBank.getPenerimaannoAju()):""), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoInvoice(), style,sheet);
-						createCell(rowData, columnCount++, dataKasBank.getPenerimaannamaCustomer(), style,sheet);
+						String penerimaanNama = "";
+						if(dataKasBank.getPenerimaanIdReceiveType().equals("EMPLOYEE")) {
+							penerimaanNama = dataKasBank.getPenerimaanEmployeename();
+						}else if(dataKasBank.getPenerimaanIdReceiveType().equals("CUSTOMER")) {
+							penerimaanNama = dataKasBank.getPenerimaannamaCustomer();
+						}else if(dataKasBank.getPenerimaanIdReceiveType().equals("VENDOR")) {
+							penerimaanNama = dataKasBank.getPenerimaanVendorname();
+						}
+						createCell(rowData, columnCount++, penerimaanNama, style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaanketerangan(), style,sheet);
 						Double saldoUangMasuk = dataKasBank.getPenerimaanPenyesuain();//dataKasBank.getPenerimaanAmount();
 						saldoUangMasuk = saldoUangMasuk != null?saldoUangMasuk:0.0;
