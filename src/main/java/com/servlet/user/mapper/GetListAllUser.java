@@ -27,12 +27,14 @@ public class GetListAllUser implements RowMapper<UserListData>{
 		final String username = rs.getString("username");
 		final String notelepon = rs.getString("notelepon");
 		final boolean isactive = rs.getBoolean("isactive");
+		final boolean isallbranch = rs.getBoolean("isallbranch");
 		
 		data.setId(id);
 		data.setNama(nama);
 		data.setNotelepon(notelepon);
 		data.setUsername(username);
 		data.setIsactive(isactive);
+		data.setIsallbranch(isallbranch);
 		return data;
 	}
 	

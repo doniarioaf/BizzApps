@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.servlet.admin.branch.entity.UserBranchAllData;
+import com.servlet.admin.branch.mapper.GetUserBranchAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,5 +125,13 @@ public class BranchHandler implements BranchService{
 		return data;
 	}
 
-	
+	@Override
+	public List<UserBranchAllData> getAllListUserBranch() {
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetUserBranchAll().schema());
+		sqlBuilder.append(" where b.isdelete = false ");
+		final Object[] queryParameters = new Object[] {  };
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetUserBranchAll(), queryParameters);
+	}
+
+
 }

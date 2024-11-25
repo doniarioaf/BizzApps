@@ -17,11 +17,11 @@ public class RunningNumberHandler implements RunningNumberService{
 	private RunningNumberRepo repository;
 	
 	@Override
-	public String getDocNumber(Long idcompany, Long idbranch, String code,Timestamp currDate) {
+	public String getDocNumber(Long idcompany, String code,Timestamp currDate) {
 		// TODO Auto-generated method stub
 		RunningNumberPK pk = new RunningNumberPK();
 		pk.setIdcompany(idcompany);
-		pk.setIdbranch(idbranch);
+		pk.setIdbranch(1); //dibikin default 1, karena tidak terpakai
 		pk.setCode(code);
 		
 		Optional<RunningNumber> tableOpt = repository.findById(pk);
@@ -69,11 +69,11 @@ public class RunningNumberHandler implements RunningNumberService{
 	}
 
 	@Override
-	public String rollBackDocNumber(Long idcompany, Long idbranch, String code) {
+	public String rollBackDocNumber(Long idcompany, String code) {
 		// TODO Auto-generated method stub
 		RunningNumberPK pk = new RunningNumberPK();
 		pk.setIdcompany(idcompany);
-		pk.setIdbranch(idbranch);
+		pk.setIdbranch(1);
 		pk.setCode(code);
 		
 		Optional<RunningNumber> tableOpt = repository.findById(pk);

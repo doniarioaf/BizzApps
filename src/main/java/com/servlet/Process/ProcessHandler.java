@@ -227,12 +227,12 @@ public class ProcessHandler implements ProcessService{
 			if(codepermission.equals(ConstansPermission.READ_ROLE)) {
 				String type = (String) data;
 				if(type.equals("ALL")) {
-					val.setData(roleService.getAllListRole(auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(roleService.getAllListRole(auth.getIdcompany()));
 				}else if(type.equals("TEMPLATE")) {
 					val.setData(permissionService.getAllListPermission());
 				}else {
 					long id = new Long(type).longValue();
-					val.setData(roleService.getRoleDetail(id, auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(roleService.getRoleDetail(id, auth.getIdcompany()));
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_USER)) {
 				String type = (String) data;

@@ -12,10 +12,10 @@ import com.servlet.admin.role.entity.Role;
 public interface RoleRepo extends JpaRepository<Role, Long>{
 	
 	@Query(value =" select * from m_role "
-			+ " where id = :idrole and idcompany = :companyid and idbranch = :branchid and isdelete = false ",nativeQuery = true)
-	public List<Role> getRoleById(@Param("idrole") long idrole,@Param("companyid") long companyid,@Param("branchid") long branchid);
+			+ " where id = :idrole and idcompany = :companyid and isdelete = false ",nativeQuery = true)
+	public List<Role> getRoleById(@Param("idrole") long idrole,@Param("companyid") long companyid);
 	
 	@Query(value =" select * from m_role "
-			+ " where idcompany = :companyid and idbranch = :branchid and isdelete = false ",nativeQuery = true)
-	public List<Role> getAllRole(@Param("companyid") long companyid,@Param("branchid") long branchid);
+			+ " where idcompany = :companyid  and isdelete = false ",nativeQuery = true)
+	public List<Role> getAllRole(@Param("companyid") long companyid);
 }
