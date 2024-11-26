@@ -22,6 +22,6 @@ public interface UserAppsRepo extends JpaRepository<UserApps, Long>{
 	public List<UserApps> getUserLoginByUsername(@Param("user") String user);
 	
 	@Query(value =" select * from m_user_apps "
-			+ " where id = :iduser and idcompany = :companyid and idbranch = :branchid and isdelete = false ",nativeQuery = true)
-	public List<UserApps> getUserById(@Param("iduser") long user,@Param("companyid") long companyid,@Param("branchid") long branchid);
+			+ " where id = :iduser and isdelete = false ",nativeQuery = true)
+	public List<UserApps> getUserById(@Param("iduser") long user);
 }

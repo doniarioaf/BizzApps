@@ -128,7 +128,7 @@ public class BranchHandler implements BranchService{
 	@Override
 	public List<UserBranchAllData> getAllListUserBranch() {
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetUserBranchAll().schema());
-		sqlBuilder.append(" where b.isdelete = false ");
+		sqlBuilder.append(" where b.isdelete = false and b.isactive = true ");
 		final Object[] queryParameters = new Object[] {  };
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetUserBranchAll(), queryParameters);
 	}

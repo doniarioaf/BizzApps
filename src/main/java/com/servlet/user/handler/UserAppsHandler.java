@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import com.servlet.admin.branch.service.BranchService;
 import com.servlet.admin.userbranch.entity.UserBranch;
 import com.servlet.admin.userbranch.entity.UserBranchData;
 import com.servlet.admin.userbranch.entity.UserBranchPK;
@@ -60,6 +61,9 @@ public class UserAppsHandler implements UserAppsService{
 
 	@Autowired
 	UserBranchService userBranchService;
+
+	@Autowired
+	BranchService branchService;
 
 	@Override
 	public List<UserApps> getListLogin(HashMap<String, Object> hashparam) {
@@ -187,7 +191,7 @@ public class UserAppsHandler implements UserAppsService{
 		table.setNotelepon(userapps.getNotelepon());
 		table.setIsactive(true);
 		table.setIdcompany(idcompany);
-		table.setIdbranch(idbranch);
+		table.setIdbranch(0);
 		table.setEmail(userapps.getEmail());
 		table.setAddress(userapps.getAddress());
 		table.setIsallbranch(userapps.isIsallbranch());
@@ -255,7 +259,7 @@ public class UserAppsHandler implements UserAppsService{
 	@Override
 	public UserDetailData getDetailUserApps(long id,long idcompany,long idbranch) {
 		// TODO Auto-generated method stub
-		List<UserApps> list = repository.getUserById(id, idcompany, idbranch);
+		List<UserApps> list = repository.getUserById(id);
 		if(list != null && list.size() > 0) {
 			List<UserAppsRoleData> listroleuser = new ArrayList<UserAppsRoleData>(userAppsRoleService.getListUserAppsRole(id));
 			UserApps data = list.get(0);
@@ -278,10 +282,15 @@ public class UserAppsHandler implements UserAppsService{
 			datadetail.setIsdelete(data.isIsdelete());
 			datadetail.setCreated(data.getCreated());
 			datadetail.setModified(data.getModified());
-			
+			datadetail.setIsallbranch(data.isIsallbranch());
+
 			UserDetailData userdetail = new UserDetailData();
 			userdetail.setUser(datadetail);
 			userdetail.setRoles(listroleuser);
+			if(!data.isIsallbranch()){
+				List<UserBranchData> listUB = userBranchService.getListUserBranchByIdUserJoinBranch(id);
+				userdetail.setBranchs(listUB);
+			}
 			return userdetail;
 		}
 		return null;
@@ -363,8 +372,8 @@ public class UserAppsHandler implements UserAppsService{
 	public List<UserListData> getListAllUser(long idcompany, long idbranch) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListAllUser().schema());
-		sqlBuilder.append(" where mua.idcompany = ? and mua.idbranch = ? and mua.isdelete = false ");
-		final Object[] queryParameters = new Object[] { idcompany , idbranch};
+		sqlBuilder.append(" where mua.idcompany = ?  and mua.isdelete = false ");
+		final Object[] queryParameters = new Object[] { idcompany };
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListAllUser(), queryParameters);
 	}
 	
@@ -395,6 +404,7 @@ public class UserAppsHandler implements UserAppsService{
 		// TODO Auto-generated method stub
 		TemplateInternalUser data = new TemplateInternalUser();
 		data.setRoleoptions(roleService.getAllListRole(idcompany));
+		data.setBranchOptions(branchService.getAllListUserBranch());
 		return data;
 	}
 

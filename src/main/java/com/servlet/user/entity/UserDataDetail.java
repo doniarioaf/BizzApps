@@ -17,6 +17,16 @@ public class UserDataDetail {
 	private boolean isdelete;
 	private Timestamp created;
 	private Timestamp modified;
+	private boolean isallbranch;
+
+	public boolean isIsallbranch() {
+		return isallbranch;
+	}
+
+	public void setIsallbranch(boolean isallbranch) {
+		this.isallbranch = isallbranch;
+	}
+
 	public long getId() {
 		return id;
 	}

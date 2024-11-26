@@ -55,7 +55,7 @@ public class UserBranchHandler implements UserBranchService {
     @Override
     public List<UserBranchData> getListUserBranchByIdUserJoinBranch(long iduser) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataUserBranchJoinBranch().schema());
-        sqlBuilder.append(" where ub.iduser = ? and b.isdelete = false ");
+        sqlBuilder.append(" where ub.iduser = ? and b.isdelete = false and b.isactive = true ");
         final Object[] queryParameters = new Object[] { iduser };
         return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataUserBranchJoinBranch(), queryParameters);
     }

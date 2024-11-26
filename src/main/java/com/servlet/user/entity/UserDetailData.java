@@ -3,12 +3,23 @@ package com.servlet.user.entity;
 import java.util.List;
 
 import com.servlet.admin.userappsrole.entity.UserAppsRoleData;
+import com.servlet.admin.userbranch.entity.UserBranchData;
 
 public class UserDetailData {
 //	private UserApps user;
 	private UserDataDetail user;
 	private List<UserAppsRoleData> roles;
-public UserDataDetail getUser() {
+	private List<UserBranchData> branchs;
+
+	public List<UserBranchData> getBranchs() {
+		return branchs;
+	}
+
+	public void setBranchs(List<UserBranchData> branchs) {
+		this.branchs = branchs;
+	}
+
+	public UserDataDetail getUser() {
 		return user;
 	}
 	public void setUser(UserDataDetail user) {
