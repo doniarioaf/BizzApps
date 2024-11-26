@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.servlet.customer.entity.BodyCustomer;
+import com.servlet.customer.service.CustomerService;
+import com.servlet.parameterclient.entity.BodyParameterClient;
+import com.servlet.parameterclient.service.ParameterClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +65,12 @@ public class ProcessHandler implements ProcessService{
 	SubDistrictService subdistrictService;
 	@Autowired
 	PostalCodeService postalCodeService;
+
+	@Autowired
+	ParameterClientService parameterClientService;
+
+	@Autowired
+	CustomerService customerService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -195,7 +205,79 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}	
-			}else if(codepermission.equals(ConstansPermission.LOGOUT)) {
+			}else if(codepermission.equals(ConstansPermission.CREATE_PARAMETERCLIENT)) {
+				BodyParameterClient param = (BodyParameterClient) data;
+				ReturnData valReturn = parameterClientService.saveParameterManggala(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_PARAMETERCLIENT)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyParameterClient body  = (BodyParameterClient) param.get("body");
+				ReturnData valReturn = parameterClientService.updateParameterManggala(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_PARAMETERCLIENT)) {
+				long id = (long) data;
+				ReturnData valReturn = parameterClientService.deleteParameterManggala(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_CUSTOMER)) {
+				BodyCustomer param = (BodyCustomer) data;
+				ReturnData valReturn = customerService.save(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_CUSTOMER)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyCustomer body  = (BodyCustomer) param.get("body");
+				ReturnData valReturn = customerService.update(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId(),body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_CUSTOMER)) {
+				long id = (long) data;
+				ReturnData valReturn = customerService.delete(id,auth.getId());
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}
+
+			else if(codepermission.equals(ConstansPermission.LOGOUT)) {
 				ReturnData valReturn = userAppsService.logout(auth.getId());
 				val.setSuccess(valReturn.isSuccess());
 				val.setData(null);
@@ -307,7 +389,28 @@ public class ProcessHandler implements ProcessService{
 					val.setData(postalCodeService.getListPostalCodeByPostalCodeByDistrictId(districtid));
 				}
 				
-			}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {}
+			}else if(codepermission.equals(ConstansPermission.READ_PARAMETERCLIENT)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(parameterClientService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(parameterClientService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}if(type.equals("TEMPLATE")) {
+					val.setData(parameterClientService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}
+			}else if(codepermission.equals(ConstansPermission.READ_CUSTOMER)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(customerService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(customerService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
+				}
+			}
+			else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {}
 				
 		}
 		return val;
