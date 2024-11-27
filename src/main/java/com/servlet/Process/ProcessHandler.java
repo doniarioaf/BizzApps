@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.servlet.categoryproduct.entity.BodyCategoryProduct;
+import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.customer.entity.BodyCustomer;
 import com.servlet.customer.service.CustomerService;
 import com.servlet.inventori.entity.BodyInventori;
@@ -83,6 +85,8 @@ public class ProcessHandler implements ProcessService{
 	VendorService vendorService;
 	@Autowired
 	InventoriService inventoriService;
+	@Autowired
+	CategoryProductService categoryProductService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -381,9 +385,46 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
-			}else if(codepermission.equals(ConstansPermission.DELETE_VENDOR)) {
+			}else if(codepermission.equals(ConstansPermission.DELETE_INVENTORI)) {
 				long id = (long) data;
 				ReturnData valReturn = inventoriService.delete(id,auth.getId());
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}
+
+			else if(codepermission.equals(ConstansPermission.CREATE_CATEGORYPRODUCT)) {
+				BodyCategoryProduct param = (BodyCategoryProduct) data;
+				ReturnData valReturn = categoryProductService.save(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_CATEGORYPRODUCT)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyCategoryProduct body  = (BodyCategoryProduct) param.get("body");
+				ReturnData valReturn = categoryProductService.update(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId(),body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_CATEGORYPRODUCT)) {
+				long id = (long) data;
+				ReturnData valReturn = categoryProductService.delete(id,auth.getId());
 				if(valReturn.isSuccess()) {
 					val.setData(valReturn.getId());
 				}else {
@@ -552,6 +593,15 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
 					val.setData(inventoriService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
+				}
+			}else if(codepermission.equals(ConstansPermission.READ_CATEGORYPRODUCT)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(categoryProductService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(categoryProductService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}
 			else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {}

@@ -8,6 +8,7 @@ import com.servlet.customer.mapper.QueryCustomerDetail;
 import com.servlet.customer.mapper.QueryCustomerList;
 import com.servlet.customer.repo.CustomerRepo;
 import com.servlet.customer.service.CustomerService;
+import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
@@ -27,6 +28,9 @@ public class CustomerHandler implements CustomerService {
 
     @Autowired
     private CustomerRepo repo;
+
+    @Autowired
+    private HistoryAppsService historyAppsService;
 
     @Override
     public List<ListCustomerData> getListAll(Long idcompany, Long idbranch) {
@@ -71,6 +75,8 @@ public class CustomerHandler implements CustomerService {
             customer.setCreateddate(ts);
             customer.setCreatedby(iduser);
             idsave = repo.saveAndFlush(customer).getId();
+            historyAppsService.saveHistory(idcompany,idbranch,iduser,"ADD","Customer",customer.toString(),"","",ts);
+
         }catch (Exception e){
             // TODO: handle exception
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
@@ -90,8 +96,7 @@ public class CustomerHandler implements CustomerService {
         Timestamp ts = new Timestamp(new Date().getTime());
         try{
             Customer customer = repo.getById(id);
-//            customer.setIdcompany(idcompany);
-//            customer.setIdbranch(idbranch);
+            String databefore = customer.toString();
             customer.setNama(body.getNama());
             customer.setAlias(body.getAlias());
             customer.setBank(body.getBank());
@@ -101,6 +106,8 @@ public class CustomerHandler implements CustomerService {
             customer.setModifieddate(ts);
             customer.setModifiedby(iduser);
             idsave = repo.saveAndFlush(customer).getId();
+            String dataafter = customer.toString();
+            historyAppsService.saveHistory(idcompany,idbranch,iduser,"EDIT","Customer","",dataafter,databefore,ts);
         }catch (Exception e){
             // TODO: handle exception
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
@@ -124,6 +131,7 @@ public class CustomerHandler implements CustomerService {
             customer.setDeletedate(ts);
             customer.setDeleteby(iduser);
             idsave = repo.saveAndFlush(customer).getId();
+            historyAppsService.saveHistory(customer.getIdcompany(),customer.getIdbranch(),iduser,"DELETE","Customer",customer.toString(),"","",ts);
         }catch (Exception e){
             // TODO: handle exception
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");

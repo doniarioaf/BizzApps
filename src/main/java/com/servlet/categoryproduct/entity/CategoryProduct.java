@@ -1,25 +1,22 @@
-package com.servlet.customer.entity;
+package com.servlet.categoryproduct.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "m_customer", schema = "public")
-public class Customer implements Serializable {
+@Table(name = "m_category_product", schema = "public")
+public class CategoryProduct implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO, generator="m_customer_id_seq")
+    @GeneratedValue(strategy= GenerationType.AUTO, generator="m_category_product_id_seq")
     private Long id;
     private Long idcompany;
     private Long idbranch;
     private String nama;
-    private String alias;
-    private String bank;
-    private String banknumber;
-    private String accountbankname;
-    private String address;
+    private String size;
+    private String weight;
     private boolean isdelete;
     private Long createdby;
     private Timestamp createddate;
@@ -32,27 +29,18 @@ public class Customer implements Serializable {
      * jika ada penambahan, tambahkan pada toString. wajib!!
      * @return
      */
+
     @Override
     public String toString() {
-        return "Customer{" +
+        return "CategoryProduct{" +
                 "id=" + id +
                 ", idcompany=" + idcompany +
                 ", idbranch=" + idbranch +
                 ", nama='" + nama + '\'' +
-                ", alias='" + alias + '\'' +
-                ", bank='" + bank + '\'' +
-                ", banknumber='" + banknumber + '\'' +
-                ", accountbankname='" + accountbankname + '\'' +
-                ", address='" + address + '\'' +
+                ", size='" + size + '\'' +
+                ", weight='" + weight + '\'' +
+                ", isdelete=" + isdelete +
                 '}';
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public Long getId() {
@@ -87,36 +75,20 @@ public class Customer implements Serializable {
         this.nama = nama;
     }
 
-    public String getAlias() {
-        return alias;
+    public String getSize() {
+        return size;
     }
 
-    public void setAlias(String alias) {
-        this.alias = alias;
+    public void setSize(String size) {
+        this.size = size;
     }
 
-    public String getBank() {
-        return bank;
+    public String getWeight() {
+        return weight;
     }
 
-    public void setBank(String bank) {
-        this.bank = bank;
-    }
-
-    public String getBanknumber() {
-        return banknumber;
-    }
-
-    public void setBanknumber(String banknumber) {
-        this.banknumber = banknumber;
-    }
-
-    public String getAccountbankname() {
-        return accountbankname;
-    }
-
-    public void setAccountbankname(String accountbankname) {
-        this.accountbankname = accountbankname;
+    public void setWeight(String weight) {
+        this.weight = weight;
     }
 
     public boolean isIsdelete() {
@@ -174,6 +146,4 @@ public class Customer implements Serializable {
     public void setDeletedate(Timestamp deletedate) {
         this.deletedate = deletedate;
     }
-
-
 }
