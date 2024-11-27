@@ -45,5 +45,9 @@ public class ConstansPermission {
 	public static final String CREATE_PRODUCT = "CREATE_PRODUCT";
 	public static final String EDIT_PRODUCT = "EDIT_PRODUCT";
 	public static final String DELETE_PRODUCT = "DELETE_PRODUCT";
+	public static final String READ_VENDOR = "READ_VENDOR";
+	public static final String CREATE_VENDOR = "CREATE_VENDOR";
+	public static final String EDIT_VENDOR = "EDIT_VENDOR";
+	public static final String DELETE_VENDOR = "DELETE_VENDOR";
 	
 }
