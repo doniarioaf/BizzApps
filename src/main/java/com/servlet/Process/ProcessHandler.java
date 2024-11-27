@@ -8,6 +8,8 @@ import com.servlet.customer.entity.BodyCustomer;
 import com.servlet.customer.service.CustomerService;
 import com.servlet.parameterclient.entity.BodyParameterClient;
 import com.servlet.parameterclient.service.ParameterClientService;
+import com.servlet.product.entity.BodyProduct;
+import com.servlet.product.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +73,8 @@ public class ProcessHandler implements ProcessService{
 
 	@Autowired
 	CustomerService customerService;
+	@Autowired
+	ProductService productService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -275,6 +279,41 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_PRODUCT)) {
+				BodyProduct param = (BodyProduct) data;
+				ReturnData valReturn = productService.save(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_PRODUCT)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyProduct body  = (BodyProduct) param.get("body");
+				ReturnData valReturn = productService.update(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId(),body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_CUSTOMER)) {
+				long id = (long) data;
+				ReturnData valReturn = productService.delete(id,auth.getId());
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 			}
 
 			else if(codepermission.equals(ConstansPermission.LOGOUT)) {
@@ -408,6 +447,15 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
 					val.setData(customerService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
+				}
+			}else if(codepermission.equals(ConstansPermission.READ_PRODUCT)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(productService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(productService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}
 			else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {}
