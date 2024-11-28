@@ -61,6 +61,7 @@ public class ConstansPermission {
 	public static final String CREATE_MAPPINGSTOCK = "CREATE_MAPPINGSTOCK";
 	public static final String EDIT_MAPPINGSTOCK = "EDIT_MAPPINGSTOCK";
 	public static final String DELETE_MAPPINGSTOCK = "DELETE_MAPPINGSTOCK";
+	public static final String READ_PRICELIST = "READ_PRICELIST";
 
 	
 }

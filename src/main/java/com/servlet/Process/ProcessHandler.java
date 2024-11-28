@@ -14,6 +14,7 @@ import com.servlet.mappingstock.entity.BodyMappingStock;
 import com.servlet.mappingstock.service.MappingStockService;
 import com.servlet.parameterclient.entity.BodyParameterClient;
 import com.servlet.parameterclient.service.ParameterClientService;
+import com.servlet.pricelist.service.PriceService;
 import com.servlet.product.entity.BodyProduct;
 import com.servlet.product.service.ProductService;
 import com.servlet.vendor.entity.BodyVendor;
@@ -91,6 +92,8 @@ public class ProcessHandler implements ProcessService{
 	CategoryProductService categoryProductService;
 	@Autowired
 	MappingStockService mappingStockService;
+	@Autowired
+	PriceService priceService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -649,6 +652,19 @@ public class ProcessHandler implements ProcessService{
 				String type = (String) param.get("type");
 				if(type.equals("ALL")) {
 					val.setData(mappingStockService.getListAll(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(mappingStockService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(mappingStockService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}
+			}else if(codepermission.equals(ConstansPermission.READ_PRICELIST)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					Long from = (Long) param.get("from");
+					Long to = (Long) param.get("to");
+					val.setData(priceService.getListAll(auth.getIdcompany(), auth.getIdbranch(),from,to));
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
 					val.setData(mappingStockService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
