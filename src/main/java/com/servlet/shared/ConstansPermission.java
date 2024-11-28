@@ -57,5 +57,10 @@ public class ConstansPermission {
 	public static final String CREATE_CATEGORYPRODUCT = "CREATE_CATEGORYPRODUCT";
 	public static final String EDIT_CATEGORYPRODUCT = "EDIT_CATEGORYPRODUCT";
 	public static final String DELETE_CATEGORYPRODUCT = "DELETE_CATEGORYPRODUCT";
+	public static final String READ_MAPPINGSTOCK = "READ_MAPPINGSTOCK";
+	public static final String CREATE_MAPPINGSTOCK = "CREATE_MAPPINGSTOCK";
+	public static final String EDIT_MAPPINGSTOCK = "EDIT_MAPPINGSTOCK";
+	public static final String DELETE_MAPPINGSTOCK = "DELETE_MAPPINGSTOCK";
+
 	
 }
