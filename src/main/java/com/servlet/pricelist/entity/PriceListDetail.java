@@ -11,8 +11,6 @@ public class PriceListDetail {
     private Timestamp createddate;
     private String modifiedbyName;
     private Timestamp modifieddate;
-    private String deletebyName;
-    private Timestamp deletedate;
     private List<PriceListItemData> items;
 
     public Long getId() {
@@ -61,22 +59,6 @@ public class PriceListDetail {
 
     public void setModifieddate(Timestamp modifieddate) {
         this.modifieddate = modifieddate;
-    }
-
-    public String getDeletebyName() {
-        return deletebyName;
-    }
-
-    public void setDeletebyName(String deletebyName) {
-        this.deletebyName = deletebyName;
-    }
-
-    public Timestamp getDeletedate() {
-        return deletedate;
-    }
-
-    public void setDeletedate(Timestamp deletedate) {
-        this.deletedate = deletedate;
     }
 
     public List<PriceListItemData> getItems() {

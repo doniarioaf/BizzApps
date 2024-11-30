@@ -1,15 +1,13 @@
 package com.servlet.pricelist.entity;
 
-public class PriceListItemData {
+public class BodyPriceItem {
     private long categoryproductid;
-    private String categoryproductidName;
     private Double amount;
 
     @Override
     public String toString() {
-        return "PriceListItemData{" +
+        return "BodyPriceItem{" +
                 "categoryproductid=" + categoryproductid +
-                ", categoryproductidName='" + categoryproductidName + '\'' +
                 ", amount=" + amount +
                 '}';
     }
@@ -20,14 +18,6 @@ public class PriceListItemData {
 
     public void setCategoryproductid(long categoryproductid) {
         this.categoryproductid = categoryproductid;
-    }
-
-    public String getCategoryproductidName() {
-        return categoryproductidName;
-    }
-
-    public void setCategoryproductidName(String categoryproductidName) {
-        this.categoryproductidName = categoryproductidName;
     }
 
     public Double getAmount() {

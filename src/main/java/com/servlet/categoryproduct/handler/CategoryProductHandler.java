@@ -1,9 +1,6 @@
 package com.servlet.categoryproduct.handler;
 
-import com.servlet.categoryproduct.entity.BodyCategoryProduct;
-import com.servlet.categoryproduct.entity.CategoryProduct;
-import com.servlet.categoryproduct.entity.CategoryProductDetail;
-import com.servlet.categoryproduct.entity.CategoryProductList;
+import com.servlet.categoryproduct.entity.*;
 import com.servlet.categoryproduct.mapper.QueryDataDetail;
 import com.servlet.categoryproduct.mapper.QueryDataList;
 import com.servlet.categoryproduct.repo.CategoryProductRepo;
@@ -144,5 +141,13 @@ public class CategoryProductHandler implements CategoryProductService {
         data.setSuccess(validations.size() > 0?false:true);
         data.setValidations(validations);
         return data;
+    }
+
+    @Override
+    public List<CategoryProductList> getDataForTemplate(Long idcompany, Long idbranch, ParamTemplate param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataList().schema());
+        sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false ");
+        final Object[] queryParameters = new Object[] {idcompany};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataList(), queryParameters);
     }
 }

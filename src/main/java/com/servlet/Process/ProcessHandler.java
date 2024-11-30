@@ -14,6 +14,7 @@ import com.servlet.mappingstock.entity.BodyMappingStock;
 import com.servlet.mappingstock.service.MappingStockService;
 import com.servlet.parameterclient.entity.BodyParameterClient;
 import com.servlet.parameterclient.service.ParameterClientService;
+import com.servlet.pricelist.entity.BodyPriceList;
 import com.servlet.pricelist.service.PriceService;
 import com.servlet.product.entity.BodyProduct;
 import com.servlet.product.service.ProductService;
@@ -479,6 +480,43 @@ public class ProcessHandler implements ProcessService{
 				}
 			}
 
+			else if(codepermission.equals(ConstansPermission.CREATE_PRICELIST)) {
+				BodyPriceList param = (BodyPriceList) data;
+				ReturnData valReturn = priceService.save(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_PRICELIST)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyPriceList body  = (BodyPriceList) param.get("body");
+				ReturnData valReturn = priceService.update(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId(),body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_PRICELIST)) {
+				long id = (long) data;
+				ReturnData valReturn = priceService.delete(id,auth.getId());
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}
+
 			else if(codepermission.equals(ConstansPermission.LOGOUT)) {
 				ReturnData valReturn = userAppsService.logout(auth.getId());
 				val.setSuccess(valReturn.isSuccess());
@@ -667,9 +705,9 @@ public class ProcessHandler implements ProcessService{
 					val.setData(priceService.getListAll(auth.getIdcompany(), auth.getIdbranch(),from,to));
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
-					val.setData(mappingStockService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(priceService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("TEMPLATE")) {
-					val.setData(mappingStockService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(priceService.getTemplateData(auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}
 			else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {}

@@ -58,5 +58,6 @@ public class ConstansCodeMessage {
 	
 	public static final String VALIDASI_PARAMETERMANGGALA_PARAMNAME_EXIST = "validation.parametermanggala.paramname.exist";
 	public static final String CATEGORYPRODUCT_ALREADY_MAPPING = "categoryproduct.already.mapping";
+	public static final String PRICE_ALREADY_GENERATE = "price.already.generate";
 	
 }

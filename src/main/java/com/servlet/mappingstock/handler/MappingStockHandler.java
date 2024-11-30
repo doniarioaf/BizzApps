@@ -148,7 +148,7 @@ public class MappingStockHandler implements MappingStockService {
     @Override
     public MappingStockTemplateData getTemplate(Long idcompany, Long idbranch) {
         MappingStockTemplateData data = new MappingStockTemplateData();
-        data.setCategoryProductOpt(categoryProductService.getListAll(idcompany,idbranch));
+        data.setCategoryProductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,null));
         return data;
     }
 }
