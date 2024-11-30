@@ -37,6 +37,14 @@ public class VendorAPI {
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
+    @GetMapping("/template")
+    ResponseEntity<Response> getTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "TEMPLATE");
+        Response response = securityService.response(ConstansPermission.READ_VENDOR,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
     @PostMapping
     ResponseEntity<Response> createObject(@RequestBody @Validated BodyVendor body, @RequestHeader(ConstansKey.AUTH) String authorization) {
         Response response = securityService.response(ConstansPermission.CREATE_VENDOR,body,authorization);

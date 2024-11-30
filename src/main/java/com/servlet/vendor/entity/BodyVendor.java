@@ -7,6 +7,15 @@ public class BodyVendor {
     private String bank;
     private String accountnobank;
     private String accountnamebank;
+    private Long[] idcategoryproduct;
+
+    public Long[] getIdcategoryproduct() {
+        return idcategoryproduct;
+    }
+
+    public void setIdcategoryproduct(Long[] idcategoryproduct) {
+        this.idcategoryproduct = idcategoryproduct;
+    }
 
     public String getNama() {
         return nama;

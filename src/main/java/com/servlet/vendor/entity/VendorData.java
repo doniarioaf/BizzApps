@@ -1,6 +1,7 @@
 package com.servlet.vendor.entity;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 public class VendorData {
     private Long id;
@@ -16,6 +17,15 @@ public class VendorData {
     private Timestamp modifieddate;
     private String deletebyName;
     private Timestamp deletedate;
+    private List<VendorCategoryProductNotIncludeData> items;
+
+    public List<VendorCategoryProductNotIncludeData> getItems() {
+        return items;
+    }
+
+    public void setItems(List<VendorCategoryProductNotIncludeData> items) {
+        this.items = items;
+    }
 
     public Long getId() {
         return id;

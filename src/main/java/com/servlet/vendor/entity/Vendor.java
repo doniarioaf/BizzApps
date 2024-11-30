@@ -28,6 +28,21 @@ public class Vendor implements Serializable {
     private Long deleteby;
     private Timestamp deletedate;
 
+    @Override
+    public String toString() {
+        return "Vendor{" +
+                "id=" + id +
+                ", idcompany=" + idcompany +
+                ", idbranch=" + idbranch +
+                ", nama='" + nama + '\'' +
+                ", alias='" + alias + '\'' +
+                ", type='" + type + '\'' +
+                ", bank='" + bank + '\'' +
+                ", accountnobank='" + accountnobank + '\'' +
+                ", accountnamebank='" + accountnamebank + '\'' +
+                '}';
+    }
+
     public Long getId() {
         return id;
     }
