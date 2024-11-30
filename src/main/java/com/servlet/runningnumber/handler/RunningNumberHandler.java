@@ -17,11 +17,11 @@ public class RunningNumberHandler implements RunningNumberService{
 	private RunningNumberRepo repository;
 	
 	@Override
-	public String getDocNumber(Long idcompany, String code,Timestamp currDate) {
+	public String getDocNumber(Long idcompany,Long idbranch, String code,Timestamp currDate) {
 		// TODO Auto-generated method stub
 		RunningNumberPK pk = new RunningNumberPK();
 		pk.setIdcompany(idcompany);
-		pk.setIdbranch(1); //dibikin default 1, karena tidak terpakai
+		pk.setIdbranch(idbranch);
 		pk.setCode(code);
 		
 		Optional<RunningNumber> tableOpt = repository.findById(pk);
@@ -31,18 +31,15 @@ public class RunningNumberHandler implements RunningNumberService{
 			int runningNumber = table.getValue().intValue();
 			table.setValue(table.getValue().longValue() + 1);
 			repository.saveAndFlush(table);
-			return generateDocNumber(code,runningNumber,currDate);
+			return generateDocNumber(code,idbranch,runningNumber,currDate);
 			}catch (Exception e) {
 				return "";
 			}
-			
-			
-			
 		}
 		return "";
 	}
 	
-	private String generateDocNumber(String code,int number,Timestamp currDate) {
+	private String generateDocNumber(String code,Long idbranch,int number,Timestamp currDate) {
 		String runningNumber = "";
 		if(number > 0 && number < 10) {
 			runningNumber = "00000"+number;
@@ -62,18 +59,18 @@ public class RunningNumberHandler implements RunningNumberService{
 		
 		String valNumber = "";
 		if(!runningNumber.equals("")) {
-			String s = new SimpleDateFormat("yyMMdd").format(currDate);
-			valNumber = code+"-"+runningNumber;//+"-"+s;
+//			String s = new SimpleDateFormat("yyMMdd").format(currDate);
+			valNumber = code+"-"+idbranch+runningNumber;//+"-"+s;
 		}
 		return valNumber;
 	}
 
 	@Override
-	public String rollBackDocNumber(Long idcompany, String code) {
+	public String rollBackDocNumber(Long idcompany,Long idbranch, String code) {
 		// TODO Auto-generated method stub
 		RunningNumberPK pk = new RunningNumberPK();
 		pk.setIdcompany(idcompany);
-		pk.setIdbranch(1);
+		pk.setIdbranch(idbranch);
 		pk.setCode(code);
 		
 		Optional<RunningNumber> tableOpt = repository.findById(pk);
