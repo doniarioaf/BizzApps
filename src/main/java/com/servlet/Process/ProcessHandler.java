@@ -18,6 +18,7 @@ import com.servlet.pricelist.entity.BodyPriceList;
 import com.servlet.pricelist.service.PriceService;
 import com.servlet.product.entity.BodyProduct;
 import com.servlet.product.service.ProductService;
+import com.servlet.purchasereceive.service.PurchaseReceiveService;
 import com.servlet.vendor.entity.BodyVendor;
 import com.servlet.vendor.service.VendorService;
 import org.slf4j.Logger;
@@ -95,6 +96,8 @@ public class ProcessHandler implements ProcessService{
 	MappingStockService mappingStockService;
 	@Autowired
 	PriceService priceService;
+	@Autowired
+	PurchaseReceiveService purchaseReceiveService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -710,6 +713,23 @@ public class ProcessHandler implements ProcessService{
 					val.setData(priceService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("TEMPLATE")) {
 					val.setData(priceService.getTemplateData(auth.getIdcompany(), auth.getIdbranch()));
+				}
+			}else if(codepermission.equals(ConstansPermission.READ_PURCHASERECEIVE)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					Long from = (Long) param.get("from");
+					Long to = (Long) param.get("to");
+					val.setData(purchaseReceiveService.getListAll(auth.getIdcompany(), auth.getIdbranch(),from,to));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(priceService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
+					Long pricedate = (Long) param.get("pricedate");
+					val.setData(purchaseReceiveService.getTemplate(auth.getIdcompany(), auth.getIdbranch(),pricedate));
+				}else if(type.equals("SEARCHPRICELIST")) {
+					Long pricedate = (Long) param.get("pricedate");
+					val.setData(priceService.getDataPriceByDate(auth.getIdcompany(), auth.getIdbranch(),pricedate));
 				}
 			}
 			else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {}

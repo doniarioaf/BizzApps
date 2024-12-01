@@ -189,6 +189,31 @@ public class PriceHandler implements PriceService {
         return null;
     }
 
+    @Override
+    public PriceItemsDataForTemplate getDataPriceByDate(Long idcompany, Long idbranch, Long priceDate) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataList().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+
+        if(priceDate != null && priceDate.longValue() != 0){
+            Date dt = new Date(priceDate.longValue());
+            sqlBuilder.append(" and data.pricedate = '"+dt.toString()+"'");
+            final Object[] queryParameters = new Object[] {idcompany,idbranch};
+            List<PriceListData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataList(), queryParameters);
+            if(list != null && list.size() > 0){
+                PriceListData data = list.get(0);
+
+                PriceItemsDataForTemplate val = new PriceItemsDataForTemplate();
+                val.setId(data.getId());
+                val.setPricedate(data.getPricedate());
+                val.setItems(getPriceListItems(data.getId()));
+
+                return val;
+            }
+        }
+        return null;
+
+    }
+
     private List<PriceListItemData> getPriceListItems(Long idpricelist){
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataPriceItem().schema());
         sqlBuilder.append(" where data.pricelistid = ? ");

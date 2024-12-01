@@ -9,6 +9,7 @@ import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 import com.servlet.vendor.entity.*;
+import com.servlet.vendor.mapper.QueryListForDropdownList;
 import com.servlet.vendor.mapper.QueryListVendor;
 import com.servlet.vendor.mapper.QueryVendorCategoryProductNotInclude;
 import com.servlet.vendor.mapper.QueryVendorDetail;
@@ -193,6 +194,14 @@ public class VendorHandler implements VendorService {
         VendorTemplate template = new VendorTemplate();
         template.setCategoryProductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,null));
         return template;
+    }
+
+    @Override
+    public List<VendorDataForTemplate> getListDropdown(Long idcompany, Long idbranch) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryListForDropdownList().schema());
+        sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false ");
+        final Object[] queryParameters = new Object[] {idcompany};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryListForDropdownList(), queryParameters);
     }
 
     private HashMap<Object,Object> setItems(Long[] items, Long idvendor){
