@@ -12,6 +12,7 @@ import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.vendor.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,9 @@ public class CategoryProductHandler implements CategoryProductService {
 
     @Autowired
     private HistoryAppsService historyAppsService;
+
+    @Autowired
+    private VendorService vendorService;
     protected final String namaMenu = "CategoryProduct";
 
     /**
@@ -68,7 +72,9 @@ public class CategoryProductHandler implements CategoryProductService {
             table.setIdbranch(idbranch);
             table.setNama(body.getNama());
             table.setSize(body.getSize());
-            table.setWeight(body.getWeight());
+            table.setWeightfromingram(body.getWeightfromingram());
+            table.setWeighttoingram(body.getWeighttoingram());
+            table.setJumlahitemsperkoli(body.getJumlahitemsperkoli());
             table.setIsdelete(false);
             table.setCreateddate(ts);
             table.setCreatedby(iduser);
@@ -98,7 +104,9 @@ public class CategoryProductHandler implements CategoryProductService {
             String databefore = table.toString();
             table.setNama(body.getNama());
             table.setSize(body.getSize());
-            table.setWeight(body.getWeight());
+            table.setWeightfromingram(body.getWeightfromingram());
+            table.setWeighttoingram(body.getWeighttoingram());
+            table.setJumlahitemsperkoli(body.getJumlahitemsperkoli());
             table.setModifieddate(ts);
             table.setModifiedby(iduser);
             idsave = repo.saveAndFlush(table).getId();
@@ -147,6 +155,13 @@ public class CategoryProductHandler implements CategoryProductService {
     public List<CategoryProductList> getDataForTemplate(Long idcompany, Long idbranch, ParamTemplate param) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataList().schema());
         sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false ");
+        if(param != null){
+            if(param.getMenu() != null){
+                if(param.getMenu().equals("PURCHASE_RECEIVE")){
+                    sqlBuilder.append(" and data.id not in ("+vendorService.queryIdVendorCategoryProductNotInclud(idcompany,idbranch,param.getIdvendor())+") ");
+                }
+            }
+        }
         final Object[] queryParameters = new Object[] {idcompany};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataList(), queryParameters);
     }

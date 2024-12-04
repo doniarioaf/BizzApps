@@ -15,6 +15,7 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.id as id, data.nama as nama, data.alias as alias,data.type as type, ");
         sqlBuilder.append("data.bank as bank, data.accountnobank as accountnobank, data.accountnamebank as accountnamebank, ");
+        sqlBuilder.append("data.pricebox as pricebox, data.priceongkos as priceongkos, ");
         sqlBuilder.append("data.createddate as createddate, data.modifieddate as modifieddate, data.deletedate as deletedate, ");
         sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama, userdelete.nama as deletenama ");
         sqlBuilder.append("from m_vendor as data ");
@@ -44,6 +45,8 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         final String createdname = rs.getString("createdname");
         final String modifiednama = rs.getString("modifiednama");
         final String deletenama = rs.getString("deletenama");
+        final Double pricebox = rs.getDouble("pricebox");
+        final Double priceongkos = rs.getDouble("priceongkos");
 
         VendorData data = new VendorData();
         data.setId(id);
@@ -59,6 +62,8 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         data.setCreatedbyName(createdname);
         data.setModifiedbyName(modifiednama);
         data.setDeletebyName(deletenama);
+        data.setPricebox(pricebox);
+        data.setPriceongkos(priceongkos);
         return data;
     }
 }

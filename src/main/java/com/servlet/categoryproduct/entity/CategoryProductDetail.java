@@ -6,11 +6,37 @@ public class CategoryProductDetail {
     private Long id;
     private String nama;
     private String size;
-    private String weight;
+    private Integer weightfromingram;
+    private Integer weighttoingram;
+    private Integer jumlahitemsperkoli;
     private String createdbyName;
     private Timestamp createddate;
     private String modifiedbyName;
     private Timestamp modifieddate;
+
+    public Integer getWeightfromingram() {
+        return weightfromingram;
+    }
+
+    public void setWeightfromingram(Integer weightfromingram) {
+        this.weightfromingram = weightfromingram;
+    }
+
+    public Integer getWeighttoingram() {
+        return weighttoingram;
+    }
+
+    public void setWeighttoingram(Integer weighttoingram) {
+        this.weighttoingram = weighttoingram;
+    }
+
+    public Integer getJumlahitemsperkoli() {
+        return jumlahitemsperkoli;
+    }
+
+    public void setJumlahitemsperkoli(Integer jumlahitemsperkoli) {
+        this.jumlahitemsperkoli = jumlahitemsperkoli;
+    }
 
     public Long getId() {
         return id;
@@ -34,14 +60,6 @@ public class CategoryProductDetail {
 
     public void setSize(String size) {
         this.size = size;
-    }
-
-    public String getWeight() {
-        return weight;
-    }
-
-    public void setWeight(String weight) {
-        this.weight = weight;
     }
 
     public String getCreatedbyName() {

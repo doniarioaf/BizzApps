@@ -8,6 +8,24 @@ public class BodyVendor {
     private String accountnobank;
     private String accountnamebank;
     private Long[] idcategoryproduct;
+    private Double pricebox;
+    private Double priceongkos;
+
+    public Double getPricebox() {
+        return pricebox;
+    }
+
+    public void setPricebox(Double pricebox) {
+        this.pricebox = pricebox;
+    }
+
+    public Double getPriceongkos() {
+        return priceongkos;
+    }
+
+    public void setPriceongkos(Double priceongkos) {
+        this.priceongkos = priceongkos;
+    }
 
     public Long[] getIdcategoryproduct() {
         return idcategoryproduct;

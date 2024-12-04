@@ -13,7 +13,8 @@ public class QueryDataDetail implements RowMapper<CategoryProductDetail> {
     public QueryDataDetail() {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
-        sqlBuilder.append("data.id as id, data.nama as nama, data.size as size,data.weight as weight, ");
+        sqlBuilder.append("data.id as id, data.nama as nama, data.size as size,data.weightfromingram as weightfromingram, ");
+        sqlBuilder.append("data.weighttoingram as weighttoingram, data.jumlahitemsperkoli as jumlahitemsperkoli, ");
         sqlBuilder.append("data.createddate as createddate, data.modifieddate as modifieddate, ");
         sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama ");
         sqlBuilder.append("from m_category_product as data ");
@@ -32,7 +33,9 @@ public class QueryDataDetail implements RowMapper<CategoryProductDetail> {
         final Long id = rs.getLong("id");
         final String nama = rs.getString("nama");
         final String size = rs.getString("size");
-        final String weight = rs.getString("weight");
+        final Integer weightfromingram = rs.getInt("weightfromingram");
+        final Integer weighttoingram = rs.getInt("weighttoingram");
+        final Integer jumlahitemsperkoli = rs.getInt("jumlahitemsperkoli");
         final Timestamp createddate = rs.getTimestamp("createddate");
         final Timestamp modifieddate = rs.getTimestamp("modifieddate");
         final String createdname = rs.getString("createdname");
@@ -42,7 +45,9 @@ public class QueryDataDetail implements RowMapper<CategoryProductDetail> {
         data.setId(id);
         data.setNama(nama);
         data.setSize(size);
-        data.setWeight(weight);
+        data.setWeightfromingram(weightfromingram);
+        data.setWeighttoingram(weighttoingram);
+        data.setJumlahitemsperkoli(jumlahitemsperkoli);
         data.setCreateddate(createddate);
         data.setModifieddate(modifieddate);
         data.setCreatedbyName(createdname);

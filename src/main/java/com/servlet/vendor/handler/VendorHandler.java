@@ -85,6 +85,8 @@ public class VendorHandler implements VendorService {
             vendor.setBank(body.getBank());
             vendor.setAccountnobank(body.getAccountnobank());
             vendor.setAccountnamebank(body.getAccountnamebank());
+            vendor.setPricebox(body.getPricebox());
+            vendor.setPriceongkos(body.getPriceongkos());
             vendor.setIsdelete(false);
             vendor.setCreateddate(ts);
             vendor.setCreatedby(iduser);
@@ -128,6 +130,8 @@ public class VendorHandler implements VendorService {
             vendor.setBank(body.getBank());
             vendor.setAccountnobank(body.getAccountnobank());
             vendor.setAccountnamebank(body.getAccountnamebank());
+            vendor.setPricebox(body.getPricebox());
+            vendor.setPriceongkos(body.getPriceongkos());
             vendor.setModifieddate(ts);
             vendor.setModifiedby(iduser);
             idsave = repo.saveAndFlush(vendor).getId();
@@ -202,6 +206,13 @@ public class VendorHandler implements VendorService {
         sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false ");
         final Object[] queryParameters = new Object[] {idcompany};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryListForDropdownList(), queryParameters);
+    }
+
+    @Override
+    public String queryIdVendorCategoryProductNotInclud(Long idcompany, Long idbranch,Long idvendor) {
+        String query = "select idcategoryproduct from vendor_categoryproduct_not_include as vc ";
+        query += " where vc.idvendor = "+idvendor;
+        return query;
     }
 
     private HashMap<Object,Object> setItems(Long[] items, Long idvendor){

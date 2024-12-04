@@ -17,6 +17,25 @@ public class VendorData {
     private Timestamp modifieddate;
     private String deletebyName;
     private Timestamp deletedate;
+    private Double pricebox;
+    private Double priceongkos;
+
+    public Double getPricebox() {
+        return pricebox;
+    }
+
+    public void setPricebox(Double pricebox) {
+        this.pricebox = pricebox;
+    }
+
+    public Double getPriceongkos() {
+        return priceongkos;
+    }
+
+    public void setPriceongkos(Double priceongkos) {
+        this.priceongkos = priceongkos;
+    }
+
     private List<VendorCategoryProductNotIncludeData> items;
 
     public List<VendorCategoryProductNotIncludeData> getItems() {

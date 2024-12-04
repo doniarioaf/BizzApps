@@ -1,5 +1,6 @@
 package com.servlet.purchasereceive.api;
 
+import com.servlet.purchasereceive.entity.BodyPurchaseReceive;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConstansPermission;
@@ -7,6 +8,7 @@ import com.servlet.shared.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -29,20 +31,25 @@ public class PurchaseReceiveAPI {
     }
 
     @GetMapping("/template")
-    ResponseEntity<Response> getTemplate(@RequestParam("pricedate") Long pricedate,@RequestHeader(ConstansKey.AUTH) String authorization) {
+    ResponseEntity<Response> getTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
         HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("type", "TEMPLATE");
-        param.put("pricedate", pricedate);
         Response response = securityService.response(ConstansPermission.READ_PURCHASERECEIVE,param,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
-    @GetMapping("/searchpricelist")
-    ResponseEntity<Response> getPriceList(@RequestParam("pricedate") Long pricedate,@RequestHeader(ConstansKey.AUTH) String authorization) {
+    @GetMapping("/searchvendor")
+    ResponseEntity<Response> getPriceList(@RequestParam("idvendor") Long idvendor,@RequestHeader(ConstansKey.AUTH) String authorization) {
         HashMap<String, Object> param = new HashMap<String, Object>();
-        param.put("type", "SEARCHPRICELIST");
-        param.put("pricedate", pricedate);
+        param.put("type", "SEARCHBYVENDOR");
+        param.put("idvendor", idvendor);
         Response response = securityService.response(ConstansPermission.READ_PURCHASERECEIVE,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @PostMapping
+    ResponseEntity<Response> createObject(@RequestBody @Validated BodyPurchaseReceive body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+        Response response = securityService.response(ConstansPermission.CREATE_PURCHASERECEIVE,body,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 

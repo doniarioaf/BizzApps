@@ -30,6 +30,22 @@ public class PurchaseReceive implements Serializable {
     private Timestamp modifieddate;
     private Long deleteby;
     private Timestamp deletedate;
+    private Double totalprice;
+
+    /**
+     * isdefaultvaluesetor
+     * jika true, nilainya mengikuti totalprice,
+     * jika false, nilai tergantung inputan
+     */
+    private boolean isdefaultvaluesetor;
+    private Double setor;
+
+    /**
+     * iddeposit
+     * jika penambahan dilakukan ketika submit pada menu purchasereceive
+     * jika tidak value null
+     */
+    private Long iddeposit;
 
     @Override
     public String toString() {
@@ -43,9 +59,44 @@ public class PurchaseReceive implements Serializable {
                 ", bank='" + bank + '\'' +
                 ", accountnobank='" + accountnobank + '\'' +
                 ", accountnamebank='" + accountnamebank + '\'' +
+                ", totalprice='" + totalprice + '\'' +
+                ", isdefaultvaluesetor='" + isdefaultvaluesetor + '\'' +
+                ", setor='" + setor + '\'' +
+                ", iddeposit='" + iddeposit + '\'' +
                 '}';
     }
 
+    public boolean isIsdefaultvaluesetor() {
+        return isdefaultvaluesetor;
+    }
+
+    public void setIsdefaultvaluesetor(boolean isdefaultvaluesetor) {
+        this.isdefaultvaluesetor = isdefaultvaluesetor;
+    }
+
+    public Double getSetor() {
+        return setor;
+    }
+
+    public void setSetor(Double setor) {
+        this.setor = setor;
+    }
+
+    public Long getIddeposit() {
+        return iddeposit;
+    }
+
+    public void setIddeposit(Long iddeposit) {
+        this.iddeposit = iddeposit;
+    }
+
+    public Double getTotalprice() {
+        return totalprice;
+    }
+
+    public void setTotalprice(Double totalprice) {
+        this.totalprice = totalprice;
+    }
     public Long getId() {
         return id;
     }

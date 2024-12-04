@@ -59,5 +59,7 @@ public class ConstansCodeMessage {
 	public static final String VALIDASI_PARAMETERMANGGALA_PARAMNAME_EXIST = "validation.parametermanggala.paramname.exist";
 	public static final String CATEGORYPRODUCT_ALREADY_MAPPING = "categoryproduct.already.mapping";
 	public static final String PRICE_ALREADY_GENERATE = "price.already.generate";
-	
+	public static final String VALIDASI_GENERATE_DOC_NUMBER = "validation.generate.doc.number";
+	public static final String STOCK_NOT_EXIST = "stock.not.exist";
+	public static final String STOCK_NOT_ENOUGH = "stock.not.enough";
 }

@@ -18,6 +18,7 @@ import com.servlet.pricelist.entity.BodyPriceList;
 import com.servlet.pricelist.service.PriceService;
 import com.servlet.product.entity.BodyProduct;
 import com.servlet.product.service.ProductService;
+import com.servlet.purchasereceive.entity.BodyPurchaseReceive;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
 import com.servlet.vendor.entity.BodyVendor;
 import com.servlet.vendor.service.VendorService;
@@ -520,6 +521,19 @@ public class ProcessHandler implements ProcessService{
 				}
 			}
 
+			else if(codepermission.equals(ConstansPermission.CREATE_PURCHASERECEIVE)) {
+				BodyPurchaseReceive param = (BodyPurchaseReceive) data;
+				ReturnData valReturn = purchaseReceiveService.save(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}
+
 			else if(codepermission.equals(ConstansPermission.LOGOUT)) {
 				ReturnData valReturn = userAppsService.logout(auth.getId());
 				val.setSuccess(valReturn.isSuccess());
@@ -725,11 +739,10 @@ public class ProcessHandler implements ProcessService{
 					long id = (long) param.get("id");
 					val.setData(priceService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("TEMPLATE")) {
-					Long pricedate = (Long) param.get("pricedate");
-					val.setData(purchaseReceiveService.getTemplate(auth.getIdcompany(), auth.getIdbranch(),pricedate));
-				}else if(type.equals("SEARCHPRICELIST")) {
-					Long pricedate = (Long) param.get("pricedate");
-					val.setData(priceService.getDataPriceByDate(auth.getIdcompany(), auth.getIdbranch(),pricedate));
+					val.setData(purchaseReceiveService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("SEARCHBYVENDOR")) {
+					Long idvendor = (Long) param.get("idvendor");
+					val.setData(purchaseReceiveService.searchDataByVendor(auth.getIdcompany(), auth.getIdbranch(),idvendor));
 				}
 			}
 			else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {}

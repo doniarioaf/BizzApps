@@ -1,5 +1,7 @@
 package com.servlet.purchasereceive.entity;
 
+import java.sql.Date;
+
 public class BodyPurchaseReceive {
     private Long idvendor;
     private Long transactiondate;
@@ -8,6 +10,61 @@ public class BodyPurchaseReceive {
     private String bank;
     private String accountnobank;
     private String accountnamebank;
+    private Double totalprice;
+    private BodyPurchaseReceiveItems[] items;
+    private BodyPurchaseReceiveCharge[] charges;
+
+    private boolean isdefaultvaluesetor;
+    private Double setor;
+    private Double tambahdeposit;
+
+    public Double getTambahdeposit() {
+        return tambahdeposit;
+    }
+
+    public void setTambahdeposit(Double tambahdeposit) {
+        this.tambahdeposit = tambahdeposit;
+    }
+
+    public boolean isIsdefaultvaluesetor() {
+        return isdefaultvaluesetor;
+    }
+
+    public void setIsdefaultvaluesetor(boolean isdefaultvaluesetor) {
+        this.isdefaultvaluesetor = isdefaultvaluesetor;
+    }
+
+    public Double getSetor() {
+        return setor;
+    }
+
+    public void setSetor(Double setor) {
+        this.setor = setor;
+    }
+
+    public Double getTotalprice() {
+        return totalprice;
+    }
+
+    public void setTotalprice(Double totalprice) {
+        this.totalprice = totalprice;
+    }
+
+    public BodyPurchaseReceiveItems[] getItems() {
+        return items;
+    }
+
+    public void setItems(BodyPurchaseReceiveItems[] items) {
+        this.items = items;
+    }
+
+    public BodyPurchaseReceiveCharge[] getCharges() {
+        return charges;
+    }
+
+    public void setCharges(BodyPurchaseReceiveCharge[] charges) {
+        this.charges = charges;
+    }
 
     public Long getIdvendor() {
         return idvendor;

@@ -4,6 +4,7 @@ import com.servlet.categoryproduct.entity.CategoryProduct;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.mappingstock.entity.*;
+import com.servlet.mappingstock.mapper.QueryDataCategoryProductID;
 import com.servlet.mappingstock.mapper.QueryDataDetail;
 import com.servlet.mappingstock.mapper.QueryDataList;
 import com.servlet.mappingstock.repo.MappingStockRepo;
@@ -150,5 +151,17 @@ public class MappingStockHandler implements MappingStockService {
         MappingStockTemplateData data = new MappingStockTemplateData();
         data.setCategoryProductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,null));
         return data;
+    }
+
+    @Override
+    public MappingStockCategoryID getDetailMapping(Long id, Long idcompany, Long idbranch) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataCategoryProductID().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.categoryproductid = ? ");
+        final Object[] queryParameters = new Object[] {idcompany,id};
+        List<MappingStockCategoryID> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataCategoryProductID(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return null;
     }
 }

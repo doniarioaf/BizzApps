@@ -16,7 +16,14 @@ public class CategoryProduct implements Serializable {
     private Long idbranch;
     private String nama;
     private String size;
-    private String weight;
+    private Integer weightfromingram;
+    private Integer weighttoingram;
+    /**
+     * value jumlahitemsperkoli a/, jumlah udang untuk 1 koli, ini untuk parameter perhitungan report
+     * ex, jika 1 koli = 20 ekor udang, maka disini value nya 20
+     */
+
+    private Integer jumlahitemsperkoli;
     private boolean isdelete;
     private Long createdby;
     private Timestamp createddate;
@@ -38,8 +45,9 @@ public class CategoryProduct implements Serializable {
                 ", idbranch=" + idbranch +
                 ", nama='" + nama + '\'' +
                 ", size='" + size + '\'' +
-                ", weight='" + weight + '\'' +
-                ", isdelete=" + isdelete +
+                ", weightfromingram='" + weightfromingram + '\'' +
+                ", weighttoingram='" + weighttoingram + '\'' +
+                ", jumlahitemsperkoli='" + jumlahitemsperkoli + '\'' +
                 '}';
     }
 
@@ -81,14 +89,6 @@ public class CategoryProduct implements Serializable {
 
     public void setSize(String size) {
         this.size = size;
-    }
-
-    public String getWeight() {
-        return weight;
-    }
-
-    public void setWeight(String weight) {
-        this.weight = weight;
     }
 
     public boolean isIsdelete() {
@@ -145,5 +145,29 @@ public class CategoryProduct implements Serializable {
 
     public void setDeletedate(Timestamp deletedate) {
         this.deletedate = deletedate;
+    }
+
+    public Integer getWeightfromingram() {
+        return weightfromingram;
+    }
+
+    public void setWeightfromingram(Integer weightfromingram) {
+        this.weightfromingram = weightfromingram;
+    }
+
+    public Integer getWeighttoingram() {
+        return weighttoingram;
+    }
+
+    public void setWeighttoingram(Integer weighttoingram) {
+        this.weighttoingram = weighttoingram;
+    }
+
+    public Integer getJumlahitemsperkoli() {
+        return jumlahitemsperkoli;
+    }
+
+    public void setJumlahitemsperkoli(Integer jumlahitemsperkoli) {
+        this.jumlahitemsperkoli = jumlahitemsperkoli;
     }
 }

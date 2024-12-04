@@ -13,4 +13,5 @@ public interface VendorService {
     ReturnData delete(Long id,Long iduser);
     VendorTemplate getTemplate(Long idcompany, Long idbranch);
     List<VendorDataForTemplate> getListDropdown(Long idcompany, Long idbranch);
+    String queryIdVendorCategoryProductNotInclud(Long idcompany, Long idbranch,Long idvendor);
 }

@@ -27,6 +27,8 @@ public class Vendor implements Serializable {
     private Timestamp modifieddate;
     private Long deleteby;
     private Timestamp deletedate;
+    private Double pricebox;
+    private Double priceongkos;
 
     @Override
     public String toString() {
@@ -40,7 +42,25 @@ public class Vendor implements Serializable {
                 ", bank='" + bank + '\'' +
                 ", accountnobank='" + accountnobank + '\'' +
                 ", accountnamebank='" + accountnamebank + '\'' +
+                ", pricebox='" + pricebox + '\'' +
+                ", priceongkos='" + priceongkos + '\'' +
                 '}';
+    }
+
+    public Double getPricebox() {
+        return pricebox;
+    }
+
+    public void setPricebox(Double pricebox) {
+        this.pricebox = pricebox;
+    }
+
+    public Double getPriceongkos() {
+        return priceongkos;
+    }
+
+    public void setPriceongkos(Double priceongkos) {
+        this.priceongkos = priceongkos;
     }
 
     public Long getId() {

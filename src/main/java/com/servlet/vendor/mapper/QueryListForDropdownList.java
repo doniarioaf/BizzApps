@@ -13,7 +13,8 @@ public class QueryListForDropdownList implements RowMapper<VendorDataForTemplate
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.id as id, data.nama as nama, data.alias as alias,data.type as type, ");
-        sqlBuilder.append("data.bank as bank, data.accountnobank as accountnobank, data.accountnamebank as accountnamebank ");
+        sqlBuilder.append("data.bank as bank, data.accountnobank as accountnobank, data.accountnamebank as accountnamebank, ");
+        sqlBuilder.append("data.pricebox as pricebox, data.priceongkos as priceongkos ");
         sqlBuilder.append("from m_vendor as data ");
 
         this.schemaSql = sqlBuilder.toString();
@@ -31,6 +32,8 @@ public class QueryListForDropdownList implements RowMapper<VendorDataForTemplate
         final String bank = rs.getString("bank");
         final String accountnobank = rs.getString("accountnobank");
         final String accountnamebank = rs.getString("accountnamebank");
+        final Double pricebox = rs.getDouble("pricebox");
+        final Double priceongkos = rs.getDouble("priceongkos");
 
         VendorDataForTemplate data = new VendorDataForTemplate();
         data.setId(id);
@@ -40,6 +43,8 @@ public class QueryListForDropdownList implements RowMapper<VendorDataForTemplate
         data.setBank(bank);
         data.setAccountnobank(accountnobank);
         data.setAccountnamebank(accountnamebank);
+        data.setPricebox(pricebox);
+        data.setPriceongkos(priceongkos);
         return data;
     }
 }
