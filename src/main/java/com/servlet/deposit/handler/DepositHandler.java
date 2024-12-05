@@ -99,4 +99,24 @@ public class DepositHandler implements DepositService {
         data.setValidations(validations);
         return data;
     }
+
+    @Override
+    public Double calculateSaldoDepositByIdVendorAndBeforeDateCreated(Long idcompany, Long idbranch, Long idvendor, Long date) {
+        double summaryDeposit = summaryCalculateSaldoDepositByIdVendorAndBeforeDateCreated(idcompany,idbranch,idvendor,date).doubleValue();
+        double summarySetorPurchaseReceive =  purchaseReceiveService.calculateSetorByIdVendorAndCreatedDate(idcompany,idbranch,idvendor,date).doubleValue();
+        double hasil = summaryDeposit - summarySetorPurchaseReceive;
+        return hasil;
+    }
+
+    private Double summaryCalculateSaldoDepositByIdVendorAndBeforeDateCreated(Long idcompany, Long idbranch, Long idvendor, Long date){
+        Date dt = new Date(date);
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountDeposit().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idvendor = ?  and data.isdelete = false and data.createddate < '"+dt+"' ");
+        final Object[] queryParameters = new Object[] {idcompany,idvendor};
+        List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateAmountDeposit(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return 0.0;
+    }
 }

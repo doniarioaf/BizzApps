@@ -7,10 +7,15 @@ import com.servlet.deposit.entity.BodyDeposit;
 import com.servlet.deposit.service.DepositService;
 import com.servlet.mappingstock.entity.MappingStockCategoryID;
 import com.servlet.mappingstock.service.MappingStockService;
+import com.servlet.parameterclient.entity.ValueParameter;
+import com.servlet.parameterclient.service.ParameterClientService;
 import com.servlet.pricelist.service.PriceService;
 import com.servlet.product.service.ProductService;
 import com.servlet.purchasereceive.entity.*;
 import com.servlet.purchasereceive.mapper.QueryDataList;
+import com.servlet.purchasereceive.mapper.QueryPrintDataPurchaseReceiveCharge;
+import com.servlet.purchasereceive.mapper.QueryPrintDataPurchaseReceiveItems;
+import com.servlet.purchasereceive.mapper.QueryPrintPurchaseReceive;
 import com.servlet.purchasereceive.repo.PurchaseReceiveChargeRepo;
 import com.servlet.purchasereceive.repo.PurchaseReceiveItemsRepo;
 import com.servlet.purchasereceive.repo.PurchaseReceiveRepo;
@@ -65,6 +70,8 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     private MappingStockService mappingStockService;
     @Autowired
     private DepositService depositService;
+    @Autowired
+    private ParameterClientService parameterClientService;
 
     @Override
     public List<PurchaseReceiveDataList> getListAll(Long idcompany, Long idbranch, Long from, Long to) {
@@ -184,6 +191,55 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             return list.get(0);
         }
         return 0.0;
+    }
+
+    @Override
+    public PrintDataPurchaseReceive printNotaPurchaseReceive(Long idcompany, Long idbranch, Long iduser, Long id) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPrintPurchaseReceive().schema());
+        sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+        final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+        List<PrintDataPurchaseReceive> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPrintPurchaseReceive(), queryParameters);
+        if(list != null && list.size() > 0){
+            ValueParameter param = parameterClientService.getValueByParamName(idcompany,idbranch,"COMPANYNAME","TEXT");
+
+            PrintDataPurchaseReceive print = list.get(0);
+            print.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch, print.getIdvendor()));
+            print.setItems(getPrintDataItems(id));
+            print.setCharges(getPrintDataCharge(id));
+            print.setCompanyName(param.getStrValue());
+            print.setSaldoDepositBeforeNotaSubmit(depositService.calculateSaldoDepositByIdVendorAndBeforeDateCreated(idcompany,idbranch, print.getIdvendor(),print.getCreateddate().getTime()));
+            return print;
+        }
+        return null;
+    }
+
+    @Override
+    public Double calculateSetorByIdVendorAndCreatedDate(Long idcompany, Long idbranch, Long idvendor, Long date) {
+        Date dt = new Date(date);
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountSetor().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idvendor = ?  and data.isdelete = false and data.createddate < '"+dt+"' ");
+        final Object[] queryParameters = new Object[] {idcompany,idvendor};
+        List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateAmountSetor(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return 0.0;
+    }
+
+    private List<PrintDataPurchaseReceiveItems> getPrintDataItems(Long idpurchasereceive){
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPrintDataPurchaseReceiveItems().schema());
+        sqlBuilder.append(" where data.idpurchasereceive = ?  ");
+
+        final Object[] queryParameters = new Object[] {idpurchasereceive};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPrintDataPurchaseReceiveItems(), queryParameters);
+    }
+
+    private List<PrintDataPurchaseReceiveCharge> getPrintDataCharge(Long idpurchasereceive){
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPrintDataPurchaseReceiveCharge().schema());
+        sqlBuilder.append(" where data.idpurchasereceive = ?  ");
+
+        final Object[] queryParameters = new Object[] {idpurchasereceive};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPrintDataPurchaseReceiveCharge(), queryParameters);
     }
 
     private HashMap<Object,Object> setItems(Long idcompany, Long idbranch,BodyPurchaseReceiveCharge[] charges, BodyPurchaseReceiveItems[] items, Long idpurchasereceive){
