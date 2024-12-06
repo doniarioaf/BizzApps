@@ -109,7 +109,7 @@ public class DepositHandler implements DepositService {
     }
 
     private Double summaryCalculateSaldoDepositByIdVendorAndBeforeDateCreated(Long idcompany, Long idbranch, Long idvendor, Long date){
-        Date dt = new Date(date);
+        Timestamp dt = new Timestamp(date);
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountDeposit().schema());
         sqlBuilder.append(" where data.idcompany = ? and data.idvendor = ?  and data.isdelete = false and data.createddate < '"+dt+"' ");
         final Object[] queryParameters = new Object[] {idcompany,idvendor};
