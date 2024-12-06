@@ -23,7 +23,7 @@ public class GetDetailWorkOrderJoinTableWithSuratJalan implements RowMapper<Deta
 		sqlBuilder.append("vendor.nama as vendorname, city.city_name as warehousecity, district.dis_name as warehousekecamatan  ");
 		sqlBuilder.append("from detail_work_order as data ");
 		sqlBuilder.append("left join m_partai as partai on partai.id = data.idpartai ");
-		sqlBuilder.append("left join t_surat_jalan as sj on sj.idworkorder = data.idworkorder and sj.nocantainer = data.nocontainer ");
+		sqlBuilder.append("left join t_surat_jalan as sj on sj.idworkorder = data.idworkorder and sj.nocantainer = data.nocontainer and sj.isdelete = false and sj.isactive = true ");
 		sqlBuilder.append("left join m_employee_manggala as emp on emp.id = sj.idemployee_supir ");
 		sqlBuilder.append("left join m_parameter as param on param.code = sj.kepemilikanmobil and param.grup = 'KEPEMILIKAN_MOBIL_SURAT_JALAN' ");
 		sqlBuilder.append("left join m_asset as asset on asset.id = sj.idasset ");
