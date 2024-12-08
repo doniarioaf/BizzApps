@@ -1,4 +1,4 @@
-package com.servlet.purchasereceive.handler;
+package com.servlet.purchasereceive.mapper;
 
 import org.springframework.jdbc.core.RowMapper;
 

@@ -32,6 +32,15 @@ public class PrintDataPurchaseReceive {
     private Timestamp createddate;
     private List<PrintDataPurchaseReceiveItems> items;
     private List<PrintDataPurchaseReceiveCharge> charges;
+    private List<PrintDataPurchaseReceiveInventori> inventori;
+
+    public List<PrintDataPurchaseReceiveInventori> getInventori() {
+        return inventori;
+    }
+
+    public void setInventori(List<PrintDataPurchaseReceiveInventori> inventori) {
+        this.inventori = inventori;
+    }
 
     public Timestamp getCreateddate() {
         return createddate;

@@ -1,11 +1,9 @@
 package com.servlet.inventori.handler;
 
-import com.servlet.inventori.entity.BodyInventori;
-import com.servlet.inventori.entity.Inventori;
-import com.servlet.inventori.entity.InventoriDataDetail;
-import com.servlet.inventori.entity.ListInventoriData;
+import com.servlet.inventori.entity.*;
 import com.servlet.inventori.mapper.QueryInventoriDetail;
 import com.servlet.inventori.mapper.QueryInventoriList;
+import com.servlet.inventori.mapper.QueryListDropdown;
 import com.servlet.inventori.repo.InventoriRepo;
 import com.servlet.inventori.service.InventoriService;
 import com.servlet.shared.ConstansCodeMessage;
@@ -125,5 +123,13 @@ public class InventoriHandler implements InventoriService {
         data.setSuccess(validations.size() > 0?false:true);
         data.setValidations(validations);
         return data;
+    }
+
+    @Override
+    public List<ListDropdownData> getListDropDown(Long idcompany, Long idbranch) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryListDropdown().schema());
+        sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false ");
+        final Object[] queryParameters = new Object[] {idcompany};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryListDropdown(), queryParameters);
     }
 }

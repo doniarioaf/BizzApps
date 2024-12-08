@@ -13,6 +13,15 @@ public class BodyPurchaseReceive {
     private Double totalprice;
     private BodyPurchaseReceiveItems[] items;
     private BodyPurchaseReceiveCharge[] charges;
+    private BodyPurchaseReceiveInventori[] inventori;
+
+    public BodyPurchaseReceiveInventori[] getInventori() {
+        return inventori;
+    }
+
+    public void setInventori(BodyPurchaseReceiveInventori[] inventori) {
+        this.inventori = inventori;
+    }
 
     private boolean isdefaultvaluesetor;
     private Double setor;

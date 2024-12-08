@@ -5,6 +5,7 @@ import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.charge.service.ChargeService;
 import com.servlet.deposit.entity.BodyDeposit;
 import com.servlet.deposit.service.DepositService;
+import com.servlet.inventori.service.InventoriService;
 import com.servlet.mappingstock.entity.MappingStockCategoryID;
 import com.servlet.mappingstock.service.MappingStockService;
 import com.servlet.parameterclient.entity.ValueParameter;
@@ -12,11 +13,9 @@ import com.servlet.parameterclient.service.ParameterClientService;
 import com.servlet.pricelist.service.PriceService;
 import com.servlet.product.service.ProductService;
 import com.servlet.purchasereceive.entity.*;
-import com.servlet.purchasereceive.mapper.QueryDataList;
-import com.servlet.purchasereceive.mapper.QueryPrintDataPurchaseReceiveCharge;
-import com.servlet.purchasereceive.mapper.QueryPrintDataPurchaseReceiveItems;
-import com.servlet.purchasereceive.mapper.QueryPrintPurchaseReceive;
+import com.servlet.purchasereceive.mapper.*;
 import com.servlet.purchasereceive.repo.PurchaseReceiveChargeRepo;
+import com.servlet.purchasereceive.repo.PurchaseReceiveInventoriRepo;
 import com.servlet.purchasereceive.repo.PurchaseReceiveItemsRepo;
 import com.servlet.purchasereceive.repo.PurchaseReceiveRepo;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
@@ -48,6 +47,8 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     private PurchaseReceiveItemsRepo purchaseReceiveItemsRepo;
     @Autowired
     private PurchaseReceiveChargeRepo purchaseReceiveChargeRepo;
+    @Autowired
+    private PurchaseReceiveInventoriRepo purchaseReceiveInventoriRepo;
 
     @Autowired
     private VendorService vendorService;
@@ -72,6 +73,8 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     private DepositService depositService;
     @Autowired
     private ParameterClientService parameterClientService;
+    @Autowired
+    private InventoriService inventoriService;
 
     @Override
     public List<PurchaseReceiveDataList> getListAll(Long idcompany, Long idbranch, Long from, Long to) {
@@ -91,12 +94,29 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     }
 
     @Override
+    public PurchaseReceiveDataDetail getDetail(Long idcompany, Long idbranch, Long id) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataDetail().schema());
+        sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+        List<PurchaseReceiveDataDetail> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataDetail(), queryParameters);
+        if(list != null && list.size() > 0){
+            PurchaseReceiveDataDetail data = list.get(0);
+            data.setItems(getPrintDataItems(id));
+            data.setCharges(getPrintDataCharge(id));
+            data.setInventori(getPrintDataItemsInventori(id));
+            return data;
+        }
+        return null;
+    }
+
+    @Override
     public PurchaseReceiveTemplate getTemplate(Long idcompany, Long idbranch) {
         PurchaseReceiveTemplate data = new PurchaseReceiveTemplate();
         data.setVendorOpt(vendorService.getListDropdown(idcompany,idbranch));
 //        data.setPriceItems(priceService.getDataPriceByDate(idcompany,idbranch,pricedate));
         data.setProductOpt(productService.getListAll(idcompany,idbranch));
         data.setChargeOpt(chargeService.getListCharge(idcompany,idbranch));
+        data.setInventoriOpt(inventoriService.getListDropDown(idcompany,idbranch));
         return data;
     }
 
@@ -145,14 +165,16 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                 table.setCreateddate(ts);
                 table.setCreatedby(iduser);
                 idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
-                HashMap<Object, Object> mapsItems = setItems(idcompany,idbranch,body.getCharges(), body.getItems(), idsave);
+                HashMap<Object, Object> mapsItems = setItems(idcompany,idbranch,body.getCharges(), body.getItems(),body.getInventori(), idsave);
                 List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
                 if(validationsItems.size() == 0){
 
                 }else{
+
                     purchaseReceiveRepo.deleteById(idsave);
                     purchaseReceiveItemsRepo.deleteAllDetailByIdPurchaseReceive(idsave);
                     purchaseReceiveChargeRepo.deleteAllDetailByIdPurchaseReceive(idsave);
+                    purchaseReceiveInventoriRepo.deleteAllDetailByIdPurchaseReceiveInventory(idsave);
                     depositService.deleteRollBack(iddeposit);
                     runningNumberService.rollBackDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_PURCHASERECEIVE);
                     validations.add(validationsItems.get(0));
@@ -207,6 +229,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             print.setItems(getPrintDataItems(id));
             print.setCharges(getPrintDataCharge(id));
             print.setCompanyName(param.getStrValue());
+            print.setInventori(getPrintDataItemsInventori(id));
             print.setSaldoDepositBeforeNotaSubmit(depositService.calculateSaldoDepositByIdVendorAndBeforeDateCreated(idcompany,idbranch, print.getIdvendor(),print.getCreateddate().getTime()));
             return print;
         }
@@ -226,6 +249,14 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         return 0.0;
     }
 
+    private List<PrintDataPurchaseReceiveInventori> getPrintDataItemsInventori(Long idpurchasereceive){
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPrintDataPurchaseReceiveInventori().schema());
+        sqlBuilder.append(" where data.idpurchasereceive = ?  ");
+
+        final Object[] queryParameters = new Object[] {idpurchasereceive};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPrintDataPurchaseReceiveInventori(), queryParameters);
+    }
+
     private List<PrintDataPurchaseReceiveItems> getPrintDataItems(Long idpurchasereceive){
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPrintDataPurchaseReceiveItems().schema());
         sqlBuilder.append(" where data.idpurchasereceive = ?  ");
@@ -242,7 +273,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPrintDataPurchaseReceiveCharge(), queryParameters);
     }
 
-    private HashMap<Object,Object> setItems(Long idcompany, Long idbranch,BodyPurchaseReceiveCharge[] charges, BodyPurchaseReceiveItems[] items, Long idpurchasereceive){
+    private HashMap<Object,Object> setItems(Long idcompany, Long idbranch,BodyPurchaseReceiveCharge[] charges, BodyPurchaseReceiveItems[] items,BodyPurchaseReceiveInventori[] inventori, Long idpurchasereceive){
         List<ValidationDataMessage> validations = new ArrayList<>();
         HashMap<Object,Object> maps = new HashMap<>();
         HashMap<String,PurchaseReceiveItems> mapsStock = new HashMap<>();
@@ -280,6 +311,21 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                     table.setSubtotalprice(val.getSubtotalprice());
                     purchaseReceiveChargeRepo.saveAndFlush(table);
 
+                }
+            }
+
+            if(inventori.length > 0){
+                for(BodyPurchaseReceiveInventori val : inventori){
+                    PurchaseReceiveInventoriPK pk = new PurchaseReceiveInventoriPK();
+                    pk.setIdinventori(val.getIdinventori());
+                    pk.setIdpurchasereceive(idpurchasereceive);
+
+                    PurchaseReceiveInventori table = new PurchaseReceiveInventori();
+                    table.setPurchaseReceiveInventoriPK(pk);
+                    table.setQty(val.getQty());
+                    table.setPrice(val.getPrice());
+                    table.setSubtotalprice(val.getSubtotalprice());
+                    purchaseReceiveInventoriRepo.saveAndFlush(table);
                 }
             }
         }catch (Exception e){
