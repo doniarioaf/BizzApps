@@ -67,6 +67,8 @@ public class ConstansPermission {
 	public static final String DELETE_PRICELIST = "DELETE_PRICELIST";
 	public static final String READ_PURCHASERECEIVE = "READ_PURCHASERECEIVE";
 	public static final String CREATE_PURCHASERECEIVE = "CREATE_PURCHASERECEIVE";
+	public static final String EDIT_PURCHASERECEIVE = "EDIT_PURCHASERECEIVE";
+	public static final String DELETE_PURCHASERECEIVE = "DELETE_PURCHASERECEIVE";
 
 	
 }

@@ -24,10 +24,19 @@ public class PurchaseReceiveDataDetail {
     private boolean isdefaultvaluesetor;
     private Double setor;
     private Long iddeposit;
+    private Double sisaDeposit;
 
     private List<PrintDataPurchaseReceiveItems> items;
     private List<PrintDataPurchaseReceiveCharge> charges;
     private List<PrintDataPurchaseReceiveInventori> inventori;
+
+    public Double getSisaDeposit() {
+        return sisaDeposit;
+    }
+
+    public void setSisaDeposit(Double sisaDeposit) {
+        this.sisaDeposit = sisaDeposit;
+    }
 
     public String getVendoralias() {
         return vendoralias;

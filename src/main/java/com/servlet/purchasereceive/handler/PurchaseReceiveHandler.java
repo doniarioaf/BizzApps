@@ -104,6 +104,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             data.setItems(getPrintDataItems(id));
             data.setCharges(getPrintDataCharge(id));
             data.setInventori(getPrintDataItemsInventori(id));
+            data.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch,data.getIdvendor()));
             return data;
         }
         return null;
@@ -193,6 +194,82 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     }
 
     @Override
+    public ReturnData update(Long id,Long idcompany, Long idbranch, Long iduser, BodyPurchaseReceive body) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        try {
+            PurchaseReceive table = purchaseReceiveRepo.getById(id);
+            /**
+             * idvendor tidak diupdate, terlalu banyak relasi.
+             *
+             * note:ini sementara
+             */
+
+//            table.setIdvendor(body.getIdvendor());
+            table.setTransactiondate(new Date(body.getTransactiondate()));
+            table.setKoli(body.getKoli());
+            table.setNotes(body.getNotes());
+            table.setBank(body.getBank());
+            table.setAccountnobank(body.getAccountnobank());
+            table.setAccountnamebank(body.getAccountnamebank());
+            table.setTotalprice(body.getTotalprice());
+            table.setSetor(body.getSetor());
+            table.setIsdefaultvaluesetor(body.isIsdefaultvaluesetor());
+            table.setModifiedby(iduser);
+            table.setModifieddate(ts);
+            idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
+
+            kurangiStockItems(idcompany,idbranch, id);
+
+            purchaseReceiveItemsRepo.deleteAllDetailByIdPurchaseReceive(idsave);
+            purchaseReceiveChargeRepo.deleteAllDetailByIdPurchaseReceive(idsave);
+            purchaseReceiveInventoriRepo.deleteAllDetailByIdPurchaseReceiveInventory(idsave);
+
+            HashMap<Object, Object> mapsItems = setItems(idcompany,idbranch,body.getCharges(), body.getItems(),body.getInventori(), idsave);
+            List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
+            if(validationsItems.size() > 0){
+                validations.add(validationsItems.get(0));
+            }
+
+        }catch (Exception e) {
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+            validations.add(msg);
+        }
+
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public ReturnData delete(Long id, Long idcompany, Long idbranch, Long iduser) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        try {
+            PurchaseReceive table = purchaseReceiveRepo.getById(id);
+            table.setIsdelete(true);
+            table.setDeleteby(iduser);
+            table.setDeletedate(ts);
+            idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
+
+            kurangiStockItems(idcompany,idbranch, id);
+        }catch (Exception e) {
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+            validations.add(msg);
+        }
+
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
     public SearchDataTemplateByVendor searchDataByVendor(Long idcompany, Long idbranch, Long idvendor) {
         SearchDataTemplateByVendor data = new SearchDataTemplateByVendor();
         ParamTemplate paramCategoryProduct = new ParamTemplate();
@@ -265,6 +342,14 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPrintDataPurchaseReceiveItems(), queryParameters);
     }
 
+    private List<PurchaseReceiveItemsNotJoin> getDataItemsNotJoin(Long idpurchasereceive){
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryItemsNotJoin().schema());
+        sqlBuilder.append(" where data.idpurchasereceive = ?  ");
+
+        final Object[] queryParameters = new Object[] {idpurchasereceive};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryItemsNotJoin(), queryParameters);
+    }
+
     private List<PrintDataPurchaseReceiveCharge> getPrintDataCharge(Long idpurchasereceive){
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPrintDataPurchaseReceiveCharge().schema());
         sqlBuilder.append(" where data.idpurchasereceive = ?  ");
@@ -273,6 +358,23 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPrintDataPurchaseReceiveCharge(), queryParameters);
     }
 
+    private HashMap<Object,Object> kurangiStockItems(Long idcompany, Long idbranch, Long idpurchasereceive){
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        HashMap<Object,Object> maps = new HashMap<>();
+        List<PurchaseReceiveItemsNotJoin> listItems = getDataItemsNotJoin(idpurchasereceive);
+        for(PurchaseReceiveItemsNotJoin value : listItems){
+            long categoryProductID = value.getIdcategoryproduct();
+            MappingStockCategoryID mapping = mappingStockService.getDetailMapping(categoryProductID,idcompany,idbranch);
+            if(mapping != null){
+                categoryProductID = mapping.getCategoryproductidmapping();
+            }
+            stockItemService.kurang(idcompany,idbranch,value.getIdproduct(),categoryProductID ,value.getType(),value.getQty());
+        }
+
+
+        maps.put("validations",validations);
+        return maps;
+    }
     private HashMap<Object,Object> setItems(Long idcompany, Long idbranch,BodyPurchaseReceiveCharge[] charges, BodyPurchaseReceiveItems[] items,BodyPurchaseReceiveInventori[] inventori, Long idpurchasereceive){
         List<ValidationDataMessage> validations = new ArrayList<>();
         HashMap<Object,Object> maps = new HashMap<>();

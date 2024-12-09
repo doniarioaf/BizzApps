@@ -1,5 +1,6 @@
 package com.servlet.purchasereceive.api;
 
+import com.servlet.product.entity.BodyProduct;
 import com.servlet.purchasereceive.entity.BodyPurchaseReceive;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
@@ -71,4 +72,18 @@ public class PurchaseReceiveAPI {
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
+    @PutMapping("{id}")
+    ResponseEntity<Response> updateObject(@PathVariable long id, @RequestBody @Validated BodyPurchaseReceive body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("id", id);
+        param.put("body", body);
+        Response response = securityService.response(ConstansPermission.EDIT_PURCHASERECEIVE,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @DeleteMapping("{id}")
+    ResponseEntity<Response> deleteObject(@PathVariable long id, @RequestHeader(ConstansKey.AUTH) String authorization) {
+        Response response = securityService.response(ConstansPermission.DELETE_PURCHASERECEIVE,id,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
 }
