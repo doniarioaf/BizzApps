@@ -16,6 +16,8 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         sqlBuilder.append("data.id as id, data.nama as nama, data.alias as alias,data.type as type, ");
         sqlBuilder.append("data.bank as bank, data.accountnobank as accountnobank, data.accountnamebank as accountnamebank, ");
         sqlBuilder.append("data.pricebox as pricebox, data.priceongkos as priceongkos, ");
+        sqlBuilder.append("data.packing as packing, data.kurir as kurir, ");
+        sqlBuilder.append("data.komisi as komisi, data.profit as profit,data.value1 as value1, ");
         sqlBuilder.append("data.createddate as createddate, data.modifieddate as modifieddate, data.deletedate as deletedate, ");
         sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama, userdelete.nama as deletenama ");
         sqlBuilder.append("from m_vendor as data ");
@@ -47,6 +49,11 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         final String deletenama = rs.getString("deletenama");
         final Double pricebox = rs.getDouble("pricebox");
         final Double priceongkos = rs.getDouble("priceongkos");
+        final Double packing = rs.getDouble("packing");
+        final Double kurir = rs.getDouble("kurir");
+        final Double komisi = rs.getDouble("komisi");
+        final Double profit = rs.getDouble("profit");
+        final Double value1 = rs.getDouble("value1");
 
         VendorData data = new VendorData();
         data.setId(id);
@@ -64,6 +71,11 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         data.setDeletebyName(deletenama);
         data.setPricebox(pricebox);
         data.setPriceongkos(priceongkos);
+        data.setPacking(packing);
+        data.setKurir(kurir);
+        data.setKomisi(komisi);
+        data.setProfit(profit);
+        data.setValue1(value1);
         return data;
     }
 }

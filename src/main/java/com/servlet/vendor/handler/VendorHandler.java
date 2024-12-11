@@ -87,6 +87,11 @@ public class VendorHandler implements VendorService {
             vendor.setAccountnamebank(body.getAccountnamebank());
             vendor.setPricebox(body.getPricebox());
             vendor.setPriceongkos(body.getPriceongkos());
+            vendor.setPacking(body.getPacking());
+            vendor.setKurir(body.getKurir());
+            vendor.setKomisi(body.getKomisi());
+            vendor.setProfit(body.getProfit());
+            vendor.setValue1(body.getValue1());
             vendor.setIsdelete(false);
             vendor.setCreateddate(ts);
             vendor.setCreatedby(iduser);
@@ -132,6 +137,11 @@ public class VendorHandler implements VendorService {
             vendor.setAccountnamebank(body.getAccountnamebank());
             vendor.setPricebox(body.getPricebox());
             vendor.setPriceongkos(body.getPriceongkos());
+            vendor.setPacking(body.getPacking());
+            vendor.setKurir(body.getKurir());
+            vendor.setKomisi(body.getKomisi());
+            vendor.setProfit(body.getProfit());
+            vendor.setValue1(body.getValue1());
             vendor.setModifieddate(ts);
             vendor.setModifiedby(iduser);
             idsave = repo.saveAndFlush(vendor).getId();

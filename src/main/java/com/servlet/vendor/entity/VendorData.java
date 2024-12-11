@@ -19,6 +19,51 @@ public class VendorData {
     private Timestamp deletedate;
     private Double pricebox;
     private Double priceongkos;
+    private Double packing;
+    private Double kurir;
+    private Double komisi;
+    private Double profit;
+    private Double value1;
+
+    public Double getPacking() {
+        return packing;
+    }
+
+    public void setPacking(Double packing) {
+        this.packing = packing;
+    }
+
+    public Double getKurir() {
+        return kurir;
+    }
+
+    public void setKurir(Double kurir) {
+        this.kurir = kurir;
+    }
+
+    public Double getKomisi() {
+        return komisi;
+    }
+
+    public void setKomisi(Double komisi) {
+        this.komisi = komisi;
+    }
+
+    public Double getProfit() {
+        return profit;
+    }
+
+    public void setProfit(Double profit) {
+        this.profit = profit;
+    }
+
+    public Double getValue1() {
+        return value1;
+    }
+
+    public void setValue1(Double value1) {
+        this.value1 = value1;
+    }
 
     public Double getPricebox() {
         return pricebox;
