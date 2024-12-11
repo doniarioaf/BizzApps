@@ -6,6 +6,16 @@ public class BodyPurchaseReceiveCharge {
     private Double price;
     private Double subtotalprice;
 
+    @Override
+    public String toString() {
+        return "PurchaseReceiveCharge{" +
+                "idcharge=" + idcharge +
+                ", qty=" + qty +
+                ", price=" + price +
+                ", subtotalprice=" + subtotalprice +
+                '}';
+    }
+
     public long getIdcharge() {
         return idcharge;
     }

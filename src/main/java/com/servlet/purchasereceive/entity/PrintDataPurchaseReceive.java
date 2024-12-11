@@ -22,6 +22,9 @@ public class PrintDataPurchaseReceive {
     private Long iddeposit;
     private Double depositAmount;
     private Double sisaDeposit;
+    private Long countPrint;
+    private Long countEdit;
+    private String namaUser;
 
     /**
      * saldoDepositBeforeNotaSubmit didapat sebelum nota ini dibuat,
@@ -33,6 +36,30 @@ public class PrintDataPurchaseReceive {
     private List<PrintDataPurchaseReceiveItems> items;
     private List<PrintDataPurchaseReceiveCharge> charges;
     private List<PrintDataPurchaseReceiveInventori> inventori;
+
+    public Long getCountPrint() {
+        return countPrint;
+    }
+
+    public void setCountPrint(Long countPrint) {
+        this.countPrint = countPrint;
+    }
+
+    public Long getCountEdit() {
+        return countEdit;
+    }
+
+    public void setCountEdit(Long countEdit) {
+        this.countEdit = countEdit;
+    }
+
+    public String getNamaUser() {
+        return namaUser;
+    }
+
+    public void setNamaUser(String namaUser) {
+        this.namaUser = namaUser;
+    }
 
     public List<PrintDataPurchaseReceiveInventori> getInventori() {
         return inventori;

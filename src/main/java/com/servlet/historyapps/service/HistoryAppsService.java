@@ -4,4 +4,5 @@ import java.sql.Timestamp;
 
 public interface HistoryAppsService {
     void saveHistory(Long idcompany, Long idbranch, Long iduser, String action, String menu, String data, String datafter, String databefore, Timestamp ts);
+    Long countByActionAndMenu(Long idcompany, Long idbranch, String action, String menu);
 }

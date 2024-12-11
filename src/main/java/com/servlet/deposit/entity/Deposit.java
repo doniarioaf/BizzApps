@@ -26,6 +26,16 @@ public class Deposit implements Serializable {
     private Long deleteby;
     private Timestamp deletedate;
 
+    @Override
+    public String toString() {
+        return "Deposit{" +
+                "id=" + id +
+                ", idvendor=" + idvendor +
+                ", amount=" + amount +
+                ", depositdate=" + depositdate +
+                '}';
+    }
+
     public Long getId() {
         return id;
     }

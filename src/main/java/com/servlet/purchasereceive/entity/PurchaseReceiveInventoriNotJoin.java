@@ -1,8 +1,8 @@
 package com.servlet.purchasereceive.entity;
 
-public class BodyPurchaseReceiveInventori {
+public class PurchaseReceiveInventoriNotJoin {
     private long idinventori;
-    private Long qty;
+    private long qty;
     private Double price;
     private Double subtotalprice;
 
@@ -24,11 +24,11 @@ public class BodyPurchaseReceiveInventori {
         this.idinventori = idinventori;
     }
 
-    public Long getQty() {
+    public long getQty() {
         return qty;
     }
 
-    public void setQty(Long qty) {
+    public void setQty(long qty) {
         this.qty = qty;
     }
 

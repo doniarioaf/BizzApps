@@ -5,6 +5,7 @@ import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.charge.service.ChargeService;
 import com.servlet.deposit.entity.BodyDeposit;
 import com.servlet.deposit.service.DepositService;
+import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.inventori.service.InventoriService;
 import com.servlet.mappingstock.entity.MappingStockCategoryID;
 import com.servlet.mappingstock.service.MappingStockService;
@@ -25,6 +26,8 @@ import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 import com.servlet.stockitems.service.StockItemService;
+import com.servlet.user.entity.UserListData;
+import com.servlet.user.service.UserAppsService;
 import com.servlet.vendor.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -75,6 +78,13 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     private ParameterClientService parameterClientService;
     @Autowired
     private InventoriService inventoriService;
+
+    @Autowired
+    private HistoryAppsService historyAppsService;
+
+    @Autowired
+    private UserAppsService userAppsService;
+    protected final String namaMenu = "PURCHASE_RECEIVE";
 
     @Override
     public List<PurchaseReceiveDataList> getListAll(Long idcompany, Long idbranch, Long from, Long to) {
@@ -169,7 +179,10 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                 HashMap<Object, Object> mapsItems = setItems(idcompany,idbranch,body.getCharges(), body.getItems(),body.getInventori(), idsave);
                 List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
                 if(validationsItems.size() == 0){
-
+                    String data = table.toString();
+                    String dataItems = (String) mapsItems.get("dataItems");
+                    String mixData = "header = "+data+" | Items = "+dataItems;
+                    historyAppsService.saveHistory(idcompany,idbranch,iduser,"ADD",namaMenu,mixData,"","",ts);
                 }else{
 
                     purchaseReceiveRepo.deleteById(idsave);
@@ -200,6 +213,13 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
         try {
             PurchaseReceive table = purchaseReceiveRepo.getById(id);
+            List<PurchaseReceiveItemsNotJoin> listItems = getDataItemsNotJoin(id);
+            List<PurchaseReceiveChargeNotJoin> listItemsCharge = getDataItemsChargeNotJoin(id);
+            List<PurchaseReceiveInventoriNotJoin> listItemsInventori = getDataItemsInventoriNotJoin(id);
+            String dataBefore = table.toString();
+            String dataItemsBefore = listItems.toString()+" | "+listItemsCharge.toString()+" | "+listItemsInventori.toString();
+            String mixDataBefore = "header = "+dataBefore+" | Items = "+dataItemsBefore;
+
             /**
              * idvendor tidak diupdate, terlalu banyak relasi.
              *
@@ -228,7 +248,12 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
 
             HashMap<Object, Object> mapsItems = setItems(idcompany,idbranch,body.getCharges(), body.getItems(),body.getInventori(), idsave);
             List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
-            if(validationsItems.size() > 0){
+            if(validationsItems.size() == 0){
+                String data = table.toString();
+                String dataItems = (String) mapsItems.get("dataItems");
+                String mixData = "header = "+data+" | Items = "+dataItems;
+                historyAppsService.saveHistory(idcompany,idbranch,iduser,"EDIT",namaMenu,"",mixData,mixDataBefore,ts);
+            }else{
                 validations.add(validationsItems.get(0));
             }
 
@@ -257,6 +282,27 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
 
             kurangiStockItems(idcompany,idbranch, id);
+            historyAppsService.saveHistory(table.getIdcompany(),table.getIdbranch(),iduser,"DELETE",namaMenu,table.toString(),"","",ts);
+        }catch (Exception e) {
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+            validations.add(msg);
+        }
+
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public ReturnData catatDownload(Long id, Long idcompany, Long idbranch, Long iduser) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        try {
+            PurchaseReceive table = purchaseReceiveRepo.getById(id);
+            historyAppsService.saveHistory(table.getIdcompany(),table.getIdbranch(),iduser,"DOWNLOADNOTA",namaMenu,table.toString(),"","",ts);
         }catch (Exception e) {
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
             validations.add(msg);
@@ -308,6 +354,14 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             print.setCompanyName(param.getStrValue());
             print.setInventori(getPrintDataItemsInventori(id));
             print.setSaldoDepositBeforeNotaSubmit(depositService.calculateSaldoDepositByIdVendorAndBeforeDateCreated(idcompany,idbranch, print.getIdvendor(),print.getCreateddate().getTime()));
+            print.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADNOTA",namaMenu));
+            print.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
+            UserListData user = userAppsService.getUserByID(iduser);
+            String namaUser  = "";
+            if(user != null){
+                namaUser = user.getNama();
+            }
+            print.setNamaUser(namaUser);
             return print;
         }
         return null;
@@ -324,6 +378,18 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             return list.get(0);
         }
         return 0.0;
+    }
+
+    @Override
+    public PurchaseReceiveDataList checkIdDeposit(Long iddeposit) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataNotJoin().schema());
+        sqlBuilder.append(" where data.iddeposit = ? and data.isdelete = false ");
+        final Object[] queryParameters = new Object[] {iddeposit};
+        List<PurchaseReceiveDataList> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataNotJoin(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return null;
     }
 
     private List<PrintDataPurchaseReceiveInventori> getPrintDataItemsInventori(Long idpurchasereceive){
@@ -348,6 +414,22 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
 
         final Object[] queryParameters = new Object[] {idpurchasereceive};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryItemsNotJoin(), queryParameters);
+    }
+
+    private List<PurchaseReceiveChargeNotJoin> getDataItemsChargeNotJoin(Long idpurchasereceive){
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryItemsChargeNotJoin().schema());
+        sqlBuilder.append(" where data.idpurchasereceive = ?  ");
+
+        final Object[] queryParameters = new Object[] {idpurchasereceive};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryItemsChargeNotJoin(), queryParameters);
+    }
+
+    private List<PurchaseReceiveInventoriNotJoin> getDataItemsInventoriNotJoin(Long idpurchasereceive){
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryItemsInventoriNotJoin().schema());
+        sqlBuilder.append(" where data.idpurchasereceive = ?  ");
+
+        final Object[] queryParameters = new Object[] {idpurchasereceive};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryItemsInventoriNotJoin(), queryParameters);
     }
 
     private List<PrintDataPurchaseReceiveCharge> getPrintDataCharge(Long idpurchasereceive){
@@ -379,6 +461,9 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         List<ValidationDataMessage> validations = new ArrayList<>();
         HashMap<Object,Object> maps = new HashMap<>();
         HashMap<String,PurchaseReceiveItems> mapsStock = new HashMap<>();
+        List<BodyPurchaseReceiveItems> listItems = new ArrayList<>();
+        List<BodyPurchaseReceiveCharge> listCharge = new ArrayList<>();
+        List<BodyPurchaseReceiveInventori> listInventori = new ArrayList<>();
         try{
             if(items.length > 0){
                 for(BodyPurchaseReceiveItems val : items){
@@ -396,6 +481,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                     table.setPrice(val.getPrice());
                     table.setSubtotalprice(val.getSubtotalprice());
                     purchaseReceiveItemsRepo.saveAndFlush(table);
+                    listItems.add(val);
                     mapsStock.put(keyMaps,table);
                 }
             }
@@ -412,6 +498,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                     table.setPrice(val.getPrice());
                     table.setSubtotalprice(val.getSubtotalprice());
                     purchaseReceiveChargeRepo.saveAndFlush(table);
+                    listCharge.add(val);
 
                 }
             }
@@ -428,6 +515,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                     table.setPrice(val.getPrice());
                     table.setSubtotalprice(val.getSubtotalprice());
                     purchaseReceiveInventoriRepo.saveAndFlush(table);
+                    listInventori.add(val);
                 }
             }
         }catch (Exception e){
@@ -445,8 +533,9 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                 stockItemService.tambah(idcompany,idbranch,value.getPurchaseReceiveItemsPK().getIdproduct(),categoryProductID ,value.getPurchaseReceiveItemsPK().getType(),value.getQty());
             }
         }
+        String dataItems = listItems.toString()+" | "+listCharge.toString()+" | "+listInventori.toString();
         maps.put("validations",validations);
-//        maps.put("dataItems",dataItems);
+        maps.put("dataItems",dataItems);
         return maps;
     }
 }

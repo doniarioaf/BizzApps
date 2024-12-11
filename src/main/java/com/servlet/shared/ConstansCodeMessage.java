@@ -62,4 +62,6 @@ public class ConstansCodeMessage {
 	public static final String VALIDASI_GENERATE_DOC_NUMBER = "validation.generate.doc.number";
 	public static final String STOCK_NOT_EXIST = "stock.not.exist";
 	public static final String STOCK_NOT_ENOUGH = "stock.not.enough";
+	public static final String TOTAL_SETOR_GREATER_THAN = "total.setor.greater.then";
+	public static final String THIS_ID_ALREADY_INSTALLED_PURCHASERECEIVE = "this.id.already.installed.purschasereceive";
 }

@@ -9,6 +9,19 @@ public class BodyPurchaseReceiveItems {
     private Double subtotalprice;
     private String type;
 
+    @Override
+    public String toString() {
+        return "PurchaseReceiveItems{" +
+                "idproduct=" + idproduct +
+                ", idcategoryproduct=" + idcategoryproduct +
+                ", qty=" + qty +
+                ", qtybonus=" + qtybonus +
+                ", price=" + price +
+                ", subtotalprice=" + subtotalprice +
+                ", type='" + type + '\'' +
+                '}';
+    }
+
     public String getType() {
         return type;
     }

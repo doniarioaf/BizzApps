@@ -69,6 +69,10 @@ public class ConstansPermission {
 	public static final String CREATE_PURCHASERECEIVE = "CREATE_PURCHASERECEIVE";
 	public static final String EDIT_PURCHASERECEIVE = "EDIT_PURCHASERECEIVE";
 	public static final String DELETE_PURCHASERECEIVE = "DELETE_PURCHASERECEIVE";
+	public static final String READ_DEPOSIT = "READ_DEPOSIT";
+	public static final String CREATE_DEPOSIT = "CREATE_DEPOSIT";
+	public static final String EDIT_DEPOSIT = "EDIT_DEPOSIT";
+	public static final String DELETE_DEPOSIT = "DELETE_DEPOSIT";
 
 	
 }

@@ -2,9 +2,50 @@ package com.servlet.purchasereceive.entity;
 
 public class PurchaseReceiveItemsNotJoin {
     private long qty;
+    private long qtyBonus;
     private long idcategoryproduct;
     private long idproduct;
     private String type;
+    private Double price;
+    private Double subtotalprice;
+
+
+    @Override
+    public String toString() {
+        return "PurchaseReceiveItems{" +
+                "qty=" + qty +
+                ", idcategoryproduct=" + idcategoryproduct +
+                ", idproduct=" + idproduct +
+                ", type='" + type + '\'' +
+                ", qtyBonus='" + qtyBonus + '\'' +
+                ", price='" + price + '\'' +
+                ", subtotalprice='" + subtotalprice + '\'' +
+                '}';
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public Double getSubtotalprice() {
+        return subtotalprice;
+    }
+
+    public void setSubtotalprice(Double subtotalprice) {
+        this.subtotalprice = subtotalprice;
+    }
+
+    public long getQtyBonus() {
+        return qtyBonus;
+    }
+
+    public void setQtyBonus(long qtyBonus) {
+        this.qtyBonus = qtyBonus;
+    }
 
     public String getType() {
         return type;

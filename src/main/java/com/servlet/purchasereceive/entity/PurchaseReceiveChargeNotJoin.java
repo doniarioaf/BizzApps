@@ -1,34 +1,34 @@
 package com.servlet.purchasereceive.entity;
 
-public class BodyPurchaseReceiveInventori {
-    private long idinventori;
-    private Long qty;
+public class PurchaseReceiveChargeNotJoin {
+    private long idcharge;
+    private long qty;
     private Double price;
     private Double subtotalprice;
 
     @Override
     public String toString() {
-        return "PurchaseReceiveInventori{" +
-                "idinventori=" + idinventori +
+        return "PurchaseReceiveCharge{" +
+                "idcharge=" + idcharge +
                 ", qty=" + qty +
                 ", price=" + price +
                 ", subtotalprice=" + subtotalprice +
                 '}';
     }
 
-    public long getIdinventori() {
-        return idinventori;
+    public long getIdcharge() {
+        return idcharge;
     }
 
-    public void setIdinventori(long idinventori) {
-        this.idinventori = idinventori;
+    public void setIdcharge(long idcharge) {
+        this.idcharge = idcharge;
     }
 
-    public Long getQty() {
+    public long getQty() {
         return qty;
     }
 
-    public void setQty(Long qty) {
+    public void setQty(long qty) {
         this.qty = qty;
     }
 

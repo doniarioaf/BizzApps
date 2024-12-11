@@ -8,6 +8,9 @@ import com.servlet.categoryproduct.entity.BodyCategoryProduct;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.customer.entity.BodyCustomer;
 import com.servlet.customer.service.CustomerService;
+import com.servlet.deposit.entity.BodyDeposit;
+import com.servlet.deposit.entity.ParamList;
+import com.servlet.deposit.service.DepositService;
 import com.servlet.inventori.entity.BodyInventori;
 import com.servlet.inventori.service.InventoriService;
 import com.servlet.mappingstock.entity.BodyMappingStock;
@@ -99,6 +102,9 @@ public class ProcessHandler implements ProcessService{
 	PriceService priceService;
 	@Autowired
 	PurchaseReceiveService purchaseReceiveService;
+
+	@Autowired
+	DepositService depositService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -558,6 +564,43 @@ public class ProcessHandler implements ProcessService{
 				}
 			}
 
+			else if(codepermission.equals(ConstansPermission.CREATE_DEPOSIT)) {
+				BodyDeposit param = (BodyDeposit) data;
+				ReturnData valReturn = depositService.save(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_DEPOSIT)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyDeposit body  = (BodyDeposit) param.get("body");
+				ReturnData valReturn = depositService.update(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId(),body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_DEPOSIT)) {
+				long id = (long) data;
+				ReturnData valReturn = depositService.delete(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId());
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}
+
 			else if(codepermission.equals(ConstansPermission.LOGOUT)) {
 				ReturnData valReturn = userAppsService.logout(auth.getId());
 				val.setSuccess(valReturn.isSuccess());
@@ -770,6 +813,21 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("PRINT_NOTA")) {
 					long id = (long) param.get("id");
 					val.setData(purchaseReceiveService.printNotaPurchaseReceive(auth.getIdcompany(), auth.getIdbranch(),auth.getId(),id));
+				}else if(type.equals("DOWNLOAD_PRINT_NOTA")) {
+					long id = (long) param.get("id");
+					val.setData(purchaseReceiveService.catatDownload(id,auth.getIdcompany(), auth.getIdbranch(),auth.getId()));
+				}
+			}else if(codepermission.equals(ConstansPermission.READ_DEPOSIT)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					ParamList paramlist = (ParamList) param.get("param");
+					val.setData(depositService.getList(auth.getIdcompany(), auth.getIdbranch(),paramlist));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(depositService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(depositService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}
 			else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {}

@@ -19,6 +19,24 @@ public class HistoryApps implements Serializable {
     private String data;
     private Timestamp datetime;
     private Long iduser;
+    private Long idcompany;
+    private Long idbranch;
+
+    public Long getIdcompany() {
+        return idcompany;
+    }
+
+    public void setIdcompany(Long idcompany) {
+        this.idcompany = idcompany;
+    }
+
+    public Long getIdbranch() {
+        return idbranch;
+    }
+
+    public void setIdbranch(Long idbranch) {
+        this.idbranch = idbranch;
+    }
 
     public Long getId() {
         return id;
