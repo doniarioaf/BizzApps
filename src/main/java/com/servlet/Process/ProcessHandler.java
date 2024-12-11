@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.servlet.area.entity.BodyArea;
+import com.servlet.area.service.AreaService;
 import com.servlet.categoryproduct.entity.BodyCategoryProduct;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.customer.entity.BodyCustomer;
@@ -105,6 +107,9 @@ public class ProcessHandler implements ProcessService{
 
 	@Autowired
 	DepositService depositService;
+
+	@Autowired
+	AreaService areaService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -601,6 +606,43 @@ public class ProcessHandler implements ProcessService{
 				}
 			}
 
+			else if(codepermission.equals(ConstansPermission.CREATE_AREA)) {
+				BodyArea param = (BodyArea) data;
+				ReturnData valReturn = areaService.save(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_AREA)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyArea body  = (BodyArea) param.get("body");
+				ReturnData valReturn = areaService.update(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId(),body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_AREA)) {
+				long id = (long) data;
+				ReturnData valReturn = areaService.delete(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId());
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}
+
 			else if(codepermission.equals(ConstansPermission.LOGOUT)) {
 				ReturnData valReturn = userAppsService.logout(auth.getId());
 				val.setSuccess(valReturn.isSuccess());
@@ -828,6 +870,15 @@ public class ProcessHandler implements ProcessService{
 					val.setData(depositService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("TEMPLATE")) {
 					val.setData(depositService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}
+			}else if(codepermission.equals(ConstansPermission.READ_AREA)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(areaService.getList(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(areaService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}
 			else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {}

@@ -73,6 +73,10 @@ public class ConstansPermission {
 	public static final String CREATE_DEPOSIT = "CREATE_DEPOSIT";
 	public static final String EDIT_DEPOSIT = "EDIT_DEPOSIT";
 	public static final String DELETE_DEPOSIT = "DELETE_DEPOSIT";
+	public static final String READ_AREA = "READ_AREA";
+	public static final String CREATE_AREA = "CREATE_AREA";
+	public static final String EDIT_AREA = "EDIT_AREA";
+	public static final String DELETE_AREA = "DELETE_AREA";
 
 	
 }

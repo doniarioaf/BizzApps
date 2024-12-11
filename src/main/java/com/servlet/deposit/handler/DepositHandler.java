@@ -161,7 +161,6 @@ public class DepositHandler implements DepositService {
             if(validations.size() == 0) {
                 String dataBefore = table.toString();
                 table.setAmount(body.getAmount());
-                table.setDepositdate(new Date(body.getDepositdate()));
                 table.setModifieddate(ts);
                 table.setModifiedby(iduser);
                 idsave = repo.saveAndFlush(table).getId();
