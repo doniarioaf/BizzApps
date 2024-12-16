@@ -77,6 +77,7 @@ public class ConstansPermission {
 	public static final String CREATE_AREA = "CREATE_AREA";
 	public static final String EDIT_AREA = "EDIT_AREA";
 	public static final String DELETE_AREA = "DELETE_AREA";
+	public static final String READ_DRAFTPURCHASERECEIVE = "READ_DRAFTPURCHASERECEIVE";
 
 	
 }

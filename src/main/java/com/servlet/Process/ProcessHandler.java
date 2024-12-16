@@ -13,6 +13,8 @@ import com.servlet.customer.service.CustomerService;
 import com.servlet.deposit.entity.BodyDeposit;
 import com.servlet.deposit.entity.ParamList;
 import com.servlet.deposit.service.DepositService;
+import com.servlet.draftpurchasereceive.entity.ParamSearchDraftPurchaseReceive;
+import com.servlet.draftpurchasereceive.service.DraftPurchaseReceiveService;
 import com.servlet.inventori.entity.BodyInventori;
 import com.servlet.inventori.service.InventoriService;
 import com.servlet.mappingstock.entity.BodyMappingStock;
@@ -110,6 +112,9 @@ public class ProcessHandler implements ProcessService{
 
 	@Autowired
 	AreaService areaService;
+
+	@Autowired
+	DraftPurchaseReceiveService draftPurchaseReceiveService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -879,6 +884,19 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
 					val.setData(areaService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
+				}
+			}
+			else if(codepermission.equals(ConstansPermission.READ_DRAFTPURCHASERECEIVE)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				ParamSearchDraftPurchaseReceive paramsearch = (ParamSearchDraftPurchaseReceive) param.get("paramsearch");
+				if(type.equals("ALL")) {
+					val.setData(draftPurchaseReceiveService.getList(auth.getIdcompany(), auth.getIdbranch(),paramsearch));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(areaService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(draftPurchaseReceiveService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}
 			else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {}
