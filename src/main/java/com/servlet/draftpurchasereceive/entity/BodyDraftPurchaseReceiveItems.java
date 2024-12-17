@@ -6,6 +6,27 @@ public class BodyDraftPurchaseReceiveItems {
     private Long ekor;
     private Long kilo;
     private Long boxsequence;
+    private String type;
+
+    @Override
+    public String toString() {
+        return "DraftPurchaseReceiveItems{" +
+                "idproduct=" + idproduct +
+                ", idcategoryproduct=" + idcategoryproduct +
+                ", ekor=" + ekor +
+                ", kilo=" + kilo +
+                ", boxsequence=" + boxsequence +
+                ", type='" + type + '\'' +
+                '}';
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public Long getIdproduct() {
         return idproduct;

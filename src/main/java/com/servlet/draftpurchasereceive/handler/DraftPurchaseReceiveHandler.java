@@ -1,5 +1,7 @@
 package com.servlet.draftpurchasereceive.handler;
 
+import com.servlet.categoryproduct.entity.ParamTemplate;
+import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.draftpurchasereceive.entity.*;
 import com.servlet.draftpurchasereceive.mapper.QueryDataList;
 import com.servlet.draftpurchasereceive.repo.DraftPurchaseReceiveItemsRepo;
@@ -42,6 +44,8 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
 
     @Autowired
     private ProductService productService;
+    @Autowired
+    private CategoryProductService categoryProductService;
 
     @Autowired
     private RunningNumberService runningNumberService;
@@ -110,6 +114,7 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
                 table.setSmu(body.getSmu());
                 table.setTotalekor(body.getTotalekor());
                 table.setTotalkg(body.getTotalkg());
+                table.setPersentase(body.getPersentase());
                 table.setIsdelete(false);
                 table.setCreatedby(iduser);
                 table.setCreateddate(ts);
@@ -148,30 +153,45 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
         return data;
     }
 
+    @Override
+    public SearchDataTemplateByVendor getTemplateByIdVendor(Long idcompany, Long idbranch, Long idvendor) {
+        ParamTemplate paramCategoryProduct = new ParamTemplate();
+        paramCategoryProduct.setMenu("DRAFTPURCHASE_RECEIVE");
+        paramCategoryProduct.setIdvendor(idvendor);
+
+        SearchDataTemplateByVendor data = new SearchDataTemplateByVendor();
+        data.setCategoryproductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,paramCategoryProduct));
+        return data;
+    }
+
     private HashMap<Object,Object> setItems(Long idcompany, Long idbranch, Long iddraftpurchasereceive, BodyDraftPurchaseReceiveItems[] items){
         List<ValidationDataMessage> validations = new ArrayList<>();
         HashMap<Object,Object> maps = new HashMap<>();
+        List<BodyDraftPurchaseReceiveItems> listitem = new ArrayList<>();
         try{
             if(items.length > 0){
                 for(BodyDraftPurchaseReceiveItems val:items){
                     DraftPurchaseReceiveItemsPK pk = new DraftPurchaseReceiveItemsPK();
                     pk.setIddraftpurchasereceive(iddraftpurchasereceive);
                     pk.setBoxsequence(val.getBoxsequence());
+                    pk.setIdproduct(val.getIdproduct());
+                    pk.setIdcategoryproduct(val.getIdcategoryproduct());
                     DraftPurchaseReceiveItems table = new DraftPurchaseReceiveItems();
                     table.setDraftPurchaseReceiveItemsPK(pk);
-                    table.setIdproduct(val.getIdproduct());
-                    table.setIdcategoryproduct(val.getIdcategoryproduct());
                     table.setEkor(val.getEkor());
                     table.setKilo(val.getKilo());
+                    table.setType(val.getType());
                     repoItems.saveAndFlush(table);
+                    listitem.add(val);
                 }
             }
         }catch (Exception e){
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
             validations.add(msg);
         }
+        String dataItems = listitem.toString();
         maps.put("validations",validations);
-        maps.put("dataItems","");
+        maps.put("dataItems","dataItems");
         return maps;
     }
 }

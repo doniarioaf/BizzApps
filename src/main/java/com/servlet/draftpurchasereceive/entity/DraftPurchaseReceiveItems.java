@@ -14,10 +14,18 @@ public class DraftPurchaseReceiveItems implements Serializable {
 
     @EmbeddedId
     private DraftPurchaseReceiveItemsPK draftPurchaseReceiveItemsPK;
-    private Long idproduct;
-    private Long idcategoryproduct;
+
     private Long ekor;
     private Long kilo;
+    private String type;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public DraftPurchaseReceiveItemsPK getDraftPurchaseReceiveItemsPK() {
         return draftPurchaseReceiveItemsPK;
@@ -25,22 +33,6 @@ public class DraftPurchaseReceiveItems implements Serializable {
 
     public void setDraftPurchaseReceiveItemsPK(DraftPurchaseReceiveItemsPK draftPurchaseReceiveItemsPK) {
         this.draftPurchaseReceiveItemsPK = draftPurchaseReceiveItemsPK;
-    }
-
-    public Long getIdproduct() {
-        return idproduct;
-    }
-
-    public void setIdproduct(Long idproduct) {
-        this.idproduct = idproduct;
-    }
-
-    public Long getIdcategoryproduct() {
-        return idcategoryproduct;
-    }
-
-    public void setIdcategoryproduct(Long idcategoryproduct) {
-        this.idcategoryproduct = idcategoryproduct;
     }
 
     public Long getEkor() {

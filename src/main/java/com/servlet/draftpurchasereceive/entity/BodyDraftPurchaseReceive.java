@@ -8,7 +8,16 @@ public class BodyDraftPurchaseReceive {
     private String smu;
     private Long totalekor;
     private Long totalkg;
+    private Double persentase;
     private BodyDraftPurchaseReceiveItems[] items;
+
+    public Double getPersentase() {
+        return persentase;
+    }
+
+    public void setPersentase(Double persentase) {
+        this.persentase = persentase;
+    }
 
     public BodyDraftPurchaseReceiveItems[] getItems() {
         return items;

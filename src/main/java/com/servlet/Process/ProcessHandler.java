@@ -13,6 +13,7 @@ import com.servlet.customer.service.CustomerService;
 import com.servlet.deposit.entity.BodyDeposit;
 import com.servlet.deposit.entity.ParamList;
 import com.servlet.deposit.service.DepositService;
+import com.servlet.draftpurchasereceive.entity.BodyDraftPurchaseReceive;
 import com.servlet.draftpurchasereceive.entity.ParamSearchDraftPurchaseReceive;
 import com.servlet.draftpurchasereceive.service.DraftPurchaseReceiveService;
 import com.servlet.inventori.entity.BodyInventori;
@@ -647,6 +648,18 @@ public class ProcessHandler implements ProcessService{
 					val.setData(null);
 				}
 			}
+			else if(codepermission.equals(ConstansPermission.CREATE_DRAFTPURCHASERECEIVE)) {
+				BodyDraftPurchaseReceive param = (BodyDraftPurchaseReceive) data;
+				ReturnData valReturn = draftPurchaseReceiveService.save(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}
 
 			else if(codepermission.equals(ConstansPermission.LOGOUT)) {
 				ReturnData valReturn = userAppsService.logout(auth.getId());
@@ -897,6 +910,9 @@ public class ProcessHandler implements ProcessService{
 					val.setData(areaService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("TEMPLATE")) {
 					val.setData(draftPurchaseReceiveService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("SEARCHBYVENDOR")) {
+					long idvendor = (long) param.get("idvendor");
+					val.setData(draftPurchaseReceiveService.getTemplateByIdVendor(auth.getIdcompany(), auth.getIdbranch(),idvendor));
 				}
 			}
 			else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {}

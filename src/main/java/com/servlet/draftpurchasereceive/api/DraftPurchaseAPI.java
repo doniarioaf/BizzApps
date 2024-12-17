@@ -1,6 +1,6 @@
 package com.servlet.draftpurchasereceive.api;
 
-import com.servlet.area.entity.BodyArea;
+import com.servlet.draftpurchasereceive.entity.BodyDraftPurchaseReceive;
 import com.servlet.draftpurchasereceive.entity.ParamSearchDraftPurchaseReceive;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
@@ -35,6 +35,21 @@ public class DraftPurchaseAPI {
         HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("type", "TEMPLATE");
         Response response = securityService.response(ConstansPermission.READ_DRAFTPURCHASERECEIVE,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @GetMapping("/searchvendor")
+    ResponseEntity<Response> getPriceList(@RequestParam("idvendor") Long idvendor,@RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "SEARCHBYVENDOR");
+        param.put("idvendor", idvendor);
+        Response response = securityService.response(ConstansPermission.READ_DRAFTPURCHASERECEIVE,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @PostMapping
+    ResponseEntity<Response> createObject(@RequestBody @Validated BodyDraftPurchaseReceive body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+        Response response = securityService.response(ConstansPermission.CREATE_DRAFTPURCHASERECEIVE,body,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 }

@@ -5,6 +5,24 @@ public class CategoryProductList {
     private String nama;
     private String size;
     private String weight;
+    private Integer weightfromingram;
+    private Integer weighttoingram;
+
+    public Integer getWeightfromingram() {
+        return weightfromingram;
+    }
+
+    public void setWeightfromingram(Integer weightfromingram) {
+        this.weightfromingram = weightfromingram;
+    }
+
+    public Integer getWeighttoingram() {
+        return weighttoingram;
+    }
+
+    public void setWeighttoingram(Integer weighttoingram) {
+        this.weighttoingram = weighttoingram;
+    }
 
     public Long getId() {
         return id;

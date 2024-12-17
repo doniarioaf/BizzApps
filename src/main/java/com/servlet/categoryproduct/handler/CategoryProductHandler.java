@@ -157,7 +157,7 @@ public class CategoryProductHandler implements CategoryProductService {
         sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false ");
         if(param != null){
             if(param.getMenu() != null){
-                if(param.getMenu().equals("PURCHASE_RECEIVE")){
+                if(param.getMenu().equals("PURCHASE_RECEIVE") || param.getMenu().equals("DRAFTPURCHASE_RECEIVE")){
                     sqlBuilder.append(" and data.id not in ("+vendorService.queryIdVendorCategoryProductNotInclud(idcompany,idbranch,param.getIdvendor())+") ");
                 }
             }

@@ -30,6 +30,7 @@ public class DraftPurchaseReceive implements Serializable {
     private Timestamp modifieddate;
     private Long deleteby;
     private Timestamp deletedate;
+    private Double persentase;
 
     @Override
     public String toString() {
@@ -42,7 +43,16 @@ public class DraftPurchaseReceive implements Serializable {
                 ", smu='" + smu + '\'' +
                 ", totalekor=" + totalekor +
                 ", totalkg=" + totalkg +
+                ", persentase=" + persentase +
                 '}';
+    }
+
+    public Double getPersentase() {
+        return persentase;
+    }
+
+    public void setPersentase(Double persentase) {
+        this.persentase = persentase;
     }
 
     public Long getId() {
