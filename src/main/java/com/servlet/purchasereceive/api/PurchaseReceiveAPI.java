@@ -57,6 +57,15 @@ public class PurchaseReceiveAPI {
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
+    @GetMapping("/getitemdraft/{iddraft}")
+    ResponseEntity<Response> getItemDraft(@PathVariable long iddraft,@RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "GETITEMDRAFT");
+        param.put("iddraft", iddraft);
+        Response response = securityService.response(ConstansPermission.READ_PURCHASERECEIVE,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
     @GetMapping("/printnota/{id}")
     ResponseEntity<Response> getPrintDataById(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
         HashMap<String, Object> param = new HashMap<String, Object>();

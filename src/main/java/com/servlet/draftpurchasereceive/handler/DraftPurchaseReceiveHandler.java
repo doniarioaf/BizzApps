@@ -3,10 +3,7 @@ package com.servlet.draftpurchasereceive.handler;
 import com.servlet.categoryproduct.entity.ParamTemplate;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.draftpurchasereceive.entity.*;
-import com.servlet.draftpurchasereceive.mapper.QueryDataDetail;
-import com.servlet.draftpurchasereceive.mapper.QueryDataItemsDetail;
-import com.servlet.draftpurchasereceive.mapper.QueryDataItemsNotJoin;
-import com.servlet.draftpurchasereceive.mapper.QueryDataList;
+import com.servlet.draftpurchasereceive.mapper.*;
 import com.servlet.draftpurchasereceive.repo.DraftPurchaseReceiveItemsRepo;
 import com.servlet.draftpurchasereceive.repo.DraftPurchaseReceiveRepo;
 import com.servlet.draftpurchasereceive.service.DraftPurchaseReceiveService;
@@ -294,6 +291,35 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
         SearchDataTemplateByVendor data = new SearchDataTemplateByVendor();
         data.setCategoryproductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,paramCategoryProduct));
         return data;
+    }
+
+    @Override
+    public boolean checkIDVendor(Long idvendor) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryColumnIDVendor().schema());
+        sqlBuilder.append(" where data.idvendor = ? and data.isdelete = false limit 1 ");
+        final Object[] queryParameters = new Object[] {idvendor};
+        List<Long> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryColumnIDVendor(), queryParameters);
+        if(list != null && list.size() > 0){
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public List<DraftPurchaseReceiveDropDownList> getDropDownList(Long idcompany, Long idbranch, ParamGetDataDraftPR param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDropDownData().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+        if(param.getMenu().equals("PURCHASERECEIVE")){
+            sqlBuilder.append(" and data.idvendor = "+param.getIdvendor());
+            sqlBuilder.append(" and data.id not in (select pr.iddraftpurchasereceive from purchasereceive as pr where pr.idcompany = "+idcompany+" and pr.idbranch = "+idbranch+" and pr.idvendor = "+param.getIdvendor()+" and pr.isdelete = false and pr.iddraftpurchasereceive notnull ) ");
+        }
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDropDownData(), queryParameters);
+    }
+
+    @Override
+    public List<DraftPurchaseReceiveItemsDetailData> getListItemsByID(Long iddraftpurchasereceive) {
+        return getListItems(iddraftpurchasereceive,null,null);
     }
 
     private HashMap<Object,Object> setItems(Long idcompany, Long idbranch, Long iddraftpurchasereceive, BodyDraftPurchaseReceiveItems[] items){

@@ -900,6 +900,9 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("DOWNLOAD_PRINT_NOTA")) {
 					long id = (long) param.get("id");
 					val.setData(purchaseReceiveService.catatDownload(id,auth.getIdcompany(), auth.getIdbranch(),auth.getId()));
+				}else if(type.equals("GETITEMDRAFT")) {
+					long id = (long) param.get("iddraft");
+					val.setData(draftPurchaseReceiveService.getListItemsByID(id));
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_DEPOSIT)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;

@@ -5,6 +5,9 @@ import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.charge.service.ChargeService;
 import com.servlet.deposit.entity.BodyDeposit;
 import com.servlet.deposit.service.DepositService;
+import com.servlet.draftpurchasereceive.entity.DraftPurchaseReceive;
+import com.servlet.draftpurchasereceive.entity.ParamGetDataDraftPR;
+import com.servlet.draftpurchasereceive.service.DraftPurchaseReceiveService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.inventori.service.InventoriService;
 import com.servlet.mappingstock.entity.MappingStockCategoryID;
@@ -84,6 +87,8 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
 
     @Autowired
     private UserAppsService userAppsService;
+    @Autowired
+    private DraftPurchaseReceiveService draftPurchaseReceiveService;
     protected final String namaMenu = "PURCHASE_RECEIVE";
 
     @Override
@@ -323,6 +328,11 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         paramCategoryProduct.setIdvendor(idvendor);
         data.setCategoryproductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,paramCategoryProduct));
         data.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch,idvendor));
+
+        ParamGetDataDraftPR paramDraftPR = new ParamGetDataDraftPR();
+        paramDraftPR.setIdvendor(idvendor);
+        paramDraftPR.setMenu("PURCHASERECEIVE");
+        data.setDraftPurchaseReceiveOpt(draftPurchaseReceiveService.getDropDownList(idcompany,idbranch,paramDraftPR));
         return data;
     }
 
@@ -402,6 +412,18 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             return list.get(0);
         }
         return null;
+    }
+
+    @Override
+    public boolean checkIDVendor(Long idvendor) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryColumnIDVendor().schema());
+        sqlBuilder.append(" where data.idvendor = ? and data.isdelete = false limit 1 ");
+        final Object[] queryParameters = new Object[] {idvendor};
+        List<Long> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryColumnIDVendor(), queryParameters);
+        if(list != null && list.size() > 0){
+            return true;
+        }
+        return false;
     }
 
     private List<PrintDataPurchaseReceiveInventori> getPrintDataItemsInventori(Long idpurchasereceive){
