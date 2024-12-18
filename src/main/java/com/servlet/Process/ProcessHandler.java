@@ -659,6 +659,30 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_DRAFTPURCHASERECEIVE)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyDraftPurchaseReceive body  = (BodyDraftPurchaseReceive) param.get("body");
+				ReturnData valReturn = draftPurchaseReceiveService.update(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId(),body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_DRAFTPURCHASERECEIVE)) {
+				long id = (long) data;
+				ReturnData valReturn = draftPurchaseReceiveService.delete(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId());
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 			}
 
 			else if(codepermission.equals(ConstansPermission.LOGOUT)) {
@@ -907,7 +931,7 @@ public class ProcessHandler implements ProcessService{
 					val.setData(draftPurchaseReceiveService.getList(auth.getIdcompany(), auth.getIdbranch(),paramsearch));
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
-					val.setData(areaService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(draftPurchaseReceiveService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("TEMPLATE")) {
 					val.setData(draftPurchaseReceiveService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("SEARCHBYVENDOR")) {

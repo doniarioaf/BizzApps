@@ -46,6 +46,15 @@ public class PurchaseReceive implements Serializable {
      * jika tidak value null
      */
     private Long iddeposit;
+    private Long iddraftpurchasereceive;
+
+    public Long getIddraftpurchasereceive() {
+        return iddraftpurchasereceive;
+    }
+
+    public void setIddraftpurchasereceive(Long iddraftpurchasereceive) {
+        this.iddraftpurchasereceive = iddraftpurchasereceive;
+    }
 
     @Override
     public String toString() {
@@ -63,6 +72,7 @@ public class PurchaseReceive implements Serializable {
                 ", isdefaultvaluesetor='" + isdefaultvaluesetor + '\'' +
                 ", setor='" + setor + '\'' +
                 ", iddeposit='" + iddeposit + '\'' +
+                ", iddraftpurchasereceive='" + iddraftpurchasereceive + '\'' +
                 '}';
     }
 

@@ -3,12 +3,17 @@ package com.servlet.draftpurchasereceive.handler;
 import com.servlet.categoryproduct.entity.ParamTemplate;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.draftpurchasereceive.entity.*;
+import com.servlet.draftpurchasereceive.mapper.QueryDataDetail;
+import com.servlet.draftpurchasereceive.mapper.QueryDataItemsDetail;
+import com.servlet.draftpurchasereceive.mapper.QueryDataItemsNotJoin;
 import com.servlet.draftpurchasereceive.mapper.QueryDataList;
 import com.servlet.draftpurchasereceive.repo.DraftPurchaseReceiveItemsRepo;
 import com.servlet.draftpurchasereceive.repo.DraftPurchaseReceiveRepo;
 import com.servlet.draftpurchasereceive.service.DraftPurchaseReceiveService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.product.service.ProductService;
+import com.servlet.purchasereceive.entity.PurchaseReceiveDataList;
+import com.servlet.purchasereceive.service.PurchaseReceiveService;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
@@ -49,6 +54,8 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
 
     @Autowired
     private RunningNumberService runningNumberService;
+    @Autowired
+    private PurchaseReceiveService purchaseReceiveService;
 
     protected final String namaMenu = "DraftPurchaseReceive";
 
@@ -66,6 +73,20 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
         }
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataList(), queryParameters);
+    }
+
+    @Override
+    public DraftPurchaseReceiveDetailData getDetail(Long id, Long idcompany, Long idbranch) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataDetail().schema());
+        sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+        List<DraftPurchaseReceiveDetailData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataDetail(), queryParameters);
+        if(list != null && list.size() > 0){
+            DraftPurchaseReceiveDetailData data = list.get(0);
+            data.setItems(getListItems(id,idcompany,idbranch));
+            return data;
+        }
+        return null;
     }
 
     @Override
@@ -154,6 +175,117 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
     }
 
     @Override
+    public ReturnData update(Long id, Long idcompany, Long idbranch, Long iduser, BodyDraftPurchaseReceive body) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        PurchaseReceiveDataList pr = purchaseReceiveService.getDataByIdDratPurchaseReceive(id,idcompany,idbranch);
+        if(pr != null){
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_PURCHASERECEIVE,"draft ini terpasang pada purchase receive ("+pr.getNodocument()+")");
+            validations.add(msg);
+        }
+        if(validations.size() == 0) {
+            try{
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                DraftPurchaseReceive table = repo.getById(id);
+                String dataBefore = table.toString();
+                List<DraftPurchaseReceiveItemNotJoin> listitems = getListItemsNotJoin(id,idcompany,idbranch);
+                String dataItemsBefore = listitems.toString();
+                String mixDataBefore = "header = "+dataBefore+" | Items = "+dataItemsBefore;
+
+                table.setDate(new Date(body.getDate()));
+                table.setIdvendor(body.getIdvendor());
+                if(body.getArriveltime() != null){
+                    long msArrival = sdf.parse(body.getArriveltime()).getTime();
+                    Time arrival = new Time(msArrival);
+                    table.setArriveltime(arrival);
+                }else{
+                    table.setArriveltime(null);
+                }
+
+                if(body.getReceivetime() != null){
+                    long msReceive = sdf.parse(body.getReceivetime()).getTime();
+                    Time receive = new Time(msReceive);
+                    table.setReceivetime(receive);
+                }else{
+                    table.setReceivetime(null);
+                }
+
+                table.setSmu(body.getSmu());
+                table.setTotalekor(body.getTotalekor());
+                table.setTotalkg(body.getTotalkg());
+                table.setPersentase(body.getPersentase());
+                table.setModifiedby(iduser);
+                table.setModifieddate(ts);
+                idsave = repo.saveAndFlush(table).getId();
+
+                repoItems.deleteAllDetailByIdDraftPurchaseReceive(id);
+
+                HashMap<Object, Object> mapsItems = setItems(idcompany,idbranch,idsave, body.getItems());
+                List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
+                if(validationsItems.size() == 0){
+                    String data = table.toString();
+                    String dataItems = (String) mapsItems.get("dataItems");
+                    String mixData = "header = "+data+" | Items = "+dataItems;
+                    historyAppsService.saveHistory(idcompany,idbranch,iduser,"EDIT",namaMenu,"",mixData,mixDataBefore,ts);
+                }else{
+                    validations.add(validationsItems.get(0));
+                }
+
+            }catch (Exception e) {
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
+        }
+
+        if(validations.size() > 0){
+            historyAppsService.saveHistory(idcompany,idbranch,iduser,"EDIT_ERROR",namaMenu,validations.get(0).getMessage(),"","",ts);
+        }
+
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public ReturnData delete(Long id, Long idcompany, Long idbranch, Long iduser) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        PurchaseReceiveDataList pr = purchaseReceiveService.getDataByIdDratPurchaseReceive(id,idcompany,idbranch);
+        if(pr != null){
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_PURCHASERECEIVE,"draft ini terpasang pada purchase receive ("+pr.getNodocument()+")");
+            validations.add(msg);
+        }
+        if(validations.size() == 0) {
+            try {
+                DraftPurchaseReceive table = repo.getById(id);
+                table.setIsdelete(true);
+                table.setDeleteby(iduser);
+                table.setDeletedate(ts);
+                idsave = repo.saveAndFlush(table).getId();
+                historyAppsService.saveHistory(table.getIdcompany(),table.getIdbranch(),iduser,"DELETE",namaMenu,table.toString(),"","",ts);
+            }catch (Exception e) {
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
+
+        }
+
+        if(validations.size() > 0){
+            historyAppsService.saveHistory(idcompany,idbranch,iduser,"DELETE_ERROR",namaMenu,validations.get(0).getMessage(),"","",ts);
+        }
+
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
     public SearchDataTemplateByVendor getTemplateByIdVendor(Long idcompany, Long idbranch, Long idvendor) {
         ParamTemplate paramCategoryProduct = new ParamTemplate();
         paramCategoryProduct.setMenu("DRAFTPURCHASE_RECEIVE");
@@ -193,5 +325,19 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
         maps.put("validations",validations);
         maps.put("dataItems","dataItems");
         return maps;
+    }
+
+    private List<DraftPurchaseReceiveItemsDetailData> getListItems(Long iddraftpurchasereceive,Long idcompany, Long idbranch) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataItemsDetail().schema());
+        sqlBuilder.append(" where data.iddraftpurchasereceive = ?  ");
+        sqlBuilder.append(" order by data.boxsequence asc  ");
+        final Object[] queryParameters = new Object[] {iddraftpurchasereceive};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataItemsDetail(), queryParameters);
+    }
+    private List<DraftPurchaseReceiveItemNotJoin> getListItemsNotJoin(Long iddraftpurchasereceive,Long idcompany, Long idbranch) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataItemsNotJoin().schema());
+        sqlBuilder.append(" where data.iddraftpurchasereceive = ?  ");
+        final Object[] queryParameters = new Object[] {iddraftpurchasereceive};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataItemsNotJoin(), queryParameters);
     }
 }

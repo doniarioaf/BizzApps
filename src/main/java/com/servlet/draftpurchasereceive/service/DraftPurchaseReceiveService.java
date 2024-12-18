@@ -7,7 +7,10 @@ import java.util.List;
 
 public interface DraftPurchaseReceiveService {
     List<DraftPurchaseReceiveList> getList(Long idcompany, Long idbranch, ParamSearchDraftPurchaseReceive param);
+    DraftPurchaseReceiveDetailData getDetail(Long id,Long idcompany, Long idbranch);
     DraftPurchaseReceiveTemplate getTemplate(Long idcompany, Long idbranch);
     ReturnData save(Long idcompany, Long idbranch, Long iduser, BodyDraftPurchaseReceive body);
+    ReturnData update(Long id,Long idcompany, Long idbranch, Long iduser, BodyDraftPurchaseReceive body);
+    ReturnData delete(Long id,Long idcompany, Long idbranch, Long iduser);
     SearchDataTemplateByVendor getTemplateByIdVendor(Long idcompany, Long idbranch, Long idvendor);
 }

@@ -18,4 +18,5 @@ public interface PurchaseReceiveService {
     PrintDataPurchaseReceive printNotaPurchaseReceive(Long idcompany, Long idbranch,Long iduser, Long id);
     Double calculateSetorByIdVendorAndCreatedDate(Long idcompany, Long idbranch, Long idvendor, Long date);
     PurchaseReceiveDataList checkIdDeposit(Long iddeposit);
+    PurchaseReceiveDataList getDataByIdDratPurchaseReceive(Long iddraftpurchasereceive,Long idcompany, Long idbranch);
 }

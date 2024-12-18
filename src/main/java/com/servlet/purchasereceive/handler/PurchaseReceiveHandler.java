@@ -392,6 +392,18 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         return null;
     }
 
+    @Override
+    public PurchaseReceiveDataList getDataByIdDratPurchaseReceive(Long iddraftpurchasereceive, Long idcompany, Long idbranch) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataNotJoin().schema());
+        sqlBuilder.append(" where data.iddraftpurchasereceive = ? and data.isdelete = false ");
+        final Object[] queryParameters = new Object[] {iddraftpurchasereceive};
+        List<PurchaseReceiveDataList> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataNotJoin(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return null;
+    }
+
     private List<PrintDataPurchaseReceiveInventori> getPrintDataItemsInventori(Long idpurchasereceive){
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPrintDataPurchaseReceiveInventori().schema());
         sqlBuilder.append(" where data.idpurchasereceive = ?  ");
