@@ -19,11 +19,15 @@ public class QueryDataDetail implements RowMapper<PurchaseReceiveDataDetail> {
         sqlBuilder.append("data.bank as bank, data.accountnobank as accountnobank, data.accountnamebank as accountnamebank, ");
         sqlBuilder.append("data.totalprice as totalprice, data.setor as setor, data.iddeposit as iddeposit,data.isdefaultvaluesetor as isdefaultvaluesetor, ");
         sqlBuilder.append("ven.nama as vennama, ven.alias as venalias, ");
+        sqlBuilder.append("data.idarea as idarea, area.nama as areanama, area.alias as areaalias, ");
+        sqlBuilder.append("data.iddraftpurchasereceive as iddraftpurchasereceive ,dpr.nodocument as nodocumentdraft, dpr.smu as smudraft, ");
         sqlBuilder.append("data.createddate as createddate, data.modifieddate as modifieddate, ");
         sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama ");
 
         sqlBuilder.append("from purchasereceive as data ");
         sqlBuilder.append("left join m_vendor as ven on ven.id = data.idvendor ");
+        sqlBuilder.append("left join m_area as area on area.id = data.idarea ");
+        sqlBuilder.append("left join draft_purchasereceive as dpr on dpr.id = data.iddraftpurchasereceive ");
         sqlBuilder.append("left join m_user_apps as usercreate on usercreate.id = data.createdby ");
         sqlBuilder.append("left join m_user_apps as usermodified on usermodified.id = data.modifiedby ");
 
@@ -55,6 +59,13 @@ public class QueryDataDetail implements RowMapper<PurchaseReceiveDataDetail> {
         final String createdname = rs.getString("createdname");
         final String modifiednama = rs.getString("modifiednama");
         final boolean isdefaultvaluesetor = rs.getBoolean("isdefaultvaluesetor");
+        final String nodocumentdraft = rs.getString("nodocumentdraft");
+        final String smudraft = rs.getString("smudraft");
+        final Long iddraftpurchasereceive = rs.getLong("iddraftpurchasereceive");
+
+        final String areaalias = rs.getString("areaalias");
+        final String areanama = rs.getString("areanama");
+        final Long idarea = rs.getLong("idarea");
 
         PurchaseReceiveDataDetail data = new PurchaseReceiveDataDetail();
         data.setId(id);
@@ -72,10 +83,17 @@ public class QueryDataDetail implements RowMapper<PurchaseReceiveDataDetail> {
         data.setSetor(setor);
         data.setIddeposit(iddeposit);
         data.setIsdefaultvaluesetor(isdefaultvaluesetor);
+        data.setIddraftpurchasereceive(iddraftpurchasereceive);
+        data.setNodocumentDraft(nodocumentdraft);
+        data.setNoSmuDraft(smudraft);
+        data.setIdarea(idarea);
+        data.setNamaArea(areanama);
+        data.setAliasArea(areaalias);
         data.setCreateddate(createddate);
         data.setModifieddate(modifieddate);
         data.setCreatedbyName(createdname);
         data.setModifiedbyName(modifiednama);
+
         return data;
     }
 }

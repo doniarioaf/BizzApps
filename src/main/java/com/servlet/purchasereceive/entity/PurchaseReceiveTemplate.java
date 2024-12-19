@@ -1,5 +1,6 @@
 package com.servlet.purchasereceive.entity;
 
+import com.servlet.area.entity.AreaList;
 import com.servlet.charge.entity.ChargeList;
 import com.servlet.inventori.entity.ListDropdownData;
 import com.servlet.pricelist.entity.PriceItemsDataForTemplate;
@@ -14,6 +15,15 @@ public class PurchaseReceiveTemplate {
     private List<ListProductData> productOpt;
     private List<ChargeList> chargeOpt;
     private List<ListDropdownData> inventoriOpt;
+    private List<AreaList> areaOpt;
+
+    public List<AreaList> getAreaOpt() {
+        return areaOpt;
+    }
+
+    public void setAreaOpt(List<AreaList> areaOpt) {
+        this.areaOpt = areaOpt;
+    }
 
     public List<ListDropdownData> getInventoriOpt() {
         return inventoriOpt;

@@ -26,6 +26,24 @@ public class BodyPurchaseReceive {
     private boolean isdefaultvaluesetor;
     private Double setor;
     private Double tambahdeposit;
+    private Long iddraftpurchasereceive;
+    private Long idarea;
+
+    public Long getIdarea() {
+        return idarea;
+    }
+
+    public void setIdarea(Long idarea) {
+        this.idarea = idarea;
+    }
+
+    public Long getIddraftpurchasereceive() {
+        return iddraftpurchasereceive;
+    }
+
+    public void setIddraftpurchasereceive(Long iddraftpurchasereceive) {
+        this.iddraftpurchasereceive = iddraftpurchasereceive;
+    }
 
     public Double getTambahdeposit() {
         return tambahdeposit;

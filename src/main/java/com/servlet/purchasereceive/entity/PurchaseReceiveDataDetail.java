@@ -25,10 +25,64 @@ public class PurchaseReceiveDataDetail {
     private Double setor;
     private Long iddeposit;
     private Double sisaDeposit;
+    private Long iddraftpurchasereceive;
+    private String nodocumentDraft;
+    private String noSmuDraft;
+    private Long idarea;
+    private String namaArea;
+    private String aliasArea;
+
+    public Long getIdarea() {
+        return idarea;
+    }
+
+    public void setIdarea(Long idarea) {
+        this.idarea = idarea;
+    }
+
+    public String getNamaArea() {
+        return namaArea;
+    }
+
+    public void setNamaArea(String namaArea) {
+        this.namaArea = namaArea;
+    }
+
+    public String getAliasArea() {
+        return aliasArea;
+    }
+
+    public void setAliasArea(String aliasArea) {
+        this.aliasArea = aliasArea;
+    }
 
     private List<PrintDataPurchaseReceiveItems> items;
     private List<PrintDataPurchaseReceiveCharge> charges;
     private List<PrintDataPurchaseReceiveInventori> inventori;
+
+    public Long getIddraftpurchasereceive() {
+        return iddraftpurchasereceive;
+    }
+
+    public void setIddraftpurchasereceive(Long iddraftpurchasereceive) {
+        this.iddraftpurchasereceive = iddraftpurchasereceive;
+    }
+
+    public String getNodocumentDraft() {
+        return nodocumentDraft;
+    }
+
+    public void setNodocumentDraft(String nodocumentDraft) {
+        this.nodocumentDraft = nodocumentDraft;
+    }
+
+    public String getNoSmuDraft() {
+        return noSmuDraft;
+    }
+
+    public void setNoSmuDraft(String noSmuDraft) {
+        this.noSmuDraft = noSmuDraft;
+    }
 
     public Double getSisaDeposit() {
         return sisaDeposit;

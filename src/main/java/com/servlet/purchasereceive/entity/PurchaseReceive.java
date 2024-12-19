@@ -47,6 +47,15 @@ public class PurchaseReceive implements Serializable {
      */
     private Long iddeposit;
     private Long iddraftpurchasereceive;
+    private Long idarea;
+
+    public Long getIdarea() {
+        return idarea;
+    }
+
+    public void setIdarea(Long idarea) {
+        this.idarea = idarea;
+    }
 
     public Long getIddraftpurchasereceive() {
         return iddraftpurchasereceive;

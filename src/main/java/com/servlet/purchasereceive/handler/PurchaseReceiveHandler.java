@@ -1,5 +1,6 @@
 package com.servlet.purchasereceive.handler;
 
+import com.servlet.area.service.AreaService;
 import com.servlet.categoryproduct.entity.ParamTemplate;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.charge.service.ChargeService;
@@ -89,6 +90,8 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     private UserAppsService userAppsService;
     @Autowired
     private DraftPurchaseReceiveService draftPurchaseReceiveService;
+    @Autowired
+    private AreaService areaService;
     protected final String namaMenu = "PURCHASE_RECEIVE";
 
     @Override
@@ -103,6 +106,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             Date dt = new Date(to);
             sqlBuilder.append(" and data.transactiondate <= '"+dt.toString()+"'");
         }
+        sqlBuilder.append(" order by data.id desc ");
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataList(), queryParameters);
 
@@ -133,6 +137,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         data.setProductOpt(productService.getListAll(idcompany,idbranch));
         data.setChargeOpt(chargeService.getListCharge(idcompany,idbranch));
         data.setInventoriOpt(inventoriService.getListDropDown(idcompany,idbranch));
+        data.setAreaOpt(areaService.getList(idcompany,idbranch));
         return data;
     }
 
@@ -178,6 +183,8 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                 table.setSetor(body.getSetor());
                 table.setIsdefaultvaluesetor(body.isIsdefaultvaluesetor());
                 table.setIddeposit(iddeposit);
+                table.setIddraftpurchasereceive(body.getIddraftpurchasereceive());
+                table.setIdarea(body.getIdarea());
                 table.setCreateddate(ts);
                 table.setCreatedby(iduser);
                 idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
@@ -241,6 +248,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             table.setTotalprice(body.getTotalprice());
             table.setSetor(body.getSetor());
             table.setIsdefaultvaluesetor(body.isIsdefaultvaluesetor());
+            table.setIdarea(body.getIdarea());
             table.setModifiedby(iduser);
             table.setModifieddate(ts);
             idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
