@@ -37,6 +37,34 @@ public class PrintDataPurchaseReceive {
     private List<PrintDataPurchaseReceiveCharge> charges;
     private List<PrintDataPurchaseReceiveInventori> inventori;
 
+    private String noSMU;
+    private String namaArea;
+    private String aliasArea;
+
+    public String getNoSMU() {
+        return noSMU;
+    }
+
+    public void setNoSMU(String noSMU) {
+        this.noSMU = noSMU;
+    }
+
+    public String getNamaArea() {
+        return namaArea;
+    }
+
+    public void setNamaArea(String namaArea) {
+        this.namaArea = namaArea;
+    }
+
+    public String getAliasArea() {
+        return aliasArea;
+    }
+
+    public void setAliasArea(String aliasArea) {
+        this.aliasArea = aliasArea;
+    }
+
     public Long getCountPrint() {
         return countPrint;
     }

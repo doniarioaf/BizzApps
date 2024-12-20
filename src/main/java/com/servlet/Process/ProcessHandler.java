@@ -896,7 +896,8 @@ public class ProcessHandler implements ProcessService{
 					val.setData(purchaseReceiveService.searchDataByVendor(auth.getIdcompany(), auth.getIdbranch(),idvendor));
 				}else if(type.equals("PRINT_NOTA")) {
 					long id = (long) param.get("id");
-					val.setData(purchaseReceiveService.printNotaPurchaseReceive(auth.getIdcompany(), auth.getIdbranch(),auth.getId(),id));
+					String printtype = (String) param.get("printtype");
+					val.setData(purchaseReceiveService.printNotaPurchaseReceive(auth.getIdcompany(), auth.getIdbranch(),auth.getId(),id,printtype));
 				}else if(type.equals("DOWNLOAD_PRINT_NOTA")) {
 					long id = (long) param.get("id");
 					val.setData(purchaseReceiveService.catatDownload(id,auth.getIdcompany(), auth.getIdbranch(),auth.getId()));

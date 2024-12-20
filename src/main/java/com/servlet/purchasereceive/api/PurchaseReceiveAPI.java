@@ -66,11 +66,12 @@ public class PurchaseReceiveAPI {
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
-    @GetMapping("/printnota/{id}")
-    ResponseEntity<Response> getPrintDataById(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
+    @GetMapping("/printnota/{id}/{printtype}")
+    ResponseEntity<Response> getPrintDataById(@PathVariable long id,@PathVariable String printtype,@RequestHeader(ConstansKey.AUTH) String authorization) {
         HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("type", "PRINT_NOTA");
         param.put("id", id);
+        param.put("printtype", printtype);
         Response response = securityService.response(ConstansPermission.READ_PURCHASERECEIVE,param,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }

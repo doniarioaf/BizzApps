@@ -15,7 +15,7 @@ public interface PurchaseReceiveService {
     ReturnData catatDownload(Long id,Long idcompany, Long idbranch, Long iduser);
     SearchDataTemplateByVendor searchDataByVendor(Long idcompany, Long idbranch,Long idvendor);
     Double calculateSetorByIdVendor(Long idcompany, Long idbranch, Long idvendor);
-    PrintDataPurchaseReceive printNotaPurchaseReceive(Long idcompany, Long idbranch,Long iduser, Long id);
+    PrintDataPurchaseReceive printNotaPurchaseReceive(Long idcompany, Long idbranch,Long iduser, Long id,String printtype);
     Double calculateSetorByIdVendorAndCreatedDate(Long idcompany, Long idbranch, Long idvendor, Long date);
     PurchaseReceiveDataList checkIdDeposit(Long iddeposit);
     PurchaseReceiveDataList getDataByIdDratPurchaseReceive(Long iddraftpurchasereceive,Long idcompany, Long idbranch);

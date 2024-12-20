@@ -13,16 +13,19 @@ public class QueryPrintPurchaseReceive implements RowMapper<PrintDataPurchaseRec
 
     public QueryPrintPurchaseReceive() {
         // TODO Auto-generated constructor stub
-        final StringBuilder sqlBuilder = new StringBuilder(10);
+        final StringBuilder sqlBuilder = new StringBuilder(20);
         sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.idvendor as idvendor, ");
         sqlBuilder.append("data.transactiondate as transactiondate, data.koli as koli, data.notes as notes, ");
         sqlBuilder.append("data.bank as bank, data.accountnobank as accountnobank, data.accountnamebank as accountnamebank, ");
         sqlBuilder.append("data.totalprice as totalprice, data.setor as setor, data.iddeposit as iddeposit, data.createddate as createddate, ");
         sqlBuilder.append("ven.nama as vennama, ven.alias as venalias, ");
-        sqlBuilder.append("dep.amount as depamount ");
+        sqlBuilder.append("dep.amount as depamount, dpr.smu as nosmu, ");
+        sqlBuilder.append("area.nama as namaarea, area.alias as aliasarea ");
         sqlBuilder.append("from purchasereceive as data ");
         sqlBuilder.append("left join m_vendor as ven on ven.id = data.idvendor ");
         sqlBuilder.append("left join deposit as dep on dep.id = data.iddeposit ");
+        sqlBuilder.append("left join draft_purchasereceive as dpr on dpr.id = data.iddraftpurchasereceive ");
+        sqlBuilder.append("left join m_area as area on area.id = data.idarea ");
 
         this.schemaSql = sqlBuilder.toString();
     }
@@ -49,7 +52,9 @@ public class QueryPrintPurchaseReceive implements RowMapper<PrintDataPurchaseRec
         final String venalias = rs.getString("venalias");
         final Double depamount = rs.getDouble("depamount");
         final Timestamp createddate = rs.getTimestamp("createddate");
-
+        final String nosmu = rs.getString("nosmu");
+        final String namaarea = rs.getString("namaarea");
+        final String aliasarea = rs.getString("aliasarea");
 
         PrintDataPurchaseReceive data = new PrintDataPurchaseReceive();
         data.setId(id);
@@ -68,6 +73,9 @@ public class QueryPrintPurchaseReceive implements RowMapper<PrintDataPurchaseRec
         data.setIddeposit(iddeposit);
         data.setDepositAmount(depamount);
         data.setCreateddate(createddate);
+        data.setNoSMU(nosmu);
+        data.setAliasArea(aliasarea);
+        data.setNamaArea(namaarea);
         return data;
     }
 }

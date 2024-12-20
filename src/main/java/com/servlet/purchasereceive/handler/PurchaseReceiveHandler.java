@@ -357,32 +357,107 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     }
 
     @Override
-    public PrintDataPurchaseReceive printNotaPurchaseReceive(Long idcompany, Long idbranch, Long iduser, Long id) {
+    public PrintDataPurchaseReceive printNotaPurchaseReceive(Long idcompany, Long idbranch, Long iduser, Long id,String printtype) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPrintPurchaseReceive().schema());
         sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
         final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
         List<PrintDataPurchaseReceive> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPrintPurchaseReceive(), queryParameters);
         if(list != null && list.size() > 0){
-            ValueParameter param = parameterClientService.getValueByParamName(idcompany,idbranch,"COMPANYNAME","TEXT");
-
-            PrintDataPurchaseReceive print = list.get(0);
-            print.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch, print.getIdvendor()));
-            print.setItems(getPrintDataItems(id));
-            print.setCharges(getPrintDataCharge(id));
-            print.setCompanyName(param.getStrValue());
-            print.setInventori(getPrintDataItemsInventori(id));
-            print.setSaldoDepositBeforeNotaSubmit(depositService.calculateSaldoDepositByIdVendorAndBeforeDateCreated(idcompany,idbranch, print.getIdvendor(),print.getCreateddate().getTime()));
-            print.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADNOTA",namaMenu));
-            print.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
-            UserListData user = userAppsService.getUserByID(iduser);
-            String namaUser  = "";
-            if(user != null){
-                namaUser = user.getNama();
+            if(printtype.equals("SUPPLIER")){
+                return getPrintDataNotaSupplier(id,iduser,idcompany,idbranch,list.get(0));
+            }else if(printtype.equals("INTERNAL") || printtype.equals("PAJAK")){
+                return getPrintDataNotaInternalAndPajak(id,iduser,idcompany,idbranch,list.get(0),printtype);
             }
-            print.setNamaUser(namaUser);
-            return print;
         }
         return null;
+    }
+
+    private PrintDataPurchaseReceive getPrintDataNotaInternalAndPajak(Long id,Long iduser, Long idcompany,Long idbranch,PrintDataPurchaseReceive value,String printtype){
+        ValueParameter param = parameterClientService.getValueByParamName(idcompany,idbranch,"COMPANYNAME","TEXT");
+        PrintDataPurchaseReceive print = value;
+        print.setSisaDeposit(0.0);
+        print.setSaldoDepositBeforeNotaSubmit(0.0);
+        print.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADNOTA",namaMenu));
+        print.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
+        print.setCompanyName(param.getStrValue());
+        UserListData user = userAppsService.getUserByID(iduser);
+        String namaUser  = "";
+        if(user != null){
+            namaUser = user.getNama();
+        }
+        print.setNamaUser(namaUser);
+
+        List<PrintDataPurchaseReceiveItems> items = getPrintDataItems(id);
+        List<PrintDataPurchaseReceiveCharge> charges = new ArrayList<>();//getPrintDataCharge(id);
+        List<PrintDataPurchaseReceiveInventori> inventori = new ArrayList<>();//getPrintDataItemsInventori(id);
+        double totalPrice = 0.0;
+        double totalPricePajak = 0.0;
+        List<PrintDataPurchaseReceiveItems> listitems = new ArrayList<>();
+        for(PrintDataPurchaseReceiveItems val : items){
+            if(val.getType().equals("H")){
+                double price = val.getPrice().doubleValue();
+                long qty = val.getQty().longValue();
+                double subprice = price * qty;
+                totalPrice += subprice;
+                totalPricePajak += val.getSubtotalprice().doubleValue();
+
+                PrintDataPurchaseReceiveItems temps = new PrintDataPurchaseReceiveItems();
+                temps.setIdpurchasereceive(val.getIdpurchasereceive());
+                temps.setIdproduct(val.getIdproduct());
+                temps.setProductName(val.getProductName());
+                temps.setIdcategoryproduct(val.getIdcategoryproduct());
+                temps.setCategoryProductName(val.getCategoryProductName());
+                temps.setSize(val.getSize());
+                temps.setWeightto(val.getWeightto());
+                temps.setWeightfrom(val.getWeightfrom());
+                temps.setType(val.getType());
+                temps.setQty(qty);
+                if(printtype.equals("INTERNAL")){
+                    temps.setQtybonus(0l);
+                    temps.setSubtotalprice(subprice);
+                }else if(printtype.equals("PAJAK")){
+                    temps.setQtybonus(val.getQtybonus());
+                    temps.setSubtotalprice(val.getSubtotalprice());
+                }
+                temps.setPrice(price);
+
+                listitems.add(temps);
+            }else{
+                listitems.add(val);
+            }
+
+        }
+        if(printtype.equals("INTERNAL")){
+            print.setTotalprice(totalPrice);
+        }else if(printtype.equals("PAJAK")){
+            print.setTotalprice(totalPricePajak);
+        }
+        print.setItems(listitems);
+
+        print.setCharges(charges);
+        print.setInventori(inventori);
+
+        return print;
+    }
+    private PrintDataPurchaseReceive getPrintDataNotaSupplier(Long id,Long iduser, Long idcompany,Long idbranch,PrintDataPurchaseReceive value){
+        ValueParameter param = parameterClientService.getValueByParamName(idcompany,idbranch,"COMPANYNAME","TEXT");
+
+        PrintDataPurchaseReceive print = value;
+        print.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch, print.getIdvendor()));
+        print.setItems(getPrintDataItems(id));
+        print.setCharges(getPrintDataCharge(id));
+        print.setCompanyName(param.getStrValue());
+        print.setInventori(getPrintDataItemsInventori(id));
+        print.setSaldoDepositBeforeNotaSubmit(depositService.calculateSaldoDepositByIdVendorAndBeforeDateCreated(idcompany,idbranch, print.getIdvendor(),print.getCreateddate().getTime()));
+        print.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADNOTA",namaMenu));
+        print.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
+        UserListData user = userAppsService.getUserByID(iduser);
+        String namaUser  = "";
+        if(user != null){
+            namaUser = user.getNama();
+        }
+        print.setNamaUser(namaUser);
+        return print;
     }
 
     @Override
