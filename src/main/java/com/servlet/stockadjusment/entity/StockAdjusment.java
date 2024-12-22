@@ -1,4 +1,4 @@
-package com.servlet.pricelist.entity;
+package com.servlet.stockadjusment.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -6,18 +6,21 @@ import java.sql.Date;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "pricelist", schema = "public")
-public class PriceList implements Serializable {
+@Table(name = "stock_adjusment", schema = "public")
+public class StockAdjusment implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO, generator="pricelist_id_seq")
+    @GeneratedValue(strategy= GenerationType.AUTO, generator="stock_adjusment_id_seq")
     private Long id;
     private Long idcompany;
     private Long idbranch;
+    private String nodocument;
+    private Date date;
     private Date pricedate;
-    private Date pricedatethru;
-    private String notes;
+    private String note;
+    private String type;
+    private Long idpricelist;
     private boolean isdelete;
     private Long createdby;
     private Timestamp createddate;
@@ -26,30 +29,12 @@ public class PriceList implements Serializable {
     private Long deleteby;
     private Timestamp deletedate;
 
-    @Override
-    public String toString() {
-        return "PriceList{" +
-                "id=" + id +
-                ", pricedate=" + pricedate +
-                ", pricedatethru=" + pricedatethru +
-                ", notes=" + notes +
-                '}';
+    public Long getIdpricelist() {
+        return idpricelist;
     }
 
-    public Date getPricedatethru() {
-        return pricedatethru;
-    }
-
-    public void setPricedatethru(Date pricedatethru) {
-        this.pricedatethru = pricedatethru;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
+    public void setIdpricelist(Long idpricelist) {
+        this.idpricelist = idpricelist;
     }
 
     public Long getId() {
@@ -76,12 +61,44 @@ public class PriceList implements Serializable {
         this.idbranch = idbranch;
     }
 
+    public String getNodocument() {
+        return nodocument;
+    }
+
+    public void setNodocument(String nodocument) {
+        this.nodocument = nodocument;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
     public Date getPricedate() {
         return pricedate;
     }
 
     public void setPricedate(Date pricedate) {
         this.pricedate = pricedate;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public boolean isIsdelete() {

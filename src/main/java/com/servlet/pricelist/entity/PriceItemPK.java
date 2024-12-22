@@ -9,13 +9,23 @@ public class PriceItemPK implements Serializable {
 
     private long pricelistid;
     private long categoryproductid;
+    private long idproduct;
 
     @Override
     public String toString() {
         return "PriceItemPK{" +
                 "pricelistid=" + pricelistid +
                 ", categoryproductid=" + categoryproductid +
+                ", idproduct=" + idproduct +
                 '}';
+    }
+
+    public long getIdproduct() {
+        return idproduct;
+    }
+
+    public void setIdproduct(long idproduct) {
+        this.idproduct = idproduct;
     }
 
     public long getPricelistid() {

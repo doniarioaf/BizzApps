@@ -28,6 +28,8 @@ import com.servlet.product.entity.BodyProduct;
 import com.servlet.product.service.ProductService;
 import com.servlet.purchasereceive.entity.BodyPurchaseReceive;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
+import com.servlet.stockadjusment.entity.BodyStockAdjusment;
+import com.servlet.stockadjusment.service.StockAdjusmentService;
 import com.servlet.vendor.entity.BodyVendor;
 import com.servlet.vendor.service.VendorService;
 import org.slf4j.Logger;
@@ -116,6 +118,8 @@ public class ProcessHandler implements ProcessService{
 
 	@Autowired
 	DraftPurchaseReceiveService draftPurchaseReceiveService;
+	@Autowired
+	StockAdjusmentService stockAdjusmentService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -685,6 +689,43 @@ public class ProcessHandler implements ProcessService{
 				}
 			}
 
+			else if(codepermission.equals(ConstansPermission.CREATE_STOCKADJUSMENT)) {
+				BodyStockAdjusment param = (BodyStockAdjusment) data;
+				ReturnData valReturn = stockAdjusmentService.save(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_STOCKADJUSMENT)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyStockAdjusment body  = (BodyStockAdjusment) param.get("body");
+				ReturnData valReturn = stockAdjusmentService.update(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId(),body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_STOCKADJUSMENT)) {
+				long id = (long) data;
+				ReturnData valReturn = stockAdjusmentService.delete(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId());
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}
+
 			else if(codepermission.equals(ConstansPermission.LOGOUT)) {
 				ReturnData valReturn = userAppsService.logout(auth.getId());
 				val.setSuccess(valReturn.isSuccess());
@@ -941,6 +982,24 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("SEARCHBYVENDOR")) {
 					long idvendor = (long) param.get("idvendor");
 					val.setData(draftPurchaseReceiveService.getTemplateByIdVendor(auth.getIdcompany(), auth.getIdbranch(),idvendor));
+				}
+			}
+
+			else if(codepermission.equals(ConstansPermission.READ_STOCKADJUSMENT)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					Long from = (Long) param.get("from");
+					Long to = (Long) param.get("to");
+					val.setData(stockAdjusmentService.getListAll(auth.getIdcompany(), auth.getIdbranch(),from,to));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(stockAdjusmentService.getDetail(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(stockAdjusmentService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("PRICELIST")) {
+					long pricedate = (long) param.get("pricedate");
+					val.setData(priceService.getDataPriceByDate(auth.getIdcompany(), auth.getIdbranch(),pricedate));
 				}
 			}
 			else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {}

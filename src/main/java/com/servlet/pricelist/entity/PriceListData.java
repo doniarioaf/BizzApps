@@ -5,6 +5,15 @@ import java.sql.Date;
 public class PriceListData {
     private Long id;
     private Date pricedate;
+    private Date pricedatethru;
+
+    public Date getPricedatethru() {
+        return pricedatethru;
+    }
+
+    public void setPricedatethru(Date pricedatethru) {
+        this.pricedatethru = pricedatethru;
+    }
 
     public Long getId() {
         return id;

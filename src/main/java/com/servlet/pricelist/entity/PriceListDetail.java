@@ -7,11 +7,29 @@ import java.util.List;
 public class PriceListDetail {
     private Long id;
     private Date pricedate;
+    private Date pricedatethru;
+    private String notes;
     private String createdbyName;
     private Timestamp createddate;
     private String modifiedbyName;
     private Timestamp modifieddate;
     private List<PriceListItemData> items;
+
+    public Date getPricedatethru() {
+        return pricedatethru;
+    }
+
+    public void setPricedatethru(Date pricedatethru) {
+        this.pricedatethru = pricedatethru;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
 
     public Long getId() {
         return id;

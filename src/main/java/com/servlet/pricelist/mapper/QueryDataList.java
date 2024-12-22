@@ -13,7 +13,7 @@ public class QueryDataList implements RowMapper<PriceListData> {
     public QueryDataList() {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
-        sqlBuilder.append("data.id as id, data.pricedate as pricedate ");
+        sqlBuilder.append("data.id as id, data.pricedate as pricedate,data.pricedatethru as pricedatethru ");
         sqlBuilder.append("from pricelist as data ");
 
         this.schemaSql = sqlBuilder.toString();
@@ -26,10 +26,12 @@ public class QueryDataList implements RowMapper<PriceListData> {
     public PriceListData mapRow(ResultSet rs, int rowNum) throws SQLException {
         final Long id = rs.getLong("id");
         final Date pricedate = rs.getDate("pricedate");
+        final Date pricedatethru = rs.getDate("pricedatethru");
+
         PriceListData data = new PriceListData();
         data.setId(id);
         data.setPricedate(pricedate);
-
+        data.setPricedatethru(pricedatethru);
         return data;
     }
 }

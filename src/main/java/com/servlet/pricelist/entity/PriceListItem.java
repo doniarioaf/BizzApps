@@ -13,13 +13,23 @@ public class PriceListItem implements Serializable {
     @EmbeddedId
     private PriceItemPK priceItemPK;
     private Double amount;
+    private Double allowance;
 
     @Override
     public String toString() {
         return "PriceListItem{" +
                 "priceItemPK=" + priceItemPK.toString() +
                 ", amount=" + amount +
+                ", allowance=" + allowance +
                 '}';
+    }
+
+    public Double getAllowance() {
+        return allowance;
+    }
+
+    public void setAllowance(Double allowance) {
+        this.allowance = allowance;
     }
 
     public PriceItemPK getPriceItemPK() {
