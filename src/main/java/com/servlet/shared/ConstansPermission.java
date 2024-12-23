@@ -85,6 +85,10 @@ public class ConstansPermission {
 	public static final String CREATE_STOCKADJUSMENT = "CREATE_STOCKADJUSMENT";
 	public static final String EDIT_STOCKADJUSMENT = "EDIT_STOCKADJUSMENT";
 	public static final String DELETE_STOCKADJUSMENT = "DELETE_STOCKADJUSMENT";
+	public static final String READ_PACKINGLIST = "READ_PACKINGLIST";
+	public static final String CREATE_PACKINGLIST = "CREATE_PACKINGLIST";
+	public static final String EDIT_PACKINGLIST = "EDIT_PACKINGLIST";
+	public static final String DELETE_PACKINGLIST = "DELETE_PACKINGLIST";
 
 	
 }

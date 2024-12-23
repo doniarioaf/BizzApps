@@ -349,7 +349,7 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
         }
         String dataItems = listitem.toString();
         maps.put("validations",validations);
-        maps.put("dataItems","dataItems");
+        maps.put("dataItems",dataItems);
         return maps;
     }
 

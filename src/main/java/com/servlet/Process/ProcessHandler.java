@@ -20,6 +20,9 @@ import com.servlet.inventori.entity.BodyInventori;
 import com.servlet.inventori.service.InventoriService;
 import com.servlet.mappingstock.entity.BodyMappingStock;
 import com.servlet.mappingstock.service.MappingStockService;
+import com.servlet.packinglist.entity.BodyPackingList;
+import com.servlet.packinglist.entity.ParamSearchPackingList;
+import com.servlet.packinglist.service.PackingListService;
 import com.servlet.parameterclient.entity.BodyParameterClient;
 import com.servlet.parameterclient.service.ParameterClientService;
 import com.servlet.pricelist.entity.BodyPriceList;
@@ -120,6 +123,9 @@ public class ProcessHandler implements ProcessService{
 	DraftPurchaseReceiveService draftPurchaseReceiveService;
 	@Autowired
 	StockAdjusmentService stockAdjusmentService;
+
+	@Autowired
+	PackingListService packingListService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -726,6 +732,43 @@ public class ProcessHandler implements ProcessService{
 				}
 			}
 
+			else if(codepermission.equals(ConstansPermission.CREATE_PACKINGLIST)) {
+				BodyPackingList param = (BodyPackingList) data;
+				ReturnData valReturn = packingListService.save(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_PACKINGLIST)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyPackingList body  = (BodyPackingList) param.get("body");
+				ReturnData valReturn = packingListService.update(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId(),body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_PACKINGLIST)) {
+				long id = (long) data;
+				ReturnData valReturn = packingListService.delete(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId());
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}
+
 			else if(codepermission.equals(ConstansPermission.LOGOUT)) {
 				ReturnData valReturn = userAppsService.logout(auth.getId());
 				val.setSuccess(valReturn.isSuccess());
@@ -997,6 +1040,23 @@ public class ProcessHandler implements ProcessService{
 					val.setData(stockAdjusmentService.getDetail(auth.getIdcompany(), auth.getIdbranch(),id));
 				}else if(type.equals("TEMPLATE")) {
 					val.setData(stockAdjusmentService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("PRICELIST")) {
+					long pricedate = (long) param.get("pricedate");
+					val.setData(priceService.getDataPriceByDate(auth.getIdcompany(), auth.getIdbranch(),pricedate));
+				}
+			}
+
+			else if(codepermission.equals(ConstansPermission.READ_PACKINGLIST)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				ParamSearchPackingList paramsearch = (ParamSearchPackingList) param.get("paramsearch");
+				if(type.equals("ALL")) {
+					val.setData(packingListService.getList(auth.getIdcompany(), auth.getIdbranch(),paramsearch));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(packingListService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(packingListService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("PRICELIST")) {
 					long pricedate = (long) param.get("pricedate");
 					val.setData(priceService.getDataPriceByDate(auth.getIdcompany(), auth.getIdbranch(),pricedate));

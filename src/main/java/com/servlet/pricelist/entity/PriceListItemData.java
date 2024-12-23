@@ -5,6 +5,7 @@ public class PriceListItemData {
     private String productName;
     private long categoryproductid;
     private String categoryproductidName;
+    private String categoryproductSize;
     private Double amount;
     private Double allowance;
 
@@ -18,6 +19,14 @@ public class PriceListItemData {
                 ", idproduct=" + idproduct +
                 ", productName=" + productName +
                 '}';
+    }
+
+    public String getCategoryproductSize() {
+        return categoryproductSize;
+    }
+
+    public void setCategoryproductSize(String categoryproductSize) {
+        this.categoryproductSize = categoryproductSize;
     }
 
     public long getIdproduct() {

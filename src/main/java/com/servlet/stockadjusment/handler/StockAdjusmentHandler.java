@@ -140,7 +140,7 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
                 String data = table.toString();
                 String dataItems = (String) mapsItems.get("dataItems");
                 String mixData = "header = "+data+" | Items = "+dataItems;
-                historyAppsService.saveHistory(idcompany,idbranch,iduser,"ADD",namaMenu,mixData,"","",ts);
+                historyAppsService.saveHistory(idcompany,idbranch,iduser,"EDIT",namaMenu,mixData,"","",ts);
             }else{
                 validations.add(validationsItems.get(0));
             }
