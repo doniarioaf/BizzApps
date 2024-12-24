@@ -136,7 +136,7 @@ public class PriceHandler implements PriceService {
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
         try{
             PriceList table = priceListRepo.getById(id);
-            if(table.getIdcompany() == idcompany.longValue() && table.getIdbranch() == idbranch.longValue()){
+            if(table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue() && !table.isIsdelete()){
                 table.setNotes(body.getNotes());
                 table.setModifieddate(ts);
                 table.setModifiedby(iduser);
@@ -174,17 +174,19 @@ public class PriceHandler implements PriceService {
     }
 
     @Override
-    public ReturnData delete(Long id, Long iduser) {
+    public ReturnData delete(Long id,Long idcompany, Long idbranch, Long iduser) {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
         try{
             PriceList table = priceListRepo.getById(id);
-            table.setIsdelete(true);
-            table.setDeletedate(ts);
-            table.setDeleteby(iduser);
-            idsave = priceListRepo.saveAndFlush(table).getId();
-            historyAppsService.saveHistory(table.getIdcompany(),table.getIdbranch(),iduser,"DELETE",namaMenu,table.toString(),"","",ts);
+            if(table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue() && !table.isIsdelete()) {
+                table.setIsdelete(true);
+                table.setDeletedate(ts);
+                table.setDeleteby(iduser);
+                idsave = priceListRepo.saveAndFlush(table).getId();
+                historyAppsService.saveHistory(table.getIdcompany(), table.getIdbranch(), iduser, "DELETE", namaMenu, table.toString(), "", "", ts);
+            }
         }catch (Exception e){
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
             validations.add(msg);

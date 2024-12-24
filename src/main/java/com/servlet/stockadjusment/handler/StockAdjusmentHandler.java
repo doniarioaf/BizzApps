@@ -124,27 +124,28 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
         try{
             StockAdjusment table = repo.getById(id);
-            table.setNote(body.getNote());
-            table.setType(body.getType());
-            table.setModifiedby(iduser);
-            table.setModifieddate(ts);
-            idsave = repo.saveAndFlush(table).getId();
+            if(table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue() && !table.isIsdelete()) {
+                table.setNote(body.getNote());
+                table.setType(body.getType());
+                table.setModifiedby(iduser);
+                table.setModifieddate(ts);
+                idsave = repo.saveAndFlush(table).getId();
 
-            kurangiStockItems(idcompany,idbranch, id);
+                kurangiStockItems(idcompany, idbranch, id);
 
-            stockAdjusmentItemRepo.deleteAllDetailByIdStockAdjusment(id);
+                stockAdjusmentItemRepo.deleteAllDetailByIdStockAdjusment(id);
 
-            HashMap<Object, Object> mapsItems = setItems(idcompany,idbranch, body.getItems(), idsave);
-            List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
-            if(validationsItems.size() == 0){
-                String data = table.toString();
-                String dataItems = (String) mapsItems.get("dataItems");
-                String mixData = "header = "+data+" | Items = "+dataItems;
-                historyAppsService.saveHistory(idcompany,idbranch,iduser,"EDIT",namaMenu,mixData,"","",ts);
-            }else{
-                validations.add(validationsItems.get(0));
+                HashMap<Object, Object> mapsItems = setItems(idcompany, idbranch, body.getItems(), idsave);
+                List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
+                if (validationsItems.size() == 0) {
+                    String data = table.toString();
+                    String dataItems = (String) mapsItems.get("dataItems");
+                    String mixData = "header = " + data + " | Items = " + dataItems;
+                    historyAppsService.saveHistory(idcompany, idbranch, iduser, "EDIT", namaMenu, mixData, "", "", ts);
+                } else {
+                    validations.add(validationsItems.get(0));
+                }
             }
-
         }catch (Exception e) {
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
             validations.add(msg);
@@ -163,12 +164,14 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
         try{
             StockAdjusment table = repo.getById(id);
-            table.setIsdelete(true);
-            table.setDeleteby(iduser);
-            table.setDeletedate(ts);
-            idsave = repo.saveAndFlush(table).getId();
+            if(table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue() && !table.isIsdelete()) {
+                table.setIsdelete(true);
+                table.setDeleteby(iduser);
+                table.setDeletedate(ts);
+                idsave = repo.saveAndFlush(table).getId();
 
-            kurangiStockItems(idcompany,idbranch, id);
+                kurangiStockItems(idcompany, idbranch, id);
+            }
         }catch (Exception e) {
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
             validations.add(msg);

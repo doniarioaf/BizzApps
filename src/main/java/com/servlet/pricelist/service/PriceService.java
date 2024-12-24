@@ -11,7 +11,7 @@ public interface PriceService {
     PriceListTemplate getTemplateData(Long idcompany, Long idbranch);
     ReturnData save(Long idcompany, Long idbranch, Long iduser, BodyPriceList body);
     ReturnData update(Long id,Long idcompany, Long idbranch, Long iduser, BodyPriceList body);
-    ReturnData delete(Long id,Long iduser);
+    ReturnData delete(Long id,Long idcompany, Long idbranch,Long iduser);
     PriceListDetail getDetail(Long id,Long idcompany, Long idbranch);
     PriceItemsDataForTemplate getDataPriceByDate(Long idcompany, Long idbranch,Long priceDate);
 }

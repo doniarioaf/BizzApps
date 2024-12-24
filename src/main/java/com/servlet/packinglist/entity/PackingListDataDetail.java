@@ -11,6 +11,7 @@ public class PackingListDataDetail {
     private Long idcustomer;
     private String customerName;
     private String customerAlias;
+    private String customerAddress;
     private String city;
     private String attention;
     private String flightnumber;
@@ -23,6 +24,14 @@ public class PackingListDataDetail {
     private Timestamp modifieddate;
     private Long idpricelist;
     private List<PackingListDataItemDetail> items;
+
+    public String getCustomerAddress() {
+        return customerAddress;
+    }
+
+    public void setCustomerAddress(String customerAddress) {
+        this.customerAddress = customerAddress;
+    }
 
     public Long getId() {
         return id;

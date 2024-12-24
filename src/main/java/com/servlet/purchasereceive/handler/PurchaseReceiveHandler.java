@@ -225,51 +225,52 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
         try {
             PurchaseReceive table = purchaseReceiveRepo.getById(id);
-            List<PurchaseReceiveItemsNotJoin> listItems = getDataItemsNotJoin(id);
-            List<PurchaseReceiveChargeNotJoin> listItemsCharge = getDataItemsChargeNotJoin(id);
-            List<PurchaseReceiveInventoriNotJoin> listItemsInventori = getDataItemsInventoriNotJoin(id);
-            String dataBefore = table.toString();
-            String dataItemsBefore = listItems.toString()+" | "+listItemsCharge.toString()+" | "+listItemsInventori.toString();
-            String mixDataBefore = "header = "+dataBefore+" | Items = "+dataItemsBefore;
+            if(table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue() && !table.isIsdelete()) {
+                List<PurchaseReceiveItemsNotJoin> listItems = getDataItemsNotJoin(id);
+                List<PurchaseReceiveChargeNotJoin> listItemsCharge = getDataItemsChargeNotJoin(id);
+                List<PurchaseReceiveInventoriNotJoin> listItemsInventori = getDataItemsInventoriNotJoin(id);
+                String dataBefore = table.toString();
+                String dataItemsBefore = listItems.toString() + " | " + listItemsCharge.toString() + " | " + listItemsInventori.toString();
+                String mixDataBefore = "header = " + dataBefore + " | Items = " + dataItemsBefore;
 
-            /**
-             * idvendor tidak diupdate, terlalu banyak relasi.
-             *
-             * note:ini sementara
-             */
+                /**
+                 * idvendor tidak diupdate, terlalu banyak relasi.
+                 *
+                 * note:ini sementara
+                 */
 
 //            table.setIdvendor(body.getIdvendor());
-            table.setTransactiondate(new Date(body.getTransactiondate()));
-            table.setKoli(body.getKoli());
-            table.setNotes(body.getNotes());
-            table.setBank(body.getBank());
-            table.setAccountnobank(body.getAccountnobank());
-            table.setAccountnamebank(body.getAccountnamebank());
-            table.setTotalprice(body.getTotalprice());
-            table.setSetor(body.getSetor());
-            table.setIsdefaultvaluesetor(body.isIsdefaultvaluesetor());
-            table.setIdarea(body.getIdarea());
-            table.setModifiedby(iduser);
-            table.setModifieddate(ts);
-            idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
+                table.setTransactiondate(new Date(body.getTransactiondate()));
+                table.setKoli(body.getKoli());
+                table.setNotes(body.getNotes());
+                table.setBank(body.getBank());
+                table.setAccountnobank(body.getAccountnobank());
+                table.setAccountnamebank(body.getAccountnamebank());
+                table.setTotalprice(body.getTotalprice());
+                table.setSetor(body.getSetor());
+                table.setIsdefaultvaluesetor(body.isIsdefaultvaluesetor());
+                table.setIdarea(body.getIdarea());
+                table.setModifiedby(iduser);
+                table.setModifieddate(ts);
+                idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
 
-            kurangiStockItems(idcompany,idbranch, id);
+                kurangiStockItems(idcompany, idbranch, id);
 
-            purchaseReceiveItemsRepo.deleteAllDetailByIdPurchaseReceive(idsave);
-            purchaseReceiveChargeRepo.deleteAllDetailByIdPurchaseReceive(idsave);
-            purchaseReceiveInventoriRepo.deleteAllDetailByIdPurchaseReceiveInventory(idsave);
+                purchaseReceiveItemsRepo.deleteAllDetailByIdPurchaseReceive(idsave);
+                purchaseReceiveChargeRepo.deleteAllDetailByIdPurchaseReceive(idsave);
+                purchaseReceiveInventoriRepo.deleteAllDetailByIdPurchaseReceiveInventory(idsave);
 
-            HashMap<Object, Object> mapsItems = setItems(idcompany,idbranch,body.getCharges(), body.getItems(),body.getInventori(), idsave);
-            List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
-            if(validationsItems.size() == 0){
-                String data = table.toString();
-                String dataItems = (String) mapsItems.get("dataItems");
-                String mixData = "header = "+data+" | Items = "+dataItems;
-                historyAppsService.saveHistory(idcompany,idbranch,iduser,"EDIT",namaMenu,"",mixData,mixDataBefore,ts);
-            }else{
-                validations.add(validationsItems.get(0));
+                HashMap<Object, Object> mapsItems = setItems(idcompany, idbranch, body.getCharges(), body.getItems(), body.getInventori(), idsave);
+                List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
+                if (validationsItems.size() == 0) {
+                    String data = table.toString();
+                    String dataItems = (String) mapsItems.get("dataItems");
+                    String mixData = "header = " + data + " | Items = " + dataItems;
+                    historyAppsService.saveHistory(idcompany, idbranch, iduser, "EDIT", namaMenu, "", mixData, mixDataBefore, ts);
+                } else {
+                    validations.add(validationsItems.get(0));
+                }
             }
-
         }catch (Exception e) {
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
             validations.add(msg);
@@ -289,13 +290,15 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
         try {
             PurchaseReceive table = purchaseReceiveRepo.getById(id);
-            table.setIsdelete(true);
-            table.setDeleteby(iduser);
-            table.setDeletedate(ts);
-            idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
+            if(table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue() && !table.isIsdelete()) {
+                table.setIsdelete(true);
+                table.setDeleteby(iduser);
+                table.setDeletedate(ts);
+                idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
 
-            kurangiStockItems(idcompany,idbranch, id);
-            historyAppsService.saveHistory(table.getIdcompany(),table.getIdbranch(),iduser,"DELETE",namaMenu,table.toString(),"","",ts);
+                kurangiStockItems(idcompany, idbranch, id);
+                historyAppsService.saveHistory(table.getIdcompany(), table.getIdbranch(), iduser, "DELETE", namaMenu, table.toString(), "", "", ts);
+            }
         }catch (Exception e) {
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
             validations.add(msg);

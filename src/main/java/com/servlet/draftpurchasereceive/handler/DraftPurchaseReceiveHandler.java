@@ -185,50 +185,51 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
             try{
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
                 DraftPurchaseReceive table = repo.getById(id);
-                String dataBefore = table.toString();
-                List<DraftPurchaseReceiveItemNotJoin> listitems = getListItemsNotJoin(id,idcompany,idbranch);
-                String dataItemsBefore = listitems.toString();
-                String mixDataBefore = "header = "+dataBefore+" | Items = "+dataItemsBefore;
+                if(table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue() && !table.isIsdelete()) {
+                    String dataBefore = table.toString();
+                    List<DraftPurchaseReceiveItemNotJoin> listitems = getListItemsNotJoin(id, idcompany, idbranch);
+                    String dataItemsBefore = listitems.toString();
+                    String mixDataBefore = "header = " + dataBefore + " | Items = " + dataItemsBefore;
 
-                table.setDate(new Date(body.getDate()));
-                table.setIdvendor(body.getIdvendor());
-                if(body.getArriveltime() != null){
-                    long msArrival = sdf.parse(body.getArriveltime()).getTime();
-                    Time arrival = new Time(msArrival);
-                    table.setArriveltime(arrival);
-                }else{
-                    table.setArriveltime(null);
+                    table.setDate(new Date(body.getDate()));
+                    table.setIdvendor(body.getIdvendor());
+                    if (body.getArriveltime() != null) {
+                        long msArrival = sdf.parse(body.getArriveltime()).getTime();
+                        Time arrival = new Time(msArrival);
+                        table.setArriveltime(arrival);
+                    } else {
+                        table.setArriveltime(null);
+                    }
+
+                    if (body.getReceivetime() != null) {
+                        long msReceive = sdf.parse(body.getReceivetime()).getTime();
+                        Time receive = new Time(msReceive);
+                        table.setReceivetime(receive);
+                    } else {
+                        table.setReceivetime(null);
+                    }
+
+                    table.setSmu(body.getSmu());
+                    table.setTotalekor(body.getTotalekor());
+                    table.setTotalkg(body.getTotalkg());
+                    table.setPersentase(body.getPersentase());
+                    table.setModifiedby(iduser);
+                    table.setModifieddate(ts);
+                    idsave = repo.saveAndFlush(table).getId();
+
+                    repoItems.deleteAllDetailByIdDraftPurchaseReceive(id);
+
+                    HashMap<Object, Object> mapsItems = setItems(idcompany, idbranch, idsave, body.getItems());
+                    List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
+                    if (validationsItems.size() == 0) {
+                        String data = table.toString();
+                        String dataItems = (String) mapsItems.get("dataItems");
+                        String mixData = "header = " + data + " | Items = " + dataItems;
+                        historyAppsService.saveHistory(idcompany, idbranch, iduser, "EDIT", namaMenu, "", mixData, mixDataBefore, ts);
+                    } else {
+                        validations.add(validationsItems.get(0));
+                    }
                 }
-
-                if(body.getReceivetime() != null){
-                    long msReceive = sdf.parse(body.getReceivetime()).getTime();
-                    Time receive = new Time(msReceive);
-                    table.setReceivetime(receive);
-                }else{
-                    table.setReceivetime(null);
-                }
-
-                table.setSmu(body.getSmu());
-                table.setTotalekor(body.getTotalekor());
-                table.setTotalkg(body.getTotalkg());
-                table.setPersentase(body.getPersentase());
-                table.setModifiedby(iduser);
-                table.setModifieddate(ts);
-                idsave = repo.saveAndFlush(table).getId();
-
-                repoItems.deleteAllDetailByIdDraftPurchaseReceive(id);
-
-                HashMap<Object, Object> mapsItems = setItems(idcompany,idbranch,idsave, body.getItems());
-                List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
-                if(validationsItems.size() == 0){
-                    String data = table.toString();
-                    String dataItems = (String) mapsItems.get("dataItems");
-                    String mixData = "header = "+data+" | Items = "+dataItems;
-                    historyAppsService.saveHistory(idcompany,idbranch,iduser,"EDIT",namaMenu,"",mixData,mixDataBefore,ts);
-                }else{
-                    validations.add(validationsItems.get(0));
-                }
-
             }catch (Exception e) {
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
                 validations.add(msg);

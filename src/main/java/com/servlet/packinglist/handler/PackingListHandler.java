@@ -161,31 +161,33 @@ public class PackingListHandler implements PackingListService {
         if(validations.size() == 0) {
             try{
                 PackingList table = repo.getById(id);
-                String mixDataBef = "header = "+table.toString()+" | Items = "+getListItemsNotJoin(id).toString();
+                if(table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue() && !table.isIsdelete()) {
+                    String mixDataBef = "header = " + table.toString() + " | Items = " + getListItemsNotJoin(id).toString();
 
-                table.setDate(new Date(body.getDate()));
-                table.setIdcustomer(body.getIdcustomer());
-                table.setCity(body.getCity());
-                table.setAttention(body.getAttention());
-                table.setFlightnumber(body.getFlightnumber());
-                table.setAwbnumber(body.getAwbnumber());
-                table.setNetto(body.getNetto());
-                table.setKoli(body.getKoli());
-                table.setModifiedby(iduser);
-                table.setModifieddate(ts);
-                idsave = repo.saveAndFlush(table).getId();
+                    table.setDate(new Date(body.getDate()));
+                    table.setIdcustomer(body.getIdcustomer());
+                    table.setCity(body.getCity());
+                    table.setAttention(body.getAttention());
+                    table.setFlightnumber(body.getFlightnumber());
+                    table.setAwbnumber(body.getAwbnumber());
+                    table.setNetto(body.getNetto());
+                    table.setKoli(body.getKoli());
+                    table.setModifiedby(iduser);
+                    table.setModifieddate(ts);
+                    idsave = repo.saveAndFlush(table).getId();
 
-                itemRepo.deleteAllDetailByIdPackingList(id);
+                    itemRepo.deleteAllDetailByIdPackingList(id);
 
-                HashMap<Object, Object> mapsItems = setItems(idcompany,idbranch,idsave, body.getItems());
-                List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
-                if(validationsItems.size() == 0){
-                    String data = table.toString();
-                    String dataItems = (String) mapsItems.get("dataItems");
-                    String mixData = "header = "+data+" | Items = "+dataItems;
-                    historyAppsService.saveHistory(idcompany,idbranch,iduser,"EDIT",namaMenu,"",mixData,mixDataBef,ts);
-                }else{
-                    validations.add(validationsItems.get(0));
+                    HashMap<Object, Object> mapsItems = setItems(idcompany, idbranch, idsave, body.getItems());
+                    List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
+                    if (validationsItems.size() == 0) {
+                        String data = table.toString();
+                        String dataItems = (String) mapsItems.get("dataItems");
+                        String mixData = "header = " + data + " | Items = " + dataItems;
+                        historyAppsService.saveHistory(idcompany, idbranch, iduser, "EDIT", namaMenu, "", mixData, mixDataBef, ts);
+                    } else {
+                        validations.add(validationsItems.get(0));
+                    }
                 }
 
             }catch (Exception e) {
@@ -212,13 +214,15 @@ public class PackingListHandler implements PackingListService {
         if(validations.size() == 0) {
             try{
                 PackingList table = repo.getById(id);
-                String mixDataBef = "header = "+table.toString()+" | Items = "+getListItemsNotJoin(id).toString();
-                table.setIsdelete(true);
-                table.setDeleteby(iduser);
-                table.setDeletedate(ts);
-                idsave = repo.saveAndFlush(table).getId();
+                if(table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue() && !table.isIsdelete()) {
+                    String mixDataBef = "header = " + table.toString() + " | Items = " + getListItemsNotJoin(id).toString();
+                    table.setIsdelete(true);
+                    table.setDeleteby(iduser);
+                    table.setDeletedate(ts);
+                    idsave = repo.saveAndFlush(table).getId();
 
-                historyAppsService.saveHistory(idcompany,idbranch,iduser,"DELETE",namaMenu,mixDataBef,"","",ts);
+                    historyAppsService.saveHistory(idcompany, idbranch, iduser, "DELETE", namaMenu, mixDataBef, "", "", ts);
+                }
 
             }catch (Exception e) {
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");

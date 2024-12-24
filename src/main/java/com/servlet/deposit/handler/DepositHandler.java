@@ -158,7 +158,7 @@ public class DepositHandler implements DepositService {
                     validations.add(msg);
                 }
             }
-            if(validations.size() == 0) {
+            if(validations.size() == 0 && !table.isIsdelete()) {
                 String dataBefore = table.toString();
                 table.setAmount(body.getAmount());
                 table.setModifieddate(ts);

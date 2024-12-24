@@ -542,7 +542,7 @@ public class ProcessHandler implements ProcessService{
 				}
 			}else if(codepermission.equals(ConstansPermission.DELETE_PRICELIST)) {
 				long id = (long) data;
-				ReturnData valReturn = priceService.delete(id,auth.getId());
+				ReturnData valReturn = priceService.delete(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId());
 				if(valReturn.isSuccess()) {
 					val.setData(valReturn.getId());
 				}else {
@@ -777,6 +777,30 @@ public class ProcessHandler implements ProcessService{
 			else if(codepermission.equals(ConstansPermission.CREATE_INVOICE)) {
 				BodyInvoice param = (BodyInvoice) data;
 				ReturnData valReturn = invoiceService.save(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_INVOICE)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyInvoice body  = (BodyInvoice) param.get("body");
+				ReturnData valReturn = invoiceService.update(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId(),body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_INVOICE)) {
+				long id = (long) data;
+				ReturnData valReturn = invoiceService.delete(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId());
 				if(valReturn.isSuccess()) {
 					val.setData(valReturn.getId());
 				}else {
@@ -1089,7 +1113,7 @@ public class ProcessHandler implements ProcessService{
 					val.setData(invoiceService.getList(auth.getIdcompany(), auth.getIdbranch(),paramsearch));
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
-					val.setData(packingListService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(invoiceService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("TEMPLATE")) {
 					val.setData(invoiceService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("GET_PACKINGLIST")) {

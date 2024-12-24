@@ -2,6 +2,7 @@ package com.servlet.invoice.handler;
 
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.invoice.entity.*;
+import com.servlet.invoice.mapper.QueryDataDetail;
 import com.servlet.invoice.mapper.QueryDataList;
 import com.servlet.invoice.repo.InvoiceRepo;
 import com.servlet.invoice.service.InvoiceService;
@@ -64,6 +65,22 @@ public class InvoiceHandler implements InvoiceService {
     }
 
     @Override
+    public InvoiceDataDetail getDetail(Long id, Long idcompany, Long idbranch) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataDetail().schema());
+        sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+
+        final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+        List<InvoiceDataDetail> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataDetail(), queryParameters);
+        if(list != null && list.size() > 0){
+            InvoiceDataDetail det = list.get(0);
+            det.setPackinglist(packingListService.getDetail(det.getIdpackinglist(), idcompany,idbranch));
+
+            return det;
+        }
+        return null;
+    }
+
+    @Override
     public ReturnData save(Long idcompany, Long idbranch, Long iduser, BodyInvoice body) {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
@@ -97,6 +114,76 @@ public class InvoiceHandler implements InvoiceService {
 
         if(validations.size() > 0){
             historyAppsService.saveHistory(idcompany,idbranch,iduser,"ADD_ERROR",namaMenu,validations.get(0).getMessage(),"","",ts);
+        }
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public ReturnData update(Long id, Long idcompany, Long idbranch, Long iduser, BodyInvoice body) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+
+        if(validations.size() == 0) {
+            try{
+                Invoice table = repo.getById(id);
+                if(table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue()){
+                    String before = table.toString();
+                    table.setKurs(body.getKurs());
+                    table.setPhone(body.getPhone());
+                    table.setModifiedby(iduser);
+                    table.setModifieddate(ts);
+                    idsave = repo.saveAndFlush(table).getId();
+                    String after = table.toString();
+                    historyAppsService.saveHistory(idcompany,idbranch,iduser,"EDIT",namaMenu,"",after,before,ts);
+                }
+            }catch (Exception e) {
+                runningNumberService.rollBackDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_INVOICE);
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
+        }
+
+        if(validations.size() > 0){
+            historyAppsService.saveHistory(idcompany,idbranch,iduser,"EDIT_ERROR",namaMenu,validations.get(0).getMessage(),"","",ts);
+        }
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public ReturnData delete(Long id, Long idcompany, Long idbranch, Long iduser) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+
+        if(validations.size() == 0) {
+            try{
+                Invoice table = repo.getById(id);
+                if(table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue()){
+                    table.setIsdelete(true);
+                    table.setDeleteby(iduser);
+                    table.setDeletedate(ts);
+                    idsave = repo.saveAndFlush(table).getId();
+
+                    historyAppsService.saveHistory(idcompany,idbranch,iduser,"DELETE",namaMenu,table.toString(),"","",ts);
+                }
+            }catch (Exception e) {
+                runningNumberService.rollBackDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_INVOICE);
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
+        }
+
+        if(validations.size() > 0){
+            historyAppsService.saveHistory(idcompany,idbranch,iduser,"DELETE_ERROR",namaMenu,validations.get(0).getMessage(),"","",ts);
         }
         ReturnData data = new ReturnData();
         data.setId(idsave);
