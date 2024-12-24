@@ -9,6 +9,8 @@ import com.servlet.packinglist.mapper.*;
 import com.servlet.packinglist.repo.PakcingListItemRepo;
 import com.servlet.packinglist.repo.PakcingListRepo;
 import com.servlet.packinglist.service.PackingListService;
+import com.servlet.parameterclient.entity.ValueParameter;
+import com.servlet.parameterclient.service.ParameterClientService;
 import com.servlet.product.service.ProductService;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
@@ -47,6 +49,9 @@ public class PackingListHandler implements PackingListService {
 
     @Autowired
     private CustomerService customerService;
+
+    @Autowired
+    private ParameterClientService parameterClientService;
 
     @Autowired
     private HistoryAppsService historyAppsService;
@@ -250,6 +255,29 @@ public class PackingListHandler implements PackingListService {
 
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDropDown(), queryParameters);
+    }
+
+    @Override
+    public PrintPackingList getPrintData(Long id, Long idcompany, Long idbranch) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataPrint().schema());
+        sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+        List<PrintPackingList> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataPrint(), queryParameters);
+        if(list != null && list.size() > 0){
+            ValueParameter param = parameterClientService.getValueByParamName(idcompany,idbranch,"COMPANYNAME","TEXT");
+            ValueParameter paramAddress1 = parameterClientService.getValueByParamName(idcompany,idbranch,"ADDRESS1","TEXT");
+            ValueParameter paramAddress2 = parameterClientService.getValueByParamName(idcompany,idbranch,"ADDRESS2","TEXT");
+            ValueParameter paramAddress3 = parameterClientService.getValueByParamName(idcompany,idbranch,"ADDRESS3","TEXT");
+
+            PrintPackingList data = list.get(0);
+            data.setItems(getListItems(data.getId()));
+            data.setCompanyName(param.getStrValue());
+            data.setAddress1(paramAddress1.getStrValue());
+            data.setAddress2(paramAddress2.getStrValue());
+            data.setAddress3(paramAddress3.getStrValue());
+            return data;
+        }
+        return null;
     }
 
     private List<PackingListDataItemDetail> getListItems(Long idpackinglist){
