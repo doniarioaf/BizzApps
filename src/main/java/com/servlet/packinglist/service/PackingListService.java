@@ -12,4 +12,5 @@ public interface PackingListService {
     PackingListDataDetail getDetail(Long id,Long idcompany, Long idbranch);
     ReturnData update(Long id, Long idcompany, Long idbranch, Long iduser, BodyPackingList body);
     ReturnData delete(Long id, Long idcompany, Long idbranch, Long iduser);
+    List<PackingListDropDown> getDropDown(Long idcompany, Long idbranch, ParamDropDownPackingList param);
 }

@@ -89,6 +89,8 @@ public class ConstansPermission {
 	public static final String CREATE_PACKINGLIST = "CREATE_PACKINGLIST";
 	public static final String EDIT_PACKINGLIST = "EDIT_PACKINGLIST";
 	public static final String DELETE_PACKINGLIST = "DELETE_PACKINGLIST";
+	public static final String READ_INVOICE = "READ_INVOICE";
+	public static final String CREATE_INVOICE = "CREATE_INVOICE";
 
 	
 }

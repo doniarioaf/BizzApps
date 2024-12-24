@@ -18,6 +18,9 @@ import com.servlet.draftpurchasereceive.entity.ParamSearchDraftPurchaseReceive;
 import com.servlet.draftpurchasereceive.service.DraftPurchaseReceiveService;
 import com.servlet.inventori.entity.BodyInventori;
 import com.servlet.inventori.service.InventoriService;
+import com.servlet.invoice.entity.BodyInvoice;
+import com.servlet.invoice.entity.ParamSearchInvoice;
+import com.servlet.invoice.service.InvoiceService;
 import com.servlet.mappingstock.entity.BodyMappingStock;
 import com.servlet.mappingstock.service.MappingStockService;
 import com.servlet.packinglist.entity.BodyPackingList;
@@ -126,6 +129,8 @@ public class ProcessHandler implements ProcessService{
 
 	@Autowired
 	PackingListService packingListService;
+	@Autowired
+	InvoiceService invoiceService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -769,6 +774,19 @@ public class ProcessHandler implements ProcessService{
 				}
 			}
 
+			else if(codepermission.equals(ConstansPermission.CREATE_INVOICE)) {
+				BodyInvoice param = (BodyInvoice) data;
+				ReturnData valReturn = invoiceService.save(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}
+
 			else if(codepermission.equals(ConstansPermission.LOGOUT)) {
 				ReturnData valReturn = userAppsService.logout(auth.getId());
 				val.setSuccess(valReturn.isSuccess());
@@ -1060,6 +1078,23 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("PRICELIST")) {
 					long pricedate = (long) param.get("pricedate");
 					val.setData(priceService.getDataPriceByDate(auth.getIdcompany(), auth.getIdbranch(),pricedate));
+				}
+			}
+
+			else if(codepermission.equals(ConstansPermission.READ_INVOICE)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				ParamSearchInvoice paramsearch = (ParamSearchInvoice) param.get("paramsearch");
+				if(type.equals("ALL")) {
+					val.setData(invoiceService.getList(auth.getIdcompany(), auth.getIdbranch(),paramsearch));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(packingListService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(invoiceService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("GET_PACKINGLIST")) {
+					long id = (long) param.get("id");
+					val.setData(packingListService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}
 			else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {}

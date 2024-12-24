@@ -5,10 +5,7 @@ import com.servlet.customer.service.CustomerService;
 import com.servlet.draftpurchasereceive.entity.BodyDraftPurchaseReceiveItems;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.packinglist.entity.*;
-import com.servlet.packinglist.mapper.QueryDataDetail;
-import com.servlet.packinglist.mapper.QueryDataList;
-import com.servlet.packinglist.mapper.QueryItemDataDetail;
-import com.servlet.packinglist.mapper.QueryItemNotJoin;
+import com.servlet.packinglist.mapper.*;
 import com.servlet.packinglist.repo.PakcingListItemRepo;
 import com.servlet.packinglist.repo.PakcingListRepo;
 import com.servlet.packinglist.service.PackingListService;
@@ -237,6 +234,18 @@ public class PackingListHandler implements PackingListService {
         data.setSuccess(validations.size() > 0?false:true);
         data.setValidations(validations);
         return data;
+    }
+
+    @Override
+    public List<PackingListDropDown> getDropDown(Long idcompany, Long idbranch, ParamDropDownPackingList param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDropDown().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        if(param.getMenu().equals("INVOICE")){
+            sqlBuilder.append(" and data.id not in (select idpackinglist from invoice as inv where inv.idcompany = "+idcompany+" and inv.idbranch = "+idbranch+" and inv.isdelete = false ) ");
+        }
+
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDropDown(), queryParameters);
     }
 
     private List<PackingListDataItemDetail> getListItems(Long idpackinglist){
