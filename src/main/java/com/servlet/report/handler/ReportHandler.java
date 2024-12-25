@@ -1,5 +1,7 @@
 package com.servlet.report.handler;
 
+import com.servlet.invoice.entity.PrintInvoice;
+import com.servlet.invoice.service.InvoiceService;
 import com.servlet.packinglist.entity.PackingListDataItemDetail;
 import com.servlet.packinglist.entity.PrintPackingList;
 import com.servlet.packinglist.service.PackingListService;
@@ -17,6 +19,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -28,6 +33,9 @@ public class ReportHandler implements ReportService {
 
     @Autowired
     PackingListService packingListService;
+
+    @Autowired
+    InvoiceService invoiceService;
 
     @Override
     public ReportWorkBookExcel getExcelPackingListByID(long id, long idcompany, long idbranch) {
@@ -63,8 +71,6 @@ public class ReportHandler implements ReportService {
             fontBold.setBold(true);
             fontBold.setFontHeight(fontHeight);
             styleBold.setFont(fontBold);
-
-
 
             int rowcount = 2;
             Row row = sheet.createRow(rowcount);
@@ -238,6 +244,226 @@ public class ReportHandler implements ReportService {
         }
         data.setWorkbook(workbook);
         return data;
+    }
+
+    @Override
+    public ReportWorkBookExcel getExcelInvoiceByID(long id, long idcompany, long idbranch) {
+        ReportWorkBookExcel data = new ReportWorkBookExcel();
+        XSSFWorkbook workbook = new XSSFWorkbook();
+
+        XSSFDataFormat format = workbook.createDataFormat();
+
+        XSSFSheet sheet = workbook.createSheet("Invoice");
+        sheet.setDefaultColumnWidth(1000);
+        List<Integer> columns = new ArrayList<>();
+        columns.add(10000); //0
+        columns.add(10000); //1
+        columns.add(5000); //2
+        columns.add(5000); //3
+        columns.add(5000); //4
+        columns.add(5000); //5
+        columns.add(5000); //6
+        columns.add(5000); //6
+
+        PrintInvoice print = invoiceService.getPrintDataByID(id,idcompany,idbranch);
+        if(print != null){
+            int fontHeight = 12;
+            CellStyle style = workbook.createCellStyle();
+            CellStyle styleBold = workbook.createCellStyle();
+            CellStyle styleAmount = workbook.createCellStyle();
+            XSSFFont font = workbook.createFont();
+            font.setBold(false);
+            font.setFontHeight(fontHeight);
+            style.setFont(font);
+            styleAmount.setFont(font);
+
+            XSSFFont fontBold = workbook.createFont();
+            fontBold.setBold(true);
+            fontBold.setFontHeight(fontHeight);
+            styleBold.setFont(fontBold);
+
+            int rowcount = 2;
+            Row row = sheet.createRow(rowcount);
+            createCell(row, 0, print.getCompanyName(), style, sheet,columns);
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            createCell(row, 0, print.getAddress1(), style, sheet,columns);
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            createCell(row, 0, print.getAddress2(), style, sheet,columns);
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            createCell(row, 0, print.getAddress3(), style, sheet,columns);
+            createCell(row, 7, "SALES INVOICE", style, sheet,columns);
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            createCell(row, 0, "Customer", style, sheet,columns);
+            createCell(row, 1, print.getPackinglist().getCustomerName(), style, sheet,columns);
+
+            createCell(row, 6, "Invoice Number", style, sheet,columns);
+            createCell(row, 7, print.getNodocument(), style, sheet,columns);
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            createCell(row, 0, "Address", style, sheet,columns);
+            createCell(row, 1, print.getPackinglist().getCustomerAddress(), style, sheet,columns);
+            String tanggal = "";
+            try{
+                tanggal = GlobalFunc.getDateLongToString(print.getDate().getTime(), "dd-MMMM-yyyy");
+            }catch (ParseException e){
+                e.printStackTrace();
+            }
+
+            createCell(row, 6, "Invoice Date", style, sheet,columns);
+            createCell(row, 7, tanggal, style, sheet,columns);
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            createCell(row, 0, "Phone", style, sheet,columns);
+            createCell(row, 1, print.getPhone(), style, sheet,columns);
+
+            createCell(row, 6, "Flight Number", style, sheet,columns);
+            createCell(row, 7, print.getPackinglist().getFlightnumber(), style, sheet,columns);
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            createCell(row, 0, "Attn", style, sheet,columns);
+            createCell(row, 1, print.getPackinglist().getAttention(), style, sheet,columns);
+
+            createCell(row, 6, "AWB", style, sheet,columns);
+            createCell(row, 7, print.getPackinglist().getAwbnumber(), style, sheet,columns);
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            createCell(row, 6, "Collie", style, sheet,columns);
+            createCell(row, 7, print.getPackinglist().getKoli(), style, sheet,columns);
+
+            rowcount++;
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            int colomcount = 0;
+            createCell(row, colomcount, "No", style, sheet,columns);
+
+            colomcount++;
+            createCell(row, colomcount, "Description", style, sheet,columns);
+
+            colomcount++;
+            createCell(row, colomcount, "Size", style, sheet,columns);
+
+            colomcount++;
+            createCell(row, colomcount, "Gram", style, sheet,columns);
+
+            colomcount++;
+            createCell(row, colomcount, "Qty(Pcs)", style, sheet,columns);
+
+            colomcount++;
+            createCell(row, colomcount, "Weight", style, sheet,columns);
+
+            colomcount++;
+            createCell(row, colomcount, "Unit Price", style, sheet,columns);
+
+            colomcount++;
+            createCell(row, colomcount, "Total", style, sheet,columns);
+
+            Double totalPrice = 0.00;
+            for(PackingListDataItemDetail item : print.getPackinglist().getItems()){
+                totalPrice += item.getTotalprice();
+
+                rowcount++;
+                row = sheet.createRow(rowcount);
+                colomcount = 0;
+                createCell(row, colomcount, item.getBox(), style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, item.getProductName(), style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, item.getCategoryProductSize(), style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, item.getCategoryProductFromGr()+"-"+item.getCategoryProductThruGr(), style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, item.getQty(), style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, item.getNettoweight(), style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, "$"+item.getPrice(), style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, "$"+item.getTotalprice(), style, sheet,columns);
+            }
+            rowcount++;
+            row = sheet.createRow(rowcount);
+
+//            int compare = new BigDecimal(totalPrice).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(totalPrice));
+//            styleAmount = workbook.createCellStyle();
+//            if(compare == 0) {
+//                styleAmount.setDataFormat(format.getFormat("#,###"));
+//            }else {
+//                styleAmount.setDataFormat(format.getFormat("#,###.##"));
+//            }
+            totalPrice = round(totalPrice,2);
+            createCell(row, 0, "Bank Account:", style, sheet,columns);
+            createCell(row, 6, "Total In USD", style, sheet,columns);
+            createCell(row, 7, "$"+totalPrice, style, sheet,columns);
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            createCell(row, 0, print.getBankCompany(), style, sheet,columns);
+            createCell(row, 6, "Kurs", style, sheet,columns);
+            createCell(row, 7, "Rp "+print.getKurs(), style, sheet,columns);
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            createCell(row, 0, "a/c "+print.getBankAccNoCompany(), style, sheet,columns);
+            createCell(row, 6, "Total In IDR", style, sheet,columns);
+            createCell(row, 7, "Rp "+round((print.getKurs()*totalPrice),2), style, sheet,columns);
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            createCell(row, 0, print.getBankAccNameCompany(), style, sheet,columns);
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            CellRangeAddress regardsRangeAddress = new CellRangeAddress(rowcount, rowcount, 6, 7);
+            sheet.addMergedRegion(regardsRangeAddress);
+            Cell regards = createCell(row, 6, "Regards,", style, sheet,columns);
+            CellUtil.setVerticalAlignment(regards, VerticalAlignment.CENTER);
+            CellUtil.setAlignment(regards, HorizontalAlignment.CENTER);
+            RegionUtil.setBorderRight(BorderStyle.THIN, regardsRangeAddress, sheet);
+            RegionUtil.setRightBorderColor(IndexedColors.WHITE.getIndex(), regardsRangeAddress, sheet);
+
+            rowcount++;
+            rowcount++;
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            CellRangeAddress garisRangeAddress = new CellRangeAddress(rowcount, rowcount, 6, 7);
+            sheet.addMergedRegion(garisRangeAddress);
+            Cell garis = createCell(row, 6, "__________________", style, sheet,columns);
+            CellUtil.setVerticalAlignment(garis, VerticalAlignment.CENTER);
+            CellUtil.setAlignment(garis, HorizontalAlignment.CENTER);
+            RegionUtil.setBorderRight(BorderStyle.THIN, garisRangeAddress, sheet);
+            RegionUtil.setRightBorderColor(IndexedColors.WHITE.getIndex(), garisRangeAddress, sheet);
+        }
+
+        data.setWorkbook(workbook);
+        return data;
+    }
+
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
     }
 
     private Cell createCell(Row row, int columnCount, Object value, CellStyle style,XSSFSheet sheet,List<Integer> widthcols) {

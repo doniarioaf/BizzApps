@@ -6,4 +6,5 @@ import java.text.ParseException;
 
 public interface ReportService {
     ReportWorkBookExcel getExcelPackingListByID(long id, long idcompany, long idbranch);
+    ReportWorkBookExcel getExcelInvoiceByID(long id, long idcompany, long idbranch);
 }
