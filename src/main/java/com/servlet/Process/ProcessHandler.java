@@ -34,6 +34,7 @@ import com.servlet.product.entity.BodyProduct;
 import com.servlet.product.service.ProductService;
 import com.servlet.purchasereceive.entity.BodyPurchaseReceive;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
+import com.servlet.report.service.ReportService;
 import com.servlet.stockadjusment.entity.BodyStockAdjusment;
 import com.servlet.stockadjusment.service.StockAdjusmentService;
 import com.servlet.vendor.entity.BodyVendor;
@@ -131,6 +132,8 @@ public class ProcessHandler implements ProcessService{
 	PackingListService packingListService;
 	@Autowired
 	InvoiceService invoiceService;
+	@Autowired
+	ReportService reportService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -1105,6 +1108,9 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("PRICELIST")) {
 					long pricedate = (long) param.get("pricedate");
 					val.setData(priceService.getDataPriceByDate(auth.getIdcompany(), auth.getIdbranch(),pricedate));
+				}else if(type.equals("PRINTEXCEL")) {
+					long id = (long) param.get("id");
+					val.setData(reportService.getExcelPackingListByID(id,auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
 				}
 			}
 
