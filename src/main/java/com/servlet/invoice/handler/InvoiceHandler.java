@@ -4,10 +4,13 @@ import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.invoice.entity.*;
 import com.servlet.invoice.mapper.QueryDataDetail;
 import com.servlet.invoice.mapper.QueryDataList;
+import com.servlet.invoice.mapper.QueryPrintInvoice;
 import com.servlet.invoice.repo.InvoiceRepo;
 import com.servlet.invoice.service.InvoiceService;
 import com.servlet.packinglist.entity.ParamDropDownPackingList;
 import com.servlet.packinglist.service.PackingListService;
+import com.servlet.parameterclient.entity.ValueParameter;
+import com.servlet.parameterclient.service.ParameterClientService;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
@@ -36,6 +39,9 @@ public class InvoiceHandler implements InvoiceService {
     private RunningNumberService runningNumberService;
     @Autowired
     private PackingListService packingListService;
+    @Autowired
+    private ParameterClientService parameterClientService;
+
     protected final String namaMenu = "Invoice";
 
     @Override
@@ -190,5 +196,36 @@ public class InvoiceHandler implements InvoiceService {
         data.setSuccess(validations.size() > 0?false:true);
         data.setValidations(validations);
         return data;
+    }
+
+    @Override
+    public PrintInvoice getPrintDataByID(Long id, Long idcompany, Long idbranch) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPrintInvoice().schema());
+        sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+
+        final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+        List<PrintInvoice> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPrintInvoice(), queryParameters);
+        if(list != null && list.size() > 0){
+            ValueParameter param = parameterClientService.getValueByParamName(idcompany,idbranch,"COMPANYNAME","TEXT");
+            ValueParameter paramAddress1 = parameterClientService.getValueByParamName(idcompany,idbranch,"ADDRESS1","TEXT");
+            ValueParameter paramAddress2 = parameterClientService.getValueByParamName(idcompany,idbranch,"ADDRESS2","TEXT");
+            ValueParameter paramAddress3 = parameterClientService.getValueByParamName(idcompany,idbranch,"ADDRESS3","TEXT");
+            ValueParameter parambankComp = parameterClientService.getValueByParamName(idcompany,idbranch,"BANK","TEXT");
+            ValueParameter parambankAccnoComp = parameterClientService.getValueByParamName(idcompany,idbranch,"BANKACCNO","TEXT");
+            ValueParameter parambankAccnameComp = parameterClientService.getValueByParamName(idcompany,idbranch,"BANKACCNAME","TEXT");
+
+            PrintInvoice det = list.get(0);
+            det.setPackinglist(packingListService.getDetail(det.getIdpackinglist(), idcompany,idbranch));
+            det.setCompanyName(param.getStrValue());
+            det.setAddress1(paramAddress1.getStrValue());
+            det.setAddress2(paramAddress2.getStrValue());
+            det.setAddress3(paramAddress3.getStrValue());
+            det.setBankCompany(parambankComp.getStrValue());
+            det.setBankAccNoCompany(parambankAccnoComp.getStrValue());
+            det.setBankAccNameCompany(parambankAccnameComp.getStrValue());
+
+            return det;
+        }
+        return null;
     }
 }

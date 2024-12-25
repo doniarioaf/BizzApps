@@ -88,11 +88,11 @@ public class PriceHandler implements PriceService {
         long idsave = 0;
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
         try{
-            List<PriceListData> check = getListAll(idcompany,idbranch, body.getPricedate(), body.getPricedate());
-            if(check != null && check.size() > 0){
-                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.PRICE_ALREADY_GENERATE,"harga sudah di generate untuk tanggal ini");
-                validations.add(msg);
-            }else{
+//            List<PriceListData> check = getListAll(idcompany,idbranch, body.getPricedate(), body.getPricedate());
+//            if(check != null && check.size() > 0){
+//                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.PRICE_ALREADY_GENERATE,"harga sudah di generate untuk tanggal ini");
+//                validations.add(msg);
+//            }else{
                 PriceList table = new PriceList();
                 table.setIdcompany(idcompany);
                 table.setIdbranch(idbranch);
@@ -116,7 +116,7 @@ public class PriceHandler implements PriceService {
 
                     validations.add(validationsItems.get(0));
                 }
-            }
+//            }
         }catch (Exception e){
             // TODO: handle exception
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");

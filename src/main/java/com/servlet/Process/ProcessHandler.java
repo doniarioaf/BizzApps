@@ -1122,6 +1122,9 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("GET_PACKINGLIST")) {
 					long id = (long) param.get("id");
 					val.setData(packingListService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("PRINT")) {
+					long id = (long) param.get("id");
+					val.setData(invoiceService.getPrintDataByID(id,auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}
 			else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {}
