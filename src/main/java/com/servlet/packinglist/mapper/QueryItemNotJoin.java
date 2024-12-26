@@ -33,7 +33,7 @@ public class QueryItemNotJoin implements RowMapper<PackingListItemData> {
         final Double brutoweight = rs.getDouble("brutoweight");
         final Double allowance = rs.getDouble("allowance");
         final Double nettoweight = rs.getDouble("nettoweight");
-        final Long box = rs.getLong("box");
+        final String box = rs.getString("box");
         PackingListItemData data = new PackingListItemData();
         data.setIdproduct(idproduct);
         data.setIdcategoryproduct(idcategoryproduct);

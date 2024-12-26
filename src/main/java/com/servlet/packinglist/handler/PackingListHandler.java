@@ -301,11 +301,14 @@ public class PackingListHandler implements PackingListService {
         HashMap<Object,Object> maps = new HashMap<>();
         try{
             if(items.length > 0){
+                int noseq =1;
                 for(BodyPackingListItem val:items){
                     PackingListItemPK pk = new PackingListItemPK();
                     pk.setIdpackinglist(idpackinglist);
                     pk.setIdproduct(val.getIdproduct());
                     pk.setIdcategoryproduct(val.getIdcategoryproduct());
+                    pk.setBox(val.getBox());
+                    pk.setNoseq(noseq);
                     PackingListItem table = new PackingListItem();
                     table.setPackingListItemPK(pk);
                     table.setQty(val.getQty());
@@ -314,8 +317,8 @@ public class PackingListHandler implements PackingListService {
                     table.setNettoweight(val.getNettoweight());
                     table.setPrice(val.getPrice());
                     table.setTotalprice(val.getTotalprice());
-                    table.setBox(val.getBox());
                     itemRepo.saveAndFlush(table);
+                    noseq++;
                 }
             }
         }catch (Exception e){

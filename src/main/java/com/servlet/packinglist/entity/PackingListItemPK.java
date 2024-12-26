@@ -10,6 +10,35 @@ public class PackingListItemPK implements Serializable {
     private long idpackinglist;
     private Long idproduct;
     private Long idcategoryproduct;
+    private String box;
+    private int noseq;
+
+    @Override
+    public String toString() {
+        return "PackingListItemPK{" +
+                "idpackinglist=" + idpackinglist +
+                ", idproduct=" + idproduct +
+                ", idcategoryproduct=" + idcategoryproduct +
+                ", box='" + box + '\'' +
+                ", noseq=" + noseq +
+                '}';
+    }
+
+    public String getBox() {
+        return box;
+    }
+
+    public void setBox(String box) {
+        this.box = box;
+    }
+
+    public int getNoseq() {
+        return noseq;
+    }
+
+    public void setNoseq(int noseq) {
+        this.noseq = noseq;
+    }
 
     public long getIdpackinglist() {
         return idpackinglist;

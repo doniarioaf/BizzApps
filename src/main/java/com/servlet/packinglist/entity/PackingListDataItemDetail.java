@@ -14,7 +14,7 @@ public class PackingListDataItemDetail {
     private Double nettoweight;
     private Double price;
     private Double totalprice;
-    private Long box;
+    private String box;
 
     public Long getCategoryProductFromGr() {
         return categoryProductFromGr;
@@ -120,11 +120,11 @@ public class PackingListDataItemDetail {
         this.totalprice = totalprice;
     }
 
-    public Long getBox() {
+    public String getBox() {
         return box;
     }
 
-    public void setBox(Long box) {
+    public void setBox(String box) {
         this.box = box;
     }
 }

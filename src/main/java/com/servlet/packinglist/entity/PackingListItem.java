@@ -19,15 +19,6 @@ public class PackingListItem implements Serializable {
     private Double nettoweight;
     private Double price;
     private Double totalprice;
-    private Long box;
-
-    public Long getBox() {
-        return box;
-    }
-
-    public void setBox(Long box) {
-        this.box = box;
-    }
 
     public PackingListItemPK getPackingListItemPK() {
         return packingListItemPK;

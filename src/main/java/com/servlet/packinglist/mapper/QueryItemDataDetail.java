@@ -38,7 +38,7 @@ public class QueryItemDataDetail implements RowMapper<PackingListDataItemDetail>
         final Double brutoweight = rs.getDouble("brutoweight");
         final Double allowance = rs.getDouble("allowance");
         final Double nettoweight = rs.getDouble("nettoweight");
-        final Long box = rs.getLong("box");
+        final String box = rs.getString("box");
         final String prodnama = rs.getString("prodnama");
         final String cprodnama = rs.getString("cprodnama");
         final String cprodsize = rs.getString("cprodsize");
