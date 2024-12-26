@@ -3,6 +3,7 @@ package com.servlet.stockadjusment.handler;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.mappingstock.entity.MappingStockCategoryID;
 import com.servlet.mappingstock.service.MappingStockService;
+import com.servlet.packinglist.mapper.QueryCalculateQtyPL;
 import com.servlet.product.service.ProductService;
 import com.servlet.purchasereceive.entity.PurchaseReceiveItemsNotJoin;
 import com.servlet.runningnumber.service.RunningNumberService;
@@ -11,10 +12,7 @@ import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 import com.servlet.stockadjusment.entity.*;
-import com.servlet.stockadjusment.mapper.QueryDataDetail;
-import com.servlet.stockadjusment.mapper.QueryDataItemsJoin;
-import com.servlet.stockadjusment.mapper.QueryDataItemsNotJoin;
-import com.servlet.stockadjusment.mapper.QueryDataList;
+import com.servlet.stockadjusment.mapper.*;
 import com.servlet.stockadjusment.repo.StockAdjusmentItemRepo;
 import com.servlet.stockadjusment.repo.StockAdjusmentRepo;
 import com.servlet.stockadjusment.service.StockAdjusmentService;
@@ -203,6 +201,30 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
         }
 
         return null;
+    }
+
+    @Override
+    public Long calculateQtySA(Long idcompany, Long idbranch, ParamCalculateQtySA param) {
+        String selectidPr = " select pr.id from stock_adjusment as pr where pr.idcompany = "+idcompany+" and pr.idbranch = "+idbranch+" and pr.isdelete = false ";
+        if(param.getDateFrom() != null){
+            Date dt = new Date(param.getDateFrom());
+            selectidPr += " and data.date >= '"+dt.toString()+"' ";
+        }
+        if(param.getDateThru() != null){
+            Date dt = new Date(param.getDateThru());
+            selectidPr += " and data.date <= '"+dt.toString()+"' ";
+        }
+        selectidPr += " and data.type = '"+param.getType()+"' ";
+
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateQtySA().schema());
+        sqlBuilder.append(" where data.idcategoryproduct = ? and data.idstockadjusment in ("+selectidPr+") ");
+
+        final Object[] queryParameters = new Object[] {param.getIdcategoryproduct()};
+        List<Long> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateQtySA(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return 0L;
     }
 
     private List<StockAdjsumentDataItem> getItems(Long idstockadjusment){

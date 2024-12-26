@@ -1,10 +1,7 @@
 package com.servlet.stockadjusment.service;
 
 import com.servlet.shared.ReturnData;
-import com.servlet.stockadjusment.entity.BodyStockAdjusment;
-import com.servlet.stockadjusment.entity.StockAdjsumentDataDetail;
-import com.servlet.stockadjusment.entity.StockAdjusmentDataList;
-import com.servlet.stockadjusment.entity.StockAdjusmentTemplate;
+import com.servlet.stockadjusment.entity.*;
 
 import java.util.List;
 
@@ -15,4 +12,5 @@ public interface StockAdjusmentService {
     ReturnData delete(Long id, Long idcompany, Long idbranch, Long iduser);
     StockAdjusmentTemplate getTemplate(Long idcompany, Long idbranch);
     StockAdjsumentDataDetail getDetail(Long idcompany, Long idbranch,Long id);
+    Long calculateQtySA(Long idcompany, Long idbranch, ParamCalculateQtySA param);
 }

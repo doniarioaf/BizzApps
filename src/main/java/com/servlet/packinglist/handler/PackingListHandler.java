@@ -16,6 +16,7 @@ import com.servlet.parameterclient.service.ParameterClientService;
 import com.servlet.product.service.ProductService;
 import com.servlet.purchasereceive.entity.PurchaseReceiveItems;
 import com.servlet.purchasereceive.entity.PurchaseReceiveItemsNotJoin;
+import com.servlet.purchasereceive.mapper.QueryCalculateQty;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
@@ -290,6 +291,28 @@ public class PackingListHandler implements PackingListService {
             return data;
         }
         return null;
+    }
+
+    @Override
+    public Long calculateQtyPL(Long idcompany, Long idbranch, ParamCalculateQtyPL param) {
+        String selectidPr = " select pr.id from packinglist as pr where pr.idcompany = "+idcompany+" and pr.idbranch = "+idbranch+" and pr.isdelete = false ";
+        if(param.getDateFrom() != null){
+            Date dt = new Date(param.getDateFrom());
+            selectidPr += " and data.date >= '"+dt.toString()+"' ";
+        }
+        if(param.getDateThru() != null){
+            Date dt = new Date(param.getDateThru());
+            selectidPr += " and data.date <= '"+dt.toString()+"' ";
+        }
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateQtyPL().schema());
+        sqlBuilder.append(" where data.idcategoryproduct = ? and data.idpackinglist in ("+selectidPr+") ");
+
+        final Object[] queryParameters = new Object[] {param.getIdcategoryproduct()};
+        List<Long> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateQtyPL(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return 0L;
     }
 
     private HashMap<Object,Object> tambahStockItems(Long idcompany, Long idbranch, Long idpackinglist){

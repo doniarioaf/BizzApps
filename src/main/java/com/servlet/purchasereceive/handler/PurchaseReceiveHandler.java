@@ -571,6 +571,28 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         return maps;
     }
 
+    @Override
+    public Long calculateQtyPr(Long idcompany, Long idbranch, ParamCalculateQtyPR param) {
+        String selectidPr = " select pr.id from purchasereceive as pr where pr.idcompany = "+idcompany+" and pr.idbranch = "+idbranch+" and pr.isdelete = false ";
+        if(param.getDateFrom() != null){
+            Date dt = new Date(param.getDateFrom());
+            selectidPr += " and data.transactiondate >= '"+dt.toString()+"' ";
+        }
+        if(param.getDateThru() != null){
+            Date dt = new Date(param.getDateThru());
+            selectidPr += " and data.transactiondate <= '"+dt.toString()+"' ";
+        }
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateQty().schema());
+        sqlBuilder.append(" where data.idcategoryproduct = ? and data.type = 'H' and data.idpurchasereceive in ("+selectidPr+") ");
+
+        final Object[] queryParameters = new Object[] {param.getIdcategoryproduct()};
+        List<Long> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateQty(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return 0L;
+    }
+
     private List<PrintDataPurchaseReceiveInventori> getPrintDataItemsInventori(Long idpurchasereceive){
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPrintDataPurchaseReceiveInventori().schema());
         sqlBuilder.append(" where data.idpurchasereceive = ?  ");

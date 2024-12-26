@@ -24,4 +24,5 @@ public interface PurchaseReceiveService {
     PurchaseReceiveDataList getDataByIdDratPurchaseReceive(Long iddraftpurchasereceive,Long idcompany, Long idbranch);
     boolean checkIDVendor(Long idvendor);
     HashMap<String,Object> getDataForReport(Long idcompany, Long idbranch, ParamReportPembelian param);
+    Long calculateQtyPr(Long idcompany, Long idbranch,ParamCalculateQtyPR param);
 }
