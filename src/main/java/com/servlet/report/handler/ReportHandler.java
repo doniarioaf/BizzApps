@@ -1,10 +1,19 @@
 package com.servlet.report.handler;
 
+import com.servlet.categoryproduct.entity.CategoryProductList;
+import com.servlet.categoryproduct.service.CategoryProductService;
+import com.servlet.charge.entity.ChargeList;
+import com.servlet.charge.service.ChargeService;
 import com.servlet.invoice.entity.PrintInvoice;
 import com.servlet.invoice.service.InvoiceService;
 import com.servlet.packinglist.entity.PackingListDataItemDetail;
 import com.servlet.packinglist.entity.PrintPackingList;
 import com.servlet.packinglist.service.PackingListService;
+import com.servlet.purchasereceive.entity.PrintDataPurchaseReceive;
+import com.servlet.purchasereceive.entity.PrintDataPurchaseReceiveItems;
+import com.servlet.purchasereceive.entity.PurchaseReceiveChargeNotJoin;
+import com.servlet.purchasereceive.service.PurchaseReceiveService;
+import com.servlet.report.entity.ParamReportPembelian;
 import com.servlet.report.entity.ReportWorkBookExcel;
 import com.servlet.report.service.ReportService;
 import com.servlet.shared.GlobalFunc;
@@ -26,6 +35,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -36,6 +46,14 @@ public class ReportHandler implements ReportService {
 
     @Autowired
     InvoiceService invoiceService;
+    @Autowired
+    CategoryProductService categoryProductService;
+
+    @Autowired
+    ChargeService chargeService;
+
+    @Autowired
+    PurchaseReceiveService purchaseReceiveService;
 
     @Override
     public ReportWorkBookExcel getExcelPackingListByID(long id, long idcompany, long idbranch) {
@@ -241,6 +259,7 @@ public class ReportHandler implements ReportService {
             colomcount++;
             colomcount++;
             createCell(row, colomcount, totalprice, style, sheet,columns);
+
         }
         data.setWorkbook(workbook);
         return data;
@@ -457,7 +476,365 @@ public class ReportHandler implements ReportService {
         return data;
     }
 
-    public static double round(double value, int places) {
+    @Override
+    public ReportWorkBookExcel reportPembelian(long idcompany, long idbranch, ParamReportPembelian param) {
+        ReportWorkBookExcel data = new ReportWorkBookExcel();
+        XSSFWorkbook workbook = new XSSFWorkbook();
+
+        XSSFDataFormat format = workbook.createDataFormat();
+
+        XSSFSheet sheet = workbook.createSheet("Laporan Pembelian");
+        sheet.setDefaultColumnWidth(1000);
+        List<Integer> columns = getWidthColumns(500);
+
+        List<CategoryProductList> listCP = categoryProductService.getDataForTemplate(idcompany,idbranch,null);
+        if(listCP != null && listCP.size() > 0){
+            int fontHeight = 12;
+            CellStyle style = workbook.createCellStyle();
+            CellStyle styleBold = workbook.createCellStyle();
+            CellStyle styleAmount = workbook.createCellStyle();
+            XSSFFont font = workbook.createFont();
+            font.setBold(false);
+            font.setFontHeight(fontHeight);
+            style.setFont(font);
+            styleAmount.setFont(font);
+
+            XSSFFont fontBold = workbook.createFont();
+            fontBold.setBold(true);
+            fontBold.setFontHeight(fontHeight);
+            styleBold.setFont(fontBold);
+
+            int rowcount = 2;
+            Row row = sheet.createRow(rowcount);
+            createCell(row, 0, "Laporan Pembelian", style, sheet,columns);
+
+            String dateFrom = "";
+            try {
+                dateFrom = GlobalFunc.getDateLongToString(param.getFrom(), "dd-MMMM-yyyy");
+            } catch (ParseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            String dateThru = "";
+            try {
+                dateThru = GlobalFunc.getDateLongToString(param.getTo(), "dd-MMMM-yyyy");
+            } catch (ParseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            createCell(row, 0, "Periode", style, sheet,columns);
+            createCell(row, 1, dateFrom+" s/d "+dateThru, style, sheet,columns);
+
+            int colomcount = 0;
+            rowcount++;
+            rowcount++;
+            row = sheet.createRow(rowcount);
+
+            createCell(row, colomcount, "Tanggal Transaksi", style, sheet,columns);
+
+            colomcount++;
+            createCell(row, colomcount, "No Dokumen", style, sheet,columns);
+
+            colomcount++;
+            createCell(row, colomcount, "Vendor", style, sheet,columns);
+
+            colomcount++;
+            createCell(row, colomcount, "Area", style, sheet,columns);
+
+            colomcount++;
+            int koliIdxColomn = colomcount;
+            createCell(row, colomcount, "Koli", style, sheet,columns);
+
+            HashMap<Long,Integer> mapsCPcolumn = new HashMap<Long, Integer>();
+            for(CategoryProductList cp :listCP){
+                colomcount++;
+                mapsCPcolumn.put(cp.getId(),colomcount);
+                createCell(row, colomcount, "Qty"+cp.getSize(), style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, "QtyBns"+cp.getSize(), style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, "Harga"+cp.getSize(), style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, "subTotal"+cp.getSize(), style, sheet,columns);
+            }
+
+            colomcount++;
+            int totalQtyEkorIdxColumn = colomcount;
+            createCell(row, colomcount, "Total Qty Ekor", style, sheet,columns);
+            colomcount++;
+            createCell(row, colomcount, "Total KG", style, sheet,columns);
+            colomcount++;
+            createCell(row, colomcount, "Subtotal Udang", style, sheet,columns);
+
+            List<ChargeList> listBiaya = chargeService.getListCharge(idcompany,idbranch);
+            HashMap<Long,Integer> mapsBiayacolumn = new HashMap<Long, Integer>();
+            Long idbox = 0L;
+            Long idOngkos = 0L;
+            if(listBiaya != null && listBiaya.size() > 0){
+                for(ChargeList biaya : listBiaya){
+                    if(biaya.getNama().equals("BOX")){
+                        idbox = biaya.getId();
+                    }
+                    if(biaya.getNama().equals("ONGKOS")){
+                        idOngkos = biaya.getId();
+                    }
+                    colomcount++;
+                    mapsBiayacolumn.put(biaya.getId(),colomcount);
+                    createCell(row, colomcount, "Qty"+biaya.getNama(), style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, "Hrg"+biaya.getNama(), style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, "Subtotal"+biaya.getNama(), style, sheet,columns);
+                }
+            }
+
+            colomcount++;
+            int kolomIdxSetor = colomcount;
+            createCell(row, colomcount, "Setor", style, sheet,columns);
+
+            colomcount++;
+            createCell(row, colomcount, "SubTotal Biaya", style, sheet,columns);
+
+            colomcount++;
+            createCell(row, colomcount, "Total", style, sheet,columns);
+
+            colomcount++;
+            createCell(row, colomcount, "Transfer", style, sheet,columns);
+
+            colomcount++;
+            createCell(row, colomcount, "Catatan", style, sheet,columns);
+
+            HashMap<String, Object> getData = purchaseReceiveService.getDataForReport(idcompany,idbranch,param);
+            List<PrintDataPurchaseReceive> listPR = (List<PrintDataPurchaseReceive>) getData.get("listPR");
+            List<PrintDataPurchaseReceiveItems> listItems = (List<PrintDataPurchaseReceiveItems>) getData.get("listItems");
+            List<PurchaseReceiveChargeNotJoin> listBiayaPr = (List<PurchaseReceiveChargeNotJoin>) getData.get("listBiaya");
+
+
+            HashMap<Long,List<PrintDataPurchaseReceiveItems>> grupByIdPR = new HashMap<>();
+            List<PrintDataPurchaseReceiveItems> listItemsTemp = new ArrayList<>();
+            for(PrintDataPurchaseReceiveItems item :listItems){
+                    if(grupByIdPR.get(item.getIdpurchasereceive()) != null){
+                        listItemsTemp.add(item);
+                        grupByIdPR.put(item.getIdpurchasereceive(), listItemsTemp);
+                    }else{
+                        listItemsTemp = new ArrayList<>();
+                        listItemsTemp.clear();
+                        listItemsTemp.add(item);
+                        grupByIdPR.put(item.getIdpurchasereceive(), listItemsTemp);
+                    }
+            }
+
+            HashMap<Long,List<PurchaseReceiveChargeNotJoin>> grupChargeByIdPR = new HashMap<>();
+            List<PurchaseReceiveChargeNotJoin> listChargeTemp = new ArrayList<>();
+            for(PurchaseReceiveChargeNotJoin item :listBiayaPr){
+                if(grupChargeByIdPR.get(item.getIdpurchasereceive()) != null){
+                    listChargeTemp.add(item);
+                    grupChargeByIdPR.put(item.getIdpurchasereceive(), listChargeTemp);
+                }else{
+                    listChargeTemp = new ArrayList<>();
+                    listChargeTemp.clear();
+                    listChargeTemp.add(item);
+                    grupChargeByIdPR.put(item.getIdpurchasereceive(), listChargeTemp);
+                }
+            }
+
+            if(listPR != null && listPR.size() > 0){
+                for(PrintDataPurchaseReceive value : listPR){
+                    colomcount = 0;
+                    rowcount++;
+                    row = sheet.createRow(rowcount);
+                    String transDate = "";
+                    try {
+                        transDate = GlobalFunc.getDateLongToString(value.getTransactiondate().getTime(), "dd-MMMM-yyyy");
+                    } catch (ParseException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    createCell(row, colomcount, transDate, style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, value.getNodocument(), style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, value.getVendorAlias(), style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, value.getNamaArea(), style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, "Koli", style, sheet,columns);
+
+                    List<PrintDataPurchaseReceiveItems> listItemsPR = grupByIdPR.get(value.getId());
+                    int totalQty = 0;
+                    double totalSubtotal = 0.0;
+                    double totalBeratInGram = 0.0;
+                    if(listItemsPR != null && listItemsPR.size() > 0){
+                        for(PrintDataPurchaseReceiveItems det : listItemsPR){
+                            Double fromgram = det.getWeightfrom() != null?det.getWeightfrom().doubleValue():0.0;
+                            Double togram = det.getWeightto() != null?det.getWeightto().doubleValue():0.0;
+                            Double beratAvg = (fromgram+togram) / 2;
+                            Double berat = beratAvg * det.getQty().doubleValue();
+                            totalBeratInGram += berat.doubleValue();
+
+                            totalQty += det.getQty().intValue();
+                            totalSubtotal += det.getSubtotalprice().doubleValue();
+                            colomcount = mapsCPcolumn.get(det.getIdcategoryproduct()).intValue();
+                            createCell(row, colomcount, det.getQty(), style, sheet,columns);
+
+                            colomcount++;
+                            createCell(row, colomcount, det.getQtybonus(), style, sheet,columns);
+
+                            colomcount++;
+                            int compare = new BigDecimal(det.getPrice()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(det.getPrice()));
+                            styleAmount = workbook.createCellStyle();
+                            if(compare == 0) {
+                                styleAmount.setDataFormat(format.getFormat("#,###"));
+                            }else {
+                                styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                            }
+
+                            createCell(row, colomcount, det.getPrice(), styleAmount, sheet,columns);
+
+                            compare = new BigDecimal(det.getSubtotalprice()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(det.getSubtotalprice()));
+                            styleAmount = workbook.createCellStyle();
+                            if(compare == 0) {
+                                styleAmount.setDataFormat(format.getFormat("#,###"));
+                            }else {
+                                styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                            }
+
+                            colomcount++;
+                            createCell(row, colomcount, det.getSubtotalprice(), styleAmount, sheet,columns);
+                        }
+                    }
+
+                    colomcount = totalQtyEkorIdxColumn;
+                    createCell(row, colomcount, totalQty, style, sheet,columns);
+                    colomcount++;
+                    createCell(row, colomcount, (totalBeratInGram / 1000.0), style, sheet,columns);
+
+                    int compare = new BigDecimal(totalSubtotal).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(totalSubtotal));
+                    styleAmount = workbook.createCellStyle();
+                    if(compare == 0) {
+                        styleAmount.setDataFormat(format.getFormat("#,###"));
+                    }else {
+                        styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                    }
+                    colomcount++;
+                    createCell(row, colomcount, totalSubtotal, styleAmount, sheet,columns);
+
+                    List<PurchaseReceiveChargeNotJoin> listChargePR = grupChargeByIdPR.get(value.getId());
+                    long qtyBox = 0;
+                    Double subtotalBiaya = 0.0;
+                    if(listChargePR != null && listChargePR.size() > 0){
+                        for(PurchaseReceiveChargeNotJoin det : listChargePR){
+                            if(det.getIdcharge() == idbox.longValue()){
+                                qtyBox = det.getQty();
+                            }
+                            subtotalBiaya += det.getSubtotalprice();
+
+
+                            colomcount = mapsBiayacolumn.get(det.getIdcharge()).intValue();
+                            createCell(row, colomcount, det.getQty(), style, sheet,columns);
+
+                            compare = new BigDecimal(det.getPrice()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(det.getPrice()));
+                            styleAmount = workbook.createCellStyle();
+                            if(compare == 0) {
+                                styleAmount.setDataFormat(format.getFormat("#,###"));
+                            }else {
+                                styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                            }
+
+                            colomcount++;
+                            createCell(row, colomcount, det.getPrice(), styleAmount, sheet,columns);
+
+                            compare = new BigDecimal(det.getSubtotalprice()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(det.getSubtotalprice()));
+                            styleAmount = workbook.createCellStyle();
+                            if(compare == 0) {
+                                styleAmount.setDataFormat(format.getFormat("#,###"));
+                            }else {
+                                styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                            }
+                            colomcount++;
+                            createCell(row, colomcount, det.getSubtotalprice(), styleAmount, sheet,columns);
+                        }
+                    }
+
+                    //Kolom Koli
+                    colomcount = koliIdxColomn;
+                    createCell(row, colomcount, qtyBox, style, sheet,columns);
+                    //
+
+                    compare = new BigDecimal(value.getSetor()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(value.getSetor()));
+                    styleAmount = workbook.createCellStyle();
+                    if(compare == 0) {
+                        styleAmount.setDataFormat(format.getFormat("#,###"));
+                    }else {
+                        styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                    }
+                    colomcount = kolomIdxSetor;
+                    createCell(row, colomcount, value.getSetor(), styleAmount, sheet,columns);
+
+                    compare = new BigDecimal(subtotalBiaya).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(subtotalBiaya));
+                    styleAmount = workbook.createCellStyle();
+                    if(compare == 0) {
+                        styleAmount.setDataFormat(format.getFormat("#,###"));
+                    }else {
+                        styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                    }
+                    colomcount++;
+                    createCell(row, colomcount, subtotalBiaya, styleAmount, sheet,columns);
+
+                    compare = new BigDecimal(value.getTotalprice()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(value.getTotalprice()));
+                    styleAmount = workbook.createCellStyle();
+                    if(compare == 0) {
+                        styleAmount.setDataFormat(format.getFormat("#,###"));
+                    }else {
+                        styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                    }
+                    colomcount++;
+                    createCell(row, colomcount, value.getTotalprice(), styleAmount, sheet,columns);
+
+                    Double transfer = value.getTotalprice() - value.getSetor();
+                    compare = new BigDecimal(transfer).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(transfer));
+                    styleAmount = workbook.createCellStyle();
+                    if(compare == 0) {
+                        styleAmount.setDataFormat(format.getFormat("#,###"));
+                    }else {
+                        styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                    }
+                    colomcount++;
+                    createCell(row, colomcount, transfer, styleAmount, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, value.getNotes(), style, sheet,columns);
+
+                }
+            }
+
+        }
+        data.setWorkbook(workbook);
+        return data;
+    }
+
+    private List<Integer> getWidthColumns(int size){
+        List<Integer> columns = new ArrayList<>();
+        int defaultwidth = 5000;
+        for(int i=0;i < size;i++){
+            columns.add(defaultwidth);
+        }
+        return columns;
+    }
+
+    private double round(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
 
         long factor = (long) Math.pow(10, places);

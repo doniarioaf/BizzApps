@@ -12,7 +12,7 @@ public class QueryItemsChargeNotJoin implements RowMapper<PurchaseReceiveChargeN
     public QueryItemsChargeNotJoin() {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
-        sqlBuilder.append("data.idcharge as idcharge, data.qty as qty, ");
+        sqlBuilder.append("data.idpurchasereceive as idpurchasereceive, data.idcharge as idcharge, data.qty as qty, ");
         sqlBuilder.append("data.price as price, data.subtotalprice as subtotalprice ");
         sqlBuilder.append("from purchasereceive_charge as data ");
 
@@ -25,11 +25,13 @@ public class QueryItemsChargeNotJoin implements RowMapper<PurchaseReceiveChargeN
 
     @Override
     public PurchaseReceiveChargeNotJoin mapRow(ResultSet rs, int rowNum) throws SQLException {
+        final Long idpurchasereceive = rs.getLong("idpurchasereceive");
         final Long idcharge = rs.getLong("idcharge");
         final Long qty = rs.getLong("qty");
         final Double price = rs.getDouble("price");
         final Double subtotalprice = rs.getDouble("subtotalprice");
         PurchaseReceiveChargeNotJoin data = new PurchaseReceiveChargeNotJoin();
+        data.setIdpurchasereceive(idpurchasereceive);
         data.setIdcharge(idcharge);
         data.setQty(qty);
         data.setPrice(price);

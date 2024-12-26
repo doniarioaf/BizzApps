@@ -34,6 +34,7 @@ import com.servlet.product.entity.BodyProduct;
 import com.servlet.product.service.ProductService;
 import com.servlet.purchasereceive.entity.BodyPurchaseReceive;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
+import com.servlet.report.entity.ParamReportPembelian;
 import com.servlet.report.service.ReportService;
 import com.servlet.stockadjusment.entity.BodyStockAdjusment;
 import com.servlet.stockadjusment.service.StockAdjusmentService;
@@ -1070,6 +1071,16 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("SEARCHBYVENDOR")) {
 					long idvendor = (long) param.get("idvendor");
 					val.setData(draftPurchaseReceiveService.getTemplateByIdVendor(auth.getIdcompany(), auth.getIdbranch(),idvendor));
+				}
+			}
+			else if(codepermission.equals(ConstansPermission.READ_REPORT_PURCHASERECEIVE)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("REPORT_PEMBELIAN")) {
+					ParamReportPembelian body = (ParamReportPembelian) param.get("body");
+					val.setData(reportService.reportPembelian(auth.getIdcompany(), auth.getIdbranch(),body).getWorkbook());
+				}else if(type.equals("REPORT_TEMPLATE")) {
+					val.setData(purchaseReceiveService.getReportTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}
 

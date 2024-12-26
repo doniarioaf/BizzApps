@@ -1,6 +1,7 @@
 package com.servlet.purchasereceive.entity;
 
 public class PurchaseReceiveChargeNotJoin {
+    private long idpurchasereceive;
     private long idcharge;
     private long qty;
     private Double price;
@@ -14,6 +15,14 @@ public class PurchaseReceiveChargeNotJoin {
                 ", price=" + price +
                 ", subtotalprice=" + subtotalprice +
                 '}';
+    }
+
+    public long getIdpurchasereceive() {
+        return idpurchasereceive;
+    }
+
+    public void setIdpurchasereceive(long idpurchasereceive) {
+        this.idpurchasereceive = idpurchasereceive;
     }
 
     public long getIdcharge() {

@@ -24,6 +24,7 @@ import com.servlet.purchasereceive.repo.PurchaseReceiveInventoriRepo;
 import com.servlet.purchasereceive.repo.PurchaseReceiveItemsRepo;
 import com.servlet.purchasereceive.repo.PurchaseReceiveRepo;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
+import com.servlet.report.entity.ParamReportPembelian;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
@@ -137,6 +138,14 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         data.setProductOpt(productService.getListAll(idcompany,idbranch));
         data.setChargeOpt(chargeService.getListCharge(idcompany,idbranch));
         data.setInventoriOpt(inventoriService.getListDropDown(idcompany,idbranch));
+        data.setAreaOpt(areaService.getList(idcompany,idbranch));
+        return data;
+    }
+
+    @Override
+    public ReportPurchaseReceiveTemplate getReportTemplate(Long idcompany, Long idbranch) {
+        ReportPurchaseReceiveTemplate data = new ReportPurchaseReceiveTemplate();
+        data.setVendorOpt(vendorService.getListDropdown(idcompany,idbranch));
         data.setAreaOpt(areaService.getList(idcompany,idbranch));
         return data;
     }
@@ -510,6 +519,56 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public HashMap<String, Object> getDataForReport(Long idcompany, Long idbranch, ParamReportPembelian param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPrintPurchaseReceive().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+        String selectIdPR = "select pr.id from purchasereceive as pr where pr.idcompany = "+idcompany+" and pr.idbranch = "+idbranch+" and pr.isdelete = false ";
+        if(param.getFrom() != null){
+            Date dt = new Date(param.getFrom().longValue());
+            sqlBuilder.append(" and data.transactiondate >= '"+dt.toString()+"'");
+            selectIdPR += " and pr.transactiondate >= '"+dt.toString()+"' ";
+        }
+        if(param.getTo() != null){
+            Date dt = new Date(param.getTo().longValue());
+            sqlBuilder.append(" and data.transactiondate <= '"+dt.toString()+"'");
+            selectIdPR += " and pr.transactiondate <= '"+dt.toString()+"' ";
+        }
+        if(param.getIdvendor() != null){
+            sqlBuilder.append(" and data.idvendor = "+param.getIdvendor().longValue()+" ");
+            selectIdPR += " and pr.idvendor = "+param.getIdvendor().longValue()+" ";
+        }
+        if(param.getIdarea() != null){
+            sqlBuilder.append(" and data.idarea = "+param.getIdarea().longValue()+" ");
+            selectIdPR += " and pr.idarea = "+param.getIdarea().longValue()+" ";
+        }
+        sqlBuilder.append(" order by data.id desc ");
+
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        List<PrintDataPurchaseReceive> listPR = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPrintPurchaseReceive(), queryParameters);
+
+        final StringBuilder sqlBuilderItems = new StringBuilder("select " + new QueryPrintDataPurchaseReceiveItems().schema());
+        sqlBuilderItems.append(" where data.type = 'H' and data.idpurchasereceive in ("+selectIdPR+")  ");
+        sqlBuilderItems.append(" order by data.idpurchasereceive desc ");
+
+        final Object[] queryParametersItems = new Object[] {};
+        List<PrintDataPurchaseReceiveItems> listItems = this.jdbcTemplate.query(sqlBuilderItems.toString(), new QueryPrintDataPurchaseReceiveItems(), queryParametersItems);
+
+        final StringBuilder sqlBuilderBiaya = new StringBuilder("select " + new QueryItemsChargeNotJoin().schema());
+        sqlBuilderBiaya.append(" where data.idpurchasereceive in ("+selectIdPR+")  ");
+        sqlBuilderBiaya.append(" order by data.idpurchasereceive desc ");
+
+        final Object[] queryParametersBiaya = new Object[] {};
+        List<PurchaseReceiveChargeNotJoin> listBiaya = this.jdbcTemplate.query(sqlBuilderBiaya.toString(), new QueryItemsChargeNotJoin(), queryParametersBiaya);
+
+        HashMap<String, Object> maps = new HashMap<>();
+        maps.put("listPR",listPR);
+        maps.put("listItems",listItems);
+        maps.put("listBiaya",listBiaya);
+
+        return maps;
     }
 
     private List<PrintDataPurchaseReceiveInventori> getPrintDataItemsInventori(Long idpurchasereceive){

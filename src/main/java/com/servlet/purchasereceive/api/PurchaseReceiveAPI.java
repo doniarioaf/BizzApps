@@ -2,16 +2,22 @@ package com.servlet.purchasereceive.api;
 
 import com.servlet.product.entity.BodyProduct;
 import com.servlet.purchasereceive.entity.BodyPurchaseReceive;
+import com.servlet.report.entity.ParamReportPembelian;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConstansPermission;
 import com.servlet.shared.Response;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.HashMap;
 
 @RestController
@@ -45,6 +51,14 @@ public class PurchaseReceiveAPI {
         HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("type", "TEMPLATE");
         Response response = securityService.response(ConstansPermission.READ_PURCHASERECEIVE,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @GetMapping("/reporttemplate")
+    ResponseEntity<Response> getReportTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "REPORT_TEMPLATE");
+        Response response = securityService.response(ConstansPermission.READ_REPORT_PURCHASERECEIVE,param,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
@@ -91,6 +105,28 @@ public class PurchaseReceiveAPI {
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
+
+    @GetMapping("/reportpembelian")
+    ResponseEntity<Response> getReportPembelian(HttpServletResponse response, @RequestParam("from") Long from, @RequestParam("to") Long to,@RequestParam("idvendor") Long idvendor, @RequestParam("idarea") Long idarea, @RequestHeader(ConstansKey.AUTH) String authorization) throws IOException{
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "REPORT_PEMBELIAN");
+        ParamReportPembelian body = new ParamReportPembelian();
+        body.setFrom(from);
+        body.setTo(to);
+        body.setIdvendor(idvendor != 0L?idvendor:null);
+        body.setIdarea(idarea != 0L?idarea:null);
+        param.put("body", body);
+        Response response1 = securityService.response(ConstansPermission.READ_REPORT_PURCHASERECEIVE,param,authorization);
+        if(response1.getHttpcode() == HttpStatus.OK.value()) {
+            XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+            export(response, workbook);
+
+            return ResponseEntity.ok().build();
+        }else{
+            return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
+        }
+    }
+
     @PutMapping("{id}")
     ResponseEntity<Response> updateObject(@PathVariable long id, @RequestBody @Validated BodyPurchaseReceive body, @RequestHeader(ConstansKey.AUTH) String authorization) {
         HashMap<String, Object> param = new HashMap<String, Object>();
@@ -104,5 +140,14 @@ public class PurchaseReceiveAPI {
     ResponseEntity<Response> deleteObject(@PathVariable long id, @RequestHeader(ConstansKey.AUTH) String authorization) {
         Response response = securityService.response(ConstansPermission.DELETE_PURCHASERECEIVE,id,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    private void export(HttpServletResponse response, XSSFWorkbook workbook) throws IOException {
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+
+        outputStream.close();
+
     }
 }
