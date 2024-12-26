@@ -11,6 +11,21 @@ public class BodyPackingListItem {
     private Double totalprice;
     private String box;
 
+    @Override
+    public String toString() {
+        return "PackingListItem{" +
+                "idproduct=" + idproduct +
+                ", idcategoryproduct=" + idcategoryproduct +
+                ", qty=" + qty +
+                ", brutoweight=" + brutoweight +
+                ", allowance=" + allowance +
+                ", nettoweight=" + nettoweight +
+                ", price=" + price +
+                ", totalprice=" + totalprice +
+                ", box='" + box + '\'' +
+                '}';
+    }
+
     public String getBox() {
         return box;
     }

@@ -4,6 +4,8 @@ import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.customer.service.CustomerService;
 import com.servlet.draftpurchasereceive.entity.BodyDraftPurchaseReceiveItems;
 import com.servlet.historyapps.service.HistoryAppsService;
+import com.servlet.mappingstock.entity.MappingStockCategoryID;
+import com.servlet.mappingstock.service.MappingStockService;
 import com.servlet.packinglist.entity.*;
 import com.servlet.packinglist.mapper.*;
 import com.servlet.packinglist.repo.PakcingListItemRepo;
@@ -12,11 +14,14 @@ import com.servlet.packinglist.service.PackingListService;
 import com.servlet.parameterclient.entity.ValueParameter;
 import com.servlet.parameterclient.service.ParameterClientService;
 import com.servlet.product.service.ProductService;
+import com.servlet.purchasereceive.entity.PurchaseReceiveItems;
+import com.servlet.purchasereceive.entity.PurchaseReceiveItemsNotJoin;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.stockitems.service.StockItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -55,6 +60,11 @@ public class PackingListHandler implements PackingListService {
 
     @Autowired
     private HistoryAppsService historyAppsService;
+
+    @Autowired
+    private StockItemService stockItemService;
+    @Autowired
+    private MappingStockService mappingStockService;
 
     protected final String namaMenu = "PackingList";
     @Override
@@ -181,6 +191,7 @@ public class PackingListHandler implements PackingListService {
                     table.setModifieddate(ts);
                     idsave = repo.saveAndFlush(table).getId();
 
+                    tambahStockItems(idcompany,idbranch,id);
                     itemRepo.deleteAllDetailByIdPackingList(id);
 
                     HashMap<Object, Object> mapsItems = setItems(idcompany, idbranch, idsave, body.getItems());
@@ -226,6 +237,7 @@ public class PackingListHandler implements PackingListService {
                     table.setDeletedate(ts);
                     idsave = repo.saveAndFlush(table).getId();
 
+                    tambahStockItems(idcompany,idbranch,id);
                     historyAppsService.saveHistory(idcompany, idbranch, iduser, "DELETE", namaMenu, mixDataBef, "", "", ts);
                 }
 
@@ -280,6 +292,24 @@ public class PackingListHandler implements PackingListService {
         return null;
     }
 
+    private HashMap<Object,Object> tambahStockItems(Long idcompany, Long idbranch, Long idpackinglist){
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        HashMap<Object,Object> maps = new HashMap<>();
+        List<PackingListItemData> listItems = getListItemsNotJoin(idpackinglist);
+        for(PackingListItemData value : listItems){
+            long categoryProductID = value.getIdcategoryproduct();
+            MappingStockCategoryID mapping = mappingStockService.getDetailMapping(categoryProductID,idcompany,idbranch);
+            if(mapping != null){
+                categoryProductID = mapping.getCategoryproductidmapping();
+            }
+            stockItemService.tambah(idcompany,idbranch,value.getIdproduct(),categoryProductID ,"H",value.getQty());
+        }
+
+
+        maps.put("validations",validations);
+        return maps;
+    }
+
     private List<PackingListDataItemDetail> getListItems(Long idpackinglist){
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryItemDataDetail().schema());
         sqlBuilder.append(" where data.idpackinglist = ? ");
@@ -299,10 +329,13 @@ public class PackingListHandler implements PackingListService {
     private HashMap<Object,Object> setItems(Long idcompany, Long idbranch, Long idpackinglist, BodyPackingListItem[] items){
         List<ValidationDataMessage> validations = new ArrayList<>();
         HashMap<Object,Object> maps = new HashMap<>();
+        HashMap<String, PackingListItem> mapsStock = new HashMap<>();
+        List<BodyPackingListItem> listitem = new ArrayList<>();
         try{
             if(items.length > 0){
                 int noseq =1;
                 for(BodyPackingListItem val:items){
+                    String keyMaps = idpackinglist+val.getIdcategoryproduct()+val.getIdproduct()+val.getBox()+noseq;
                     PackingListItemPK pk = new PackingListItemPK();
                     pk.setIdpackinglist(idpackinglist);
                     pk.setIdproduct(val.getIdproduct());
@@ -318,6 +351,8 @@ public class PackingListHandler implements PackingListService {
                     table.setPrice(val.getPrice());
                     table.setTotalprice(val.getTotalprice());
                     itemRepo.saveAndFlush(table);
+                    listitem.add(val);
+                    mapsStock.put(keyMaps,table);
                     noseq++;
                 }
             }
@@ -325,7 +360,17 @@ public class PackingListHandler implements PackingListService {
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
             validations.add(msg);
         }
-        String dataItems = "";//listitem.toString();
+        if(validations.size() == 0){
+            for (PackingListItem value : mapsStock.values()) {
+                long categoryProductID = value.getPackingListItemPK().getIdcategoryproduct();
+                MappingStockCategoryID mapping = mappingStockService.getDetailMapping(categoryProductID,idcompany,idbranch);
+                if(mapping != null){
+                    categoryProductID = mapping.getCategoryproductidmapping();
+                }
+                stockItemService.kurang(idcompany,idbranch,value.getPackingListItemPK().getIdproduct(),categoryProductID ,"H",value.getQty());
+            }
+        }
+        String dataItems = listitem.toString();
         maps.put("validations",validations);
         maps.put("dataItems",dataItems);
         return maps;

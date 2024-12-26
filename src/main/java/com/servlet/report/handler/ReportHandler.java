@@ -1,5 +1,7 @@
 package com.servlet.report.handler;
 
+import com.servlet.admin.branch.entity.Branch;
+import com.servlet.admin.branch.service.BranchService;
 import com.servlet.categoryproduct.entity.CategoryProductList;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.charge.entity.ChargeList;
@@ -43,6 +45,9 @@ public class ReportHandler implements ReportService {
 
     @Autowired
     PackingListService packingListService;
+
+    @Autowired
+    BranchService branchService;
 
     @Autowired
     InvoiceService invoiceService;
@@ -487,6 +492,12 @@ public class ReportHandler implements ReportService {
         sheet.setDefaultColumnWidth(1000);
         List<Integer> columns = getWidthColumns(500);
 
+        String namaCabang = "";
+        Branch branch = branchService.getBranchByID(idbranch);
+        if(branch != null){
+            namaCabang = branch.getNama();
+        }
+
         List<CategoryProductList> listCP = categoryProductService.getDataForTemplate(idcompany,idbranch,null);
         if(listCP != null && listCP.size() > 0){
             int fontHeight = 12;
@@ -527,6 +538,11 @@ public class ReportHandler implements ReportService {
             row = sheet.createRow(rowcount);
             createCell(row, 0, "Periode", style, sheet,columns);
             createCell(row, 1, dateFrom+" s/d "+dateThru, style, sheet,columns);
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            createCell(row, 0, "Cabang", style, sheet,columns);
+            createCell(row, 1, namaCabang, style, sheet,columns);
 
             int colomcount = 0;
             rowcount++;
