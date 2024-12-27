@@ -38,6 +38,13 @@ public class GlobalFunc {
 	     cal.add(Calendar.DATE, days); //minus number would decrement the days
 	     return new Timestamp(cal.getTime().getTime());
 	}
+
+	public static Long addDays(Long lgdate,int days) throws ParseException {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date(lgdate));// w ww.  j ava  2  s  .co m
+		cal.add(Calendar.DATE, days); //minus number would decrement the days
+		return cal.getTime().getTime();
+	}
 	
 	public static Timestamp addDaysByType(Timestamp ts,int days,String type) throws ParseException {
 		 Calendar cal = Calendar.getInstance();

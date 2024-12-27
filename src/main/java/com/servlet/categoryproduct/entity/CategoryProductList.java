@@ -7,6 +7,15 @@ public class CategoryProductList {
     private String weight;
     private Integer weightfromingram;
     private Integer weighttoingram;
+    private Integer jumlahitemsperkoli;
+
+    public Integer getJumlahitemsperkoli() {
+        return jumlahitemsperkoli;
+    }
+
+    public void setJumlahitemsperkoli(Integer jumlahitemsperkoli) {
+        this.jumlahitemsperkoli = jumlahitemsperkoli;
+    }
 
     public Integer getWeightfromingram() {
         return weightfromingram;

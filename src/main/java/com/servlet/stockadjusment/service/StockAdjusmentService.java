@@ -12,5 +12,5 @@ public interface StockAdjusmentService {
     ReturnData delete(Long id, Long idcompany, Long idbranch, Long iduser);
     StockAdjusmentTemplate getTemplate(Long idcompany, Long idbranch);
     StockAdjsumentDataDetail getDetail(Long idcompany, Long idbranch,Long id);
-    Long calculateQtySA(Long idcompany, Long idbranch, ParamCalculateQtySA param);
+    Long calculateQtySA(Long idcompany, Long idbranch,String type, ParamCalculateQtySA param);
 }

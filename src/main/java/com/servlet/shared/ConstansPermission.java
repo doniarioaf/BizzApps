@@ -94,5 +94,6 @@ public class ConstansPermission {
 	public static final String EDIT_INVOICE = "EDIT_INVOICE";
 	public static final String DELETE_INVOICE = "DELETE_INVOICE";
 	public static final String READ_REPORT_PURCHASERECEIVE = "READ_REPORT_PURCHASERECEIVE";
+	public static final String READ_REPORT_STOCKUDANGHIDUPMATI = "READ_REPORT_STOCKUDANGHIDUPMATI";
 	
 }

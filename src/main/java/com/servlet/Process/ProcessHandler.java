@@ -35,6 +35,7 @@ import com.servlet.product.service.ProductService;
 import com.servlet.purchasereceive.entity.BodyPurchaseReceive;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
 import com.servlet.report.entity.ParamReportPembelian;
+import com.servlet.report.entity.ParamReportStockUdangHidupMati;
 import com.servlet.report.service.ReportService;
 import com.servlet.stockadjusment.entity.BodyStockAdjusment;
 import com.servlet.stockadjusment.service.StockAdjusmentService;
@@ -1145,6 +1146,14 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("PRINTEXCEL")) {
 					long id = (long) param.get("id");
 					val.setData(reportService.getExcelInvoiceByID(id,auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
+				}
+			}
+			else if(codepermission.equals(ConstansPermission.READ_REPORT_STOCKUDANGHIDUPMATI)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("REPORTUDANGHIDUPMATI")) {
+					ParamReportStockUdangHidupMati body = (ParamReportStockUdangHidupMati) param.get("body");
+					val.setData(reportService.reportStockUdangHidupMati(auth.getIdcompany(), auth.getIdbranch(),body).getWorkbook());
 				}
 			}
 			else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {}

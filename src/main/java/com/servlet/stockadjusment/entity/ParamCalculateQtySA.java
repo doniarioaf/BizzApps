@@ -4,7 +4,7 @@ public class ParamCalculateQtySA {
     private Long idcategoryproduct;
     private Long dateFrom;
     private Long dateThru;
-    private String type;
+
 
     public Long getIdcategoryproduct() {
         return idcategoryproduct;
@@ -28,13 +28,5 @@ public class ParamCalculateQtySA {
 
     public void setDateThru(Long dateThru) {
         this.dateThru = dateThru;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 }

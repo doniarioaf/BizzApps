@@ -576,11 +576,11 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         String selectidPr = " select pr.id from purchasereceive as pr where pr.idcompany = "+idcompany+" and pr.idbranch = "+idbranch+" and pr.isdelete = false ";
         if(param.getDateFrom() != null){
             Date dt = new Date(param.getDateFrom());
-            selectidPr += " and data.transactiondate >= '"+dt.toString()+"' ";
+            selectidPr += " and pr.transactiondate >= '"+dt.toString()+"' ";
         }
         if(param.getDateThru() != null){
             Date dt = new Date(param.getDateThru());
-            selectidPr += " and data.transactiondate <= '"+dt.toString()+"' ";
+            selectidPr += " and pr.transactiondate <= '"+dt.toString()+"' ";
         }
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateQty().schema());
         sqlBuilder.append(" where data.idcategoryproduct = ? and data.type = 'H' and data.idpurchasereceive in ("+selectidPr+") ");

@@ -1,8 +1,12 @@
 package com.servlet.stockitems.handle;
 
+import com.servlet.packinglist.service.PackingListService;
+import com.servlet.purchasereceive.service.PurchaseReceiveService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.stockadjusment.service.StockAdjusmentService;
+import com.servlet.stockitems.entity.ParamCalculateQty;
 import com.servlet.stockitems.entity.StockItems;
 import com.servlet.stockitems.entity.StockItemsPK;
 import com.servlet.stockitems.repo.StockItemsRepo;
@@ -18,6 +22,13 @@ import java.util.Optional;
 public class StockItemHandler implements StockItemService {
     @Autowired
     private StockItemsRepo repo;
+
+    @Autowired
+    private PurchaseReceiveService purchaseReceiveService;
+    @Autowired
+    private StockAdjusmentService stockAdjusmentService;
+    @Autowired
+    private PackingListService packingListService;
 
     @Override
     public ReturnData tambah(Long idcompany, Long idbranch,Long idproduct,Long idcategoryproduct,String type, Long qty) {
@@ -90,5 +101,17 @@ public class StockItemHandler implements StockItemService {
         data.setSuccess(validations.size() > 0?false:true);
         data.setValidations(validations);
         return data;
+    }
+
+    @Override
+    public Long calculateQty(Long idcompany, Long idbranch, ParamCalculateQty param) {
+        Long qtyMasuk1 = purchaseReceiveService.calculateQtyPr(idcompany,idbranch, param.getParamCalculateQtyPR());
+        //Type udah hidup
+        Long qtyMasuk2 = stockAdjusmentService.calculateQtySA(idcompany,idbranch,"H", param.getParamCalculateQtySA());
+        Long qtyKeluar1 = packingListService.calculateQtyPL(idcompany,idbranch, param.getParamCalculateQtyPL());
+        //Type udah hidup
+        Long qtyKeluar2 = stockAdjusmentService.calculateQtySA(idcompany,idbranch,"M", param.getParamCalculateQtySA());
+        Long hasil = (qtyMasuk1.longValue() + qtyMasuk2.longValue()) - (qtyKeluar1.longValue() - qtyKeluar2.longValue());
+        return hasil;
     }
 }

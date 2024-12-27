@@ -298,11 +298,11 @@ public class PackingListHandler implements PackingListService {
         String selectidPr = " select pr.id from packinglist as pr where pr.idcompany = "+idcompany+" and pr.idbranch = "+idbranch+" and pr.isdelete = false ";
         if(param.getDateFrom() != null){
             Date dt = new Date(param.getDateFrom());
-            selectidPr += " and data.date >= '"+dt.toString()+"' ";
+            selectidPr += " and pr.date >= '"+dt.toString()+"' ";
         }
         if(param.getDateThru() != null){
             Date dt = new Date(param.getDateThru());
-            selectidPr += " and data.date <= '"+dt.toString()+"' ";
+            selectidPr += " and pr.date <= '"+dt.toString()+"' ";
         }
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateQtyPL().schema());
         sqlBuilder.append(" where data.idcategoryproduct = ? and data.idpackinglist in ("+selectidPr+") ");

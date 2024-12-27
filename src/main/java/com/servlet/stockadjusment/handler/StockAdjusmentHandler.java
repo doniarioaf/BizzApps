@@ -204,17 +204,17 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
     }
 
     @Override
-    public Long calculateQtySA(Long idcompany, Long idbranch, ParamCalculateQtySA param) {
+    public Long calculateQtySA(Long idcompany, Long idbranch,String type, ParamCalculateQtySA param) {
         String selectidPr = " select pr.id from stock_adjusment as pr where pr.idcompany = "+idcompany+" and pr.idbranch = "+idbranch+" and pr.isdelete = false ";
         if(param.getDateFrom() != null){
             Date dt = new Date(param.getDateFrom());
-            selectidPr += " and data.date >= '"+dt.toString()+"' ";
+            selectidPr += " and pr.date >= '"+dt.toString()+"' ";
         }
         if(param.getDateThru() != null){
             Date dt = new Date(param.getDateThru());
-            selectidPr += " and data.date <= '"+dt.toString()+"' ";
+            selectidPr += " and pr.date <= '"+dt.toString()+"' ";
         }
-        selectidPr += " and data.type = '"+param.getType()+"' ";
+        selectidPr += " and pr.type = '"+type+"' ";
 
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateQtySA().schema());
         sqlBuilder.append(" where data.idcategoryproduct = ? and data.idstockadjusment in ("+selectidPr+") ");
