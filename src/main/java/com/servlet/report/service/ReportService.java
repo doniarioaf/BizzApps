@@ -1,6 +1,7 @@
 package com.servlet.report.service;
 
 import com.servlet.report.entity.ParamReportPembelian;
+import com.servlet.report.entity.ParamReportRekapStock;
 import com.servlet.report.entity.ParamReportStockUdangHidupMati;
 import com.servlet.report.entity.ReportWorkBookExcel;
 
@@ -11,4 +12,5 @@ public interface ReportService {
     ReportWorkBookExcel getExcelInvoiceByID(long id, long idcompany, long idbranch);
     ReportWorkBookExcel reportPembelian(long idcompany, long idbranch, ParamReportPembelian param);
     ReportWorkBookExcel reportStockUdangHidupMati(long idcompany, long idbranch, ParamReportStockUdangHidupMati param);
+    ReportWorkBookExcel reportRekapStock(long idcompany, long idbranch, ParamReportRekapStock param);
 }

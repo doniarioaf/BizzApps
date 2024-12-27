@@ -20,6 +20,7 @@ import com.servlet.purchasereceive.entity.PrintDataPurchaseReceiveItems;
 import com.servlet.purchasereceive.entity.PurchaseReceiveChargeNotJoin;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
 import com.servlet.report.entity.ParamReportPembelian;
+import com.servlet.report.entity.ParamReportRekapStock;
 import com.servlet.report.entity.ParamReportStockUdangHidupMati;
 import com.servlet.report.entity.ReportWorkBookExcel;
 import com.servlet.report.service.ReportService;
@@ -28,6 +29,8 @@ import com.servlet.stockadjusment.entity.ParamCalculateQtySA;
 import com.servlet.stockadjusment.service.StockAdjusmentService;
 import com.servlet.stockitems.entity.ParamCalculateQty;
 import com.servlet.stockitems.service.StockItemService;
+import com.servlet.vendor.entity.VendorDataForTemplate;
+import com.servlet.vendor.service.VendorService;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellUtil;
@@ -44,10 +47,7 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ReportHandler implements ReportService {
@@ -77,6 +77,9 @@ public class ReportHandler implements ReportService {
 
     @Autowired
     MappingStockService mappingStockService;
+
+    @Autowired
+    VendorService vendorService;
 
     @Override
     public ReportWorkBookExcel getExcelPackingListByID(long id, long idcompany, long idbranch) {
@@ -1146,6 +1149,216 @@ public class ReportHandler implements ReportService {
         return data;
     }
 
+    @Override
+    public ReportWorkBookExcel reportRekapStock(long idcompany, long idbranch, ParamReportRekapStock param) {
+        ReportWorkBookExcel data = new ReportWorkBookExcel();
+        XSSFWorkbook workbook = new XSSFWorkbook();
+
+        XSSFDataFormat format = workbook.createDataFormat();
+
+        XSSFSheet sheet = workbook.createSheet("Laporan Rekapan Barang Masuk Harian");
+        sheet.setDefaultColumnWidth(1000);
+        List<Integer> columns = getWidthColumns(100);
+
+        String namaCabang = "";
+        Branch branch = branchService.getBranchByID(idbranch);
+        if(branch != null){
+            namaCabang = branch.getNama();
+        }
+        int fontHeight = 12;
+        CellStyle style = workbook.createCellStyle();
+        CellStyle styleBold = workbook.createCellStyle();
+        CellStyle styleAmount = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setBold(false);
+        font.setFontHeight(fontHeight);
+        style.setFont(font);
+        styleAmount.setFont(font);
+
+        XSSFFont fontBold = workbook.createFont();
+        fontBold.setBold(true);
+        fontBold.setFontHeight(fontHeight);
+        styleBold.setFont(fontBold);
+
+        int rowcount = 2;
+        Row row = sheet.createRow(rowcount);
+        createCell(row, 0, "Laporan Rekapan Barang Masuk Harian", style, sheet,columns);
+
+        String dateFrom = "";
+        try {
+            dateFrom = GlobalFunc.getDateLongToString(param.getDate(), "dd-MMMM-yyyy");
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Tanggal", style, sheet,columns);
+        createCell(row, 1, dateFrom, style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Cabang", style, sheet,columns);
+        createCell(row, 1, namaCabang, style, sheet,columns);
+
+        int colomcount = 0;
+        rowcount++;
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, colomcount, "UKURAN", style, sheet,columns);
+
+        colomcount++;
+        int gramIdxKolom = colomcount;
+        createCell(row, colomcount, "GRAM", style, sheet,columns);
+
+        List<VendorDataForTemplate> listvendor = vendorService.getListDropdown(idcompany,idbranch);
+        List<CategoryProductList> listCP = categoryProductService.getDataForTemplate(idcompany,idbranch,null);
+
+        HashMap<Long,Integer> mapsVendorIdxColumn = new HashMap<>();
+        for(VendorDataForTemplate vendor : listvendor){
+            colomcount++;
+            mapsVendorIdxColumn.put(vendor.getId(), colomcount);
+            createCell(row, colomcount, vendor.getNama(), style, sheet,columns);
+        }
+
+        colomcount++;
+        int totalIdxKolom = colomcount;
+        createCell(row, colomcount, "TOTAL", style, sheet,columns);
+
+        HashMap<Long,Long> mapsTotalEkorPerVendor = new HashMap<>();
+        HashMap<Long,Double> mapsTotalKgPerVendor = new HashMap<>();
+        HashMap<Long,Long> mapsTotalKoliPerVendor = new HashMap<>();
+        long grandTotalEkor = 0L;
+        Double grandTotalKg = 0.0;
+        Long grandTotalKoli = 0L;
+        for(CategoryProductList cp : listCP){
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            colomcount = 0;
+            createCell(row, colomcount, cp.getSize(), style, sheet,columns);
+
+            colomcount++;
+            createCell(row, colomcount, cp.getWeightfromingram()+"-"+cp.getWeighttoingram(), style, sheet,columns);
+
+            Double avgGram = 0.0;
+            int fromInGram = 0;
+            int toInGram = 0;
+            if(cp.getWeightfromingram() != null){
+                fromInGram = cp.getWeightfromingram().intValue();
+            }
+            if(cp.getWeighttoingram() != null){
+                toInGram = cp.getWeighttoingram().intValue();
+            }
+            int gram = fromInGram + toInGram;
+            avgGram = Double.valueOf(gram) / 2;
+
+            long totalPerCategory = 0L;
+            for (HashMap.Entry<Long, Integer> entry : mapsVendorIdxColumn.entrySet()) {
+                    Long idvendor = entry.getKey();
+                    int idxcolumn = entry.getValue().intValue();
+                ParamCalculateQtyPR paramPR = new ParamCalculateQtyPR();
+                paramPR.setDateFrom(param.getDate());
+                paramPR.setDateThru(param.getDate());
+                paramPR.setIdcategoryproduct(cp.getId());
+                paramPR.setIdvendor(idvendor);
+                Long stock = purchaseReceiveService.calculateQtyPr(idcompany,idbranch,paramPR);
+                Long tempTotalPerVendor = mapsTotalEkorPerVendor.get(idvendor);
+                if(tempTotalPerVendor != null){
+                    tempTotalPerVendor += stock.longValue();
+                    mapsTotalEkorPerVendor.put(idvendor,tempTotalPerVendor);
+                }else{
+                    mapsTotalEkorPerVendor.put(idvendor,stock);
+                }
+                totalPerCategory += stock.longValue();
+                createCell(row, idxcolumn, stock, style, sheet,columns);
+
+                Double tempTotalKgPerVendor = mapsTotalKgPerVendor.get(idvendor);
+                if(tempTotalKgPerVendor != null){
+                    tempTotalKgPerVendor += avgGram.doubleValue() * stock.doubleValue();
+                    mapsTotalKgPerVendor.put(idvendor,tempTotalKgPerVendor);
+                }else{
+                    mapsTotalKgPerVendor.put(idvendor,avgGram.doubleValue() * stock.doubleValue());
+                }
+
+                Double totalKoli = 0.0;
+                if(cp.getJumlahitemsperkoli() != null && cp.getJumlahitemsperkoli().intValue() > 0){
+                    totalKoli = stock.doubleValue() / cp.getJumlahitemsperkoli().doubleValue();
+                }
+                BigDecimal bgKoli = new BigDecimal(totalKoli).setScale(0,RoundingMode.UP);
+
+                Long tempTotalKoliPerVendor = mapsTotalKoliPerVendor.get(idvendor);
+                if(tempTotalKoliPerVendor != null){
+                    tempTotalKoliPerVendor += bgKoli.longValue();
+                    mapsTotalKoliPerVendor.put(idvendor,tempTotalKoliPerVendor);
+                }else{
+                    mapsTotalKoliPerVendor.put(idvendor,bgKoli.longValue());
+                }
+            }
+            createCell(row, totalIdxKolom, totalPerCategory, style, sheet,columns);
+
+            grandTotalEkor += totalPerCategory;
+            grandTotalKg += avgGram.doubleValue() * totalPerCategory;
+            Double totalKoli = 0.0;
+            if(cp.getJumlahitemsperkoli() != null && cp.getJumlahitemsperkoli().intValue() > 0){
+                totalKoli = totalPerCategory / cp.getJumlahitemsperkoli().doubleValue();
+            }
+            BigDecimal bgKoli = new BigDecimal(totalKoli).setScale(0,RoundingMode.UP);
+            grandTotalKoli += bgKoli.longValue();
+
+        }
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        colomcount = 0;
+        createCell(row, colomcount, "Total Ekor", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "", style, sheet,columns);
+        for (HashMap.Entry<Long, Long> entry : mapsTotalEkorPerVendor.entrySet()) {
+            Long idvendor = entry.getKey();
+            Long totalEkor = entry.getValue();
+            int idxcolumn = mapsVendorIdxColumn.get(idvendor).intValue();
+            createCell(row, idxcolumn, totalEkor, style, sheet,columns);
+        }
+        createCell(row, totalIdxKolom, grandTotalEkor, style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        colomcount = 0;
+        createCell(row, colomcount, "Total Kg", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "", style, sheet,columns);
+        for (HashMap.Entry<Long, Double> entry : mapsTotalKgPerVendor.entrySet()) {
+            Long idvendor = entry.getKey();
+            Double totalKg = entry.getValue();
+            int idxcolumn = mapsVendorIdxColumn.get(idvendor).intValue();
+            createCell(row, idxcolumn, convertGramToKg(totalKg), style, sheet,columns);
+        }
+        createCell(row, totalIdxKolom, convertGramToKg(grandTotalKg), style, sheet,columns);
+
+        rowcount++;
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        colomcount = 0;
+        createCell(row, colomcount, "Koli", style, sheet,columns);
+        colomcount++;
+        createCell(row, colomcount, "", style, sheet,columns);
+        for (HashMap.Entry<Long, Long> entry : mapsTotalKoliPerVendor.entrySet()) {
+            Long idvendor = entry.getKey();
+            Long totalKoli = entry.getValue();
+            int idxcolumn = mapsVendorIdxColumn.get(idvendor).intValue();
+            createCell(row, idxcolumn, totalKoli, style, sheet,columns);
+        }
+        createCell(row, totalIdxKolom, grandTotalKoli, style, sheet,columns);
+
+
+        data.setWorkbook(workbook);
+        return data;
+    }
+
     private List<Integer> getWidthColumns(int size){
         List<Integer> columns = new ArrayList<>();
         int defaultwidth = 5000;
@@ -1155,6 +1368,9 @@ public class ReportHandler implements ReportService {
         return columns;
     }
 
+    private double convertGramToKg(double value) {
+        return value / 1000.0;
+    }
     private double round(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
 

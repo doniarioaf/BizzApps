@@ -582,6 +582,9 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             Date dt = new Date(param.getDateThru());
             selectidPr += " and pr.transactiondate <= '"+dt.toString()+"' ";
         }
+        if(param.getIdvendor() != null){
+            selectidPr += " and pr.idvendor = "+param.getIdvendor()+" ";
+        }
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateQty().schema());
         sqlBuilder.append(" where data.idcategoryproduct = ? and data.type = 'H' and data.idpurchasereceive in ("+selectidPr+") ");
 
