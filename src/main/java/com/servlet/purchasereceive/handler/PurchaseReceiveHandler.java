@@ -15,6 +15,7 @@ import com.servlet.mappingstock.entity.MappingStockCategoryID;
 import com.servlet.mappingstock.service.MappingStockService;
 import com.servlet.parameterclient.entity.ValueParameter;
 import com.servlet.parameterclient.service.ParameterClientService;
+import com.servlet.pelunasanhutang.entity.FilterParamPelunasanHutang;
 import com.servlet.pricelist.service.PriceService;
 import com.servlet.product.service.ProductService;
 import com.servlet.purchasereceive.entity.*;
@@ -190,6 +191,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                 table.setAccountnamebank(body.getAccountnamebank());
                 table.setTotalprice(body.getTotalprice());
                 table.setSetor(body.getSetor());
+                table.setOutstanding(body.getTotalprice().doubleValue() - body.getSetor().doubleValue());
                 table.setIsdefaultvaluesetor(body.isIsdefaultvaluesetor());
                 table.setIddeposit(iddeposit);
                 table.setIddraftpurchasereceive(body.getIddraftpurchasereceive());
@@ -259,6 +261,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                 table.setSetor(body.getSetor());
                 table.setIsdefaultvaluesetor(body.isIsdefaultvaluesetor());
                 table.setIdarea(body.getIdarea());
+                table.setOutstanding(body.getTotalprice().doubleValue() - body.getSetor().doubleValue());
                 table.setModifiedby(iduser);
                 table.setModifieddate(ts);
                 idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
@@ -594,6 +597,64 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             return list.get(0);
         }
         return 0L;
+    }
+
+    @Override
+    public ReturnData updateOustandingTambah(Long id, Double bayar) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        try {
+            PurchaseReceive table = purchaseReceiveRepo.getById(id);
+            double outstanding = table.getOutstanding().doubleValue() + bayar.doubleValue();
+            table.setOutstanding(outstanding);
+            idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
+
+        }catch (Exception e) {
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+            validations.add(msg);
+        }
+
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public ReturnData updateOustandingKurang(Long id, Double bayar) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        try {
+            PurchaseReceive table = purchaseReceiveRepo.getById(id);
+            double outstanding = table.getOutstanding().doubleValue() - bayar.doubleValue();
+            table.setOutstanding(outstanding);
+            idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
+
+        }catch (Exception e) {
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+            validations.add(msg);
+        }
+
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public List<PurchaseReceiveDataPelunasanHutang> getListForPelunasanHutang(Long idcompany, Long idbranch, FilterParamPelunasanHutang param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataPurchaseReceivePelunasanHutang().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        if(param.getStatus().equals("LUNAS")){
+            sqlBuilder.append(" and data.outstanding < 1 ");
+        }else if(param.getStatus().equals("BELUMLUNAS")){
+            sqlBuilder.append(" and data.outstanding > 1 ");
+        }
+        sqlBuilder.append(" order by data.id desc ");
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataPurchaseReceivePelunasanHutang(), queryParameters);
     }
 
     private List<PrintDataPurchaseReceiveInventori> getPrintDataItemsInventori(Long idpurchasereceive){

@@ -31,6 +31,15 @@ public class PurchaseReceiveDataDetail {
     private Long idarea;
     private String namaArea;
     private String aliasArea;
+    private Double outstanding;
+
+    public Double getOutstanding() {
+        return outstanding;
+    }
+
+    public void setOutstanding(Double outstanding) {
+        this.outstanding = outstanding;
+    }
 
     public Long getIdarea() {
         return idarea;

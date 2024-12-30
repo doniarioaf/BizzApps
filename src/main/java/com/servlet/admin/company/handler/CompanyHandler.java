@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.servlet.runningnumber.service.RunningNumberService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,8 @@ public class CompanyHandler implements CompanyService{
 	private CompanyBranchService companyBranchService;
 	@Autowired
 	private BranchService branchService;
+	@Autowired
+	private RunningNumberService runningNumberService;
 	
 	@Override
 	public List<Company> getListCompanyActive() {
@@ -88,6 +91,8 @@ public class CompanyHandler implements CompanyService{
 				pk.setIdcompany(returntable.getId());
 				pk.setIdbranch(company.getBranches()[i]);
 				companyBranchService.saveCompanyBranch(pk);
+				runningNumberService.saveList(returntable.getId(),company.getBranches()[i]);
+
 			}
 		}
 		

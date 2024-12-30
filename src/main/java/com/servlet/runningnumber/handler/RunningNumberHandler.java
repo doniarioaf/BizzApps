@@ -1,8 +1,14 @@
 package com.servlet.runningnumber.handler;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import com.servlet.shared.ConstansCodeMessage;
+import com.servlet.shared.ConstantCodeDocument;
+import com.servlet.shared.ReturnData;
+import com.servlet.shared.ValidationDataMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
@@ -89,6 +95,43 @@ public class RunningNumberHandler implements RunningNumberService{
 			
 		}
 		return "";
+	}
+
+	@Override
+	public ReturnData saveList(Long idcompany,Long idbranch) {
+		List<String> arr = new ArrayList<>();
+		arr.add("PRC");
+		arr.add("DPRC");
+		arr.add("SA");
+		arr.add("PL");
+		arr.add("INV");
+		arr.add("PH");
+		List<RunningNumber> list = new ArrayList<>();
+		for(String code : arr){
+			RunningNumberPK pk = new RunningNumberPK();
+			pk.setIdcompany(idcompany);
+			pk.setIdbranch(idbranch);
+			pk.setCode(code);
+			RunningNumber table = new RunningNumber();
+			table.setRunningNumberPK(pk);
+			table.setValue(1L);
+			list.add(table);
+		}
+		List<ValidationDataMessage> validations = new ArrayList<>();
+		try{
+			if(list.size() > 0){
+				repository.saveAllAndFlush(list);
+			}
+
+		}catch (Exception e) {
+			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+			validations.add(msg);
+		}
+		ReturnData data = new ReturnData();
+		data.setId(0L);
+		data.setSuccess(validations.size() > 0?false:true);
+		data.setValidations(validations);
+		return data;
 	}
 
 }

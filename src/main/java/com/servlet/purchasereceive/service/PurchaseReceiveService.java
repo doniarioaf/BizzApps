@@ -1,5 +1,6 @@
 package com.servlet.purchasereceive.service;
 
+import com.servlet.pelunasanhutang.entity.FilterParamPelunasanHutang;
 import com.servlet.purchasereceive.entity.*;
 import com.servlet.report.entity.ParamReportPembelian;
 import com.servlet.shared.ReturnData;
@@ -25,4 +26,7 @@ public interface PurchaseReceiveService {
     boolean checkIDVendor(Long idvendor);
     HashMap<String,Object> getDataForReport(Long idcompany, Long idbranch, ParamReportPembelian param);
     Long calculateQtyPr(Long idcompany, Long idbranch,ParamCalculateQtyPR param);
+    ReturnData updateOustandingTambah(Long id,Double bayar);
+    ReturnData updateOustandingKurang(Long id,Double bayar);
+    List<PurchaseReceiveDataPelunasanHutang> getListForPelunasanHutang(Long idcompany, Long idbranch, FilterParamPelunasanHutang param);
 }

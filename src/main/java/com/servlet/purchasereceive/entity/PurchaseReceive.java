@@ -48,6 +48,20 @@ public class PurchaseReceive implements Serializable {
     private Long iddeposit;
     private Long iddraftpurchasereceive;
     private Long idarea;
+    /**
+     * outstanding = totalprice - setor
+     * outstanding, hutang yang harus dibayar. angka nya akan berkurang jika ada pembayaran di pelunasan hutang
+     * outstanding jika outstanding dibawah 1, maka dianggap lunas. kenapa dibawah 1 bukan same dengan 0, karena dikhawatirkan ada sisa koma, yg menyebabkan tidak lunas. contoh 0.12312
+     */
+    private Double outstanding;
+
+    public Double getOutstanding() {
+        return outstanding;
+    }
+
+    public void setOutstanding(Double outstanding) {
+        this.outstanding = outstanding;
+    }
 
     public Long getIdarea() {
         return idarea;
@@ -82,6 +96,7 @@ public class PurchaseReceive implements Serializable {
                 ", setor='" + setor + '\'' +
                 ", iddeposit='" + iddeposit + '\'' +
                 ", iddraftpurchasereceive='" + iddraftpurchasereceive + '\'' +
+                ", outstanding='" + outstanding + '\'' +
                 '}';
     }
 
