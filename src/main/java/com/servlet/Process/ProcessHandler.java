@@ -6,6 +6,9 @@ import java.util.HashMap;
 
 import com.servlet.area.entity.BodyArea;
 import com.servlet.area.service.AreaService;
+import com.servlet.cargo.entity.BodyCargo;
+import com.servlet.cargo.entity.ParamCargoSearch;
+import com.servlet.cargo.service.CargoService;
 import com.servlet.categoryproduct.entity.BodyCategoryProduct;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.customer.entity.BodyCustomer;
@@ -142,6 +145,8 @@ public class ProcessHandler implements ProcessService{
 	ReportService reportService;
 	@Autowired
 	PelunasanHutangService pelunasanHutangService;
+	@Autowired
+	CargoService cargoService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -858,6 +863,43 @@ public class ProcessHandler implements ProcessService{
 				}
 			}
 
+			else if(codepermission.equals(ConstansPermission.CREATE_CARGO)) {
+				BodyCargo param = (BodyCargo) data;
+				ReturnData valReturn = cargoService.save(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),param);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_CARGO)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyCargo body  = (BodyCargo) param.get("body");
+				ReturnData valReturn = cargoService.update(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId(),body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_CARGO)) {
+				long id = (long) data;
+				ReturnData valReturn = cargoService.delete(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId());
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}
+
 			else if(codepermission.equals(ConstansPermission.LOGOUT)) {
 				ReturnData valReturn = userAppsService.logout(auth.getId());
 				val.setSuccess(valReturn.isSuccess());
@@ -1224,6 +1266,21 @@ public class ProcessHandler implements ProcessService{
 					val.setData(pelunasanHutangService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}
+
+			else if(codepermission.equals(ConstansPermission.READ_CARGO)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				ParamCargoSearch paramsearch = (ParamCargoSearch) param.get("paramsearch");
+				if(type.equals("ALL")) {
+					val.setData(cargoService.getList(auth.getIdcompany(), auth.getIdbranch(),paramsearch));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(cargoService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(cargoService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
+				}
+			}
+
 			else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {}
 				
 		}
