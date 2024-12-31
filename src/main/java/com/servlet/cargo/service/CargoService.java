@@ -1,7 +1,9 @@
 package com.servlet.cargo.service;
 
 import com.servlet.cargo.entity.*;
+import com.servlet.filedocument.entity.FileDocumentData;
 import com.servlet.shared.ReturnData;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -12,4 +14,9 @@ public interface CargoService {
     ReturnData save(Long idcompany, Long idbranch, Long iduser, BodyCargo body);
     ReturnData update(Long id,Long idcompany, Long idbranch, Long iduser, BodyCargo body);
     ReturnData delete(Long id,Long idcompany, Long idbranch, Long iduser);
+    ReturnData uploadFileDoc(Long id, MultipartFile file, Long idcompany, Long idbranch, Long iduser);
+    FileDocumentData downloadFile(Long id,Long idcompany, Long idbranch);
+
+    ReturnData updateOustandingTambah(Long id,Double bayar);
+    ReturnData updateOustandingKurang(Long id,Double bayar);
 }

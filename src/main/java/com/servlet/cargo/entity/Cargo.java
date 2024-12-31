@@ -1,12 +1,13 @@
 package com.servlet.cargo.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Timestamp;
 
 @Entity
 @Table(name = "cargo", schema = "public")
-public class Cargo {
+public class Cargo implements Serializable {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO, generator="cargo_id_seq")
@@ -24,7 +25,6 @@ public class Cargo {
     private Double ppn23amount;
     private Double netamount;
     private Double outstanding;
-    private String file;
     private boolean isdelete;
     private Long createdby;
     private Timestamp createddate;
@@ -48,7 +48,6 @@ public class Cargo {
                 ", ppn23amount=" + ppn23amount +
                 ", netamount=" + netamount +
                 ", outstanding=" + outstanding +
-                ", file='" + file + '\'' +
                 '}';
     }
 
@@ -162,14 +161,6 @@ public class Cargo {
 
     public void setNetamount(Double netamount) {
         this.netamount = netamount;
-    }
-
-    public String getFile() {
-        return file;
-    }
-
-    public void setFile(String file) {
-        this.file = file;
     }
 
     public boolean isIsdelete() {

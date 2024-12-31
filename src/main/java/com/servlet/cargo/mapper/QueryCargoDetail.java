@@ -16,7 +16,7 @@ public class QueryCargoDetail implements RowMapper<CargoDetail> {
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.id as id, data.idvendor as idvendor, data.date as date, data.invoicenumber as invoicenumber, ");
         sqlBuilder.append("data.smunumber as smunumber,data.awbnumber as awbnumber, data.koli as koli, data.grossamount as grossamount, ");
-        sqlBuilder.append("data.ppnamount as ppnamount,data.ppn23amount as ppn23amount, data.netamount as netamount, data.outstanding as outstanding, data.file as file, ");
+        sqlBuilder.append("data.ppnamount as ppnamount,data.ppn23amount as ppn23amount, data.netamount as netamount, data.outstanding as outstanding, ");
         sqlBuilder.append("ven.nama as venNama, ven.alias as venAlias, ");
         sqlBuilder.append("data.createddate as createddate, data.modifieddate as modifieddate, ");
         sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama ");
@@ -47,7 +47,6 @@ public class QueryCargoDetail implements RowMapper<CargoDetail> {
         final Double ppn23amount = rs.getDouble("ppn23amount");
         final Double netamount = rs.getDouble("netamount");
         final Double outstanding = rs.getDouble("outstanding");
-        final String file = rs.getString("file");
         final String venNama = rs.getString("venNama");
         final String venAlias = rs.getString("venAlias");
         final Timestamp createddate = rs.getTimestamp("createddate");
@@ -69,7 +68,6 @@ public class QueryCargoDetail implements RowMapper<CargoDetail> {
         data.setPpn23amount(ppn23amount);
         data.setNetamount(netamount);
         data.setOutstanding(outstanding);
-        data.setFile("");
         data.setCreateddate(createddate);
         data.setModifieddate(modifieddate);
         data.setCreatedbyName(createdname);

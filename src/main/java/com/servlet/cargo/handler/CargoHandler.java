@@ -5,15 +5,21 @@ import com.servlet.cargo.mapper.QueryCargoDetail;
 import com.servlet.cargo.mapper.QueryCargoList;
 import com.servlet.cargo.repo.CargoRepo;
 import com.servlet.cargo.service.CargoService;
+import com.servlet.filedocument.entity.BodyFileDocument;
+import com.servlet.filedocument.entity.FileDocumentData;
+import com.servlet.filedocument.service.FileDocumentService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.shared.ConstansCodeMessage;
-import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.upload.image.FileStorageService;
+import com.servlet.upload.image.InfoFile;
 import com.servlet.vendor.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.apache.tomcat.util.codec.binary.Base64;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -33,6 +39,11 @@ public class CargoHandler implements CargoService {
 
     @Autowired
     private HistoryAppsService historyAppsService;
+
+    @Autowired
+    private FileDocumentService fileDocumentService;
+    @Autowired
+    private FileStorageService fileStorageService;
 
     protected final String namaMenu = "Cargo";
 
@@ -67,8 +78,14 @@ public class CargoHandler implements CargoService {
         final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
         List<CargoDetail> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCargoDetail(), queryParameters);
         if(list != null && list.size() > 0){
-            return list.get(0);
-//            return data;
+            CargoDetail data = list.get(0);
+            FileDocumentData file  =fileDocumentService.getDetail(data.getId(),namaMenu,idcompany,idbranch);
+            if(file != null){
+                data.setFileId(file.getId());
+                data.setFileName(file.getFilename());
+            }
+            return data;
+
         }
         return null;
     }
@@ -94,7 +111,6 @@ public class CargoHandler implements CargoService {
                 table.setPpn23amount(body.getPpn23amount());
                 table.setNetamount(body.getNetamount());
                 table.setOutstanding(body.getNetamount());
-                table.setFile("");
                 table.setIsdelete(false);
                 table.setCreateddate(ts);
                 table.setCreatedby(iduser);
@@ -162,6 +178,115 @@ public class CargoHandler implements CargoService {
                 table.setDeleteby(iduser);
                 idsave = repo.saveAndFlush(table).getId();
                 historyAppsService.saveHistory(idcompany,idbranch,iduser,"DELETE",namaMenu,table.toString(),"","",ts);
+            }catch (Exception e) {
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
+        }
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public ReturnData uploadFileDoc(Long id, MultipartFile file, Long idcompany, Long idbranch, Long iduser) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        if(validations.size() == 0) {
+            try{
+                byte[] fileencode = Base64.encodeBase64(file.getBytes());
+                String result = new String(fileencode);
+                InfoFile infofile = fileStorageService.getInfoFile(file);
+                String fileName = infofile.getNamaFile();//fileStorageService.storeFile(file);
+                String contentType = infofile.getContectType();//fileStorageService.getContentType(file);
+
+                /** validasi Size file **/
+//                double sizeInKb = infofile.getSizeFile().longValue() / 1024;
+//                double sizeInMb =  sizeInKb / 1024;
+//                List<ParameterData> arrmaxSize = parameterService.getListParameterByGrup("MAX_SIZE_DOCUMENT_IN_MB");
+//                if(arrmaxSize != null && arrmaxSize.size() > 0) {
+//                    double maxSize = new Double(arrmaxSize.get(0).getCode()).doubleValue();
+//                    if(sizeInMb > maxSize) {
+//                        ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_DOCUMENT_MAX_SIZE_OVER_LIMIT,"Ukuran Melebihi Batas, Max= "+maxSize+" MB");
+//                        validations.add(msg);
+//                    }
+//                }
+
+                /** validasi Type file **/
+//                if(contentType.equals("application/pdf") || contentType.equals("image/jpeg") || contentType.equals("image/jpg") || contentType.equals("image/png")) {
+//
+//                }else {
+//                    ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_DOCUMENT_INCORRECT_FORMAT,"Format Tidak Sesuai");
+//                    validations.add(msg);
+//                }
+                if(validations.size() == 0) {
+                    BodyFileDocument bodyFileDocument = new BodyFileDocument();
+                    bodyFileDocument.setIddata(id);
+                    bodyFileDocument.setMenu(namaMenu);
+                    bodyFileDocument.setFilename(fileName);
+                    bodyFileDocument.setFiledocument(result);
+                    bodyFileDocument.setFilecontenttype(contentType);
+                    ReturnData data = fileDocumentService.uploadDoc(idcompany,idbranch,iduser,ts,bodyFileDocument);
+                    idsave = data.getId();
+                    if(data.getValidations().size() > 0){
+                        validations.add(data.getValidations().get(0));
+                    }
+                }
+            }catch (Exception e) {
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
+        }
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public FileDocumentData downloadFile(Long id, Long idcompany, Long idbranch) {
+        return fileDocumentService.getDetail(id,namaMenu,idcompany,idbranch);
+    }
+
+    @Override
+    public ReturnData updateOustandingTambah(Long id, Double bayar) {
+
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        if(validations.size() == 0) {
+            try{
+                Cargo table = repo.getById(id);
+                double outstanding = table.getOutstanding().doubleValue() + bayar.doubleValue();
+                table.setOutstanding(outstanding);
+                idsave = repo.saveAndFlush(table).getId();
+            }catch (Exception e) {
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
+        }
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public ReturnData updateOustandingKurang(Long id, Double bayar) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        if(validations.size() == 0) {
+            try{
+                Cargo table = repo.getById(id);
+                double outstanding = table.getOutstanding().doubleValue() - bayar.doubleValue();
+                table.setOutstanding(outstanding);
+                idsave = repo.saveAndFlush(table).getId();
             }catch (Exception e) {
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
                 validations.add(msg);

@@ -15,7 +15,7 @@ public class QueryCargoList implements RowMapper<CargoDataList> {
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.id as id, data.idvendor as idvendor, data.date as date, data.invoicenumber as invoicenumber, ");
 //        sqlBuilder.append("data.smunumber as smunumber,data.awbnumber as awbnumber, data.koli as koli, data.grossamount as grossamount, ");
-//        sqlBuilder.append("data.ppnamount as ppnamount,data.ppn23amount as ppn23amount, data.netamount as netamount, data.outstanding as outstanding, data.file as file, ");
+//        sqlBuilder.append("data.ppnamount as ppnamount,data.ppn23amount as ppn23amount, data.netamount as netamount, data.outstanding as outstanding, ");
         sqlBuilder.append("ven.nama as venNama, ven.alias as venAlias ");
         sqlBuilder.append("from cargo as data ");
         sqlBuilder.append("left join m_vendor as ven on ven.id = data.idvendor ");

@@ -2,7 +2,6 @@ package com.servlet.cargo.api;
 
 import com.servlet.cargo.entity.BodyCargo;
 import com.servlet.cargo.entity.ParamCargoSearch;
-import com.servlet.invoice.entity.BodyInvoice;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConstansPermission;
@@ -12,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 
@@ -50,7 +50,10 @@ public class CargoAPI {
 
     @PostMapping
     ResponseEntity<Response> createObject(@RequestBody @Validated BodyCargo body, @RequestHeader(ConstansKey.AUTH) String authorization) {
-        Response response = securityService.response(ConstansPermission.CREATE_CARGO,body,authorization);
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "CREATE");
+        param.put("body", body);
+        Response response = securityService.response(ConstansPermission.CREATE_CARGO,param,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
@@ -66,6 +69,25 @@ public class CargoAPI {
     @DeleteMapping("{id}")
     ResponseEntity<Response> deleteObject(@PathVariable long id, @RequestHeader(ConstansKey.AUTH) String authorization) {
         Response response = securityService.response(ConstansPermission.DELETE_CARGO,id,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @PostMapping("/file/{id}")
+    ResponseEntity<Response> uploadFile(@RequestParam("file") MultipartFile file, @PathVariable long id, @RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "UPLOADFILE");
+        param.put("body", file);
+        param.put("id", id);
+        Response response = securityService.response(ConstansPermission.CREATE_CARGO,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @GetMapping("/downloadfile/{idcargo}")
+    ResponseEntity<Response> getDownloadFile(@PathVariable long idcargo,@RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "DOWNLOADFILE");
+        param.put("id", idcargo);
+        Response response = securityService.response(ConstansPermission.READ_CARGO,param,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 }

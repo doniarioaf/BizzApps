@@ -80,6 +80,7 @@ import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 import com.servlet.user.entity.BodyUserApps;
 import com.servlet.user.service.UserAppsService;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ProcessHandler implements ProcessService{
@@ -864,8 +865,17 @@ public class ProcessHandler implements ProcessService{
 			}
 
 			else if(codepermission.equals(ConstansPermission.CREATE_CARGO)) {
-				BodyCargo param = (BodyCargo) data;
-				ReturnData valReturn = cargoService.save(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),param);
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				ReturnData valReturn = new ReturnData();
+				if(type.equals("CREATE")) {
+					BodyCargo body = (BodyCargo) param.get("body");
+					valReturn = cargoService.save(auth.getIdcompany(), auth.getIdbranch(), auth.getId(), body);
+				}else if(type.equals("UPLOADFILE")) {
+					long id = (long) param.get("id");
+					MultipartFile file = (MultipartFile) param.get("body");
+					valReturn = cargoService.uploadFileDoc(id,file,auth.getIdcompany(), auth.getIdbranch(), auth.getId());
+				}
 				if(valReturn.isSuccess()) {
 					val.setData(valReturn.getId());
 				}else {
@@ -1278,6 +1288,9 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
 					val.setData(cargoService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DOWNLOADFILE")) {
+					long id = (long) param.get("id");
+					val.setData(cargoService.downloadFile(id,auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}
 

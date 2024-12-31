@@ -17,7 +17,6 @@ public class CargoData {
     private Double ppn23amount;
     private Double netamount;
     private Double outstanding;
-    private String file;
 
     public Double getOutstanding() {
         return outstanding;
@@ -131,11 +130,4 @@ public class CargoData {
         this.netamount = netamount;
     }
 
-    public String getFile() {
-        return file;
-    }
-
-    public void setFile(String file) {
-        this.file = file;
-    }
 }

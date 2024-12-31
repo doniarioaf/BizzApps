@@ -18,11 +18,28 @@ public class CargoDetail {
     private Double ppn23amount;
     private Double netamount;
     private Double outstanding;
-    private String file;
+    private Long fileId;
+    private String fileName;
     private String createdbyName;
     private Timestamp createddate;
     private String modifiedbyName;
     private Timestamp modifieddate;
+
+    public Long getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(Long fileId) {
+        this.fileId = fileId;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
 
     public String getCreatedbyName() {
         return createdbyName;
@@ -168,11 +185,4 @@ public class CargoDetail {
         this.netamount = netamount;
     }
 
-    public String getFile() {
-        return file;
-    }
-
-    public void setFile(String file) {
-        this.file = file;
-    }
 }
