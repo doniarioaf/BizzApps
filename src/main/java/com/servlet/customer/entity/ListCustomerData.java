@@ -4,6 +4,24 @@ public class ListCustomerData {
     private Long id;
     private String nama;
     private String alias;
+    private String grup;
+    private String grupcode;
+
+    public String getGrupcode() {
+        return grupcode;
+    }
+
+    public void setGrupcode(String grupcode) {
+        this.grupcode = grupcode;
+    }
+
+    public String getGrup() {
+        return grup;
+    }
+
+    public void setGrup(String grup) {
+        this.grup = grup;
+    }
 
     public Long getId() {
         return id;

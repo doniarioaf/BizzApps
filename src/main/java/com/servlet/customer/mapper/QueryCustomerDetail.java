@@ -16,6 +16,7 @@ public class QueryCustomerDetail implements RowMapper<CustomerData> {
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.id as id, data.nama as nama, data.alias as alias, data.address as address, ");
         sqlBuilder.append("data.bank as bank, data.banknumber as banknumber, data.accountbankname as accountbankname, ");
+        sqlBuilder.append("data.grup as grup, data.grupcode as grupcode, data.phonenumber as phonenumber,data.attention as attention, ");
         sqlBuilder.append("data.createddate as createddate, data.modifieddate as modifieddate, data.deletedate as deletedate, ");
         sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama, userdelete.nama as deletenama ");
         sqlBuilder.append("from m_customer as data ");
@@ -46,7 +47,10 @@ public class QueryCustomerDetail implements RowMapper<CustomerData> {
         final String modifiednama = rs.getString("modifiednama");
         final String deletenama = rs.getString("deletenama");
         final String address = rs.getString("address");
-
+        final String grup = rs.getString("grup");
+        final String grupcode = rs.getString("grupcode");
+        final String phonenumber = rs.getString("phonenumber");
+        final String attention = rs.getString("attention");
 
         CustomerData data = new CustomerData();
         data.setId(id);
@@ -62,6 +66,10 @@ public class QueryCustomerDetail implements RowMapper<CustomerData> {
         data.setModifiedbyName(modifiednama);
         data.setDeletebyName(deletenama);
         data.setAddress(address);
+        data.setGrup(grup);
+        data.setGrupcode(grupcode);
+        data.setPhonenumber(phonenumber);
+        data.setAttention(attention);
         return data;
     }
 }

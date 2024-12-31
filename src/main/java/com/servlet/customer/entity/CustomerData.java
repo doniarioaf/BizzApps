@@ -10,12 +10,48 @@ public class CustomerData {
     private String banknumber;
     private String accountbankname;
     private String address;
+    private String grup;
+    private String grupcode;
+    private String phonenumber;
+    private String attention;
     private String createdbyName;
     private Timestamp createddate;
     private String modifiedbyName;
     private Timestamp modifieddate;
     private String deletebyName;
     private Timestamp deletedate;
+
+    public String getGrupcode() {
+        return grupcode;
+    }
+
+    public void setGrupcode(String grupcode) {
+        this.grupcode = grupcode;
+    }
+
+    public String getGrup() {
+        return grup;
+    }
+
+    public void setGrup(String grup) {
+        this.grup = grup;
+    }
+
+    public String getPhonenumber() {
+        return phonenumber;
+    }
+
+    public void setPhonenumber(String phonenumber) {
+        this.phonenumber = phonenumber;
+    }
+
+    public String getAttention() {
+        return attention;
+    }
+
+    public void setAttention(String attention) {
+        this.attention = attention;
+    }
 
     public String getAddress() {
         return address;

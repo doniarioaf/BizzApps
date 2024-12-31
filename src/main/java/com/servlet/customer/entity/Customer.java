@@ -27,6 +27,10 @@ public class Customer implements Serializable {
     private Timestamp modifieddate;
     private Long deleteby;
     private Timestamp deletedate;
+    private String grup;
+    private String grupcode;
+    private String phonenumber;
+    private String attention;
 
     /**
      * jika ada penambahan, tambahkan pada toString. wajib!!
@@ -44,7 +48,42 @@ public class Customer implements Serializable {
                 ", banknumber='" + banknumber + '\'' +
                 ", accountbankname='" + accountbankname + '\'' +
                 ", address='" + address + '\'' +
+                ", grupcode='" + grupcode + '\'' +
+                ", phonenumber='" + phonenumber + '\'' +
+                ", attention='" + attention + '\'' +
                 '}';
+    }
+
+    public String getGrup() {
+        return grup;
+    }
+
+    public void setGrup(String grup) {
+        this.grup = grup;
+    }
+
+    public String getGrupcode() {
+        return grupcode;
+    }
+
+    public void setGrupcode(String grupcode) {
+        this.grupcode = grupcode;
+    }
+
+    public String getPhonenumber() {
+        return phonenumber;
+    }
+
+    public void setPhonenumber(String phonenumber) {
+        this.phonenumber = phonenumber;
+    }
+
+    public String getAttention() {
+        return attention;
+    }
+
+    public void setAttention(String attention) {
+        this.attention = attention;
     }
 
     public String getAddress() {

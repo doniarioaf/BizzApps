@@ -71,6 +71,14 @@ public class CustomerHandler implements CustomerService {
             customer.setBanknumber(body.getBanknumber());
             customer.setAccountbankname(body.getAccountbankname());
             customer.setAddress(body.getAddress());
+            String grup = "";
+            if(body.getGrup() != null){
+                grup = body.getGrup();
+            }
+            customer.setGrup(grup);
+            customer.setGrupcode(grup.trim().replaceAll(" ","").toUpperCase());
+            customer.setPhonenumber(body.getPhonenumber());
+            customer.setAttention(body.getAttention());
             customer.setIsdelete(false);
             customer.setCreateddate(ts);
             customer.setCreatedby(iduser);
@@ -103,6 +111,14 @@ public class CustomerHandler implements CustomerService {
             customer.setBanknumber(body.getBanknumber());
             customer.setAccountbankname(body.getAccountbankname());
             customer.setAddress(body.getAddress());
+            String grup = "";
+            if(body.getGrup() != null){
+                grup = body.getGrup();
+            }
+            customer.setGrup(grup);
+            customer.setGrupcode(grup.trim().replaceAll(" ","").toUpperCase());
+            customer.setPhonenumber(body.getPhonenumber());
+            customer.setAttention(body.getAttention());
             customer.setModifieddate(ts);
             customer.setModifiedby(iduser);
             idsave = repo.saveAndFlush(customer).getId();
