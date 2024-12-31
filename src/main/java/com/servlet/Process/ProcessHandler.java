@@ -1271,6 +1271,9 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("DETAIL_HUTANG_PR")) {
 					long id = (long) param.get("id");
 					val.setData(pelunasanHutangService.getDetailHutangPR(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("DETAIL_HUTANG_CARGO")) {
+					long id = (long) param.get("id");
+					val.setData(pelunasanHutangService.getDetailHutangCargo(auth.getIdcompany(), auth.getIdbranch(),id));
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
 					val.setData(pelunasanHutangService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));

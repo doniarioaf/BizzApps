@@ -9,9 +9,37 @@ public class PelunasanHutangDataList {
     private String nodocumentPR;
     private String namavendorPR;
     private String aliasvendorPR;
+
+    private String nodocumentCargo;
+    private String namavendorCargo;
+    private String aliasvendorCargo;
     private Long idcargo;
     private Date date;
     private Double amount;
+
+    public String getNodocumentCargo() {
+        return nodocumentCargo;
+    }
+
+    public void setNodocumentCargo(String nodocumentCargo) {
+        this.nodocumentCargo = nodocumentCargo;
+    }
+
+    public String getNamavendorCargo() {
+        return namavendorCargo;
+    }
+
+    public void setNamavendorCargo(String namavendorCargo) {
+        this.namavendorCargo = namavendorCargo;
+    }
+
+    public String getAliasvendorCargo() {
+        return aliasvendorCargo;
+    }
+
+    public void setAliasvendorCargo(String aliasvendorCargo) {
+        this.aliasvendorCargo = aliasvendorCargo;
+    }
 
     public Long getId() {
         return id;

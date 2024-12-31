@@ -2,11 +2,9 @@ package com.servlet.cargo.entity;
 
 import java.sql.Date;
 
-public class CargoData {
+public class CargoDataNotJoin {
     private Long id;
     private Long idvendor;
-    private String vendorNama;
-    private String vendorAlias;
     private Date date;
     private String invoicenumber;
     private String smunumber;
@@ -40,22 +38,6 @@ public class CargoData {
 
     public void setIdvendor(Long idvendor) {
         this.idvendor = idvendor;
-    }
-
-    public String getVendorNama() {
-        return vendorNama;
-    }
-
-    public void setVendorNama(String vendorNama) {
-        this.vendorNama = vendorNama;
-    }
-
-    public String getVendorAlias() {
-        return vendorAlias;
-    }
-
-    public void setVendorAlias(String vendorAlias) {
-        this.vendorAlias = vendorAlias;
     }
 
     public Date getDate() {

@@ -1,5 +1,7 @@
 package com.servlet.pelunasanhutang.handler;
 
+import com.servlet.cargo.entity.ParamCargoSearch;
+import com.servlet.cargo.service.CargoService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.pelunasanhutang.entity.*;
 import com.servlet.pelunasanhutang.mapper.QueryPelunasanHutangDataDetail;
@@ -34,6 +36,9 @@ public class PelunasanHutangHandler implements PelunasanHutangService {
     private PurchaseReceiveService purchaseReceiveService;
 
     @Autowired
+    private CargoService cargoService;
+
+    @Autowired
     private RunningNumberService runningNumberService;
 
     @Autowired
@@ -64,6 +69,12 @@ public class PelunasanHutangHandler implements PelunasanHutangService {
             data.setListPR(purchaseReceiveService.getListForPelunasanHutang(idcompany,idbranch,param));
         }
 
+        if(param.getCategory().equals("CARGO") || param.getCategory().equals("UPI") || param.getCategory().equals("ALL")){
+            ParamCargoSearch paramcargo = new ParamCargoSearch();
+            paramcargo.setStatus(param.getStatus());
+            paramcargo.setCategory(param.getCategory());
+            data.setListCargo(cargoService.getListCargoPelunasanHutang(idcompany,idbranch,paramcargo));
+        }
         return data;
     }
 
@@ -72,6 +83,14 @@ public class PelunasanHutangHandler implements PelunasanHutangService {
         DetailHutangPR data = new DetailHutangPR();
         data.setDetailPR(purchaseReceiveService.getDetail(idcompany,idbranch,idpurchasereceive));
         data.setListpembayaran(getListPembayaranHutangByIDPR(idcompany,idbranch,idpurchasereceive));
+        return data;
+    }
+
+    @Override
+    public DetailHutangCargo getDetailHutangCargo(Long idcompany, Long idbranch, Long idcargo) {
+        DetailHutangCargo data = new DetailHutangCargo();
+        data.setDetailCargo(cargoService.getDetail(idcargo,idcompany,idbranch));
+        data.setListpembayaran(getListPembayaranHutangByIDCargo(idcompany,idbranch,idcargo));
         return data;
     }
 
@@ -116,6 +135,9 @@ public class PelunasanHutangHandler implements PelunasanHutangService {
                 if(body.getIdpurchasereceive() != null){
                     purchaseReceiveService.updateOustandingKurang(body.getIdpurchasereceive(), body.getAmount());
                 }
+                if(body.getIdcargo() != null){
+                    cargoService.updateOustandingKurang(body.getIdcargo(), body.getAmount());
+                }
 
                 historyAppsService.saveHistory(idcompany,idbranch,iduser,"ADD",namaMenu,table.toString(),"","",ts);
             }catch (Exception e) {
@@ -143,6 +165,9 @@ public class PelunasanHutangHandler implements PelunasanHutangService {
                 if(table.getIdpurchasereceive() != null){
                     purchaseReceiveService.updateOustandingTambah(table.getIdpurchasereceive(), table.getAmount());
                 }
+                if(table.getIdcargo() != null){
+                    cargoService.updateOustandingTambah(table.getIdcargo(), table.getAmount());
+                }
                 table.setDate(new Date(body.getDate()));
                 table.setAmount(body.getAmount());
                 table.setNotes(body.getNotes());
@@ -153,6 +178,9 @@ public class PelunasanHutangHandler implements PelunasanHutangService {
 
                 if(table.getIdpurchasereceive() != null){
                     purchaseReceiveService.updateOustandingKurang(table.getIdpurchasereceive(), body.getAmount());
+                }
+                if(table.getIdcargo() != null){
+                    cargoService.updateOustandingKurang(table.getIdcargo(), body.getAmount());
                 }
 
                 historyAppsService.saveHistory(idcompany,idbranch,iduser,"EDIT",namaMenu,"",after,bef,ts);
@@ -179,6 +207,9 @@ public class PelunasanHutangHandler implements PelunasanHutangService {
                 if(table.getIdpurchasereceive() != null){
                     purchaseReceiveService.updateOustandingTambah(table.getIdpurchasereceive(), table.getAmount());
                 }
+                if(table.getIdcargo() != null){
+                    purchaseReceiveService.updateOustandingTambah(table.getIdcargo(), table.getAmount());
+                }
                 table.setIsdelete(true);
                 table.setDeletedate(ts);
                 table.setDeleteby(iduser);
@@ -201,6 +232,14 @@ public class PelunasanHutangHandler implements PelunasanHutangService {
         sqlBuilder.append(" where data.idpurchasereceive = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
         sqlBuilder.append(" order by data.id desc ");
         final Object[] queryParameters = new Object[] {idpurchasereceive,idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPelunasanHutangDataNotJoin(), queryParameters);
+    }
+
+    private List<PelunasanHutangDataNotJoin> getListPembayaranHutangByIDCargo(Long idcompany, Long idbranch, Long idcargo) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPelunasanHutangDataNotJoin().schema());
+        sqlBuilder.append(" where data.idcargo = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        sqlBuilder.append(" order by data.id desc ");
+        final Object[] queryParameters = new Object[] {idcargo,idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPelunasanHutangDataNotJoin(), queryParameters);
     }
 }

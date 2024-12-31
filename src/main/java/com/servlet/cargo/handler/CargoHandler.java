@@ -3,6 +3,7 @@ package com.servlet.cargo.handler;
 import com.servlet.cargo.entity.*;
 import com.servlet.cargo.mapper.QueryCargoDetail;
 import com.servlet.cargo.mapper.QueryCargoList;
+import com.servlet.cargo.mapper.QueryCargoNotJoin;
 import com.servlet.cargo.repo.CargoRepo;
 import com.servlet.cargo.service.CargoService;
 import com.servlet.filedocument.entity.BodyFileDocument;
@@ -297,5 +298,27 @@ public class CargoHandler implements CargoService {
         data.setSuccess(validations.size() > 0?false:true);
         data.setValidations(validations);
         return data;
+    }
+
+    @Override
+    public List<CargoDataNotJoin> getListCargoPelunasanHutang(Long idcompany, Long idbranch, ParamCargoSearch param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCargoNotJoin().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        String selecetIdVendor ="";
+        if(param.getCategory().equals("CARGO")){
+            selecetIdVendor = " select ven.id from m_vendor as ven where ven.type = 'CARGO' and ven.idcompany = "+idcompany+" and ven.idbranch = "+idbranch+" and ven.isdelete = false ";
+        }else if(param.getCategory().equals("UPI")){
+            selecetIdVendor = " select ven.id from m_vendor as ven where ven.type = 'UPI' and ven.idcompany = "+idcompany+" and ven.idbranch = "+idbranch+" and ven.isdelete = false ";
+        }
+        if(!selecetIdVendor.equals("")){
+            sqlBuilder.append(" and data.idvendor in ("+selecetIdVendor+")  ");
+        }
+        if(param.getStatus().equals("LUNAS")){
+            sqlBuilder.append(" and data.outstanding < 1  ");
+        }else if(param.getStatus().equals("BELUMLUNAS")){
+            sqlBuilder.append(" and data.outstanding > 1  ");
+        }
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCargoNotJoin(), queryParameters);
     }
 }

@@ -42,6 +42,15 @@ public class PelunasanHutangAPI {
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
+    @GetMapping("/detailhutangcargo/{id}")
+    ResponseEntity<Response> getHutangCargoId(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "DETAIL_HUTANG_CARGO");
+        param.put("id", id);
+        Response response = securityService.response(ConstansPermission.READ_PELUNASANHUTANG,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
     @PostMapping("/list")
     ResponseEntity<Response> getList(@RequestBody @Validated FilterParamPelunasanHutang body, @RequestHeader(ConstansKey.AUTH) String authorization) {
         HashMap<String, Object> param = new HashMap<String, Object>();

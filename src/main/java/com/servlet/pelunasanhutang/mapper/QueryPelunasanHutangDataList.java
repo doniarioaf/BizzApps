@@ -16,10 +16,15 @@ public class QueryPelunasanHutangDataList implements RowMapper<PelunasanHutangDa
         sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.idpurchasereceive as idpurchasereceive, data.idcargo as idcargo, ");
         sqlBuilder.append("data.date as date, data.amount as amount, ");
         sqlBuilder.append("pr.nodocument as nodocumentpr, ");
-        sqlBuilder.append("venpr.nama as venprnama,venpr.alias as venpralias ");
+        sqlBuilder.append("venpr.nama as venprnama,venpr.alias as venpralias, ");
+        sqlBuilder.append("cargo.invoicenumber as invoicenumbercargo, ");
+        sqlBuilder.append("vencargo.nama as vencargonama,vencargo.alias as vencargoalias ");
         sqlBuilder.append("from pelunasanhutang as data ");
         sqlBuilder.append("left join purchasereceive as pr on pr.id = data.idpurchasereceive ");
         sqlBuilder.append("left join m_vendor as venpr on venpr.id = pr.idvendor ");
+
+        sqlBuilder.append("left join cargo as cargo on cargo.id = data.idcargo ");
+        sqlBuilder.append("left join m_vendor as vencargo on vencargo.id = cargo.idvendor ");
 
         this.schemaSql = sqlBuilder.toString();
     }
@@ -39,6 +44,10 @@ public class QueryPelunasanHutangDataList implements RowMapper<PelunasanHutangDa
         final String nodocumentpr = rs.getString("nodocumentpr");
         final String venprnama = rs.getString("venprnama");
         final String venpralias = rs.getString("venpralias");
+        final String invoicenumbercargo = rs.getString("invoicenumbercargo");
+        final String vencargonama = rs.getString("vencargonama");
+        final String vencargoalias = rs.getString("vencargoalias");
+
         PelunasanHutangDataList data = new PelunasanHutangDataList();
         data.setId(id);
         data.setNodocument(nodocument);
@@ -47,8 +56,12 @@ public class QueryPelunasanHutangDataList implements RowMapper<PelunasanHutangDa
         data.setDate(date);
         data.setAmount(amount);
         data.setNodocumentPR(nodocumentpr);
+        data.setNodocumentCargo(invoicenumbercargo);
         data.setNamavendorPR(venprnama);
         data.setAliasvendorPR(venpralias);
+        data.setNamavendorCargo(vencargonama);
+        data.setAliasvendorCargo(vencargoalias);
+
         return data;
     }
 }

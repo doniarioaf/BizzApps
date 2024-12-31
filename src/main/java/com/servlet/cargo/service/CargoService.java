@@ -19,4 +19,6 @@ public interface CargoService {
 
     ReturnData updateOustandingTambah(Long id,Double bayar);
     ReturnData updateOustandingKurang(Long id,Double bayar);
+
+    List<CargoDataNotJoin> getListCargoPelunasanHutang(Long idcompany, Long idbranch, ParamCargoSearch param);
 }
