@@ -4,6 +4,8 @@ import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.customer.service.CustomerService;
 import com.servlet.draftpurchasereceive.entity.BodyDraftPurchaseReceiveItems;
 import com.servlet.historyapps.service.HistoryAppsService;
+import com.servlet.invoice.entity.InvoiceDataList;
+import com.servlet.invoice.service.InvoiceService;
 import com.servlet.mappingstock.entity.MappingStockCategoryID;
 import com.servlet.mappingstock.service.MappingStockService;
 import com.servlet.packinglist.entity.*;
@@ -66,6 +68,9 @@ public class PackingListHandler implements PackingListService {
     private StockItemService stockItemService;
     @Autowired
     private MappingStockService mappingStockService;
+
+    @Autowired
+    private InvoiceService invoiceService;
 
     protected final String namaMenu = "PackingList";
     @Override
@@ -174,6 +179,11 @@ public class PackingListHandler implements PackingListService {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        InvoiceDataList inv = invoiceService.getDataByIdPackingList(idcompany,idbranch,id);
+        if(inv != null){
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_INVOICE,"packinglist ini terpasang pada invoice ("+inv.getNodocument()+")");
+            validations.add(msg);
+        }
         if(validations.size() == 0) {
             try{
                 PackingList table = repo.getById(id);
@@ -228,6 +238,11 @@ public class PackingListHandler implements PackingListService {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        InvoiceDataList inv = invoiceService.getDataByIdPackingList(idcompany,idbranch,id);
+        if(inv != null){
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_INVOICE,"packinglist ini terpasang pada invoice ("+inv.getNodocument()+")");
+            validations.add(msg);
+        }
         if(validations.size() == 0) {
             try{
                 PackingList table = repo.getById(id);

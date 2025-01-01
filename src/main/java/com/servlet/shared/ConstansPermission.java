@@ -104,5 +104,8 @@ public class ConstansPermission {
 	public static final String CREATE_CARGO = "CREATE_CARGO";
 	public static final String EDIT_CARGO = "EDIT_CARGO";
 	public static final String DELETE_CARGO = "DELETE_CARGO";
+
+	public static final String READ_PELUNASANPIUTANG = "READ_PELUNASANPIUTANG";
+	public static final String CREATE_PELUNASANPIUTANG = "CREATE_PELUNASANPIUTANG";
 	
 }

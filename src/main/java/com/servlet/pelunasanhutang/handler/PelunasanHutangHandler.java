@@ -2,6 +2,7 @@ package com.servlet.pelunasanhutang.handler;
 
 import com.servlet.cargo.entity.ParamCargoSearch;
 import com.servlet.cargo.service.CargoService;
+import com.servlet.draftpurchasereceive.entity.BodyDraftPurchaseReceiveItems;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.pelunasanhutang.entity.*;
 import com.servlet.pelunasanhutang.mapper.QueryPelunasanHutangDataDetail;
@@ -9,6 +10,9 @@ import com.servlet.pelunasanhutang.mapper.QueryPelunasanHutangDataList;
 import com.servlet.pelunasanhutang.mapper.QueryPelunasanHutangDataNotJoin;
 import com.servlet.pelunasanhutang.repo.PelunasanHutangRepo;
 import com.servlet.pelunasanhutang.service.PelunasanHutangService;
+import com.servlet.pelunasanpiutang.entity.BodyPelunasanPiutangItem;
+import com.servlet.pelunasanpiutang.entity.PelunasanPiutangItem;
+import com.servlet.pelunasanpiutang.entity.PelunasanPiutangItemPK;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
@@ -22,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -242,4 +247,6 @@ public class PelunasanHutangHandler implements PelunasanHutangService {
         final Object[] queryParameters = new Object[] {idcargo,idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPelunasanHutangDataNotJoin(), queryParameters);
     }
+
+
 }

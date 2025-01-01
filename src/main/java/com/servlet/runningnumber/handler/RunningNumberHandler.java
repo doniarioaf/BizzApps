@@ -100,12 +100,13 @@ public class RunningNumberHandler implements RunningNumberService{
 	@Override
 	public ReturnData saveList(Long idcompany,Long idbranch) {
 		List<String> arr = new ArrayList<>();
-		arr.add("PRC");
-		arr.add("DPRC");
-		arr.add("SA");
-		arr.add("PL");
-		arr.add("INV");
-		arr.add("PH");
+		arr.add(ConstantCodeDocument.DOC_PURCHASERECEIVE);
+		arr.add(ConstantCodeDocument.DOC_DRAFTPURCHASERECEIVE);
+		arr.add(ConstantCodeDocument.DOC_STOCKADJUSMENT);
+		arr.add(ConstantCodeDocument.DOC_PACKINGLIST);
+		arr.add(ConstantCodeDocument.DOC_INVOICE);
+		arr.add(ConstantCodeDocument.DOC_PELUNASANHUTANG);
+		arr.add(ConstantCodeDocument.DOC_PELUNASANPIUTANG);
 		List<RunningNumber> list = new ArrayList<>();
 		for(String code : arr){
 			RunningNumberPK pk = new RunningNumberPK();

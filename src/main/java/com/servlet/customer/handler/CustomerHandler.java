@@ -1,11 +1,9 @@
 package com.servlet.customer.handler;
 
-import com.servlet.customer.entity.BodyCustomer;
-import com.servlet.customer.entity.Customer;
-import com.servlet.customer.entity.CustomerData;
-import com.servlet.customer.entity.ListCustomerData;
+import com.servlet.customer.entity.*;
 import com.servlet.customer.mapper.QueryCustomerDetail;
 import com.servlet.customer.mapper.QueryCustomerList;
+import com.servlet.customer.mapper.QueryDistinctCustomerGrup;
 import com.servlet.customer.repo.CustomerRepo;
 import com.servlet.customer.service.CustomerService;
 import com.servlet.historyapps.service.HistoryAppsService;
@@ -158,5 +156,13 @@ public class CustomerHandler implements CustomerService {
         data.setSuccess(validations.size() > 0?false:true);
         data.setValidations(validations);
         return data;
+    }
+
+    @Override
+    public List<CustomerGrup> getListCustomerGrup(Long idcompany, Long idbranch) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDistinctCustomerGrup().schema());
+        sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false ");
+        final Object[] queryParameters = new Object[] {idcompany};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDistinctCustomerGrup(), queryParameters);
     }
 }

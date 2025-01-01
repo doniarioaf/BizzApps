@@ -1,4 +1,4 @@
-package com.servlet.invoice.entity;
+package com.servlet.pelunasanpiutang.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -6,21 +6,18 @@ import java.sql.Date;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "invoice", schema = "public")
-public class Invoice implements Serializable {
+@Table(name = "pelunasanpiutang", schema = "public")
+public class PelunasanPiutang implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO, generator="invoice_id_seq")
+    @GeneratedValue(strategy= GenerationType.AUTO, generator="pelunasanpiutang_id_seq")
     private Long id;
     private Long idcompany;
     private Long idbranch;
     private String nodocument;
     private Date date;
     private Double kurs;
-    private Long idpackinglist;
-    private String phone;
-    private Double outstanding;
-    private Double amount;
     private boolean isdelete;
     private Long createdby;
     private Timestamp createddate;
@@ -31,39 +28,12 @@ public class Invoice implements Serializable {
 
     @Override
     public String toString() {
-        return "Invoice{" +
+        return "PelunasanPiutang{" +
                 "id=" + id +
+                ", nodocument='" + nodocument + '\'' +
                 ", date=" + date +
                 ", kurs=" + kurs +
-                ", idpackinglist=" + idpackinglist +
-                ", phone=" + phone +
-                ", amount=" + amount +
-                ", outstanding=" + outstanding +
                 '}';
-    }
-
-    public Double getOutstanding() {
-        return outstanding;
-    }
-
-    public void setOutstanding(Double outstanding) {
-        this.outstanding = outstanding;
-    }
-
-    public Double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(Double amount) {
-        this.amount = amount;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
     }
 
     public Long getId() {
@@ -112,14 +82,6 @@ public class Invoice implements Serializable {
 
     public void setKurs(Double kurs) {
         this.kurs = kurs;
-    }
-
-    public Long getIdpackinglist() {
-        return idpackinglist;
-    }
-
-    public void setIdpackinglist(Long idpackinglist) {
-        this.idpackinglist = idpackinglist;
     }
 
     public boolean isIsdelete() {

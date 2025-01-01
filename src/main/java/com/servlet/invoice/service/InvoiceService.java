@@ -1,6 +1,7 @@
 package com.servlet.invoice.service;
 
 import com.servlet.invoice.entity.*;
+import com.servlet.pelunasanpiutang.entity.FilterParamPelunasanPiutang;
 import com.servlet.shared.ReturnData;
 
 import java.util.List;
@@ -13,4 +14,10 @@ public interface InvoiceService {
     ReturnData update(Long id,Long idcompany, Long idbranch, Long iduser, BodyInvoice body);
     ReturnData delete(Long id,Long idcompany, Long idbranch, Long iduser);
     PrintInvoice getPrintDataByID(Long id, Long idcompany, Long idbranch);
+    InvoiceDataList getDataByIdPackingList(Long idcompany, Long idbranch,Long idpackinglist);
+    List<InvoiceDataPelunasanPiutang> getListInvoicePelunasanPiutang(Long idcompany, Long idbranch, FilterParamPelunasanPiutang param);
+    List<InvoiceDataPelunasanPiutang> getListInvoicePelunasanPiutangByListID(Long idcompany, Long idbranch, String listIdInvoice);
+
+    ReturnData updateOustandingTambah(Long id,Double bayar);
+    ReturnData updateOustandingKurang(Long id,Double bayar);
 }

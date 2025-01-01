@@ -6,6 +6,15 @@ public class BodyInvoice {
     private Double kurs;
     private Long idpackinglist;
     private String phone;
+    private Double totalamount;
+
+    public Double getTotalamount() {
+        return totalamount;
+    }
+
+    public void setTotalamount(Double totalamount) {
+        this.totalamount = totalamount;
+    }
 
     public Long getDate() {
         return date;
