@@ -13,11 +13,12 @@ public class QueryPelunasanPiutangList implements RowMapper<PelunasanPiutangList
     public QueryPelunasanPiutangList() {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
-        sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.date as date, data.kurs as kurs, ");
+        sqlBuilder.append("distinct(data.id) as id, data.nodocument as nodocument, data.date as date, data.kurs as kurs, ");
         sqlBuilder.append("inv.id as invid, inv.nodocument as invnodocument, inv.kurs as invkurs, inv.amount as invamount , ");
         sqlBuilder.append("cust.nama as custNama, cust.alias as custAlias ");
         sqlBuilder.append("from pelunasanpiutang as data ");
-        sqlBuilder.append("left join (select item.idpelunasanpiutang, item.idinvoice FROM pelunasanpiutang_item as item ORDER BY item.idinvoice desc LIMIT 1) as items on items.idpelunasanpiutang = data.id ");
+        sqlBuilder.append("left join pelunasanpiutang_item as items on items.idinvoice = (select item.idinvoice from pelunasanpiutang_item as item where item.idpelunasanpiutang =data.id ORDER BY item.idinvoice desc LIMIT 1) ");
+//        sqlBuilder.append("left join (select item.idpelunasanpiutang, item.idinvoice FROM pelunasanpiutang_item as item ORDER BY item.idinvoice desc LIMIT 1) as items on items.idpelunasanpiutang = data.id ");
         sqlBuilder.append("left join invoice as inv on inv.id = items.idinvoice ");
         sqlBuilder.append("left join packinglist as pl on pl.id = inv.idpackinglist ");
         sqlBuilder.append("left join m_customer as cust on cust.id = pl.idcustomer ");
