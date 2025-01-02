@@ -927,6 +927,30 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_PELUNASANPIUTANG)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyPelunasanPiutang body  = (BodyPelunasanPiutang) param.get("body");
+				ReturnData valReturn = pelunasanPiutangService.update(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId(),body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_PELUNASANPIUTANG)) {
+				long id = (long) data;
+				ReturnData valReturn = pelunasanPiutangService.delete(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId());
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 			}
 
 			else if(codepermission.equals(ConstansPermission.LOGOUT)) {
@@ -1303,24 +1327,18 @@ public class ProcessHandler implements ProcessService{
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				String type = (String) param.get("type");
 				FilterParamPelunasanPiutang paramsearch = (FilterParamPelunasanPiutang) param.get("paramsearch");
-				if(type.equals("ALL")) {
-//					val.setData(pelunasanHutangService.getList(auth.getIdcompany(), auth.getIdbranch(),paramsearch));
-				}else if(type.equals("TEMPLATE")) {
+				if(type.equals("TEMPLATE")) {
 					val.setData(pelunasanPiutangService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("PIUTANG_LIST")) {
 					val.setData(invoiceService.getListInvoicePelunasanPiutang(auth.getIdcompany(), auth.getIdbranch(),paramsearch));
 				}else if(type.equals("BAYAR_LIST_INVOICE")) {
 					String listID = (String) param.get("id");
 					val.setData(invoiceService.getListInvoicePelunasanPiutangByListID(auth.getIdcompany(), auth.getIdbranch(),listID));
-				}else if(type.equals("DETAIL_HUTANG_PR")) {
-					long id = (long) param.get("id");
-					val.setData(pelunasanHutangService.getDetailHutangPR(auth.getIdcompany(), auth.getIdbranch(),id));
-				}else if(type.equals("DETAIL_HUTANG_CARGO")) {
-					long id = (long) param.get("id");
-					val.setData(pelunasanHutangService.getDetailHutangCargo(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("PELUNASANPIUTANG_LIST")) {
+					val.setData(pelunasanPiutangService.getPelunasanPiutangList(auth.getIdcompany(), auth.getIdbranch(),paramsearch));
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
-					val.setData(pelunasanHutangService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(pelunasanPiutangService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}
 

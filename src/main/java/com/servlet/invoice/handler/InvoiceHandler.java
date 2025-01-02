@@ -271,6 +271,8 @@ public class InvoiceHandler implements InvoiceService {
         }else if(param.getStatus().equals("BELUMLUNAS")){
             sqlBuilder.append(" and data.outstanding >= 1 ");
         }
+        sqlBuilder.append(" ORDER BY data.id desc ");
+
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataPelunasanPiutang(), queryParameters);
     }
@@ -280,6 +282,7 @@ public class InvoiceHandler implements InvoiceService {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataPelunasanPiutang().schema());
         sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
         sqlBuilder.append(" and data.id in ("+listIdInvoice+") ");
+        sqlBuilder.append(" ORDER BY data.id desc ");
 
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataPelunasanPiutang(), queryParameters);
