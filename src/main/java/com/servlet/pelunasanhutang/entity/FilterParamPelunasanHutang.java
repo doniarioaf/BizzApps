@@ -6,6 +6,16 @@ public class FilterParamPelunasanHutang {
     private Long from;
     private Long to;
 
+    private String listIdCargo;//1,2,3
+
+    public String getListIdCargo() {
+        return listIdCargo;
+    }
+
+    public void setListIdCargo(String listIdCargo) {
+        this.listIdCargo = listIdCargo;
+    }
+
     public Long getFrom() {
         return from;
     }

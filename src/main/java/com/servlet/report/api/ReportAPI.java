@@ -1,6 +1,7 @@
 package com.servlet.report.api;
 
 import com.servlet.report.entity.ParamReportRekapStock;
+import com.servlet.report.entity.ParamReportStatusTagihanCargo;
 import com.servlet.report.entity.ParamReportStockUdangHidupMati;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
@@ -61,6 +62,36 @@ public class ReportAPI {
             return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
         }
 
+    }
+
+    @GetMapping("/reporstatustagihancargo")
+    ResponseEntity<Response> getReportStatusTagihanCargo(@RequestParam("status") String status, @RequestParam("idvendors") String idvendors, @RequestParam("from") Long from,@RequestParam("to") Long to, HttpServletResponse response, @RequestHeader(ConstansKey.AUTH) String authorization) throws IOException{
+        ParamReportStatusTagihanCargo body = new ParamReportStatusTagihanCargo();
+        body.setFrom(from);
+        body.setTo(to);
+        body.setIdvendors(idvendors);
+        body.setStatus(status);
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "REPORTSTATUSTAGIHANCARGO");
+        param.put("body", body);
+        Response response1 = securityService.response(ConstansPermission.READ_REPORT_STATUSTAGIHANCARGO,param,authorization);
+        if(response1.getHttpcode() == HttpStatus.OK.value()) {
+            XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+            export(response, workbook);
+
+            return ResponseEntity.ok().build();
+        }else{
+            return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
+        }
+
+    }
+
+    @GetMapping("/reporstatustagihancargo/template")
+    ResponseEntity<Response> getReportStatusTagihanCargoTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "REPORTSTATUSTAGIHANCARGO_TEMPLATE");
+        Response response = securityService.response(ConstansPermission.READ_REPORT_STATUSTAGIHANCARGO,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
     private void export(HttpServletResponse response, XSSFWorkbook workbook) throws IOException {

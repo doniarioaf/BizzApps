@@ -45,6 +45,7 @@ import com.servlet.purchasereceive.entity.BodyPurchaseReceive;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
 import com.servlet.report.entity.ParamReportPembelian;
 import com.servlet.report.entity.ParamReportRekapStock;
+import com.servlet.report.entity.ParamReportStatusTagihanCargo;
 import com.servlet.report.entity.ParamReportStockUdangHidupMati;
 import com.servlet.report.service.ReportService;
 import com.servlet.stockadjusment.entity.BodyStockAdjusment;
@@ -1300,6 +1301,17 @@ public class ProcessHandler implements ProcessService{
 				if(type.equals("REPORTREKAPANBARANGMASUK")) {
 					ParamReportRekapStock body = (ParamReportRekapStock) param.get("body");
 					val.setData(reportService.reportRekapStock(auth.getIdcompany(), auth.getIdbranch(),body).getWorkbook());
+				}
+			}
+
+			else if(codepermission.equals(ConstansPermission.READ_REPORT_STATUSTAGIHANCARGO)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("REPORTSTATUSTAGIHANCARGO")) {
+					ParamReportStatusTagihanCargo body = (ParamReportStatusTagihanCargo) param.get("body");
+					val.setData(reportService.reportStatusTagihanCargo(auth.getIdcompany(), auth.getIdbranch(),body).getWorkbook());
+				}else if(type.equals("REPORTSTATUSTAGIHANCARGO_TEMPLATE")) {
+					val.setData(reportService.reportTemplateStatusTagihanCargo(auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}
 

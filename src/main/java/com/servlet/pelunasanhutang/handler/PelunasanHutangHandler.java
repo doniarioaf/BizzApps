@@ -8,6 +8,7 @@ import com.servlet.pelunasanhutang.entity.*;
 import com.servlet.pelunasanhutang.mapper.QueryPelunasanHutangDataDetail;
 import com.servlet.pelunasanhutang.mapper.QueryPelunasanHutangDataList;
 import com.servlet.pelunasanhutang.mapper.QueryPelunasanHutangDataNotJoin;
+import com.servlet.pelunasanhutang.mapper.QueryPelunasanHutangReportStatusTagihanCargo;
 import com.servlet.pelunasanhutang.repo.PelunasanHutangRepo;
 import com.servlet.pelunasanhutang.service.PelunasanHutangService;
 import com.servlet.pelunasanpiutang.entity.BodyPelunasanPiutangItem;
@@ -230,6 +231,18 @@ public class PelunasanHutangHandler implements PelunasanHutangService {
         data.setSuccess(validations.size() > 0?false:true);
         data.setValidations(validations);
         return data;
+    }
+
+    @Override
+    public List<PelunasanHutangReportStatusTagihanCargo> getListReportStatusTagihanCargo(Long idcompany, Long idbranch, FilterParamPelunasanHutang param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPelunasanHutangReportStatusTagihanCargo().schema());
+        sqlBuilder.append(" where  data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        if(param.getListIdCargo() != null && !param.getListIdCargo().equals("")){
+            sqlBuilder.append(" and data.idcargo in ("+param.getListIdCargo()+") ");
+        }
+        sqlBuilder.append(" order by data.idcargo desc ");
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPelunasanHutangReportStatusTagihanCargo(), queryParameters);
     }
 
     private List<PelunasanHutangDataNotJoin> getListPembayaranHutangByIDPR(Long idcompany, Long idbranch, Long idpurchasereceive) {

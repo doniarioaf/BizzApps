@@ -1,9 +1,6 @@
 package com.servlet.report.service;
 
-import com.servlet.report.entity.ParamReportPembelian;
-import com.servlet.report.entity.ParamReportRekapStock;
-import com.servlet.report.entity.ParamReportStockUdangHidupMati;
-import com.servlet.report.entity.ReportWorkBookExcel;
+import com.servlet.report.entity.*;
 
 import java.text.ParseException;
 
@@ -13,4 +10,6 @@ public interface ReportService {
     ReportWorkBookExcel reportPembelian(long idcompany, long idbranch, ParamReportPembelian param);
     ReportWorkBookExcel reportStockUdangHidupMati(long idcompany, long idbranch, ParamReportStockUdangHidupMati param);
     ReportWorkBookExcel reportRekapStock(long idcompany, long idbranch, ParamReportRekapStock param);
+    ReportWorkBookExcel reportStatusTagihanCargo(long idcompany, long idbranch, ParamReportStatusTagihanCargo param);
+    ReportTemplate reportTemplateStatusTagihanCargo(long idcompany, long idbranch);
 }

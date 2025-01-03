@@ -2,6 +2,10 @@ package com.servlet.report.handler;
 
 import com.servlet.admin.branch.entity.Branch;
 import com.servlet.admin.branch.service.BranchService;
+import com.servlet.cargo.entity.CargoDataNotJoin;
+import com.servlet.cargo.entity.CargoDataReportStatusTagihanCargo;
+import com.servlet.cargo.entity.ParamCargoSearch;
+import com.servlet.cargo.service.CargoService;
 import com.servlet.categoryproduct.entity.CategoryProductList;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.charge.entity.ChargeList;
@@ -14,21 +18,22 @@ import com.servlet.packinglist.entity.PackingListDataItemDetail;
 import com.servlet.packinglist.entity.ParamCalculateQtyPL;
 import com.servlet.packinglist.entity.PrintPackingList;
 import com.servlet.packinglist.service.PackingListService;
+import com.servlet.pelunasanhutang.entity.FilterParamPelunasanHutang;
+import com.servlet.pelunasanhutang.entity.PelunasanHutangReportStatusTagihanCargo;
+import com.servlet.pelunasanhutang.service.PelunasanHutangService;
 import com.servlet.purchasereceive.entity.ParamCalculateQtyPR;
 import com.servlet.purchasereceive.entity.PrintDataPurchaseReceive;
 import com.servlet.purchasereceive.entity.PrintDataPurchaseReceiveItems;
 import com.servlet.purchasereceive.entity.PurchaseReceiveChargeNotJoin;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
-import com.servlet.report.entity.ParamReportPembelian;
-import com.servlet.report.entity.ParamReportRekapStock;
-import com.servlet.report.entity.ParamReportStockUdangHidupMati;
-import com.servlet.report.entity.ReportWorkBookExcel;
+import com.servlet.report.entity.*;
 import com.servlet.report.service.ReportService;
 import com.servlet.shared.GlobalFunc;
 import com.servlet.stockadjusment.entity.ParamCalculateQtySA;
 import com.servlet.stockadjusment.service.StockAdjusmentService;
 import com.servlet.stockitems.entity.ParamCalculateQty;
 import com.servlet.stockitems.service.StockItemService;
+import com.servlet.vendor.entity.ParamVendor;
 import com.servlet.vendor.entity.VendorDataForTemplate;
 import com.servlet.vendor.service.VendorService;
 import org.apache.poi.ss.usermodel.*;
@@ -80,6 +85,12 @@ public class ReportHandler implements ReportService {
 
     @Autowired
     VendorService vendorService;
+
+    @Autowired
+    CargoService cargoService;
+
+    @Autowired
+    PelunasanHutangService pelunasanHutangService;
 
     @Override
     public ReportWorkBookExcel getExcelPackingListByID(long id, long idcompany, long idbranch) {
@@ -1356,6 +1367,374 @@ public class ReportHandler implements ReportService {
 
 
         data.setWorkbook(workbook);
+        return data;
+    }
+
+    @Override
+    public ReportWorkBookExcel reportStatusTagihanCargo(long idcompany, long idbranch, ParamReportStatusTagihanCargo param) {
+        ReportWorkBookExcel data = new ReportWorkBookExcel();
+        XSSFWorkbook workbook = new XSSFWorkbook();
+
+        XSSFDataFormat format = workbook.createDataFormat();
+
+        XSSFSheet sheet = workbook.createSheet("Laporan Status Tagihan Cargo");
+        sheet.setDefaultColumnWidth(1000);
+        List<Integer> columns = getWidthColumns(15);
+
+        String namaCabang = "";
+        Branch branch = branchService.getBranchByID(idbranch);
+        if(branch != null){
+            namaCabang = branch.getNama();
+        }
+
+        int fontHeight = 12;
+        CellStyle style = workbook.createCellStyle();
+        CellStyle styleBold = workbook.createCellStyle();
+        CellStyle styleAmount = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setBold(false);
+        font.setFontHeight(fontHeight);
+        style.setFont(font);
+        styleAmount.setFont(font);
+
+        XSSFFont fontBold = workbook.createFont();
+        fontBold.setBold(true);
+        fontBold.setFontHeight(fontHeight);
+        styleBold.setFont(fontBold);
+        String namaVendor = "";
+        ParamVendor paramvendor =  new ParamVendor();
+        if(param.getIdvendors().equals("ALL")){
+            paramvendor.setVendorTypes("'CARGO','UPI'");
+        }else{
+            paramvendor.setListIdVendor(param.getIdvendors());
+        }
+
+        List<VendorDataForTemplate> getListVendor = vendorService.getListDropdown(idcompany,idbranch,paramvendor);
+        List<String> list = new ArrayList<>();
+        HashMap<Long, VendorDataForTemplate> mapVendor = new HashMap<>();
+        for(VendorDataForTemplate ven : getListVendor){
+            mapVendor.put(ven.getId(), ven);
+            list.add(ven.getNama());
+        }
+        if(!param.getIdvendors().equals("ALL")){
+            for(String nama :list){
+                if(namaVendor == ""){
+                    namaVendor = nama;
+                } else{
+                    namaVendor= namaVendor+","+nama;
+                }
+            }
+        }else{
+            namaVendor = "ALL";
+        }
+
+        int rowcount = 2;
+        Row row = sheet.createRow(rowcount);
+        createCell(row, 0, "PT Sumber Berlian Samudra", style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Laporan Status Tagihan Cargo", style, sheet,columns);
+
+        String dateFrom = "";
+        try {
+            dateFrom = GlobalFunc.getDateLongToString(param.getFrom(), "dd-MMMM-yyyy");
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String dateThru = "";
+        try {
+            dateThru = GlobalFunc.getDateLongToString(param.getTo(), "dd-MMMM-yyyy");
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Periode", style, sheet,columns);
+        createCell(row, 1, dateFrom+" s/d "+dateThru, style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Vendor", style, sheet,columns);
+        createCell(row, 1, namaVendor, style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Cabang", style, sheet,columns);
+        createCell(row, 1, namaCabang, style, sheet,columns);
+
+        int colomcount = 0;
+        rowcount++;
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, colomcount, "Vendor", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Tanggal", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "No Invoice", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "No SMU", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "No AWB", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Koli", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Gross Invoice", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "PPN", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "PPN23", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Net Invoice", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Status Pembayaran", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "No Doc Pelunasan", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Keterangan", style, sheet,columns);
+
+        HashMap<Long,Integer[]> mapsIdCargoRowColomIndex = new HashMap<>();
+        for(VendorDataForTemplate ven : getListVendor){
+            ParamCargoSearch paramCargo = new ParamCargoSearch();
+            paramCargo.setFrom(param.getFrom());
+            paramCargo.setTo(param.getTo());
+            paramCargo.setStatus(param.getStatus());
+            paramCargo.setIdvendor(ven.getId());
+            List<CargoDataReportStatusTagihanCargo> listCargo = cargoService.getListCargoReportStatusTagihanCargo(idcompany,idbranch,paramCargo);
+            long totalKoliPerVendor = 0L;
+            Double totalGrossInvoicePerVendor = 0.0;
+            Double totalPPNPerVendor = 0.0;
+            Double totalPPN23PerVendor = 0.0;
+            Double totalNetInvoicePerVendor = 0.0;
+            if(listCargo != null && listCargo.size() > 0){
+                for(CargoDataReportStatusTagihanCargo cargo : listCargo){
+                    colomcount = 0;
+                    rowcount++;
+                    row = sheet.createRow(rowcount);
+                    createCell(row, colomcount, ven.getNama(), style, sheet,columns);
+
+                    String transDate = "";
+                    try {
+                        transDate = GlobalFunc.getDateLongToString(cargo.getDate().getTime(), "dd-MMMM-yyyy");
+                    } catch (ParseException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    colomcount++;
+                    createCell(row, colomcount, transDate, style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, cargo.getInvoicenumber(), style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, cargo.getSmunumber(), style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, cargo.getAwbnumber(), style, sheet,columns);
+
+                    totalKoliPerVendor += cargo.getKoli().longValue();
+                    colomcount++;
+                    createCell(row, colomcount, cargo.getKoli(), style, sheet,columns);
+
+                    totalGrossInvoicePerVendor += cargo.getGrossamount().doubleValue();
+                    int compare = new BigDecimal(cargo.getGrossamount()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(cargo.getGrossamount()));
+                    styleAmount = workbook.createCellStyle();
+                    if(compare == 0) {
+                        styleAmount.setDataFormat(format.getFormat("#,###"));
+                    }else {
+                        styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                    }
+                    colomcount++;
+                    createCell(row, colomcount, cargo.getGrossamount(), styleAmount, sheet,columns);
+
+                    totalPPNPerVendor += cargo.getPpnamount().doubleValue();
+                    compare = new BigDecimal(cargo.getPpnamount()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(cargo.getPpnamount()));
+                    styleAmount = workbook.createCellStyle();
+                    if(compare == 0) {
+                        styleAmount.setDataFormat(format.getFormat("#,###"));
+                    }else {
+                        styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                    }
+                    colomcount++;
+                    createCell(row, colomcount, cargo.getPpnamount(), styleAmount, sheet,columns);
+
+                    totalPPN23PerVendor += cargo.getPpn23amount().doubleValue();
+                    compare = new BigDecimal(cargo.getPpn23amount()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(cargo.getPpn23amount()));
+                    styleAmount = workbook.createCellStyle();
+                    if(compare == 0) {
+                        styleAmount.setDataFormat(format.getFormat("#,###"));
+                    }else {
+                        styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                    }
+                    colomcount++;
+                    createCell(row, colomcount, cargo.getPpn23amount(), styleAmount, sheet,columns);
+
+                    totalNetInvoicePerVendor += cargo.getNetamount().doubleValue();
+                    compare = new BigDecimal(cargo.getNetamount()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(cargo.getNetamount()));
+                    styleAmount = workbook.createCellStyle();
+                    if(compare == 0) {
+                        styleAmount.setDataFormat(format.getFormat("#,###"));
+                    }else {
+                        styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                    }
+                    colomcount++;
+                    createCell(row, colomcount, cargo.getNetamount(), styleAmount, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, (cargo.getOutstanding() >= 1?"BELUM LUNAS":"LUNAS"), style, sheet,columns);
+
+                    colomcount++;
+                    Integer[] rowcol = {rowcount,colomcount};
+                    mapsIdCargoRowColomIndex.put(cargo.getId(),rowcol);
+                    createCell(row, colomcount, "", style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, "", style, sheet,columns);
+                }
+
+                colomcount = 0;
+                rowcount++;
+                row = sheet.createRow(rowcount);
+                createCell(row, colomcount, "Total", style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, "", style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, "", style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, "", style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, "", style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, totalKoliPerVendor, style, sheet,columns);
+
+                int compare = new BigDecimal(totalGrossInvoicePerVendor).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(totalGrossInvoicePerVendor));
+                styleAmount = workbook.createCellStyle();
+                if(compare == 0) {
+                    styleAmount.setDataFormat(format.getFormat("#,###"));
+                }else {
+                    styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                }
+                colomcount++;
+                createCell(row, colomcount, totalGrossInvoicePerVendor, styleAmount, sheet,columns);
+
+                compare = new BigDecimal(totalPPNPerVendor).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(totalPPNPerVendor));
+                styleAmount = workbook.createCellStyle();
+                if(compare == 0) {
+                    styleAmount.setDataFormat(format.getFormat("#,###"));
+                }else {
+                    styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                }
+                colomcount++;
+                createCell(row, colomcount, totalPPNPerVendor, styleAmount, sheet,columns);
+
+                compare = new BigDecimal(totalPPN23PerVendor).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(totalPPN23PerVendor));
+                styleAmount = workbook.createCellStyle();
+                if(compare == 0) {
+                    styleAmount.setDataFormat(format.getFormat("#,###"));
+                }else {
+                    styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                }
+                colomcount++;
+                createCell(row, colomcount, totalPPN23PerVendor, styleAmount, sheet,columns);
+
+                compare = new BigDecimal(totalNetInvoicePerVendor).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(totalNetInvoicePerVendor));
+                styleAmount = workbook.createCellStyle();
+                if(compare == 0) {
+                    styleAmount.setDataFormat(format.getFormat("#,###"));
+                }else {
+                    styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                }
+                colomcount++;
+                createCell(row, colomcount, totalNetInvoicePerVendor, styleAmount, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, "", style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, "", style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, "", style, sheet,columns);
+
+                //per vendor baru space 1 baris
+                rowcount++;
+            }
+        }
+
+        String idcargos = "";
+        for (HashMap.Entry<Long, Integer[]> entry : mapsIdCargoRowColomIndex.entrySet()) {
+            if(idcargos.equals("")){
+                idcargos = entry.getKey().toString();
+            } else{
+                idcargos= idcargos+","+entry.getKey().toString();
+            }
+        }
+
+        FilterParamPelunasanHutang paramPH = new FilterParamPelunasanHutang();
+        paramPH.setListIdCargo(idcargos);
+        List<PelunasanHutangReportStatusTagihanCargo> listPH = pelunasanHutangService.getListReportStatusTagihanCargo(idcompany,idbranch,paramPH);
+        String noDocPH = "";
+        String notesPH = "";
+        long idcargo = 0L;
+        for(PelunasanHutangReportStatusTagihanCargo ph : listPH){
+                if(idcargo == 0L){
+                    noDocPH = ph.getNodocument();
+                    notesPH = ph.getNotes();
+                    idcargo = ph.getIdcargo().longValue();
+                } else if(idcargo == ph.getIdcargo().longValue()){
+                    if(noDocPH.equals("")){
+                        noDocPH = ph.getNodocument();
+                        notesPH = ph.getNotes();
+                    }else{
+                        noDocPH = noDocPH+","+ph.getNodocument();
+                        notesPH = notesPH+","+ph.getNotes();
+                    }
+                }else{
+                    Integer[]  maps = mapsIdCargoRowColomIndex.get(idcargo);
+                    row = sheet.getRow(maps[0].intValue());
+                    colomcount = maps[1].intValue();
+                    createCell(row, colomcount, noDocPH, style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, notesPH, style, sheet,columns);
+
+                    idcargo = ph.getIdcargo().longValue();
+                    noDocPH = ph.getNodocument();
+                    notesPH = ph.getNotes();
+                }
+        }
+
+        data.setWorkbook(workbook);
+        return data;
+    }
+
+    @Override
+    public ReportTemplate reportTemplateStatusTagihanCargo(long idcompany, long idbranch) {
+        ReportTemplate data = new ReportTemplate();
+
+        ParamVendor paramVendor = new ParamVendor();
+        paramVendor.setVendorTypes("'CARGO','UPI'");
+        data.setVendorOpt(vendorService.getListDropdown(idcompany,idbranch,paramVendor));
         return data;
     }
 

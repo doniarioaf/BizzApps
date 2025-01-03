@@ -3,8 +3,26 @@ package com.servlet.cargo.entity;
 public class ParamCargoSearch {
     private Long from;
     private Long to;
+    private Long idvendor;
     private String category;
     private String status;
+    private String listIdVendor;
+
+    public Long getIdvendor() {
+        return idvendor;
+    }
+
+    public void setIdvendor(Long idvendor) {
+        this.idvendor = idvendor;
+    }
+
+    public String getListIdVendor() {
+        return listIdVendor;
+    }
+
+    public void setListIdVendor(String listIdVendor) {
+        this.listIdVendor = listIdVendor;
+    }
 
     public String getCategory() {
         return category;

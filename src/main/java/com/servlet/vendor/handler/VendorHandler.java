@@ -219,6 +219,21 @@ public class VendorHandler implements VendorService {
     }
 
     @Override
+    public List<VendorDataForTemplate> getListDropdown(Long idcompany, Long idbranch, ParamVendor param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryListForDropdownList().schema());
+        sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false ");
+        if(param.getListIdVendor() != null && !param.getListIdVendor().equals("")){
+            sqlBuilder.append(" and data.id in ("+param.getListIdVendor()+") ");
+        }
+        if(param.getVendorTypes() != null && !param.getVendorTypes().equals("")){
+            sqlBuilder.append(" and data.type in ("+param.getVendorTypes()+") ");
+        }
+        
+        final Object[] queryParameters = new Object[] {idcompany};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryListForDropdownList(), queryParameters);
+    }
+
+    @Override
     public String queryIdVendorCategoryProductNotInclud(Long idcompany, Long idbranch,Long idvendor) {
         String query = "select idcategoryproduct from vendor_categoryproduct_not_include as vc ";
         query += " where vc.idvendor = "+idvendor;
