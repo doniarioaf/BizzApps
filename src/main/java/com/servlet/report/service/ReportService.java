@@ -12,4 +12,6 @@ public interface ReportService {
     ReportWorkBookExcel reportRekapStock(long idcompany, long idbranch, ParamReportRekapStock param);
     ReportWorkBookExcel reportStatusTagihanCargo(long idcompany, long idbranch, ParamReportStatusTagihanCargo param);
     ReportTemplate reportTemplateStatusTagihanCargo(long idcompany, long idbranch);
+    ReportWorkBookExcel reportHutang(long idcompany, long idbranch, ParamReportHutang param);
+    ReportTemplate reportTemplateReportHutang(long idcompany, long idbranch);
 }

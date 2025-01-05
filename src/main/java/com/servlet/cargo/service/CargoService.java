@@ -2,6 +2,7 @@ package com.servlet.cargo.service;
 
 import com.servlet.cargo.entity.*;
 import com.servlet.filedocument.entity.FileDocumentData;
+import com.servlet.pelunasanhutang.entity.ReportPelunasanHutangDocumentHutang;
 import com.servlet.shared.ReturnData;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,4 +23,5 @@ public interface CargoService {
 
     List<CargoDataNotJoin> getListCargoPelunasanHutang(Long idcompany, Long idbranch, ParamCargoSearch param);
     List<CargoDataReportStatusTagihanCargo> getListCargoReportStatusTagihanCargo(Long idcompany, Long idbranch, ParamCargoSearch param);
+    List<ReportPelunasanHutangDocumentHutang> getListCargoReportHutang(Long idcompany, Long idbranch, ParamCargoSearch param);
 }

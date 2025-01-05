@@ -1,16 +1,14 @@
 package com.servlet.cargo.handler;
 
 import com.servlet.cargo.entity.*;
-import com.servlet.cargo.mapper.QueryCargoDataReportStatusTagihanCargo;
-import com.servlet.cargo.mapper.QueryCargoDetail;
-import com.servlet.cargo.mapper.QueryCargoList;
-import com.servlet.cargo.mapper.QueryCargoNotJoin;
+import com.servlet.cargo.mapper.*;
 import com.servlet.cargo.repo.CargoRepo;
 import com.servlet.cargo.service.CargoService;
 import com.servlet.filedocument.entity.BodyFileDocument;
 import com.servlet.filedocument.entity.FileDocumentData;
 import com.servlet.filedocument.service.FileDocumentService;
 import com.servlet.historyapps.service.HistoryAppsService;
+import com.servlet.pelunasanhutang.entity.ReportPelunasanHutangDocumentHutang;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
@@ -347,5 +345,34 @@ public class CargoHandler implements CargoService {
         sqlBuilder.append(" order by data.date ");
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCargoDataReportStatusTagihanCargo(), queryParameters);
+    }
+
+    @Override
+    public List<ReportPelunasanHutangDocumentHutang> getListCargoReportHutang(Long idcompany, Long idbranch, ParamCargoSearch param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCargoReportHutang().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        if(param.getFrom() != null){
+            Date dt = new Date(param.getFrom());
+            sqlBuilder.append(" and data.date >= '"+dt.toString()+"'");
+        }
+        if(param.getTo() != null){
+            Date dt = new Date(param.getTo());
+            sqlBuilder.append(" and data.date <= '"+dt.toString()+"'");
+        }
+
+        if(param.getIdvendor() != null ){
+            sqlBuilder.append(" and data.idvendor = "+param.getIdvendor()+"  ");
+        }
+        if(param.getStatus().equals("LUNAS")){
+            sqlBuilder.append(" and data.outstanding < 1  ");
+        }else if(param.getStatus().equals("BELUMLUNAS")){
+            sqlBuilder.append(" and data.outstanding >= 1  ");
+        }
+        if(param.getOrderBy() != null && !param.getOrderBy().equals("")){
+            sqlBuilder.append(" order by data."+param.getOrderBy());
+        }
+
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCargoReportHutang(), queryParameters);
     }
 }

@@ -5,8 +5,26 @@ public class FilterParamPelunasanHutang {
     private String status; //ALL/LUNAS/BELUMLUNAS
     private Long from;
     private Long to;
+    private Long idcargo;
+    private Long idpurchasereceive;
 
     private String listIdCargo;//1,2,3
+
+    public Long getIdcargo() {
+        return idcargo;
+    }
+
+    public void setIdcargo(Long idcargo) {
+        this.idcargo = idcargo;
+    }
+
+    public Long getIdpurchasereceive() {
+        return idpurchasereceive;
+    }
+
+    public void setIdpurchasereceive(Long idpurchasereceive) {
+        this.idpurchasereceive = idpurchasereceive;
+    }
 
     public String getListIdCargo() {
         return listIdCargo;

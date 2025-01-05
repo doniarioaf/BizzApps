@@ -5,10 +5,7 @@ import com.servlet.cargo.service.CargoService;
 import com.servlet.draftpurchasereceive.entity.BodyDraftPurchaseReceiveItems;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.pelunasanhutang.entity.*;
-import com.servlet.pelunasanhutang.mapper.QueryPelunasanHutangDataDetail;
-import com.servlet.pelunasanhutang.mapper.QueryPelunasanHutangDataList;
-import com.servlet.pelunasanhutang.mapper.QueryPelunasanHutangDataNotJoin;
-import com.servlet.pelunasanhutang.mapper.QueryPelunasanHutangReportStatusTagihanCargo;
+import com.servlet.pelunasanhutang.mapper.*;
 import com.servlet.pelunasanhutang.repo.PelunasanHutangRepo;
 import com.servlet.pelunasanhutang.service.PelunasanHutangService;
 import com.servlet.pelunasanpiutang.entity.BodyPelunasanPiutangItem;
@@ -243,6 +240,31 @@ public class PelunasanHutangHandler implements PelunasanHutangService {
         sqlBuilder.append(" order by data.idcargo desc ");
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPelunasanHutangReportStatusTagihanCargo(), queryParameters);
+    }
+
+    @Override
+    public List<PelunasanHutangReportHutang> getListReportHutang(Long idcompany, Long idbranch, FilterParamPelunasanHutang param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPelunasanHutangReportHutang().schema());
+        sqlBuilder.append(" where  data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        if(param.getFrom() != null){
+            Date dt = new Date(param.getFrom());
+            sqlBuilder.append(" and data.date >= '"+dt.toString()+"'");
+        }
+        if(param.getTo() != null){
+            Date dt = new Date(param.getTo());
+            sqlBuilder.append(" and data.date <= '"+dt.toString()+"'");
+        }
+        if(param.getIdcargo() != null){
+            sqlBuilder.append(" and data.idcargo = "+param.getIdcargo());
+        }
+
+        if(param.getIdpurchasereceive() != null){
+            sqlBuilder.append(" and data.idpurchasereceive = "+param.getIdpurchasereceive());
+        }
+        sqlBuilder.append(" order by data.date ");
+
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPelunasanHutangReportHutang(), queryParameters);
     }
 
     private List<PelunasanHutangDataNotJoin> getListPembayaranHutangByIDPR(Long idcompany, Long idbranch, Long idpurchasereceive) {

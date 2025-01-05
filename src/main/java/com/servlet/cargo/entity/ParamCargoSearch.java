@@ -8,6 +8,16 @@ public class ParamCargoSearch {
     private String status;
     private String listIdVendor;
 
+    private String orderBy;
+
+    public String getOrderBy() {
+        return orderBy;
+    }
+
+    public void setOrderBy(String orderBy) {
+        this.orderBy = orderBy;
+    }
+
     public Long getIdvendor() {
         return idvendor;
     }

@@ -228,7 +228,7 @@ public class VendorHandler implements VendorService {
         if(param.getVendorTypes() != null && !param.getVendorTypes().equals("")){
             sqlBuilder.append(" and data.type in ("+param.getVendorTypes()+") ");
         }
-        
+
         final Object[] queryParameters = new Object[] {idcompany};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryListForDropdownList(), queryParameters);
     }

@@ -1,5 +1,6 @@
 package com.servlet.report.api;
 
+import com.servlet.report.entity.ParamReportHutang;
 import com.servlet.report.entity.ParamReportRekapStock;
 import com.servlet.report.entity.ParamReportStatusTagihanCargo;
 import com.servlet.report.entity.ParamReportStockUdangHidupMati;
@@ -91,6 +92,37 @@ public class ReportAPI {
         HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("type", "REPORTSTATUSTAGIHANCARGO_TEMPLATE");
         Response response = securityService.response(ConstansPermission.READ_REPORT_STATUSTAGIHANCARGO,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @GetMapping("/reporthutang")
+    ResponseEntity<Response> getReportHutang(@RequestParam("status") String status, @RequestParam("idvendors") String idvendors,@RequestParam("vendorttypes") String vendorttypes, @RequestParam("from") Long from,@RequestParam("to") Long to, HttpServletResponse response, @RequestHeader(ConstansKey.AUTH) String authorization) throws IOException{
+        ParamReportHutang body = new ParamReportHutang();
+        body.setFrom(from);
+        body.setTo(to);
+        body.setIdvendors(idvendors);
+        body.setVendorType(vendorttypes);
+        body.setStatus(status);
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "REPORTHUTANG");
+        param.put("body", body);
+        Response response1 = securityService.response(ConstansPermission.READ_REPORT_HUTANG,param,authorization);
+        if(response1.getHttpcode() == HttpStatus.OK.value()) {
+            XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+            export(response, workbook);
+
+            return ResponseEntity.ok().build();
+        }else{
+            return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
+        }
+
+    }
+
+    @GetMapping("/reporthutang/template")
+    ResponseEntity<Response> getReportHutangTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "REPORTHUTANG_TEMPLATE");
+        Response response = securityService.response(ConstansPermission.READ_REPORT_HUTANG,param,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 

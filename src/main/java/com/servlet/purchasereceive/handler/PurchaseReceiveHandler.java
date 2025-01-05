@@ -16,6 +16,7 @@ import com.servlet.mappingstock.service.MappingStockService;
 import com.servlet.parameterclient.entity.ValueParameter;
 import com.servlet.parameterclient.service.ParameterClientService;
 import com.servlet.pelunasanhutang.entity.FilterParamPelunasanHutang;
+import com.servlet.pelunasanhutang.entity.ReportPelunasanHutangDocumentHutang;
 import com.servlet.pricelist.service.PriceService;
 import com.servlet.product.service.ProductService;
 import com.servlet.purchasereceive.entity.*;
@@ -650,11 +651,39 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         if(param.getStatus().equals("LUNAS")){
             sqlBuilder.append(" and data.outstanding < 1 ");
         }else if(param.getStatus().equals("BELUMLUNAS")){
-            sqlBuilder.append(" and data.outstanding > 1 ");
+            sqlBuilder.append(" and data.outstanding >= 1 ");
         }
         sqlBuilder.append(" order by data.id desc ");
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataPurchaseReceivePelunasanHutang(), queryParameters);
+    }
+
+    @Override
+    public List<ReportPelunasanHutangDocumentHutang> getListPRReportHutang(Long idcompany, Long idbranch, FilterParamPurchaseReceive param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPurchaseReceiveReportHutang().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        if(param.getFrom() != null){
+            Date dt = new Date(param.getFrom());
+            sqlBuilder.append(" and data.transactiondate >= '"+dt.toString()+"'");
+        }
+        if(param.getTo() != null){
+            Date dt = new Date(param.getTo());
+            sqlBuilder.append(" and data.transactiondate <= '"+dt.toString()+"'");
+        }
+
+        if(param.getIdvendor() != null){
+            sqlBuilder.append(" and data.idvendor = "+param.getIdvendor());
+        }
+        if(param.getStatus().equals("LUNAS")){
+            sqlBuilder.append(" and data.outstanding < 1 ");
+        }else if(param.getStatus().equals("BELUMLUNAS")){
+            sqlBuilder.append(" and data.outstanding >= 1 ");
+        }
+        if(param.getOrderBy() != null && !param.getOrderBy().equals("")){
+            sqlBuilder.append(" order by data."+param.getOrderBy());
+        }
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPurchaseReceiveReportHutang(), queryParameters);
     }
 
     private List<PrintDataPurchaseReceiveInventori> getPrintDataItemsInventori(Long idpurchasereceive){

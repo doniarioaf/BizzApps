@@ -43,10 +43,7 @@ import com.servlet.product.entity.BodyProduct;
 import com.servlet.product.service.ProductService;
 import com.servlet.purchasereceive.entity.BodyPurchaseReceive;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
-import com.servlet.report.entity.ParamReportPembelian;
-import com.servlet.report.entity.ParamReportRekapStock;
-import com.servlet.report.entity.ParamReportStatusTagihanCargo;
-import com.servlet.report.entity.ParamReportStockUdangHidupMati;
+import com.servlet.report.entity.*;
 import com.servlet.report.service.ReportService;
 import com.servlet.stockadjusment.entity.BodyStockAdjusment;
 import com.servlet.stockadjusment.service.StockAdjusmentService;
@@ -1312,6 +1309,17 @@ public class ProcessHandler implements ProcessService{
 					val.setData(reportService.reportStatusTagihanCargo(auth.getIdcompany(), auth.getIdbranch(),body).getWorkbook());
 				}else if(type.equals("REPORTSTATUSTAGIHANCARGO_TEMPLATE")) {
 					val.setData(reportService.reportTemplateStatusTagihanCargo(auth.getIdcompany(), auth.getIdbranch()));
+				}
+			}
+
+			else if(codepermission.equals(ConstansPermission.READ_REPORT_HUTANG)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("REPORTHUTANG")) {
+					ParamReportHutang body = (ParamReportHutang) param.get("body");
+					val.setData(reportService.reportHutang(auth.getIdcompany(), auth.getIdbranch(),body).getWorkbook());
+				}else if(type.equals("REPORTHUTANG_TEMPLATE")) {
+					val.setData(reportService.reportTemplateReportHutang(auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}
 

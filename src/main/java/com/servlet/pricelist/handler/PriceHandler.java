@@ -222,6 +222,9 @@ public class PriceHandler implements PriceService {
             Date dt = new Date(priceDate.longValue());
             sqlBuilder.append(" and data.pricedate <= '"+dt.toString()+"' and data.pricedatethru >= '"+dt.toString()+"' ");
             sqlBuilder.append(" order by id desc limit 1 ");
+            System.out.println("sqlBuilder "+sqlBuilder.toString() );
+            System.out.println("idcompany "+idcompany );
+            System.out.println("idbranch "+idbranch );
             final Object[] queryParameters = new Object[] {idcompany,idbranch};
             List<PriceListData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataList(), queryParameters);
             if(list != null && list.size() > 0){

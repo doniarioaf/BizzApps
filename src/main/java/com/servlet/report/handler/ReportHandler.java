@@ -19,12 +19,11 @@ import com.servlet.packinglist.entity.ParamCalculateQtyPL;
 import com.servlet.packinglist.entity.PrintPackingList;
 import com.servlet.packinglist.service.PackingListService;
 import com.servlet.pelunasanhutang.entity.FilterParamPelunasanHutang;
+import com.servlet.pelunasanhutang.entity.PelunasanHutangReportHutang;
 import com.servlet.pelunasanhutang.entity.PelunasanHutangReportStatusTagihanCargo;
+import com.servlet.pelunasanhutang.entity.ReportPelunasanHutangDocumentHutang;
 import com.servlet.pelunasanhutang.service.PelunasanHutangService;
-import com.servlet.purchasereceive.entity.ParamCalculateQtyPR;
-import com.servlet.purchasereceive.entity.PrintDataPurchaseReceive;
-import com.servlet.purchasereceive.entity.PrintDataPurchaseReceiveItems;
-import com.servlet.purchasereceive.entity.PurchaseReceiveChargeNotJoin;
+import com.servlet.purchasereceive.entity.*;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
 import com.servlet.report.entity.*;
 import com.servlet.report.service.ReportService;
@@ -1736,6 +1735,380 @@ public class ReportHandler implements ReportService {
         paramVendor.setVendorTypes("'CARGO','UPI'");
         data.setVendorOpt(vendorService.getListDropdown(idcompany,idbranch,paramVendor));
         return data;
+    }
+
+    @Override
+    public ReportWorkBookExcel reportHutang(long idcompany, long idbranch, ParamReportHutang param) {
+        ReportWorkBookExcel data = new ReportWorkBookExcel();
+        XSSFWorkbook workbook = new XSSFWorkbook();
+
+        XSSFDataFormat format = workbook.createDataFormat();
+
+        XSSFSheet sheet = workbook.createSheet("Laporan Status Tagihan Cargo");
+        sheet.setDefaultColumnWidth(1000);
+        List<Integer> columns = getWidthColumns(15);
+
+        String namaCabang = "";
+        Branch branch = branchService.getBranchByID(idbranch);
+        if(branch != null){
+            namaCabang = branch.getNama();
+        }
+
+        int fontHeight = 12;
+        CellStyle style = workbook.createCellStyle();
+        CellStyle styleBold = workbook.createCellStyle();
+        CellStyle styleAmount = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setBold(false);
+        font.setFontHeight(fontHeight);
+        style.setFont(font);
+        styleAmount.setFont(font);
+
+        boolean isMixingVendor = false;
+
+        String[] arrVendor = param.getVendorType().split(",");
+        String namaVendorType = "";
+        boolean isVendorUdang = false;
+        boolean isVendorCargo = false;
+        boolean isVendorUPI = false;
+        if(arrVendor.length == 1){
+            namaVendorType = arrVendor[0];
+            if(arrVendor[0].equals("UDANG")){
+                isVendorUdang = true;
+            }else if(arrVendor[0].equals("CARGO") || arrVendor[0].equals("UPI")){
+                isVendorCargo = true;
+                isVendorUPI = true;
+            }else if(arrVendor[0].equals("ALL")){
+                isVendorUdang = true;
+                isVendorCargo = true;
+                isVendorUPI = true;
+            }
+        }else if(arrVendor.length > 0){
+            for(int i=0; i < arrVendor.length; i++){
+                if(namaVendorType == ""){
+                    namaVendorType = arrVendor[i];
+                } else{
+                    namaVendorType= namaVendorType+","+arrVendor[i];
+                }
+
+                if(arrVendor[i].equals("UDANG")){
+                    isVendorUdang = true;
+                }else if(arrVendor[i].equals("CARGO") || arrVendor[i].equals("UPI")){
+                    isVendorCargo = true;
+                    isVendorUPI = true;
+                }else if(arrVendor[i].equals("ALL")){
+                    isVendorUdang = true;
+                    isVendorCargo = true;
+                    isVendorUPI = true;
+                }
+            }
+        }
+        if(isVendorUdang && (isVendorCargo || isVendorUPI)){
+            isMixingVendor = true;
+        }else if(isVendorUdang && isVendorCargo && isVendorUPI){
+            isMixingVendor = true;
+        }
+
+        XSSFFont fontBold = workbook.createFont();
+        fontBold.setBold(true);
+        fontBold.setFontHeight(fontHeight);
+        styleBold.setFont(fontBold);
+        String namaVendor = "";
+        ParamVendor paramvendor =  new ParamVendor();
+        if(!(isVendorUdang && isVendorCargo && isVendorUPI)){
+            paramvendor.setVendorTypes("'"+param.getVendorType()+"'");
+        }
+        if(!param.getIdvendors().equals("ALL")){
+            paramvendor.setListIdVendor(param.getIdvendors());
+        }
+        List<VendorDataForTemplate> getListVendor = vendorService.getListDropdown(idcompany,idbranch,paramvendor);
+        List<String> list = new ArrayList<>();
+        HashMap<Long, VendorDataForTemplate> mapVendor = new HashMap<>();
+        for(VendorDataForTemplate ven : getListVendor){
+            mapVendor.put(ven.getId(), ven);
+            list.add(ven.getNama());
+        }
+        if(!param.getIdvendors().equals("ALL")){
+            for(String nama :list){
+                if(namaVendor == ""){
+                    namaVendor = nama;
+                } else{
+                    namaVendor= namaVendor+","+nama;
+                }
+            }
+        }else{
+            namaVendor = "ALL";
+        }
+
+        int rowcount = 2;
+        Row row = sheet.createRow(rowcount);
+        createCell(row, 0, "PT Sumber Berlian Samudra", style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Laporan Hutang", style, sheet,columns);
+
+        String dateFrom = "";
+        try {
+            dateFrom = GlobalFunc.getDateLongToString(param.getFrom(), "dd-MMMM-yyyy");
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String dateThru = "";
+        try {
+            dateThru = GlobalFunc.getDateLongToString(param.getTo(), "dd-MMMM-yyyy");
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Periode", style, sheet,columns);
+        createCell(row, 1, dateFrom+" s/d "+dateThru, style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Vendor Type", style, sheet,columns);
+        createCell(row, 1, namaVendorType, style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Vendor", style, sheet,columns);
+        createCell(row, 1, namaVendor, style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Cabang", style, sheet,columns);
+        createCell(row, 1, namaCabang, style, sheet,columns);
+
+        int colomcount = 0;
+        rowcount++;
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, colomcount, "Vendor", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Vendor Type", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Tanggal Document", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "No Document", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Invoice Amount", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Pembayaran", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Outstanding", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "No Doc Pembayaran", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Keterangan", style, sheet,columns);
+
+        HashMap<Long,Integer[]> mapsIdCargoRowColomIndex = new HashMap<>();
+        for(VendorDataForTemplate ven : getListVendor){
+            List<ReportPelunasanHutangDocumentHutang> listHutang  = new ArrayList<>();
+            if(isMixingVendor){
+                ParamCargoSearch paramCargoSearch = new ParamCargoSearch();
+                paramCargoSearch.setFrom(param.getFrom());
+                paramCargoSearch.setTo(param.getTo());
+                paramCargoSearch.setStatus(param.getStatus());
+                paramCargoSearch.setIdvendor(ven.getId());
+                List<ReportPelunasanHutangDocumentHutang> listCargo = cargoService.getListCargoReportHutang(idcompany,idbranch,paramCargoSearch);
+
+                FilterParamPurchaseReceive paramPurchaseReceive = new FilterParamPurchaseReceive();
+                paramPurchaseReceive.setFrom(param.getFrom());
+                paramPurchaseReceive.setTo(param.getTo());
+                paramPurchaseReceive.setIdvendor(ven.getId());
+                paramPurchaseReceive.setStatus(param.getStatus());
+                List<ReportPelunasanHutangDocumentHutang> listPR = purchaseReceiveService.getListPRReportHutang(idcompany,idbranch,paramPurchaseReceive);
+
+                if(listCargo != null && listCargo.size() > 0){
+                    listHutang.addAll(listCargo);
+                }
+                if(listPR != null && listPR.size() > 0){
+                    listHutang.addAll(listPR);
+                }
+                Collections.sort(listHutang);
+                if(listHutang != null && listHutang.size() > 0) {
+                    HashMap<String, Object> map = createCellReportHutang(param, idcompany, idbranch, ven, listHutang, rowcount, workbook, format, row, sheet, style, styleAmount, columns);
+                    Integer mapInt = (Integer) map.get("rowcount");
+                    rowcount = mapInt.intValue();
+                    rowcount++;
+                }
+            } else if(isVendorCargo || isVendorUPI){
+                ParamCargoSearch paramCargoSearch = new ParamCargoSearch();
+                paramCargoSearch.setFrom(param.getFrom());
+                paramCargoSearch.setTo(param.getTo());
+                paramCargoSearch.setStatus(param.getStatus());
+                paramCargoSearch.setIdvendor(ven.getId());
+                paramCargoSearch.setOrderBy("date");
+                List<ReportPelunasanHutangDocumentHutang> listCargo = cargoService.getListCargoReportHutang(idcompany,idbranch,paramCargoSearch);
+                if(listCargo != null && listCargo.size() > 0) {
+                    HashMap<String, Object> map = createCellReportHutang(param, idcompany, idbranch, ven, listCargo, rowcount, workbook, format, row, sheet, style, styleAmount, columns);
+                    Integer mapInt = (Integer) map.get("rowcount");
+                    rowcount = mapInt.intValue();
+                    rowcount++;
+                }
+
+            }else if(isVendorUdang){
+                FilterParamPurchaseReceive paramPurchaseReceive = new FilterParamPurchaseReceive();
+                paramPurchaseReceive.setFrom(param.getFrom());
+                paramPurchaseReceive.setTo(param.getTo());
+                paramPurchaseReceive.setIdvendor(ven.getId());
+                paramPurchaseReceive.setStatus(param.getStatus());
+                paramPurchaseReceive.setOrderBy("transactiondate");
+
+                List<ReportPelunasanHutangDocumentHutang> listPR = purchaseReceiveService.getListPRReportHutang(idcompany,idbranch,paramPurchaseReceive);
+                if(listPR != null && listPR.size() > 0) {
+                    HashMap<String, Object> map = createCellReportHutang(param, idcompany, idbranch, ven, listPR, rowcount, workbook, format, row, sheet, style, styleAmount, columns);
+                    Integer mapInt = (Integer) map.get("rowcount");
+                    rowcount = mapInt.intValue();
+                    rowcount++;
+                }
+
+            }
+        }
+
+        data.setWorkbook(workbook);
+        return data;
+    }
+
+    @Override
+    public ReportTemplate reportTemplateReportHutang(long idcompany, long idbranch) {
+        ReportTemplate data = new ReportTemplate();
+
+        ParamVendor paramVendor = new ParamVendor();
+        paramVendor.setVendorTypes("");
+        data.setVendorOpt(vendorService.getListDropdown(idcompany,idbranch,paramVendor));
+        return data;
+    }
+
+    private HashMap<String,Object> createCellReportHutang(ParamReportHutang param, Long idcompany, Long idbranch,VendorDataForTemplate ven,List<ReportPelunasanHutangDocumentHutang> listHutang, int rowcount,XSSFWorkbook workbook,XSSFDataFormat format ,Row row, XSSFSheet sheet, CellStyle style, CellStyle styleAmount,List<Integer> columns){
+        HashMap<String,Object> mapp = new HashMap<>();
+        if(listHutang != null && listHutang.size() > 0){
+            for(ReportPelunasanHutangDocumentHutang hutang : listHutang){
+                Double outstanding = hutang.getAmountInvoice();
+
+                int colomcount = 0;
+                rowcount++;
+                row = sheet.createRow(rowcount);
+                createCell(row, colomcount, ven.getNama(), style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, ven.getType(), style, sheet,columns);
+
+                String transDate = "";
+                try {
+                    transDate = GlobalFunc.getDateLongToString(hutang.getDate().getTime(), "dd-MMMM-yyyy");
+                } catch (ParseException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                colomcount++;
+                createCell(row, colomcount, transDate, style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, hutang.getNodocument(), style, sheet,columns);
+
+                int compare = new BigDecimal(hutang.getAmountInvoice()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(hutang.getAmountInvoice()));
+                styleAmount = workbook.createCellStyle();
+                if(compare == 0) {
+                    styleAmount.setDataFormat(format.getFormat("#,###"));
+                }else {
+                    styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                }
+                colomcount++;
+                createCell(row, colomcount, hutang.getAmountInvoice(), styleAmount, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, "", style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, hutang.getAmountInvoice(), styleAmount, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, "", style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, "", style, sheet,columns);
+
+                FilterParamPelunasanHutang paramPelunasanHutang = new FilterParamPelunasanHutang();
+                paramPelunasanHutang.setFrom(param.getFrom());
+                paramPelunasanHutang.setTo(param.getTo());
+                if(hutang.getDocType().equals("CARGO")){
+                    paramPelunasanHutang.setIdcargo(hutang.getIddoc());
+                }else{
+                    paramPelunasanHutang.setIdpurchasereceive(hutang.getIddoc());
+                }
+                List<PelunasanHutangReportHutang> listPembayaran = pelunasanHutangService.getListReportHutang(idcompany,idbranch,paramPelunasanHutang);
+                if(listPembayaran != null && listPembayaran.size() > 0){
+                    for(PelunasanHutangReportHutang ph : listPembayaran){
+                        colomcount = 0;
+                        rowcount++;
+                        row = sheet.createRow(rowcount);
+                        createCell(row, colomcount, "", style, sheet,columns);
+
+                        colomcount++;
+                        createCell(row, colomcount, "", style, sheet,columns);
+
+                        String transPHDate = "";
+                        try {
+                            transPHDate = GlobalFunc.getDateLongToString(ph.getDate().getTime(), "dd-MMMM-yyyy");
+                        } catch (ParseException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        colomcount++;
+                        createCell(row, colomcount, transPHDate, style, sheet,columns);
+
+                        colomcount++;
+                        createCell(row, colomcount, ph.getNodocument(), style, sheet,columns);
+
+                        colomcount++;
+                        createCell(row, colomcount, "", styleAmount, sheet,columns);
+
+                        compare = new BigDecimal(ph.getAmount()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(ph.getAmount()));
+                        styleAmount = workbook.createCellStyle();
+                        if(compare == 0) {
+                            styleAmount.setDataFormat(format.getFormat("#,###"));
+                        }else {
+                            styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                        }
+
+                        colomcount++;
+                        createCell(row, colomcount, ph.getAmount(), style, sheet,columns);
+
+                        outstanding = outstanding - ph.getAmount();
+                        compare = new BigDecimal(outstanding).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(outstanding));
+                        styleAmount = workbook.createCellStyle();
+                        if(compare == 0) {
+                            styleAmount.setDataFormat(format.getFormat("#,###"));
+                        }else {
+                            styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                        }
+                        colomcount++;
+                        createCell(row, colomcount, outstanding, styleAmount, sheet,columns);
+
+                        colomcount++;
+                        createCell(row, colomcount, ph.getNodocument(), style, sheet,columns);
+
+                        colomcount++;
+                        createCell(row, colomcount, ph.getNotes(), style, sheet,columns);
+                    }
+                }
+            }
+        }
+        mapp.put("rowcount",rowcount);
+        return mapp;
     }
 
     private List<Integer> getWidthColumns(int size){
