@@ -1015,13 +1015,114 @@ public class ReportHandler implements ReportService {
         Long grandTotalTotalKoli = 0L;
 
         List<MappingStockList> listMapping = mappingStockService.getListAll(idcompany,idbranch);
+
+        HashMap<Long, Long> calculateStockByIdCPMappingStockKolamTerakhir = new HashMap<>();
+        HashMap<Long, Long> calculateStockByIdCPMappingStockUdangMati = new HashMap<>();
+        HashMap<Long, Long> calculateStockByIdCPMappingStockUdangMasuk = new HashMap<>();
+        if(listMapping != null && listMapping.size() > 0){
+            for(MappingStockList mapp : listMapping){
+                Long stockKolamTerakhir1 = stockKolamTerakhirByIDcategory.get(mapp.getCategoryproductid());
+                if(stockKolamTerakhir1 == null){
+                    stockKolamTerakhir1 = 0L;
+                }
+                Long stockKolamTerakhir2 = stockKolamTerakhirByIDcategory.get(mapp.getCategoryproductidmapping());
+                if(stockKolamTerakhir2 == null){
+                    stockKolamTerakhir2 = 0L;
+                }
+                Long stockKolamTerakhir = stockKolamTerakhir1.longValue() +  stockKolamTerakhir2.longValue();
+
+                Long stockUdangMati1 = stockUdangMatiByIDcategory.get(mapp.getCategoryproductid());
+                if(stockUdangMati1 == null){
+                    stockUdangMati1 = 0L;
+                }
+                Long stockUdangMati2 = stockUdangMatiByIDcategory.get(mapp.getCategoryproductidmapping());
+                if(stockUdangMati2 == null){
+                    stockUdangMati2 = 0L;
+                }
+                Long stockUdangMati = stockUdangMati1.longValue() +  stockUdangMati2.longValue();
+
+                Long stockUdangMasuk1 = stockUdangMasukByIDcategory.get(mapp.getCategoryproductid());
+                if(stockUdangMasuk1 == null){
+                    stockUdangMasuk1 = 0L;
+                }
+                Long stockUdangMasuk2 = stockUdangMasukByIDcategory.get(mapp.getCategoryproductidmapping());
+                if(stockUdangMasuk2 == null){
+                    stockUdangMasuk2 = 0L;
+                }
+                Long stockUdangMasuk = stockUdangMasuk1.longValue() +  stockUdangMasuk2.longValue();
+
+
+                if(calculateStockByIdCPMappingStockKolamTerakhir.get(mapp.getCategoryproductidmapping()) != null){
+                    Long tempStockKolamTerakhir = stockKolamTerakhir.longValue() + calculateStockByIdCPMappingStockKolamTerakhir.get(mapp.getCategoryproductidmapping()).longValue();
+                    calculateStockByIdCPMappingStockKolamTerakhir.put(mapp.getCategoryproductidmapping(),tempStockKolamTerakhir);
+
+                    Long tempStockUdangMati = stockUdangMati.longValue() + calculateStockByIdCPMappingStockUdangMati.get(mapp.getCategoryproductidmapping()).longValue();
+                    calculateStockByIdCPMappingStockUdangMati.put(mapp.getCategoryproductidmapping(),tempStockUdangMati);
+
+                    Long tempStockUdangMasuk = stockUdangMasuk.longValue() + calculateStockByIdCPMappingStockUdangMasuk.get(mapp.getCategoryproductidmapping()).longValue();
+                    calculateStockByIdCPMappingStockUdangMasuk.put(mapp.getCategoryproductidmapping(),tempStockUdangMasuk);
+                }else{
+                    calculateStockByIdCPMappingStockKolamTerakhir.put(mapp.getCategoryproductidmapping(),stockKolamTerakhir);
+                    calculateStockByIdCPMappingStockUdangMati.put(mapp.getCategoryproductidmapping(),stockUdangMati);
+                    calculateStockByIdCPMappingStockUdangMasuk.put(mapp.getCategoryproductidmapping(),stockUdangMasuk);
+                }
+            }
+        }
         HashMap<Long,Long> done = new HashMap<>();
+        HashMap<Long,Long> cekIDCPMappingKembar = new HashMap<>();
         if(listMapping != null && listMapping.size() > 0){
             for(MappingStockList mapp : listMapping){
                 done.put(mapp.getCategoryproductid(),mapp.getCategoryproductidmapping());
                 done.put(mapp.getCategoryproductidmapping(),mapp.getCategoryproductidmapping());
                 CategoryProductList cp = cpByIDcategory.get(mapp.getCategoryproductidmapping());
                 if(cp != null){
+                    if(cekIDCPMappingKembar.get(mapp.getCategoryproductidmapping()) != null){
+                        continue;
+                    }
+                    cekIDCPMappingKembar.put(mapp.getCategoryproductidmapping(),mapp.getCategoryproductidmapping());
+//                    Long stockKolamTerakhir1 = stockKolamTerakhirByIDcategory.get(mapp.getCategoryproductid());
+//                    if(stockKolamTerakhir1 == null){
+//                        stockKolamTerakhir1 = 0L;
+//                    }
+//                    Long stockKolamTerakhir2 = stockKolamTerakhirByIDcategory.get(mapp.getCategoryproductidmapping());
+//                    if(stockKolamTerakhir2 == null){
+//                        stockKolamTerakhir2 = 0L;
+//                    }
+                    Long stockKolamTerakhir = calculateStockByIdCPMappingStockKolamTerakhir.get(mapp.getCategoryproductidmapping()).longValue();
+                    grandTotalStockKolamTerakhir += stockKolamTerakhir.longValue();
+
+//                    Long stockUdangMati1 = stockUdangMatiByIDcategory.get(mapp.getCategoryproductid());
+//                    if(stockUdangMati1 == null){
+//                        stockUdangMati1 = 0L;
+//                    }
+//                    Long stockUdangMati2 = stockUdangMatiByIDcategory.get(mapp.getCategoryproductidmapping());
+//                    if(stockUdangMati2 == null){
+//                        stockUdangMati2 = 0L;
+//                    }
+                    Long stockUdangMati = calculateStockByIdCPMappingStockUdangMati.get(mapp.getCategoryproductidmapping()).longValue();
+                    grandTotalUdangMati += stockUdangMati.longValue();
+
+//                    Long stockUdangMasuk1 = stockUdangMasukByIDcategory.get(mapp.getCategoryproductid());
+//                    if(stockUdangMasuk1 == null){
+//                        stockUdangMasuk1 = 0L;
+//                    }
+//                    Long stockUdangMasuk2 = stockUdangMasukByIDcategory.get(mapp.getCategoryproductidmapping());
+//                    if(stockUdangMasuk2 == null){
+//                        stockUdangMasuk2 = 0L;
+//                    }
+                    Long stockUdangMasuk = calculateStockByIdCPMappingStockUdangMasuk.get(mapp.getCategoryproductidmapping()).longValue();
+                    grandTotalUdangMasuk += stockUdangMasuk.longValue();
+
+                    Long totalEkor = stockKolamTerakhir.longValue() + stockUdangMati.longValue() + stockUdangMasuk.longValue();
+                    grandTotalTotalEkor += totalEkor.longValue();
+
+                    Double totalKoli = 0.0;
+                    if(cp.getJumlahitemsperkoli() != null && cp.getJumlahitemsperkoli().intValue() > 0){
+                        totalKoli = totalEkor.doubleValue() / cp.getJumlahitemsperkoli().doubleValue();
+                    }
+                    BigDecimal bgKoli = new BigDecimal(totalKoli).setScale(0,RoundingMode.UP);
+                    grandTotalTotalKoli += bgKoli.longValue();
+
                     colomcount = 0;
                     rowcount++;
                     row = sheet.createRow(rowcount);
@@ -1033,56 +1134,20 @@ public class ReportHandler implements ReportService {
                     colomcount++;
                     createCell(row, colomcount, cp.getJumlahitemsperkoli(), style, sheet,columns);
 
-                    Long stockKolamTerakhir1 = stockKolamTerakhirByIDcategory.get(mapp.getCategoryproductid());
-                    if(stockKolamTerakhir1 == null){
-                        stockKolamTerakhir1 = 0L;
-                    }
-                    Long stockKolamTerakhir2 = stockKolamTerakhirByIDcategory.get(mapp.getCategoryproductidmapping());
-                    if(stockKolamTerakhir2 == null){
-                        stockKolamTerakhir2 = 0L;
-                    }
-                    Long stockKolamTerakhir = stockKolamTerakhir1.longValue() +  stockKolamTerakhir2.longValue();
-                    grandTotalStockKolamTerakhir += stockKolamTerakhir.longValue();
+
                     colomcount++;
                     createCell(row, colomcount, stockKolamTerakhir, style, sheet,columns);
 
-                    Long stockUdangMati1 = stockUdangMatiByIDcategory.get(mapp.getCategoryproductid());
-                    if(stockUdangMati1 == null){
-                        stockUdangMati1 = 0L;
-                    }
-                    Long stockUdangMati2 = stockUdangMatiByIDcategory.get(mapp.getCategoryproductidmapping());
-                    if(stockUdangMati2 == null){
-                        stockUdangMati2 = 0L;
-                    }
-                    Long stockUdangMati = stockUdangMati1.longValue() +  stockUdangMati2.longValue();
-                    grandTotalUdangMati += stockUdangMati.longValue();
                     colomcount++;
                     createCell(row, colomcount, stockUdangMati, style, sheet,columns);
 
-                    Long stockUdangMasuk1 = stockUdangMasukByIDcategory.get(mapp.getCategoryproductid());
-                    if(stockUdangMasuk1 == null){
-                        stockUdangMasuk1 = 0L;
-                    }
-                    Long stockUdangMasuk2 = stockUdangMasukByIDcategory.get(mapp.getCategoryproductidmapping());
-                    if(stockUdangMasuk2 == null){
-                        stockUdangMasuk2 = 0L;
-                    }
-                    Long stockUdangMasuk = stockUdangMasuk1.longValue() +  stockUdangMasuk2.longValue();
-                    grandTotalUdangMasuk += stockUdangMasuk.longValue();
+
                     colomcount++;
                     createCell(row, colomcount, stockUdangMasuk, style, sheet,columns);
 
-                    Long totalEkor = stockKolamTerakhir.longValue() + stockUdangMati.longValue() + stockUdangMasuk.longValue();
-                    grandTotalTotalEkor += totalEkor.longValue();
                     colomcount++;
                     createCell(row, colomcount, totalEkor, style, sheet,columns);
 
-                    Double totalKoli = 0.0;
-                    if(cp.getJumlahitemsperkoli() != null && cp.getJumlahitemsperkoli().intValue() > 0){
-                        totalKoli = totalEkor.doubleValue() / cp.getJumlahitemsperkoli().doubleValue();
-                    }
-                    BigDecimal bgKoli = new BigDecimal(totalKoli).setScale(0,RoundingMode.UP);
-                    grandTotalTotalKoli += bgKoli.longValue();
                     colomcount++;
                     createCell(row, colomcount, bgKoli.longValue(), style, sheet,columns);
                 }
@@ -1090,7 +1155,7 @@ public class ReportHandler implements ReportService {
             }
         }
         for(CategoryProductList cp : listCP){
-            if(done.get(cp.getId()) != null){
+            if(done.get(cp.getId().longValue()) != null){
                 continue;
             }
             colomcount = 0;

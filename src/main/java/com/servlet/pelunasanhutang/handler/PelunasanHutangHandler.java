@@ -270,7 +270,7 @@ public class PelunasanHutangHandler implements PelunasanHutangService {
     private List<PelunasanHutangDataNotJoin> getListPembayaranHutangByIDPR(Long idcompany, Long idbranch, Long idpurchasereceive) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPelunasanHutangDataNotJoin().schema());
         sqlBuilder.append(" where data.idpurchasereceive = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
-        sqlBuilder.append(" order by data.id desc ");
+        sqlBuilder.append(" order by data.date ");
         final Object[] queryParameters = new Object[] {idpurchasereceive,idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPelunasanHutangDataNotJoin(), queryParameters);
     }
@@ -278,7 +278,7 @@ public class PelunasanHutangHandler implements PelunasanHutangService {
     private List<PelunasanHutangDataNotJoin> getListPembayaranHutangByIDCargo(Long idcompany, Long idbranch, Long idcargo) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPelunasanHutangDataNotJoin().schema());
         sqlBuilder.append(" where data.idcargo = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
-        sqlBuilder.append(" order by data.id desc ");
+        sqlBuilder.append(" order by data.date ");
         final Object[] queryParameters = new Object[] {idcargo,idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPelunasanHutangDataNotJoin(), queryParameters);
     }

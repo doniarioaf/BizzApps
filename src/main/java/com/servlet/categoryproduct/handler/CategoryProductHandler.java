@@ -9,6 +9,7 @@ import com.servlet.customer.entity.Customer;
 import com.servlet.customer.mapper.QueryCustomerList;
 import com.servlet.customer.repo.CustomerRepo;
 import com.servlet.historyapps.service.HistoryAppsService;
+import com.servlet.mappingstock.service.MappingStockService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
@@ -32,6 +33,9 @@ public class CategoryProductHandler implements CategoryProductService {
 
     @Autowired
     private HistoryAppsService historyAppsService;
+
+    @Autowired
+    private MappingStockService mappingStockService;
 
     @Autowired
     private VendorService vendorService;
@@ -159,9 +163,18 @@ public class CategoryProductHandler implements CategoryProductService {
             if(param.getMenu() != null){
                 if(param.getMenu().equals("PURCHASE_RECEIVE") || param.getMenu().equals("DRAFTPURCHASE_RECEIVE")){
                     sqlBuilder.append(" and data.id not in ("+vendorService.queryIdVendorCategoryProductNotInclud(idcompany,idbranch,param.getIdvendor())+") ");
+                }else if(param.getMenu().equals("PRICELIST")){
+
+                }
+            }
+
+            if(param.getShowOnlyCpMapping() != null){
+                if(param.getShowOnlyCpMapping().booleanValue()){
+                    sqlBuilder.append(" and data.id not in ("+mappingStockService.getSelectidCategory(idcompany,idbranch)+")");
                 }
             }
         }
+        sqlBuilder.append(" order by data.weightfromingram desc ");
         final Object[] queryParameters = new Object[] {idcompany};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataList(), queryParameters);
     }

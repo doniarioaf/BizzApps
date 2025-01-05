@@ -164,4 +164,9 @@ public class MappingStockHandler implements MappingStockService {
         }
         return null;
     }
+
+    @Override
+    public String getSelectidCategory(Long idcompany, Long idbranch) {
+        return "select ms.categoryproductid from mapping_stock as ms where ms.idcompany = "+idcompany;
+    }
 }

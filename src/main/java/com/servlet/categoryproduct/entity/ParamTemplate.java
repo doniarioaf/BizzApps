@@ -2,7 +2,16 @@ package com.servlet.categoryproduct.entity;
 
 public class ParamTemplate {
     private String menu;
+    private Boolean showOnlyCpMapping;
     private long idvendor;
+
+    public Boolean getShowOnlyCpMapping() {
+        return showOnlyCpMapping;
+    }
+
+    public void setShowOnlyCpMapping(Boolean showOnlyCpMapping) {
+        this.showOnlyCpMapping = showOnlyCpMapping;
+    }
 
     public String getMenu() {
         return menu;

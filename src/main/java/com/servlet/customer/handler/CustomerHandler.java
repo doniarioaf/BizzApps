@@ -140,7 +140,7 @@ public class CustomerHandler implements CustomerService {
         long idsave = 0;
         Timestamp ts = new Timestamp(new Date().getTime());
         try{
-            Customer customer = repo.getById(iduser);
+            Customer customer = repo.getById(id);
             customer.setIsdelete(true);
             customer.setDeletedate(ts);
             customer.setDeleteby(iduser);

@@ -1,5 +1,6 @@
 package com.servlet.pricelist.handler;
 
+import com.servlet.categoryproduct.entity.ParamTemplate;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.pricelist.entity.*;
@@ -73,9 +74,12 @@ public class PriceHandler implements PriceService {
 
     @Override
     public PriceListTemplate getTemplateData(Long idcompany, Long idbranch) {
+        ParamTemplate paramCP = new ParamTemplate();
+        paramCP.setShowOnlyCpMapping(true);
+
         PriceListTemplate data = new PriceListTemplate();
         data.setProductOpt(productService.getListAll(idcompany,idbranch));
-        data.setCategoryProductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,null));
+        data.setCategoryProductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,paramCP));
 
         //priicelistudang harian ketika membuat dokumen baru , akan mengambil data dari dokumen terakhir dan diisi langsung seperti dokumen terakhir baru diedit oleh user lalu  disave
         data.setItems(getItemFromLastPriceListDoc(idcompany,idbranch));
@@ -222,9 +226,7 @@ public class PriceHandler implements PriceService {
             Date dt = new Date(priceDate.longValue());
             sqlBuilder.append(" and data.pricedate <= '"+dt.toString()+"' and data.pricedatethru >= '"+dt.toString()+"' ");
             sqlBuilder.append(" order by id desc limit 1 ");
-            System.out.println("sqlBuilder "+sqlBuilder.toString() );
-            System.out.println("idcompany "+idcompany );
-            System.out.println("idbranch "+idbranch );
+
             final Object[] queryParameters = new Object[] {idcompany,idbranch};
             List<PriceListData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataList(), queryParameters);
             if(list != null && list.size() > 0){

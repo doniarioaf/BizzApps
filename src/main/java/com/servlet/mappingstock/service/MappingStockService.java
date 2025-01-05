@@ -13,4 +13,5 @@ public interface MappingStockService {
     ReturnData delete(Long id,Long iduser);
     MappingStockTemplateData getTemplate(Long idcompany, Long idbranch);
     MappingStockCategoryID getDetailMapping(Long id, Long idcompany, Long idbranch);
+    String getSelectidCategory(Long idcompany, Long idbranch);
 }
