@@ -13,11 +13,12 @@ public interface InvoiceService {
     ReturnData save(Long idcompany, Long idbranch, Long iduser, BodyInvoice body);
     ReturnData update(Long id,Long idcompany, Long idbranch, Long iduser, BodyInvoice body);
     ReturnData delete(Long id,Long idcompany, Long idbranch, Long iduser);
-    PrintInvoice getPrintDataByID(Long id, Long idcompany, Long idbranch);
+    PrintInvoice getPrintDataByID(Long id, Long idcompany, Long idbranch,Long iduser);
     InvoiceDataList getDataByIdPackingList(Long idcompany, Long idbranch,Long idpackinglist);
     List<InvoiceDataPelunasanPiutang> getListInvoicePelunasanPiutang(Long idcompany, Long idbranch, FilterParamPelunasanPiutang param);
     List<InvoiceDataPelunasanPiutang> getListInvoicePelunasanPiutangByListID(Long idcompany, Long idbranch, String listIdInvoice);
 
     ReturnData updateOustandingTambah(Long id,Double bayar);
     ReturnData updateOustandingKurang(Long id,Double bayar);
+    ReturnData catatDownload(Long id,Long idcompany, Long idbranch, Long iduser);
 }

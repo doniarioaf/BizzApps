@@ -13,6 +13,7 @@ public interface PackingListService {
     ReturnData update(Long id, Long idcompany, Long idbranch, Long iduser, BodyPackingList body);
     ReturnData delete(Long id, Long idcompany, Long idbranch, Long iduser);
     List<PackingListDropDown> getDropDown(Long idcompany, Long idbranch, ParamDropDownPackingList param);
-    PrintPackingList getPrintData(Long id,Long idcompany, Long idbranch);
+    PrintPackingList getPrintData(Long id,Long idcompany, Long idbranch,Long iduser);
     Long calculateQtyPL(Long idcompany, Long idbranch, ParamCalculateQtyPL param);
+    ReturnData catatDownload(Long id,Long idcompany, Long idbranch, Long iduser);
 }

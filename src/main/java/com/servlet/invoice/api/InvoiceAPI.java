@@ -71,6 +71,15 @@ public class InvoiceAPI {
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
+    @GetMapping("/catatdownload/{id}")
+    ResponseEntity<Response> catatDownloadPrint(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "DOWNLOAD_PRINTPDF");
+        param.put("id", id);
+        Response response = securityService.response(ConstansPermission.READ_INVOICE,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
     @PostMapping
     ResponseEntity<Response> createObject(@RequestBody @Validated BodyInvoice body, @RequestHeader(ConstansKey.AUTH) String authorization) {
         Response response = securityService.response(ConstansPermission.CREATE_INVOICE,body,authorization);

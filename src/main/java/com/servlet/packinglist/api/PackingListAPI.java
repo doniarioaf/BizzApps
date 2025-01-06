@@ -62,6 +62,15 @@ public class PackingListAPI {
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
+    @GetMapping("/catatdownload/{id}")
+    ResponseEntity<Response> catatDownloadPrint(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "DOWNLOAD_PRINTPDF");
+        param.put("id", id);
+        Response response = securityService.response(ConstansPermission.READ_PACKINGLIST,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
     @GetMapping("/pricelist")
     ResponseEntity<Response> getPriceList(@RequestParam("pricedate") Long pricedate, @RequestHeader(ConstansKey.AUTH) String authorization) {
         HashMap<String, Object> param = new HashMap<String, Object>();

@@ -4,6 +4,7 @@ import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.customer.service.CustomerService;
 import com.servlet.draftpurchasereceive.entity.BodyDraftPurchaseReceiveItems;
 import com.servlet.historyapps.service.HistoryAppsService;
+import com.servlet.invoice.entity.Invoice;
 import com.servlet.invoice.entity.InvoiceDataList;
 import com.servlet.invoice.service.InvoiceService;
 import com.servlet.mappingstock.entity.MappingStockCategoryID;
@@ -25,6 +26,8 @@ import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 import com.servlet.stockitems.service.StockItemService;
+import com.servlet.user.entity.UserListData;
+import com.servlet.user.service.UserAppsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -71,6 +74,9 @@ public class PackingListHandler implements PackingListService {
 
     @Autowired
     private InvoiceService invoiceService;
+
+    @Autowired
+    private UserAppsService userAppsService;
 
     protected final String namaMenu = "PackingList";
     @Override
@@ -286,7 +292,7 @@ public class PackingListHandler implements PackingListService {
     }
 
     @Override
-    public PrintPackingList getPrintData(Long id, Long idcompany, Long idbranch) {
+    public PrintPackingList getPrintData(Long id, Long idcompany, Long idbranch,Long iduser) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataPrint().schema());
         sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
         final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
@@ -303,6 +309,16 @@ public class PackingListHandler implements PackingListService {
             data.setAddress1(paramAddress1.getStrValue());
             data.setAddress2(paramAddress2.getStrValue());
             data.setAddress3(paramAddress3.getStrValue());
+            data.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADPDF",namaMenu));
+            data.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
+            if(iduser != null) {
+                UserListData user = userAppsService.getUserByID(iduser);
+                String namaUser = "";
+                if (user != null) {
+                    namaUser = user.getNama();
+                }
+                data.setNamaUser(namaUser);
+            }
             return data;
         }
         return null;
@@ -328,6 +344,26 @@ public class PackingListHandler implements PackingListService {
             return list.get(0);
         }
         return 0L;
+    }
+
+    @Override
+    public ReturnData catatDownload(Long id, Long idcompany, Long idbranch, Long iduser) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        try {
+            PackingList table = repo.getById(id);
+            historyAppsService.saveHistory(table.getIdcompany(),table.getIdbranch(),iduser,"DOWNLOADPDF",namaMenu,id.toString(),"","",ts);
+        }catch (Exception e) {
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+            validations.add(msg);
+        }
+
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
     }
 
     private HashMap<Object,Object> tambahStockItems(Long idcompany, Long idbranch, Long idpackinglist){

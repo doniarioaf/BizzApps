@@ -1249,7 +1249,10 @@ public class ProcessHandler implements ProcessService{
 					val.setData(packingListService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("PRINT")) {
 					long id = (long) param.get("id");
-					val.setData(packingListService.getPrintData(id,auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(packingListService.getPrintData(id,auth.getIdcompany(), auth.getIdbranch(),auth.getId()));
+				}else if(type.equals("DOWNLOAD_PRINTPDF")) {
+					long id = (long) param.get("id");
+					val.setData(packingListService.catatDownload(id,auth.getIdcompany(), auth.getIdbranch(),auth.getId()));
 				}else if(type.equals("TEMPLATE")) {
 					val.setData(packingListService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("PRICELIST")) {
@@ -1277,7 +1280,10 @@ public class ProcessHandler implements ProcessService{
 					val.setData(packingListService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("PRINT")) {
 					long id = (long) param.get("id");
-					val.setData(invoiceService.getPrintDataByID(id,auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(invoiceService.getPrintDataByID(id,auth.getIdcompany(), auth.getIdbranch(), auth.getId()));
+				}else if(type.equals("DOWNLOAD_PRINTPDF")) {
+					long id = (long) param.get("id");
+					val.setData(invoiceService.catatDownload(id,auth.getIdcompany(), auth.getIdbranch(), auth.getId()));
 				}else if(type.equals("PRINTEXCEL")) {
 					long id = (long) param.get("id");
 					val.setData(reportService.getExcelInvoiceByID(id,auth.getIdcompany(), auth.getIdbranch()).getWorkbook());

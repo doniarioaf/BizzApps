@@ -19,6 +19,8 @@ import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.user.entity.UserListData;
+import com.servlet.user.service.UserAppsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -44,6 +46,8 @@ public class InvoiceHandler implements InvoiceService {
     private PackingListService packingListService;
     @Autowired
     private ParameterClientService parameterClientService;
+    @Autowired
+    private UserAppsService userAppsService;
 
     protected final String namaMenu = "Invoice";
 
@@ -204,7 +208,7 @@ public class InvoiceHandler implements InvoiceService {
     }
 
     @Override
-    public PrintInvoice getPrintDataByID(Long id, Long idcompany, Long idbranch) {
+    public PrintInvoice getPrintDataByID(Long id, Long idcompany, Long idbranch,Long iduser) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPrintInvoice().schema());
         sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
 
@@ -228,6 +232,16 @@ public class InvoiceHandler implements InvoiceService {
             det.setBankCompany(parambankComp.getStrValue());
             det.setBankAccNoCompany(parambankAccnoComp.getStrValue());
             det.setBankAccNameCompany(parambankAccnameComp.getStrValue());
+            det.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADPDF",namaMenu));
+            det.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
+            if(iduser != null) {
+                UserListData user = userAppsService.getUserByID(iduser);
+                String namaUser = "";
+                if (user != null) {
+                    namaUser = user.getNama();
+                }
+                det.setNamaUser(namaUser);
+            }
 
             return det;
         }
@@ -320,6 +334,26 @@ public class InvoiceHandler implements InvoiceService {
             table.setOutstanding(outstanding);
             idsave = repo.saveAndFlush(table).getId();
 
+        }catch (Exception e) {
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+            validations.add(msg);
+        }
+
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public ReturnData catatDownload(Long id, Long idcompany, Long idbranch, Long iduser) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        try {
+            Invoice table = repo.getById(id);
+            historyAppsService.saveHistory(table.getIdcompany(),table.getIdbranch(),iduser,"DOWNLOADPDF",namaMenu,id.toString(),"","",ts);
         }catch (Exception e) {
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
             validations.add(msg);

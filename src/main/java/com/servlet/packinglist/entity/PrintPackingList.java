@@ -21,7 +21,34 @@ public class PrintPackingList {
     private String awbnumber;
     private Double netto;
     private Long koli;
+    private Long countPrint;
+    private Long countEdit;
+    private String namaUser;
     private List<PackingListDataItemDetail> items;
+
+    public Long getCountPrint() {
+        return countPrint;
+    }
+
+    public void setCountPrint(Long countPrint) {
+        this.countPrint = countPrint;
+    }
+
+    public Long getCountEdit() {
+        return countEdit;
+    }
+
+    public void setCountEdit(Long countEdit) {
+        this.countEdit = countEdit;
+    }
+
+    public String getNamaUser() {
+        return namaUser;
+    }
+
+    public void setNamaUser(String namaUser) {
+        this.namaUser = namaUser;
+    }
 
     public String getCompanyName() {
         return companyName;
