@@ -35,6 +35,7 @@ import com.servlet.shared.ValidationDataMessage;
 import com.servlet.stockitems.service.StockItemService;
 import com.servlet.user.entity.UserListData;
 import com.servlet.user.service.UserAppsService;
+import com.servlet.vendor.entity.ParamVendor;
 import com.servlet.vendor.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -146,8 +147,11 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
 
     @Override
     public ReportPurchaseReceiveTemplate getReportTemplate(Long idcompany, Long idbranch) {
+        ParamVendor paramVendor = new ParamVendor();
+        paramVendor.setVendorTypes("'UDANG'");
+
         ReportPurchaseReceiveTemplate data = new ReportPurchaseReceiveTemplate();
-        data.setVendorOpt(vendorService.getListDropdown(idcompany,idbranch));
+        data.setVendorOpt(vendorService.getListDropdown(idcompany,idbranch,paramVendor));
         data.setAreaOpt(areaService.getList(idcompany,idbranch));
         return data;
     }

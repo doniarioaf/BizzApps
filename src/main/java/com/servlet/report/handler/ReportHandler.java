@@ -473,13 +473,29 @@ public class ReportHandler implements ReportService {
             row = sheet.createRow(rowcount);
             createCell(row, 0, print.getBankCompany(), style, sheet,columns);
             createCell(row, 6, "Kurs", style, sheet,columns);
-            createCell(row, 7, "Rp "+print.getKurs(), style, sheet,columns);
 
+            int compare = new BigDecimal(print.getKurs()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(print.getKurs()));
+            styleAmount = workbook.createCellStyle();
+            if(compare == 0) {
+                styleAmount.setDataFormat(format.getFormat("#,###"));
+            }else {
+                styleAmount.setDataFormat(format.getFormat("#,###.##"));
+            }
+            createCell(row, 7, "Rp "+print.getKurs(), styleAmount, sheet,columns);
+
+            double totalInIdr = round((print.getKurs()*totalPrice),2);
+            compare = new BigDecimal(totalInIdr).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(totalInIdr));
+            styleAmount = workbook.createCellStyle();
+            if(compare == 0) {
+                styleAmount.setDataFormat(format.getFormat("#,###"));
+            }else {
+                styleAmount.setDataFormat(format.getFormat("#,###.##"));
+            }
             rowcount++;
             row = sheet.createRow(rowcount);
             createCell(row, 0, "a/c "+print.getBankAccNoCompany(), style, sheet,columns);
             createCell(row, 6, "Total In IDR", style, sheet,columns);
-            createCell(row, 7, "Rp "+round((print.getKurs()*totalPrice),2), style, sheet,columns);
+            createCell(row, 7, "Rp "+new BigDecimal(totalInIdr), styleAmount, sheet,columns);
 
             rowcount++;
             row = sheet.createRow(rowcount);
@@ -1080,36 +1096,13 @@ public class ReportHandler implements ReportService {
                         continue;
                     }
                     cekIDCPMappingKembar.put(mapp.getCategoryproductidmapping(),mapp.getCategoryproductidmapping());
-//                    Long stockKolamTerakhir1 = stockKolamTerakhirByIDcategory.get(mapp.getCategoryproductid());
-//                    if(stockKolamTerakhir1 == null){
-//                        stockKolamTerakhir1 = 0L;
-//                    }
-//                    Long stockKolamTerakhir2 = stockKolamTerakhirByIDcategory.get(mapp.getCategoryproductidmapping());
-//                    if(stockKolamTerakhir2 == null){
-//                        stockKolamTerakhir2 = 0L;
-//                    }
+
                     Long stockKolamTerakhir = calculateStockByIdCPMappingStockKolamTerakhir.get(mapp.getCategoryproductidmapping()).longValue();
                     grandTotalStockKolamTerakhir += stockKolamTerakhir.longValue();
 
-//                    Long stockUdangMati1 = stockUdangMatiByIDcategory.get(mapp.getCategoryproductid());
-//                    if(stockUdangMati1 == null){
-//                        stockUdangMati1 = 0L;
-//                    }
-//                    Long stockUdangMati2 = stockUdangMatiByIDcategory.get(mapp.getCategoryproductidmapping());
-//                    if(stockUdangMati2 == null){
-//                        stockUdangMati2 = 0L;
-//                    }
                     Long stockUdangMati = calculateStockByIdCPMappingStockUdangMati.get(mapp.getCategoryproductidmapping()).longValue();
                     grandTotalUdangMati += stockUdangMati.longValue();
 
-//                    Long stockUdangMasuk1 = stockUdangMasukByIDcategory.get(mapp.getCategoryproductid());
-//                    if(stockUdangMasuk1 == null){
-//                        stockUdangMasuk1 = 0L;
-//                    }
-//                    Long stockUdangMasuk2 = stockUdangMasukByIDcategory.get(mapp.getCategoryproductidmapping());
-//                    if(stockUdangMasuk2 == null){
-//                        stockUdangMasuk2 = 0L;
-//                    }
                     Long stockUdangMasuk = calculateStockByIdCPMappingStockUdangMasuk.get(mapp.getCategoryproductidmapping()).longValue();
                     grandTotalUdangMasuk += stockUdangMasuk.longValue();
 
@@ -1288,7 +1281,9 @@ public class ReportHandler implements ReportService {
         int gramIdxKolom = colomcount;
         createCell(row, colomcount, "GRAM", style, sheet,columns);
 
-        List<VendorDataForTemplate> listvendor = vendorService.getListDropdown(idcompany,idbranch);
+        ParamVendor paramVendor = new ParamVendor();
+        paramVendor.setVendorTypes("'UDANG'");
+        List<VendorDataForTemplate> listvendor = vendorService.getListDropdown (idcompany,idbranch,paramVendor);
         List<CategoryProductList> listCP = categoryProductService.getDataForTemplate(idcompany,idbranch,null);
 
         HashMap<Long,Integer> mapsVendorIdxColumn = new HashMap<>();
