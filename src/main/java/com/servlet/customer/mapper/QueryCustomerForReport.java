@@ -12,7 +12,7 @@ public class QueryCustomerForReport implements RowMapper<CustomerForReport> {
     public QueryCustomerForReport() {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
-        sqlBuilder.append("data.id as id, data.nama as nama, data.alias as alias, ");
+        sqlBuilder.append("data.id as id, data.nama as nama, data.alias as alias ");
         sqlBuilder.append("from m_customer as data ");
 
         this.schemaSql = sqlBuilder.toString();

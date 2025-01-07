@@ -1396,6 +1396,17 @@ public class ProcessHandler implements ProcessService{
 				}
 			}
 
+			else if(codepermission.equals(ConstansPermission.READ_REPORT_PENJUALAN)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("REPORTPENJUALAN")) {
+					ParamReportPenjualan body = (ParamReportPenjualan) param.get("body");
+					val.setData(reportService.reportPenjualan(auth.getIdcompany(), auth.getIdbranch(),body).getWorkbook());
+				}else if(type.equals("REPORTPENJUALAN_TEMPLATE")) {
+					val.setData(reportService.reportTemplateReportPiutang(auth.getIdcompany(), auth.getIdbranch()));
+				}
+			}
+
 			else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {}
 				
 		}
