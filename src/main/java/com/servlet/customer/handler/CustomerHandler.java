@@ -2,6 +2,7 @@ package com.servlet.customer.handler;
 
 import com.servlet.customer.entity.*;
 import com.servlet.customer.mapper.QueryCustomerDetail;
+import com.servlet.customer.mapper.QueryCustomerForReport;
 import com.servlet.customer.mapper.QueryCustomerList;
 import com.servlet.customer.mapper.QueryDistinctCustomerGrup;
 import com.servlet.customer.repo.CustomerRepo;
@@ -161,8 +162,19 @@ public class CustomerHandler implements CustomerService {
     @Override
     public List<CustomerGrup> getListCustomerGrup(Long idcompany, Long idbranch) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDistinctCustomerGrup().schema());
-        sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false ");
+        sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false and data.grupcode notnull ");
         final Object[] queryParameters = new Object[] {idcompany};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDistinctCustomerGrup(), queryParameters);
+    }
+
+    @Override
+    public List<CustomerForReport> getListCustomerForReport(Long idcompany, Long idbranch, String listId) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCustomerForReport().schema());
+        sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false ");
+        if(listId != null && !listId.equals("")){
+            sqlBuilder.append(" and data.id in ("+listId+") ");
+        }
+        final Object[] queryParameters = new Object[] {idcompany};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCustomerForReport(), queryParameters);
     }
 }

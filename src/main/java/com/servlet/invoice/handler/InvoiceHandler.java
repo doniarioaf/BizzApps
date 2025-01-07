@@ -2,10 +2,7 @@ package com.servlet.invoice.handler;
 
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.invoice.entity.*;
-import com.servlet.invoice.mapper.QueryDataDetail;
-import com.servlet.invoice.mapper.QueryDataList;
-import com.servlet.invoice.mapper.QueryDataPelunasanPiutang;
-import com.servlet.invoice.mapper.QueryPrintInvoice;
+import com.servlet.invoice.mapper.*;
 import com.servlet.invoice.repo.InvoiceRepo;
 import com.servlet.invoice.service.InvoiceService;
 import com.servlet.packinglist.entity.ParamDropDownPackingList;
@@ -364,5 +361,35 @@ public class InvoiceHandler implements InvoiceService {
         data.setSuccess(validations.size() > 0?false:true);
         data.setValidations(validations);
         return data;
+    }
+
+    @Override
+    public List<InvoiceDataReportPiutang> getListInvoiceReportPiutang(Long idcompany, Long idbranch, ParamSearchInvoice param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryInvoiceReportPiutang().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        if(param.getFrom() != null){
+            Date dt = new Date(param.getFrom());
+            sqlBuilder.append(" and data.date >= '"+dt.toString()+"'");
+        }
+        if(param.getTo() != null){
+            Date dt = new Date(param.getTo());
+            sqlBuilder.append(" and data.date <= '"+dt.toString()+"'");
+        }
+        if(param.getIdcustomer() != null){
+            sqlBuilder.append(" and pl.idcustomer = "+param.getIdcustomer()+" ");
+        }
+        if(param.getListGroup() != null && !param.getListGroup().equals("")){
+            sqlBuilder.append(" and cust.grupcode in ("+param.getListGroup()+") ");
+        }
+        if(param.getStatus() != null && !param.getStatus().equals("")){
+            if(param.getStatus().equals("LUNAS")){
+                sqlBuilder.append(" and data.outstanding < 1 ");
+            }else if(param.getStatus().equals("BELUMLUNAS")){
+                sqlBuilder.append(" and data.outstanding >= 1 ");
+            }
+        }
+        sqlBuilder.append(" order by cust.grupcode, data.date ");
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryInvoiceReportPiutang(), queryParameters);
     }
 }

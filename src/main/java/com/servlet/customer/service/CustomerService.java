@@ -1,9 +1,6 @@
 package com.servlet.customer.service;
 
-import com.servlet.customer.entity.BodyCustomer;
-import com.servlet.customer.entity.CustomerData;
-import com.servlet.customer.entity.CustomerGrup;
-import com.servlet.customer.entity.ListCustomerData;
+import com.servlet.customer.entity.*;
 import com.servlet.shared.ReturnData;
 
 import java.util.List;
@@ -15,4 +12,5 @@ public interface CustomerService {
     ReturnData update(Long id,Long idcompany, Long idbranch, Long iduser, BodyCustomer body);
     ReturnData delete(Long id,Long iduser);
     List<CustomerGrup> getListCustomerGrup(Long idcompany, Long idbranch);
+    List<CustomerForReport> getListCustomerForReport(Long idcompany, Long idbranch,String listId);
 }

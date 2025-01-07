@@ -1,9 +1,6 @@
 package com.servlet.report.api;
 
-import com.servlet.report.entity.ParamReportHutang;
-import com.servlet.report.entity.ParamReportRekapStock;
-import com.servlet.report.entity.ParamReportStatusTagihanCargo;
-import com.servlet.report.entity.ParamReportStockUdangHidupMati;
+import com.servlet.report.entity.*;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConstansPermission;
@@ -125,6 +122,39 @@ public class ReportAPI {
         Response response = securityService.response(ConstansPermission.READ_REPORT_HUTANG,param,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
+
+    @GetMapping("/reportpiutang")
+    ResponseEntity<Response> getReportPiutang(@RequestParam("status") String status, @RequestParam("idcustomer") String idcustomer,@RequestParam("grups") String grups, @RequestParam("from") Long from,@RequestParam("to") Long to, HttpServletResponse response, @RequestHeader(ConstansKey.AUTH) String authorization) throws IOException{
+        ParamReportPiutang body = new ParamReportPiutang();
+        body.setFrom(from);
+        body.setTo(to);
+        body.setListidcustomer(idcustomer);
+        body.setListGroup(grups);
+        body.setStatus(status);
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "REPORTPIUTANG");
+        param.put("body", body);
+        Response response1 = securityService.response(ConstansPermission.READ_REPORT_PIUTANG,param,authorization);
+        if(response1.getHttpcode() == HttpStatus.OK.value()) {
+            XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+            export(response, workbook);
+
+            return ResponseEntity.ok().build();
+        }else{
+            return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
+        }
+
+    }
+
+    @GetMapping("/reportpiutang/template")
+    ResponseEntity<Response> getReportPiutangTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "REPORTPIUTANG_TEMPLATE");
+        Response response = securityService.response(ConstansPermission.READ_REPORT_PIUTANG,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+
 
     private void export(HttpServletResponse response, XSSFWorkbook workbook) throws IOException {
         ServletOutputStream outputStream = response.getOutputStream();

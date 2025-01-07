@@ -10,6 +10,11 @@ import com.servlet.categoryproduct.entity.CategoryProductList;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.charge.entity.ChargeList;
 import com.servlet.charge.service.ChargeService;
+import com.servlet.customer.entity.CustomerForReport;
+import com.servlet.customer.entity.CustomerGrup;
+import com.servlet.customer.service.CustomerService;
+import com.servlet.invoice.entity.InvoiceDataReportPiutang;
+import com.servlet.invoice.entity.ParamSearchInvoice;
 import com.servlet.invoice.entity.PrintInvoice;
 import com.servlet.invoice.service.InvoiceService;
 import com.servlet.mappingstock.entity.MappingStockList;
@@ -90,6 +95,9 @@ public class ReportHandler implements ReportService {
 
     @Autowired
     PelunasanHutangService pelunasanHutangService;
+
+    @Autowired
+    CustomerService customerService;
 
     @Override
     public ReportWorkBookExcel getExcelPackingListByID(long id, long idcompany, long idbranch) {
@@ -474,9 +482,8 @@ public class ReportHandler implements ReportService {
             createCell(row, 0, print.getBankCompany(), style, sheet,columns);
             createCell(row, 6, "Kurs", style, sheet,columns);
 
-            int compare = new BigDecimal(print.getKurs()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(print.getKurs()));
             styleAmount = workbook.createCellStyle();
-            if(compare == 0) {
+            if(GlobalFunc.checkIsDecimal(print.getKurs())) {
                 styleAmount.setDataFormat(format.getFormat("#,###"));
             }else {
                 styleAmount.setDataFormat(format.getFormat("#,###.##"));
@@ -484,9 +491,8 @@ public class ReportHandler implements ReportService {
             createCell(row, 7, "Rp "+print.getKurs(), styleAmount, sheet,columns);
 
             double totalInIdr = round((print.getKurs()*totalPrice),2);
-            compare = new BigDecimal(totalInIdr).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(totalInIdr));
             styleAmount = workbook.createCellStyle();
-            if(compare == 0) {
+            if(GlobalFunc.checkIsDecimal(totalInIdr)) {
                 styleAmount.setDataFormat(format.getFormat("#,###"));
             }else {
                 styleAmount.setDataFormat(format.getFormat("#,###.##"));
@@ -756,9 +762,9 @@ public class ReportHandler implements ReportService {
                             createCell(row, colomcount, det.getQtybonus(), style, sheet,columns);
 
                             colomcount++;
-                            int compare = new BigDecimal(det.getPrice()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(det.getPrice()));
+
                             styleAmount = workbook.createCellStyle();
-                            if(compare == 0) {
+                            if(GlobalFunc.checkIsDecimal(det.getPrice())) {
                                 styleAmount.setDataFormat(format.getFormat("#,###"));
                             }else {
                                 styleAmount.setDataFormat(format.getFormat("#,###.##"));
@@ -766,9 +772,8 @@ public class ReportHandler implements ReportService {
 
                             createCell(row, colomcount, det.getPrice(), styleAmount, sheet,columns);
 
-                            compare = new BigDecimal(det.getSubtotalprice()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(det.getSubtotalprice()));
                             styleAmount = workbook.createCellStyle();
-                            if(compare == 0) {
+                            if(GlobalFunc.checkIsDecimal(det.getSubtotalprice())) {
                                 styleAmount.setDataFormat(format.getFormat("#,###"));
                             }else {
                                 styleAmount.setDataFormat(format.getFormat("#,###.##"));
@@ -784,9 +789,8 @@ public class ReportHandler implements ReportService {
                     colomcount++;
                     createCell(row, colomcount, (totalBeratInGram / 1000.0), style, sheet,columns);
 
-                    int compare = new BigDecimal(totalSubtotal).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(totalSubtotal));
                     styleAmount = workbook.createCellStyle();
-                    if(compare == 0) {
+                    if(GlobalFunc.checkIsDecimal(totalSubtotal)) {
                         styleAmount.setDataFormat(format.getFormat("#,###"));
                     }else {
                         styleAmount.setDataFormat(format.getFormat("#,###.##"));
@@ -808,9 +812,8 @@ public class ReportHandler implements ReportService {
                             colomcount = mapsBiayacolumn.get(det.getIdcharge()).intValue();
                             createCell(row, colomcount, det.getQty(), style, sheet,columns);
 
-                            compare = new BigDecimal(det.getPrice()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(det.getPrice()));
                             styleAmount = workbook.createCellStyle();
-                            if(compare == 0) {
+                            if(GlobalFunc.checkIsDecimal(det.getPrice())) {
                                 styleAmount.setDataFormat(format.getFormat("#,###"));
                             }else {
                                 styleAmount.setDataFormat(format.getFormat("#,###.##"));
@@ -819,9 +822,8 @@ public class ReportHandler implements ReportService {
                             colomcount++;
                             createCell(row, colomcount, det.getPrice(), styleAmount, sheet,columns);
 
-                            compare = new BigDecimal(det.getSubtotalprice()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(det.getSubtotalprice()));
                             styleAmount = workbook.createCellStyle();
-                            if(compare == 0) {
+                            if(GlobalFunc.checkIsDecimal(det.getSubtotalprice())) {
                                 styleAmount.setDataFormat(format.getFormat("#,###"));
                             }else {
                                 styleAmount.setDataFormat(format.getFormat("#,###.##"));
@@ -836,9 +838,8 @@ public class ReportHandler implements ReportService {
                     createCell(row, colomcount, qtyBox, style, sheet,columns);
                     //
 
-                    compare = new BigDecimal(value.getSetor()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(value.getSetor()));
                     styleAmount = workbook.createCellStyle();
-                    if(compare == 0) {
+                    if(GlobalFunc.checkIsDecimal(value.getSetor())) {
                         styleAmount.setDataFormat(format.getFormat("#,###"));
                     }else {
                         styleAmount.setDataFormat(format.getFormat("#,###.##"));
@@ -846,9 +847,8 @@ public class ReportHandler implements ReportService {
                     colomcount = kolomIdxSetor;
                     createCell(row, colomcount, value.getSetor(), styleAmount, sheet,columns);
 
-                    compare = new BigDecimal(subtotalBiaya).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(subtotalBiaya));
                     styleAmount = workbook.createCellStyle();
-                    if(compare == 0) {
+                    if(GlobalFunc.checkIsDecimal(subtotalBiaya)) {
                         styleAmount.setDataFormat(format.getFormat("#,###"));
                     }else {
                         styleAmount.setDataFormat(format.getFormat("#,###.##"));
@@ -856,9 +856,8 @@ public class ReportHandler implements ReportService {
                     colomcount++;
                     createCell(row, colomcount, subtotalBiaya, styleAmount, sheet,columns);
 
-                    compare = new BigDecimal(value.getTotalprice()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(value.getTotalprice()));
                     styleAmount = workbook.createCellStyle();
-                    if(compare == 0) {
+                    if(GlobalFunc.checkIsDecimal(value.getTotalprice())) {
                         styleAmount.setDataFormat(format.getFormat("#,###"));
                     }else {
                         styleAmount.setDataFormat(format.getFormat("#,###.##"));
@@ -867,9 +866,8 @@ public class ReportHandler implements ReportService {
                     createCell(row, colomcount, value.getTotalprice(), styleAmount, sheet,columns);
 
                     Double transfer = value.getTotalprice() - value.getSetor();
-                    compare = new BigDecimal(transfer).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(transfer));
                     styleAmount = workbook.createCellStyle();
-                    if(compare == 0) {
+                    if(GlobalFunc.checkIsDecimal(transfer)) {
                         styleAmount.setDataFormat(format.getFormat("#,###"));
                     }else {
                         styleAmount.setDataFormat(format.getFormat("#,###.##"));
@@ -1611,9 +1609,9 @@ public class ReportHandler implements ReportService {
                     createCell(row, colomcount, cargo.getKoli(), style, sheet,columns);
 
                     totalGrossInvoicePerVendor += cargo.getGrossamount().doubleValue();
-                    int compare = new BigDecimal(cargo.getGrossamount()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(cargo.getGrossamount()));
+
                     styleAmount = workbook.createCellStyle();
-                    if(compare == 0) {
+                    if(GlobalFunc.checkIsDecimal(cargo.getGrossamount())) {
                         styleAmount.setDataFormat(format.getFormat("#,###"));
                     }else {
                         styleAmount.setDataFormat(format.getFormat("#,###.##"));
@@ -1622,9 +1620,8 @@ public class ReportHandler implements ReportService {
                     createCell(row, colomcount, cargo.getGrossamount(), styleAmount, sheet,columns);
 
                     totalPPNPerVendor += cargo.getPpnamount().doubleValue();
-                    compare = new BigDecimal(cargo.getPpnamount()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(cargo.getPpnamount()));
                     styleAmount = workbook.createCellStyle();
-                    if(compare == 0) {
+                    if(GlobalFunc.checkIsDecimal(cargo.getPpnamount())) {
                         styleAmount.setDataFormat(format.getFormat("#,###"));
                     }else {
                         styleAmount.setDataFormat(format.getFormat("#,###.##"));
@@ -1633,9 +1630,8 @@ public class ReportHandler implements ReportService {
                     createCell(row, colomcount, cargo.getPpnamount(), styleAmount, sheet,columns);
 
                     totalPPN23PerVendor += cargo.getPpn23amount().doubleValue();
-                    compare = new BigDecimal(cargo.getPpn23amount()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(cargo.getPpn23amount()));
                     styleAmount = workbook.createCellStyle();
-                    if(compare == 0) {
+                    if(GlobalFunc.checkIsDecimal(cargo.getPpn23amount())) {
                         styleAmount.setDataFormat(format.getFormat("#,###"));
                     }else {
                         styleAmount.setDataFormat(format.getFormat("#,###.##"));
@@ -1644,9 +1640,8 @@ public class ReportHandler implements ReportService {
                     createCell(row, colomcount, cargo.getPpn23amount(), styleAmount, sheet,columns);
 
                     totalNetInvoicePerVendor += cargo.getNetamount().doubleValue();
-                    compare = new BigDecimal(cargo.getNetamount()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(cargo.getNetamount()));
                     styleAmount = workbook.createCellStyle();
-                    if(compare == 0) {
+                    if(GlobalFunc.checkIsDecimal(cargo.getNetamount())) {
                         styleAmount.setDataFormat(format.getFormat("#,###"));
                     }else {
                         styleAmount.setDataFormat(format.getFormat("#,###.##"));
@@ -1686,9 +1681,8 @@ public class ReportHandler implements ReportService {
                 colomcount++;
                 createCell(row, colomcount, totalKoliPerVendor, style, sheet,columns);
 
-                int compare = new BigDecimal(totalGrossInvoicePerVendor).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(totalGrossInvoicePerVendor));
                 styleAmount = workbook.createCellStyle();
-                if(compare == 0) {
+                if(GlobalFunc.checkIsDecimal(totalGrossInvoicePerVendor)) {
                     styleAmount.setDataFormat(format.getFormat("#,###"));
                 }else {
                     styleAmount.setDataFormat(format.getFormat("#,###.##"));
@@ -1696,9 +1690,8 @@ public class ReportHandler implements ReportService {
                 colomcount++;
                 createCell(row, colomcount, totalGrossInvoicePerVendor, styleAmount, sheet,columns);
 
-                compare = new BigDecimal(totalPPNPerVendor).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(totalPPNPerVendor));
                 styleAmount = workbook.createCellStyle();
-                if(compare == 0) {
+                if(GlobalFunc.checkIsDecimal(totalPPNPerVendor)) {
                     styleAmount.setDataFormat(format.getFormat("#,###"));
                 }else {
                     styleAmount.setDataFormat(format.getFormat("#,###.##"));
@@ -1706,9 +1699,8 @@ public class ReportHandler implements ReportService {
                 colomcount++;
                 createCell(row, colomcount, totalPPNPerVendor, styleAmount, sheet,columns);
 
-                compare = new BigDecimal(totalPPN23PerVendor).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(totalPPN23PerVendor));
                 styleAmount = workbook.createCellStyle();
-                if(compare == 0) {
+                if(GlobalFunc.checkIsDecimal(totalPPN23PerVendor)) {
                     styleAmount.setDataFormat(format.getFormat("#,###"));
                 }else {
                     styleAmount.setDataFormat(format.getFormat("#,###.##"));
@@ -1716,9 +1708,8 @@ public class ReportHandler implements ReportService {
                 colomcount++;
                 createCell(row, colomcount, totalPPN23PerVendor, styleAmount, sheet,columns);
 
-                compare = new BigDecimal(totalNetInvoicePerVendor).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(totalNetInvoicePerVendor));
                 styleAmount = workbook.createCellStyle();
-                if(compare == 0) {
+                if(GlobalFunc.checkIsDecimal(totalNetInvoicePerVendor)) {
                     styleAmount.setDataFormat(format.getFormat("#,###"));
                 }else {
                     styleAmount.setDataFormat(format.getFormat("#,###.##"));
@@ -2052,6 +2043,325 @@ public class ReportHandler implements ReportService {
         return data;
     }
 
+    @Override
+    public ReportWorkBookExcel reportPiutang(long idcompany, long idbranch, ParamReportPiutang param) {
+        ReportWorkBookExcel data = new ReportWorkBookExcel();
+        XSSFWorkbook workbook = new XSSFWorkbook();
+
+        XSSFDataFormat format = workbook.createDataFormat();
+
+        XSSFSheet sheet = workbook.createSheet("Laporan Piutang");
+        sheet.setDefaultColumnWidth(1000);
+        List<Integer> columns = getWidthColumns(15);
+
+        String namaCabang = "";
+        Branch branch = branchService.getBranchByID(idbranch);
+        if(branch != null){
+            namaCabang = branch.getNama();
+        }
+
+        int fontHeight = 12;
+        CellStyle style = workbook.createCellStyle();
+        CellStyle styleBold = workbook.createCellStyle();
+        CellStyle styleAmount = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setBold(false);
+        font.setFontHeight(fontHeight);
+        style.setFont(font);
+        styleAmount.setFont(font);
+
+        List<CustomerGrup> listCustGrup = customerService.getListCustomerGrup(idcompany,idbranch);
+        HashMap<String,String> mappingGrop = new HashMap<>();
+        for(CustomerGrup grup : listCustGrup){
+            mappingGrop.put(grup.getGrupcode(), grup.getGrup());
+        }
+        String[] arrCustomerGrup = param.getListGroup().split(",");
+        String namaGrup = "";
+        String listGrupCode = param.getListGroup();
+        if(arrCustomerGrup.length == 1){
+            if(!arrCustomerGrup[0].equals("ALL")){
+                namaGrup =  mappingGrop.get(arrCustomerGrup[0]) ;
+            }else{
+                listGrupCode = "";
+                namaGrup = "ALL";
+            }
+
+        }else if(arrCustomerGrup.length > 0){
+            for(int i=0; i < arrCustomerGrup.length; i++){
+                String grupCode = arrCustomerGrup[i];
+                if(namaGrup == ""){
+                    namaGrup = mappingGrop.get(grupCode);
+                } else{
+                    namaGrup= namaGrup+","+mappingGrop.get(grupCode);
+                }
+            }
+        }
+
+        String customerName = "ALL";
+        String[] arrCustomer = param.getListidcustomer().split(",");
+        if(!param.getListidcustomer().equals("ALL")){
+            customerName = "";
+            List<CustomerForReport> listcust = customerService.getListCustomerForReport(idcompany,idbranch,param.getListidcustomer());
+            for(CustomerForReport cust : listcust){
+                if(customerName == ""){
+                    customerName = cust.getNama();
+                } else{
+                    customerName= customerName+","+cust.getNama();
+                }
+            }
+        }
+
+        XSSFFont fontBold = workbook.createFont();
+        fontBold.setBold(true);
+        fontBold.setFontHeight(fontHeight);
+        styleBold.setFont(fontBold);
+
+        int rowcount = 2;
+        Row row = sheet.createRow(rowcount);
+        createCell(row, 0, "PT Sumber Berlian Samudra", style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Laporan Piutang", style, sheet,columns);
+
+        String dateFrom = "";
+        try {
+            dateFrom = GlobalFunc.getDateLongToString(param.getFrom(), "dd-MMMM-yyyy");
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String dateThru = "";
+        try {
+            dateThru = GlobalFunc.getDateLongToString(param.getTo(), "dd-MMMM-yyyy");
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Periode", style, sheet,columns);
+        createCell(row, 1, dateFrom+" s/d "+dateThru, style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Customer Grup", style, sheet,columns);
+        createCell(row, 1, namaGrup, style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Customer", style, sheet,columns);
+        createCell(row, 1, customerName, style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Status", style, sheet,columns);
+        createCell(row, 1, param.getStatus(), style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Cabang", style, sheet,columns);
+        createCell(row, 1, namaCabang, style, sheet,columns);
+
+        int colomcount = 0;
+        rowcount++;
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, colomcount, "Customer Name", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Customer Grup", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Tanggal Dokumen", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "No Dokumen", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Flight Number", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "AWB", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Koli", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Invoice Amount ($)", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Kurs", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Invoice Amount (Rp)", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Oustanding (Rp)", style, sheet,columns);
+
+        ParamSearchInvoice paramInv = new ParamSearchInvoice();
+        paramInv.setFrom(param.getFrom());
+        paramInv.setTo(param.getTo());
+        if(!param.getListidcustomer().equals("ALL")){
+            paramInv.setIdcustomer(Long.parseLong(param.getListidcustomer()));
+        }
+        if(!param.getStatus().equals("ALL")){
+            paramInv.setStatus(param.getStatus());
+        }
+        List<InvoiceDataReportPiutang> listinv = invoiceService.getListInvoiceReportPiutang(idcompany,idbranch,paramInv);
+        long totalKoli = 0L;
+        double totalInvAmount = 0;
+        double totalInvAmountRp = 0;
+        double totalOutstandingAmountRp = 0;
+        if(listinv != null && listinv.size() > 0) {
+            for (InvoiceDataReportPiutang inv : listinv) {
+                colomcount = 0;
+                rowcount++;
+                row = sheet.createRow(rowcount);
+                createCell(row, colomcount, inv.getCustomerName(), style, sheet, columns);
+
+                colomcount++;
+                createCell(row, colomcount, inv.getCustomerGrup(), style, sheet, columns);
+
+                String tanggalDoc = "";
+                try {
+                    tanggalDoc = GlobalFunc.getDateLongToString(inv.getDate().getTime(), "dd-MMMM-yyyy");
+                } catch (ParseException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                colomcount++;
+                createCell(row, colomcount, tanggalDoc, style, sheet, columns);
+
+                colomcount++;
+                createCell(row, colomcount, inv.getNoDocument(), style, sheet, columns);
+
+                colomcount++;
+                createCell(row, colomcount, inv.getFlightnumber(), style, sheet, columns);
+
+                colomcount++;
+                createCell(row, colomcount, inv.getAwb(), style, sheet, columns);
+
+                totalKoli = totalKoli + inv.getKoli().longValue();
+                colomcount++;
+                createCell(row, colomcount, inv.getKoli(), style, sheet, columns);
+
+                totalInvAmount = totalInvAmount + inv.getInvoiceAmount().doubleValue();
+                styleAmount = workbook.createCellStyle();
+                if(GlobalFunc.checkIsDecimal(inv.getInvoiceAmount())) {
+                    styleAmount.setDataFormat(format.getFormat("#,###"));
+                }else {
+                    styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                }
+                colomcount++;
+                createCell(row, colomcount, inv.getInvoiceAmount(), styleAmount, sheet, columns);
+
+                styleAmount = workbook.createCellStyle();
+                if(GlobalFunc.checkIsDecimal(inv.getKurs())) {
+                    styleAmount.setDataFormat(format.getFormat("#,###"));
+                }else {
+                    styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                }
+                colomcount++;
+                createCell(row, colomcount, inv.getKurs(), styleAmount, sheet, columns);
+
+                double invAmountRp = inv.getInvoiceAmount().doubleValue() * inv.getKurs().doubleValue();
+                styleAmount = workbook.createCellStyle();
+                if(GlobalFunc.checkIsDecimal(invAmountRp)) {
+                    styleAmount.setDataFormat(format.getFormat("#,###"));
+                }else {
+                    styleAmount.setDataFormat(format.getFormat("#,###.##"));
+
+                }
+                totalInvAmountRp = totalInvAmountRp + invAmountRp;
+                colomcount++;
+                createCell(row, colomcount, invAmountRp, styleAmount, sheet, columns);
+
+                double oustandingAmountRp = inv.getOutstanding().doubleValue() * inv.getKurs().doubleValue();
+                if(inv.getOutstanding().doubleValue() >= 1){
+                    totalOutstandingAmountRp = totalOutstandingAmountRp + oustandingAmountRp;
+                }
+                styleAmount = workbook.createCellStyle();
+                if(GlobalFunc.checkIsDecimal(oustandingAmountRp)) {
+                    styleAmount.setDataFormat(format.getFormat("#,###"));
+                }else {
+                    styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                }
+                colomcount++;
+                if(inv.getOutstanding().doubleValue() < 1){
+                    createCell(row, colomcount, 0, style, sheet, columns);
+                }else{
+                    createCell(row, colomcount, oustandingAmountRp, styleAmount, sheet, columns);
+                }
+
+            }
+
+            colomcount = 0;
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            createCell(row, colomcount, "Total", style, sheet, columns);
+
+            colomcount++;
+            createCell(row, colomcount, "", style, sheet, columns);
+
+            colomcount++;
+            createCell(row, colomcount, "", style, sheet, columns);
+
+            colomcount++;
+            createCell(row, colomcount, "", style, sheet, columns);
+
+            colomcount++;
+            createCell(row, colomcount, "", style, sheet, columns);
+
+            colomcount++;
+            createCell(row, colomcount, "", style, sheet, columns);
+
+            colomcount++;
+            createCell(row, colomcount, totalKoli, style, sheet, columns);
+
+            styleAmount = workbook.createCellStyle();
+            if(GlobalFunc.checkIsDecimal(totalInvAmount)) {
+                styleAmount.setDataFormat(format.getFormat("#,###"));
+            }else {
+                styleAmount.setDataFormat(format.getFormat("#,###.##"));
+            }
+            colomcount++;
+            createCell(row, colomcount, totalInvAmount, styleAmount, sheet, columns);
+
+            colomcount++;
+            createCell(row, colomcount, "", style, sheet, columns);
+
+            styleAmount = workbook.createCellStyle();
+            if(GlobalFunc.checkIsDecimal(totalInvAmountRp)) {
+                styleAmount.setDataFormat(format.getFormat("#,###"));
+            }else {
+                styleAmount.setDataFormat(format.getFormat("#,###.##"));
+            }
+            colomcount++;
+            createCell(row, colomcount, totalInvAmountRp, styleAmount, sheet, columns);
+
+            styleAmount = workbook.createCellStyle();
+            if(GlobalFunc.checkIsDecimal(totalOutstandingAmountRp)) {
+                styleAmount.setDataFormat(format.getFormat("#,###"));
+            }else {
+                styleAmount.setDataFormat(format.getFormat("#,###.##"));
+            }
+            colomcount++;
+            createCell(row, colomcount, totalOutstandingAmountRp, styleAmount, sheet, columns);
+        }
+        data.setWorkbook(workbook);
+        return data;
+    }
+
+    @Override
+    public ReportTemplate reportTemplateReportPiutang(long idcompany, long idbranch) {
+        ReportTemplate data = new ReportTemplate();
+        data.setCustomerOpt(customerService.getListAll(idcompany,idbranch));
+        data.setCustomerGrupOpt(customerService.getListCustomerGrup(idcompany,idbranch));
+        return data;
+    }
+
     private HashMap<String,Object> createCellReportHutang(ParamReportHutang param, Long idcompany, Long idbranch,VendorDataForTemplate ven,List<ReportPelunasanHutangDocumentHutang> listHutang, int rowcount,XSSFWorkbook workbook,XSSFDataFormat format ,Row row, XSSFSheet sheet, CellStyle style, CellStyle styleAmount,List<Integer> columns){
         HashMap<String,Object> mapp = new HashMap<>();
         if(listHutang != null && listHutang.size() > 0){
@@ -2079,9 +2389,8 @@ public class ReportHandler implements ReportService {
                 colomcount++;
                 createCell(row, colomcount, hutang.getNodocument(), style, sheet,columns);
 
-                int compare = new BigDecimal(hutang.getAmountInvoice()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(hutang.getAmountInvoice()));
                 styleAmount = workbook.createCellStyle();
-                if(compare == 0) {
+                if(GlobalFunc.checkIsDecimal(hutang.getAmountInvoice())) {
                     styleAmount.setDataFormat(format.getFormat("#,###"));
                 }else {
                     styleAmount.setDataFormat(format.getFormat("#,###.##"));
@@ -2136,9 +2445,8 @@ public class ReportHandler implements ReportService {
                         colomcount++;
                         createCell(row, colomcount, "", styleAmount, sheet,columns);
 
-                        compare = new BigDecimal(ph.getAmount()).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(ph.getAmount()));
                         styleAmount = workbook.createCellStyle();
-                        if(compare == 0) {
+                        if(GlobalFunc.checkIsDecimal(ph.getAmount())) {
                             styleAmount.setDataFormat(format.getFormat("#,###"));
                         }else {
                             styleAmount.setDataFormat(format.getFormat("#,###.##"));
@@ -2148,9 +2456,8 @@ public class ReportHandler implements ReportService {
                         createCell(row, colomcount, ph.getAmount(), style, sheet,columns);
 
                         outstanding = outstanding - ph.getAmount();
-                        compare = new BigDecimal(outstanding).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(outstanding));
                         styleAmount = workbook.createCellStyle();
-                        if(compare == 0) {
+                        if(GlobalFunc.checkIsDecimal(outstanding)) {
                             styleAmount.setDataFormat(format.getFormat("#,###"));
                         }else {
                             styleAmount.setDataFormat(format.getFormat("#,###.##"));

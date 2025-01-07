@@ -1,18 +1,18 @@
-package com.servlet.invoice.entity;
+package com.servlet.report.entity;
 
-public class ParamSearchInvoice {
+public class ParamReportPiutang {
     private Long from;
     private Long to;
-    private Long idcustomer;
+    private String listidcustomer;
     private String listGroup;
     private String status;
 
-    public Long getIdcustomer() {
-        return idcustomer;
+    public String getListidcustomer() {
+        return listidcustomer;
     }
 
-    public void setIdcustomer(Long idcustomer) {
-        this.idcustomer = idcustomer;
+    public void setListidcustomer(String listidcustomer) {
+        this.listidcustomer = listidcustomer;
     }
 
     public String getListGroup() {

@@ -21,4 +21,5 @@ public interface InvoiceService {
     ReturnData updateOustandingTambah(Long id,Double bayar);
     ReturnData updateOustandingKurang(Long id,Double bayar);
     ReturnData catatDownload(Long id,Long idcompany, Long idbranch, Long iduser);
+    List<InvoiceDataReportPiutang> getListInvoiceReportPiutang(Long idcompany, Long idbranch, ParamSearchInvoice param);
 }

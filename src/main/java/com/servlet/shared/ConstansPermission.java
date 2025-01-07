@@ -111,5 +111,6 @@ public class ConstansPermission {
 	public static final String DELETE_PELUNASANPIUTANG = "DELETE_PELUNASANPIUTANG";
 	public static final String READ_REPORT_STATUSTAGIHANCARGO = "READ_REPORT_STATUSTAGIHANCARGO";
 	public static final String READ_REPORT_HUTANG = "READ_REPORT_HUTANG";
+	public static final String READ_REPORT_PIUTANG = "READ_REPORT_PIUTANG";
 	
 }

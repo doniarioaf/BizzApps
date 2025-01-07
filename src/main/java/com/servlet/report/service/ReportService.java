@@ -14,4 +14,6 @@ public interface ReportService {
     ReportTemplate reportTemplateStatusTagihanCargo(long idcompany, long idbranch);
     ReportWorkBookExcel reportHutang(long idcompany, long idbranch, ParamReportHutang param);
     ReportTemplate reportTemplateReportHutang(long idcompany, long idbranch);
+    ReportWorkBookExcel reportPiutang(long idcompany, long idbranch, ParamReportPiutang param);
+    ReportTemplate reportTemplateReportPiutang(long idcompany, long idbranch);
 }

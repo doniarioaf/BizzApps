@@ -1,11 +1,31 @@
 package com.servlet.report.entity;
 
+import com.servlet.customer.entity.CustomerGrup;
+import com.servlet.customer.entity.ListCustomerData;
 import com.servlet.vendor.entity.VendorDataForTemplate;
 
 import java.util.List;
 
 public class ReportTemplate {
     private List<VendorDataForTemplate> vendorOpt;
+    private List<ListCustomerData> customerOpt;
+    private List<CustomerGrup> customerGrupOpt;
+
+    public List<ListCustomerData> getCustomerOpt() {
+        return customerOpt;
+    }
+
+    public void setCustomerOpt(List<ListCustomerData> customerOpt) {
+        this.customerOpt = customerOpt;
+    }
+
+    public List<CustomerGrup> getCustomerGrupOpt() {
+        return customerGrupOpt;
+    }
+
+    public void setCustomerGrupOpt(List<CustomerGrup> customerGrupOpt) {
+        this.customerGrupOpt = customerGrupOpt;
+    }
 
     public List<VendorDataForTemplate> getVendorOpt() {
         return vendorOpt;
