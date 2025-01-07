@@ -113,5 +113,6 @@ public class ConstansPermission {
 	public static final String READ_REPORT_HUTANG = "READ_REPORT_HUTANG";
 	public static final String READ_REPORT_PIUTANG = "READ_REPORT_PIUTANG";
 	public static final String READ_REPORT_PENJUALAN = "READ_REPORT_PENJUALAN";
+	public static final String READ_REPORT_PELUNASAN_PIUTANG = "READ_REPORT_PELUNASAN_PIUTANG";
 	
 }

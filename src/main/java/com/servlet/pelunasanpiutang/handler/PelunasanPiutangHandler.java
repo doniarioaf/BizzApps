@@ -5,10 +5,7 @@ import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.invoice.mapper.QueryDataPelunasanPiutang;
 import com.servlet.invoice.service.InvoiceService;
 import com.servlet.pelunasanpiutang.entity.*;
-import com.servlet.pelunasanpiutang.mapper.QueryPelunasanPiutangDetail;
-import com.servlet.pelunasanpiutang.mapper.QueryPelunasanPiutangItemDetail;
-import com.servlet.pelunasanpiutang.mapper.QueryPelunasanPiutangItemNotJoin;
-import com.servlet.pelunasanpiutang.mapper.QueryPelunasanPiutangList;
+import com.servlet.pelunasanpiutang.mapper.*;
 import com.servlet.pelunasanpiutang.repo.PelunasanPiutangItemRepo;
 import com.servlet.pelunasanpiutang.repo.PelunasanPiutangRepo;
 import com.servlet.pelunasanpiutang.service.PelunasanPiutangService;
@@ -222,6 +219,25 @@ public class PelunasanPiutangHandler implements PelunasanPiutangService {
             return data;
         }
         return null;
+    }
+
+    @Override
+    public List<ReportPelunasanPiutang> getReportPelunasanPiutang(Long idcompany, Long idbranch, FilterParamPelunasanPiutang param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataReportPelunasanPiutang().schema());
+        sqlBuilder.append(" where pp.idcompany = ? and pp.idbranch = ? and pp.isdelete = false  ");
+        if(param.getFrom() != null){
+            Date dt = new Date(param.getFrom());
+            sqlBuilder.append(" and pp.date >= '"+dt.toString()+"'");
+        }
+        if(param.getTo() != null){
+            Date dt = new Date(param.getTo());
+            sqlBuilder.append(" and pp.date <= '"+dt.toString()+"'");
+        }
+        if(param.getListIdInvoice() != null && !param.getListIdInvoice().equals("")){
+            sqlBuilder.append(" and data.idinvoice in ("+param.getListIdInvoice()+") ");
+        }
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataReportPelunasanPiutang(), queryParameters);
     }
 
     private List<PelunasanPiutangItemDetail> getListItem(Long idpelunasanpiutang){

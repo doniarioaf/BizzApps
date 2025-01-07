@@ -185,6 +185,36 @@ public class ReportAPI {
     }
 
 
+    @GetMapping("/reportpelunasanpiutang")
+    ResponseEntity<Response> getReportPelunasanPiutang(@RequestParam("status") String status, @RequestParam("idcustomer") String idcustomer,@RequestParam("grups") String grups, @RequestParam("from") Long from,@RequestParam("to") Long to, HttpServletResponse response, @RequestHeader(ConstansKey.AUTH) String authorization) throws IOException{
+        ParamReportPelunasanPiutang body = new ParamReportPelunasanPiutang();
+        body.setFrom(from);
+        body.setTo(to);
+        body.setListidcustomer(idcustomer);
+        body.setListGroup(grups);
+        body.setStatus(status);
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "REPORTPELUNASANPIUTANG");
+        param.put("body", body);
+        Response response1 = securityService.response(ConstansPermission.READ_REPORT_PELUNASAN_PIUTANG,param,authorization);
+        if(response1.getHttpcode() == HttpStatus.OK.value()) {
+            XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+            export(response, workbook);
+
+            return ResponseEntity.ok().build();
+        }else{
+            return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
+        }
+
+    }
+
+    @GetMapping("/reportpelunasanpiutang/template")
+    ResponseEntity<Response> getReportPelunasanPiutangTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "REPORTPELUNASANPIUTANG_TEMPLATE");
+        Response response = securityService.response(ConstansPermission.READ_REPORT_PELUNASAN_PIUTANG,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
 
     private void export(HttpServletResponse response, XSSFWorkbook workbook) throws IOException {
         ServletOutputStream outputStream = response.getOutputStream();

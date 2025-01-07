@@ -12,4 +12,5 @@ public interface PelunasanPiutangService {
     ReturnData delete(Long id,Long idcompany, Long idbranch, Long iduser);
     List<PelunasanPiutangList> getPelunasanPiutangList(Long idcompany, Long idbranch, FilterParamPelunasanPiutang param);
     PelunasanPiutangDetail getDetail(Long id, Long idcompany, Long idbranch);
+    List<ReportPelunasanPiutang> getReportPelunasanPiutang(Long idcompany, Long idbranch, FilterParamPelunasanPiutang param);
 }

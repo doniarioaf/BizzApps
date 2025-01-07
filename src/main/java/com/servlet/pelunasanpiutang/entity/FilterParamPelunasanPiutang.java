@@ -6,6 +6,15 @@ public class FilterParamPelunasanPiutang {
     private String namaCust;
     private String status;//LUNAS,BELUMLUNAS,ALL
     private String customergrup;
+    private String listIdInvoice;
+
+    public String getListIdInvoice() {
+        return listIdInvoice;
+    }
+
+    public void setListIdInvoice(String listIdInvoice) {
+        this.listIdInvoice = listIdInvoice;
+    }
 
     public String getNamaCust() {
         return namaCust;
