@@ -5,10 +5,19 @@ import java.sql.Date;
 public class DepositList {
     private Long id;
     private Long idvendor;
+    private String nodocument;
     private String vendorName;
     private String vendorAlias;
     private Double amount;
     private Date depositdate;
+
+    public String getNodocument() {
+        return nodocument;
+    }
+
+    public void setNodocument(String nodocument) {
+        this.nodocument = nodocument;
+    }
 
     public String getVendorAlias() {
         return vendorAlias;

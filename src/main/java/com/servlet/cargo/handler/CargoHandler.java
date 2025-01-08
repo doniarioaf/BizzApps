@@ -8,7 +8,9 @@ import com.servlet.filedocument.entity.BodyFileDocument;
 import com.servlet.filedocument.entity.FileDocumentData;
 import com.servlet.filedocument.service.FileDocumentService;
 import com.servlet.historyapps.service.HistoryAppsService;
+import com.servlet.pelunasanhutang.entity.PelunasanHutangDataNotJoin;
 import com.servlet.pelunasanhutang.entity.ReportPelunasanHutangDocumentHutang;
+import com.servlet.pelunasanhutang.service.PelunasanHutangService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
@@ -39,6 +41,9 @@ public class CargoHandler implements CargoService {
 
     @Autowired
     private HistoryAppsService historyAppsService;
+
+    @Autowired
+    private PelunasanHutangService pelunasanHutangService;
 
     @Autowired
     private FileDocumentService fileDocumentService;
@@ -133,6 +138,11 @@ public class CargoHandler implements CargoService {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        List<PelunasanHutangDataNotJoin> list = pelunasanHutangService.getDataByIdCargo(idcompany,idbranch,id);
+        if(list != null && list.size() > 0){
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_PELUNASANHUTANG,"document ini terpasang pada pelunasan hutang ("+list.get(0).getNodocument()+")");
+            validations.add(msg);
+        }
         if(validations.size() == 0) {
             try{
                 Cargo table = repo.getById(id);

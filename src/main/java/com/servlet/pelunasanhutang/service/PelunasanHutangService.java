@@ -16,4 +16,6 @@ public interface PelunasanHutangService {
     ReturnData delete(Long id,Long idcompany, Long idbranch, Long iduser);
     List<PelunasanHutangReportStatusTagihanCargo> getListReportStatusTagihanCargo(Long idcompany, Long idbranch, FilterParamPelunasanHutang param);
     List<PelunasanHutangReportHutang> getListReportHutang(Long idcompany, Long idbranch, FilterParamPelunasanHutang param);
+    List<PelunasanHutangDataNotJoin> getDataByIdCargo(Long idcompany, Long idbranch,Long idcargo);
+    List<PelunasanHutangDataNotJoin> getDataByIdPr(Long idcompany, Long idbranch,Long idPr);
 }

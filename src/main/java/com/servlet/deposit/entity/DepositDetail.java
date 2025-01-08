@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 
 public class DepositDetail {
     private Long id;
+    private String nodocument;
     private Long idvendor;
     private String vendorName;
     private String vendorAlias;
@@ -14,6 +15,14 @@ public class DepositDetail {
     private Timestamp createddate;
     private String modifiedbyName;
     private Timestamp modifieddate;
+
+    public String getNodocument() {
+        return nodocument;
+    }
+
+    public void setNodocument(String nodocument) {
+        this.nodocument = nodocument;
+    }
 
     public Long getId() {
         return id;

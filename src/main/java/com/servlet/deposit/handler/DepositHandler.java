@@ -4,12 +4,15 @@ import com.servlet.deposit.entity.*;
 import com.servlet.deposit.mapper.QueryCalculateAmountDeposit;
 import com.servlet.deposit.mapper.QueryDetailData;
 import com.servlet.deposit.mapper.QueryListData;
+import com.servlet.deposit.mapper.QueryReportKartuDeposit;
 import com.servlet.deposit.repo.DepositRepo;
 import com.servlet.deposit.service.DepositService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.purchasereceive.entity.PurchaseReceiveDataList;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
+import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
+import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 import com.servlet.vendor.service.VendorService;
@@ -37,6 +40,10 @@ public class DepositHandler implements DepositService {
 
     @Autowired
     private HistoryAppsService historyAppsService;
+
+    @Autowired
+    private RunningNumberService runningNumberService;
+
     protected final String namaMenu = "Deposit";
 
     @Override
@@ -113,22 +120,31 @@ public class DepositHandler implements DepositService {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
-        try {
-            Deposit table = new Deposit();
-            table.setIdcompany(idcompany);
-            table.setIdbranch(idbranch);
-            table.setIdvendor(body.getIdvendor());
-            table.setAmount(body.getAmount());
-            table.setDepositdate(new Date(body.getDepositdate()));
-            table.setCreateddate(ts);
-            table.setCreatedby(iduser);
-            idsave = repo.saveAndFlush(table).getId();
-
-            String data = table.toString();
-            historyAppsService.saveHistory(idcompany,idbranch,iduser,"ADD",namaMenu,data,"","",ts);
-        }catch (Exception e) {
-            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+        String docNumber = runningNumberService.getDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_DEPOSIT, ts);
+        if(docNumber.equals("")) {
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_GENERATE_DOC_NUMBER,"Gagal Generate Document Number");
             validations.add(msg);
+        }
+        if(validations.size() == 0) {
+            try {
+                Deposit table = new Deposit();
+                table.setIdcompany(idcompany);
+                table.setIdbranch(idbranch);
+                table.setNodocument(docNumber);
+                table.setIdvendor(body.getIdvendor());
+                table.setAmount(body.getAmount());
+                table.setDepositdate(new Date(body.getDepositdate()));
+                table.setCreateddate(ts);
+                table.setCreatedby(iduser);
+                idsave = repo.saveAndFlush(table).getId();
+
+                String data = table.toString();
+                historyAppsService.saveHistory(idcompany, idbranch, iduser, "ADD", namaMenu, data, "", "", ts);
+            } catch (Exception e) {
+                runningNumberService.rollBackDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_DEPOSIT);
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
         }
         ReturnData data = new ReturnData();
         data.setId(idsave);
@@ -160,6 +176,7 @@ public class DepositHandler implements DepositService {
             }
             if(validations.size() == 0 && !table.isIsdelete()) {
                 String dataBefore = table.toString();
+                table.setDepositdate(new Date(body.getDepositdate()));
                 table.setAmount(body.getAmount());
                 table.setModifieddate(ts);
                 table.setModifiedby(iduser);
@@ -253,10 +270,50 @@ public class DepositHandler implements DepositService {
         return hasil;
     }
 
+    @Override
+    public Double calculateSaldoDepositByIdVendorAndBeforeDate(Long idcompany, Long idbranch, Long idvendor, Long date) {
+        double summaryDeposit = summaryCalculateSaldoDepositByIdVendorAndBeforeDate(idcompany,idbranch,idvendor,date).doubleValue();
+        double summarySetorPurchaseReceive =  purchaseReceiveService.calculateSetorByIdVendorAndDate(idcompany,idbranch,idvendor,date).doubleValue();
+        double hasil = summaryDeposit - summarySetorPurchaseReceive;
+        return hasil;
+    }
+
+    @Override
+    public List<ReportKartuDeposit> getListReportKartuDeposit(Long idcompany, Long idbranch, ParamList param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryReportKartuDeposit().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.isdelete = false  ");
+        if(param.getFrom() != null){
+            Date dt = new Date(param.getFrom());
+            sqlBuilder.append(" and data.depositdate >= '"+dt.toString()+"'");
+        }
+        if(param.getTo() != null){
+            Date dt = new Date(param.getTo());
+            sqlBuilder.append(" and data.depositdate <= '"+dt.toString()+"'");
+        }
+
+        if(param.getListIdVendor() != null && !param.getListIdVendor().equals("")){
+            sqlBuilder.append(" and data.idvendor in ("+param.getListIdVendor()+") ");
+        }
+        final Object[] queryParameters = new Object[] {idcompany};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryReportKartuDeposit(), queryParameters);
+    }
+
     private Double summaryCalculateSaldoDepositByIdVendorAndBeforeDateCreated(Long idcompany, Long idbranch, Long idvendor, Long date){
         Timestamp dt = new Timestamp(date);
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountDeposit().schema());
         sqlBuilder.append(" where data.idcompany = ? and data.idvendor = ?  and data.isdelete = false and data.createddate < '"+dt+"' ");
+        final Object[] queryParameters = new Object[] {idcompany,idvendor};
+        List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateAmountDeposit(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return 0.0;
+    }
+
+    private Double summaryCalculateSaldoDepositByIdVendorAndBeforeDate(Long idcompany, Long idbranch, Long idvendor, Long date){
+        Date dt = new Date(date);
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountDeposit().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idvendor = ?  and data.isdelete = false and data.depositdate < '"+dt+"' ");
         final Object[] queryParameters = new Object[] {idcompany,idvendor};
         List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateAmountDeposit(), queryParameters);
         if(list != null && list.size() > 0){

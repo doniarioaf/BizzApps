@@ -13,7 +13,7 @@ public class QueryListData implements RowMapper<DepositList> {
     public QueryListData() {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
-        sqlBuilder.append("data.id as id, data.idvendor as idvendor, data.amount as amount, data.depositdate as depositdate, ");
+        sqlBuilder.append("data.id as id,data.nodocument as nodocument, data.idvendor as idvendor, data.amount as amount, data.depositdate as depositdate, ");
         sqlBuilder.append("ven.nama as venNama, ven.alias as venAlias ");
         sqlBuilder.append("from deposit as data ");
         sqlBuilder.append("left join m_vendor as ven on data.idvendor = ven.id ");
@@ -33,6 +33,8 @@ public class QueryListData implements RowMapper<DepositList> {
         final String venAlias = rs.getString("venAlias");
         final Double amount = rs.getDouble("amount");
         final Date depositdate = rs.getDate("depositdate");
+        final String nodocument = rs.getString("nodocument");
+
 
         DepositList data = new DepositList();
         data.setId(id);
@@ -41,6 +43,7 @@ public class QueryListData implements RowMapper<DepositList> {
         data.setVendorAlias(venAlias);
         data.setAmount(amount);
         data.setDepositdate(depositdate);
+        data.setNodocument(nodocument);
         return data;
     }
 }

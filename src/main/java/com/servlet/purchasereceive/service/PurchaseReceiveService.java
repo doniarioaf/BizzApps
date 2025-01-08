@@ -1,5 +1,6 @@
 package com.servlet.purchasereceive.service;
 
+import com.servlet.deposit.entity.ReportKartuDeposit;
 import com.servlet.pelunasanhutang.entity.FilterParamPelunasanHutang;
 import com.servlet.pelunasanhutang.entity.ReportPelunasanHutangDocumentHutang;
 import com.servlet.purchasereceive.entity.*;
@@ -31,4 +32,6 @@ public interface PurchaseReceiveService {
     ReturnData updateOustandingKurang(Long id,Double bayar);
     List<PurchaseReceiveDataPelunasanHutang> getListForPelunasanHutang(Long idcompany, Long idbranch, FilterParamPelunasanHutang param);
     List<ReportPelunasanHutangDocumentHutang> getListPRReportHutang(Long idcompany, Long idbranch, FilterParamPurchaseReceive param);
+    Double calculateSetorByIdVendorAndDate(Long idcompany, Long idbranch, Long idvendor, Long date);
+    List<ReportKartuDeposit> getListPrReportKartuDeposit(Long idcompany, Long idbranch, FilterParamPurchaseReceive param);
 }

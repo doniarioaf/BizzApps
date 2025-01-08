@@ -15,6 +15,7 @@ public class Deposit implements Serializable {
     private Long id;
     private Long idcompany;
     private Long idbranch;
+    private String nodocument;
     private Long idvendor;
     private Double amount;
     private Date depositdate;
@@ -30,10 +31,19 @@ public class Deposit implements Serializable {
     public String toString() {
         return "Deposit{" +
                 "id=" + id +
+                ", nodocument=" + nodocument +
                 ", idvendor=" + idvendor +
                 ", amount=" + amount +
                 ", depositdate=" + depositdate +
                 '}';
+    }
+
+    public String getNodocument() {
+        return nodocument;
+    }
+
+    public void setNodocument(String nodocument) {
+        this.nodocument = nodocument;
     }
 
     public Long getId() {

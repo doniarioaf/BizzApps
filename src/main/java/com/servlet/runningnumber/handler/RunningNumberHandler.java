@@ -107,6 +107,7 @@ public class RunningNumberHandler implements RunningNumberService{
 		arr.add(ConstantCodeDocument.DOC_INVOICE);
 		arr.add(ConstantCodeDocument.DOC_PELUNASANHUTANG);
 		arr.add(ConstantCodeDocument.DOC_PELUNASANPIUTANG);
+		arr.add(ConstantCodeDocument.DOC_DEPOSIT);
 		List<RunningNumber> list = new ArrayList<>();
 		for(String code : arr){
 			RunningNumberPK pk = new RunningNumberPK();

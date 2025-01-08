@@ -6,6 +6,15 @@ public class FilterParamPurchaseReceive {
     private Long idvendor;
     private String status;
     private String orderBy;
+    private String listIdVendor;
+
+    public String getListIdVendor() {
+        return listIdVendor;
+    }
+
+    public void setListIdVendor(String listIdVendor) {
+        this.listIdVendor = listIdVendor;
+    }
 
     public String getOrderBy() {
         return orderBy;

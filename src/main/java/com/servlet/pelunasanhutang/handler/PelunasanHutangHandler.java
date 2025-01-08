@@ -267,6 +267,16 @@ public class PelunasanHutangHandler implements PelunasanHutangService {
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPelunasanHutangReportHutang(), queryParameters);
     }
 
+    @Override
+    public List<PelunasanHutangDataNotJoin> getDataByIdCargo(Long idcompany, Long idbranch, Long idcargo) {
+        return getListPembayaranHutangByIDCargo(idcompany,idbranch,idcargo);
+    }
+
+    @Override
+    public List<PelunasanHutangDataNotJoin> getDataByIdPr(Long idcompany, Long idbranch, Long idPr) {
+        return getListPembayaranHutangByIDPR(idcompany,idbranch,idPr);
+    }
+
     private List<PelunasanHutangDataNotJoin> getListPembayaranHutangByIDPR(Long idcompany, Long idbranch, Long idpurchasereceive) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPelunasanHutangDataNotJoin().schema());
         sqlBuilder.append(" where data.idpurchasereceive = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");

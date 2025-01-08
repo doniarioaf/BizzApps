@@ -1418,6 +1418,17 @@ public class ProcessHandler implements ProcessService{
 				}
 			}
 
+			else if(codepermission.equals(ConstansPermission.READ_REPORT_KARTUDEPOSIT)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("REPORTKARTUDEPOSIT")) {
+					ParamReportKartuDeposit body = (ParamReportKartuDeposit) param.get("body");
+					val.setData(reportService.reportKartuDeposit(auth.getIdcompany(), auth.getIdbranch(),body).getWorkbook());
+				}else if(type.equals("REPORTKARTUDEPOSIT_TEMPLATE")) {
+					val.setData(reportService.reportTemplateReportKartuDeposit(auth.getIdcompany(), auth.getIdbranch()));
+				}
+			}
+
 			else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {}
 				
 		}
