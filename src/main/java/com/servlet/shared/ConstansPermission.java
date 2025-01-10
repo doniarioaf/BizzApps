@@ -33,6 +33,8 @@ public class ConstansPermission {
 	public static final String READ_ADDRESS = "READ_ADDRESS";
 	public static final String CREATE_MAINTENANCE = "CREATE_MAINTENANCE";
 
+
+	//Menu
 	public static final String READ_PARAMETERCLIENT = "READ_PARAMETERCLIENT";
 	public static final String CREATE_PARAMETERCLIENT = "CREATE_PARAMETERCLIENT";
 	public static final String EDIT_PARAMETERCLIENT = "EDIT_PARAMETERCLIENT";
