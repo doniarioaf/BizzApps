@@ -612,8 +612,18 @@ public class ProcessHandler implements ProcessService{
 			}
 
 			else if(codepermission.equals(ConstansPermission.CREATE_DEPOSIT)) {
-				BodyDeposit param = (BodyDeposit) data;
-				ReturnData valReturn = depositService.save(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),param);
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				ReturnData valReturn = new ReturnData();
+				if(type.equals("CREATE")) {
+					BodyDeposit body = (BodyDeposit) param.get("body");
+					valReturn = depositService.save(auth.getIdcompany(), auth.getIdbranch(), auth.getId(), body);
+				}else if(type.equals("UPLOADFILE")) {
+					long id = (long) param.get("id");
+					MultipartFile file = (MultipartFile) param.get("body");
+					valReturn = depositService.uploadFileDoc(id,file,auth.getIdcompany(), auth.getIdbranch(), auth.getId());
+				}
+
 				if(valReturn.isSuccess()) {
 					val.setData(valReturn.getId());
 				}else {
@@ -1182,6 +1192,9 @@ public class ProcessHandler implements ProcessService{
 					val.setData(depositService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("TEMPLATE")) {
 					val.setData(depositService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DOWNLOADFILE")) {
+					long id = (long) param.get("id");
+					val.setData(depositService.downloadFile(id,auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_AREA)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
@@ -1260,7 +1273,7 @@ public class ProcessHandler implements ProcessService{
 					val.setData(priceService.getDataPriceByDate(auth.getIdcompany(), auth.getIdbranch(),pricedate));
 				}else if(type.equals("PRINTEXCEL")) {
 					long id = (long) param.get("id");
-					val.setData(reportService.getExcelPackingListByID(id,auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
+					val.setData(reportService.getExcelPackingListByID(id,auth.getIdcompany(), auth.getIdbranch(), auth.getId()).getWorkbook());
 				}
 			}
 
@@ -1286,7 +1299,7 @@ public class ProcessHandler implements ProcessService{
 					val.setData(invoiceService.catatDownload(id,auth.getIdcompany(), auth.getIdbranch(), auth.getId()));
 				}else if(type.equals("PRINTEXCEL")) {
 					long id = (long) param.get("id");
-					val.setData(reportService.getExcelInvoiceByID(id,auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
+					val.setData(reportService.getExcelInvoiceByID(id,auth.getIdcompany(), auth.getIdbranch(), auth.getId()).getWorkbook());
 				}
 			}
 			else if(codepermission.equals(ConstansPermission.READ_REPORT_STOCKUDANGHIDUPMATI)) {

@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 
@@ -50,7 +51,10 @@ public class DepositAPI {
 
     @PostMapping
     ResponseEntity<Response> createObject(@RequestBody @Validated BodyDeposit body, @RequestHeader(ConstansKey.AUTH) String authorization) {
-        Response response = securityService.response(ConstansPermission.CREATE_DEPOSIT,body,authorization);
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "CREATE");
+        param.put("body", body);
+        Response response = securityService.response(ConstansPermission.CREATE_DEPOSIT,param,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
@@ -66,6 +70,25 @@ public class DepositAPI {
     @DeleteMapping("{id}")
     ResponseEntity<Response> deleteObject(@PathVariable long id, @RequestHeader(ConstansKey.AUTH) String authorization) {
         Response response = securityService.response(ConstansPermission.DELETE_DEPOSIT,id,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @PostMapping("/file/{id}")
+    ResponseEntity<Response> uploadFile(@RequestParam("file") MultipartFile file, @PathVariable long id, @RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "UPLOADFILE");
+        param.put("body", file);
+        param.put("id", id);
+        Response response = securityService.response(ConstansPermission.CREATE_DEPOSIT,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @GetMapping("/downloadfile/{iddeposit}")
+    ResponseEntity<Response> getDownloadFile(@PathVariable long iddeposit,@RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "DOWNLOADFILE");
+        param.put("id", iddeposit);
+        Response response = securityService.response(ConstansPermission.READ_DEPOSIT,param,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 }

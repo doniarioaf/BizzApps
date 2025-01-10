@@ -10,11 +10,29 @@ public class DepositDetail {
     private String vendorName;
     private String vendorAlias;
     private Double amount;
+    private Long fileId;
+    private String fileName;
     private Date depositdate;
     private String createdbyName;
     private Timestamp createddate;
     private String modifiedbyName;
     private Timestamp modifieddate;
+
+    public Long getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(Long fileId) {
+        this.fileId = fileId;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
 
     public String getNodocument() {
         return nodocument;

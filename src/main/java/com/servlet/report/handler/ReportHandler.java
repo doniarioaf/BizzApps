@@ -15,6 +15,7 @@ import com.servlet.customer.service.CustomerService;
 import com.servlet.deposit.entity.ParamList;
 import com.servlet.deposit.entity.ReportKartuDeposit;
 import com.servlet.deposit.service.DepositService;
+import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.invoice.entity.InvoiceDataReportPelunasanPiutang;
 import com.servlet.invoice.entity.InvoiceDataReportPiutang;
 import com.servlet.invoice.entity.ParamSearchInvoice;
@@ -43,6 +44,8 @@ import com.servlet.stockadjusment.entity.ParamCalculateQtySA;
 import com.servlet.stockadjusment.service.StockAdjusmentService;
 import com.servlet.stockitems.entity.ParamCalculateQty;
 import com.servlet.stockitems.service.StockItemService;
+import com.servlet.user.entity.UserListData;
+import com.servlet.user.service.UserAppsService;
 import com.servlet.vendor.entity.ParamVendor;
 import com.servlet.vendor.entity.VendorDataForTemplate;
 import com.servlet.vendor.service.VendorService;
@@ -110,8 +113,14 @@ public class ReportHandler implements ReportService {
     @Autowired
     DepositService depositService;
 
+    @Autowired
+    HistoryAppsService historyAppsService;
+
+    @Autowired
+    UserAppsService userAppsService;
+
     @Override
-    public ReportWorkBookExcel getExcelPackingListByID(long id, long idcompany, long idbranch) {
+    public ReportWorkBookExcel getExcelPackingListByID(long id, long idcompany, long idbranch,long iduser) {
         ReportWorkBookExcel data = new ReportWorkBookExcel();
         XSSFWorkbook workbook = new XSSFWorkbook();
 
@@ -145,9 +154,27 @@ public class ReportHandler implements ReportService {
             fontBold.setFontHeight(fontHeight);
             styleBold.setFont(fontBold);
 
-            int rowcount = 2;
+            int rowcount = 0;
             Row row = sheet.createRow(rowcount);
 
+            Long countEdit = historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT","PackingList");
+            UserListData user = userAppsService.getUserByID(iduser);
+            String namaUser = "";
+            if (user != null) {
+                namaUser = user.getNama();
+            }
+
+            String transDate = "";
+            try {
+                transDate = GlobalFunc.getDateLongToString(new Date().getTime(), "dd MMMM yyyy HH:mm:ss");
+            } catch (ParseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            createCell(row, 6, "Edit : "+countEdit+", Dicetak Oleh : "+namaUser+", "+transDate, style, sheet,columns);
+
+            rowcount = 2;
+            row = sheet.createRow(rowcount);
 
             CellRangeAddress companyNameCellRangeAddress = new CellRangeAddress(2, 2, 0, 5);
             sheet.addMergedRegion(companyNameCellRangeAddress);
@@ -321,7 +348,7 @@ public class ReportHandler implements ReportService {
     }
 
     @Override
-    public ReportWorkBookExcel getExcelInvoiceByID(long id, long idcompany, long idbranch) {
+    public ReportWorkBookExcel getExcelInvoiceByID(long id, long idcompany, long idbranch, long iduser) {
         ReportWorkBookExcel data = new ReportWorkBookExcel();
         XSSFWorkbook workbook = new XSSFWorkbook();
 
@@ -356,8 +383,27 @@ public class ReportHandler implements ReportService {
             fontBold.setFontHeight(fontHeight);
             styleBold.setFont(fontBold);
 
-            int rowcount = 2;
+            int rowcount = 0;
             Row row = sheet.createRow(rowcount);
+
+            Long countEdit = historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT","Invoice");
+            UserListData user = userAppsService.getUserByID(iduser);
+            String namaUser = "";
+            if (user != null) {
+                namaUser = user.getNama();
+            }
+
+            String transDate = "";
+            try {
+                transDate = GlobalFunc.getDateLongToString(new Date().getTime(), "dd MMMM yyyy HH:mm:ss");
+            } catch (ParseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            createCell(row, 7, "Edit : "+countEdit+", Dicetak Oleh : "+namaUser+", "+transDate, style, sheet,columns);
+
+            rowcount = 2;
+            row = sheet.createRow(rowcount);
             createCell(row, 0, print.getCompanyName(), style, sheet,columns);
 
             rowcount++;
