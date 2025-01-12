@@ -1,7 +1,10 @@
 package com.servlet.cargo.entity;
 
+import com.servlet.filedocument.entity.FileDocumentDataList;
+
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.List;
 
 public class CargoDetail {
     private Long id;
@@ -18,27 +21,18 @@ public class CargoDetail {
     private Double ppn23amount;
     private Double netamount;
     private Double outstanding;
-    private Long fileId;
-    private String fileName;
+    private List<FileDocumentDataList> listDoc;
     private String createdbyName;
     private Timestamp createddate;
     private String modifiedbyName;
     private Timestamp modifieddate;
 
-    public Long getFileId() {
-        return fileId;
+    public List<FileDocumentDataList> getListDoc() {
+        return listDoc;
     }
 
-    public void setFileId(Long fileId) {
-        this.fileId = fileId;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public void setListDoc(List<FileDocumentDataList> listDoc) {
+        this.listDoc = listDoc;
     }
 
     public String getCreatedbyName() {

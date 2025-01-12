@@ -889,6 +889,9 @@ public class ProcessHandler implements ProcessService{
 					long id = (long) param.get("id");
 					MultipartFile file = (MultipartFile) param.get("body");
 					valReturn = cargoService.uploadFileDoc(id,file,auth.getIdcompany(), auth.getIdbranch(), auth.getId());
+				}else if(type.equals("DELETEFILE")) {
+					long id = (long) param.get("id");
+					valReturn = cargoService.deleteFile(id,auth.getIdcompany(), auth.getIdbranch(), auth.getId());
 				}
 				if(valReturn.isSuccess()) {
 					val.setData(valReturn.getId());

@@ -4,7 +4,9 @@ import com.servlet.cargo.mapper.QueryCargoList;
 import com.servlet.filedocument.entity.BodyFileDocument;
 import com.servlet.filedocument.entity.FileDocument;
 import com.servlet.filedocument.entity.FileDocumentData;
+import com.servlet.filedocument.entity.FileDocumentDataList;
 import com.servlet.filedocument.mapper.QueryData;
+import com.servlet.filedocument.mapper.QueryFileDocumentList;
 import com.servlet.filedocument.repo.FileDocumentRepo;
 import com.servlet.filedocument.service.FileDocumentService;
 import com.servlet.historyapps.service.HistoryAppsService;
@@ -121,6 +123,59 @@ public class FileDocumentHandler implements FileDocumentService {
         sqlBuilder.append(" where data.iddata = ? and data.menu = ? and data.idcompany = ? and data.idbranch = ? ");
 
         final Object[] queryParameters = new Object[] {iddata,menu,idcompany,idbranch};
+        List<FileDocumentData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryData(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return null;
+    }
+
+    @Override
+    public ReturnData uploadDocMany(Long idcompany, Long idbranch, Long iduser, Timestamp ts, BodyFileDocument body) {
+        return save(idcompany,idbranch,iduser,ts,body);
+    }
+
+    @Override
+    public List<FileDocumentDataList> getListDoc(Long iddata, String menu, Long idcompany, Long idbranch) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryFileDocumentList().schema());
+        sqlBuilder.append(" where data.iddata = ? and data.menu = ? and data.idcompany = ? and data.idbranch = ? ");
+
+        final Object[] queryParameters = new Object[] {iddata,menu,idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryFileDocumentList(), queryParameters);
+    }
+
+    @Override
+    public ReturnData deleteByIdDoc(Long iddoc, Long idcompany, Long idbranch, Long iduser,String menu) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp tsCurr = new Timestamp(new java.util.Date().getTime());
+        FileDocumentData file = getDetailByIdDoc(iddoc, menu, idcompany,idbranch);
+        if(validations.size() == 0 && file != null) {
+            try{
+                FileDocument table = repo.getById(file.getId());
+                String data = table.toString();
+                repo.deleteById(iddoc);
+                historyAppsService.saveHistory(idcompany,idbranch,iduser,"DELETE",namaMenu,data,"","",tsCurr);
+
+            }catch (Exception e) {
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
+
+        }
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public FileDocumentData getDetailByIdDoc(Long id, String menu, Long idcompany, Long idbranch) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryData().schema());
+        sqlBuilder.append(" where data.id = ? and data.menu = ? and data.idcompany = ? and data.idbranch = ? ");
+
+        final Object[] queryParameters = new Object[] {id,menu,idcompany,idbranch};
         List<FileDocumentData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryData(), queryParameters);
         if(list != null && list.size() > 0){
             return list.get(0);

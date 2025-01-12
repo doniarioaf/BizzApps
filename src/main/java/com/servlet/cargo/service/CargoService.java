@@ -16,7 +16,8 @@ public interface CargoService {
     ReturnData update(Long id,Long idcompany, Long idbranch, Long iduser, BodyCargo body);
     ReturnData delete(Long id,Long idcompany, Long idbranch, Long iduser);
     ReturnData uploadFileDoc(Long id, MultipartFile file, Long idcompany, Long idbranch, Long iduser);
-    FileDocumentData downloadFile(Long id,Long idcompany, Long idbranch);
+    FileDocumentData downloadFile(Long iddoc,Long idcompany, Long idbranch);
+    ReturnData deleteFile(Long iddoc,Long idcompany, Long idbranch,Long iduser);
 
     ReturnData updateOustandingTambah(Long id,Double bayar);
     ReturnData updateOustandingKurang(Long id,Double bayar);

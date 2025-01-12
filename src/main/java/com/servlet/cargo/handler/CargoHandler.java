@@ -84,11 +84,7 @@ public class CargoHandler implements CargoService {
         List<CargoDetail> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCargoDetail(), queryParameters);
         if(list != null && list.size() > 0){
             CargoDetail data = list.get(0);
-            FileDocumentData file  =fileDocumentService.getDetail(data.getId(),namaMenu,idcompany,idbranch);
-            if(file != null){
-                data.setFileId(file.getId());
-                data.setFileName(file.getFilename());
-            }
+            data.setListDoc(fileDocumentService.getListDoc(data.getId(), namaMenu,idcompany,idbranch));
             return data;
 
         }
@@ -239,7 +235,7 @@ public class CargoHandler implements CargoService {
                     bodyFileDocument.setFilename(fileName);
                     bodyFileDocument.setFiledocument(result);
                     bodyFileDocument.setFilecontenttype(contentType);
-                    ReturnData data = fileDocumentService.uploadDoc(idcompany,idbranch,iduser,ts,bodyFileDocument);
+                    ReturnData data = fileDocumentService.uploadDocMany(idcompany,idbranch,iduser,ts,bodyFileDocument);
                     idsave = data.getId();
                     if(data.getValidations().size() > 0){
                         validations.add(data.getValidations().get(0));
@@ -258,8 +254,13 @@ public class CargoHandler implements CargoService {
     }
 
     @Override
-    public FileDocumentData downloadFile(Long id, Long idcompany, Long idbranch) {
-        return fileDocumentService.getDetail(id,namaMenu,idcompany,idbranch);
+    public FileDocumentData downloadFile(Long iddoc, Long idcompany, Long idbranch) {
+        return fileDocumentService.getDetailByIdDoc(iddoc,namaMenu,idcompany,idbranch);
+    }
+
+    @Override
+    public ReturnData deleteFile(Long iddoc, Long idcompany, Long idbranch,Long iduser) {
+        return fileDocumentService.deleteByIdDoc(iddoc,idcompany,idbranch,iduser,namaMenu);
     }
 
     @Override

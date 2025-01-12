@@ -82,12 +82,21 @@ public class CargoAPI {
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
-    @GetMapping("/downloadfile/{idcargo}")
-    ResponseEntity<Response> getDownloadFile(@PathVariable long idcargo,@RequestHeader(ConstansKey.AUTH) String authorization) {
+    @GetMapping("/downloadfile/{iddoc}")
+    ResponseEntity<Response> getDownloadFile(@PathVariable long iddoc,@RequestHeader(ConstansKey.AUTH) String authorization) {
         HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("type", "DOWNLOADFILE");
-        param.put("id", idcargo);
+        param.put("id", iddoc);
         Response response = securityService.response(ConstansPermission.READ_CARGO,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @PostMapping("/deletefile/{iddoc}")
+    ResponseEntity<Response> deleteFile(@PathVariable long iddoc, @RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "DELETEFILE");
+        param.put("id", iddoc);
+        Response response = securityService.response(ConstansPermission.CREATE_CARGO,param,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 }
