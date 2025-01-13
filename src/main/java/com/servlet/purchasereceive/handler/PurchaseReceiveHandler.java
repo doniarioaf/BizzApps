@@ -736,6 +736,21 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPRReportKartuDeposit(), queryParameters);
     }
 
+    @Override
+    public PurchaseReceiveItemsNotJoin getItemInLastDocumentPR(Long idcompany, Long idbranch, Long idproduct, Long idcategoryproduct) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryItemsNotJoin().schema());
+        sqlBuilder.append(" where data.idproduct = ? and data.idcategoryproduct = ?  ");
+        sqlBuilder.append(" and data.idpurchasereceive in (select pr.id from purchasereceive as pr where pr.idcompany = "+idcompany+" and pr.idbranch = "+idbranch+" and pr.isdelete = false ) ");
+        sqlBuilder.append(" order by data.idpurchasereceive desc limit 1  ");
+
+        final Object[] queryParameters = new Object[] {idproduct,idcategoryproduct};
+        List<PurchaseReceiveItemsNotJoin> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryItemsNotJoin(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return null;
+    }
+
     private List<PrintDataPurchaseReceiveInventori> getPrintDataItemsInventori(Long idpurchasereceive){
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPrintDataPurchaseReceiveInventori().schema());
         sqlBuilder.append(" where data.idpurchasereceive = ?  ");

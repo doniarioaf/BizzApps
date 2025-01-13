@@ -34,4 +34,5 @@ public interface PurchaseReceiveService {
     List<ReportPelunasanHutangDocumentHutang> getListPRReportHutang(Long idcompany, Long idbranch, FilterParamPurchaseReceive param);
     Double calculateSetorByIdVendorAndDate(Long idcompany, Long idbranch, Long idvendor, Long date);
     List<ReportKartuDeposit> getListPrReportKartuDeposit(Long idcompany, Long idbranch, FilterParamPurchaseReceive param);
+    PurchaseReceiveItemsNotJoin getItemInLastDocumentPR(Long idcompany, Long idbranch, Long idproduct, Long idcategoryproduct);
 }

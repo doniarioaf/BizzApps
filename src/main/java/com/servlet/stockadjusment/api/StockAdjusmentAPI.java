@@ -40,19 +40,29 @@ public class StockAdjusmentAPI {
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
-    @GetMapping("/pricelist")
-    ResponseEntity<Response> getPriceList(@RequestParam("pricedate") Long pricedate, @RequestHeader(ConstansKey.AUTH) String authorization) {
-        HashMap<String, Object> param = new HashMap<String, Object>();
-        param.put("type", "PRICELIST");
-        param.put("pricedate", pricedate);
-        Response response = securityService.response(ConstansPermission.READ_STOCKADJUSMENT,param,authorization);
-        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
-    }
+//    @GetMapping("/pricelist")
+//    ResponseEntity<Response> getPriceList(@RequestParam("pricedate") Long pricedate, @RequestHeader(ConstansKey.AUTH) String authorization) {
+//        HashMap<String, Object> param = new HashMap<String, Object>();
+//        param.put("type", "PRICELIST");
+//        param.put("pricedate", pricedate);
+//        Response response = securityService.response(ConstansPermission.READ_STOCKADJUSMENT,param,authorization);
+//        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+//    }
 
     @GetMapping("/template")
     ResponseEntity<Response> getTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
         HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("type", "TEMPLATE");
+        Response response = securityService.response(ConstansPermission.READ_STOCKADJUSMENT,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @GetMapping("/getitems/{idproduct}/{idcategoryproduct}")
+    ResponseEntity<Response> getItemsLastDocumentPR(@PathVariable long idproduct,@PathVariable long idcategoryproduct,@RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "GETITEMS");
+        param.put("idproduct", idproduct);
+        param.put("idcategoryproduct", idcategoryproduct);
         Response response = securityService.response(ConstansPermission.READ_STOCKADJUSMENT,param,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }

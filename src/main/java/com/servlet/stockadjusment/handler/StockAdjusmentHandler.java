@@ -1,5 +1,6 @@
 package com.servlet.stockadjusment.handler;
 
+import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.mappingstock.entity.MappingStockCategoryID;
 import com.servlet.mappingstock.service.MappingStockService;
@@ -41,6 +42,8 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
     private MappingStockService mappingStockService;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private CategoryProductService categoryProductService;
 
     @Autowired
     private RunningNumberService runningNumberService;
@@ -185,6 +188,7 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
     public StockAdjusmentTemplate getTemplate(Long idcompany, Long idbranch) {
         StockAdjusmentTemplate data = new StockAdjusmentTemplate();
         data.setProductOpt(productService.getListAll(idcompany,idbranch));
+        data.setCategoryProductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,null));
         return data;
     }
 

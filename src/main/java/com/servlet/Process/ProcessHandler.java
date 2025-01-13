@@ -1248,9 +1248,15 @@ public class ProcessHandler implements ProcessService{
 					val.setData(stockAdjusmentService.getDetail(auth.getIdcompany(), auth.getIdbranch(),id));
 				}else if(type.equals("TEMPLATE")) {
 					val.setData(stockAdjusmentService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
-				}else if(type.equals("PRICELIST")) {
-					long pricedate = (long) param.get("pricedate");
-					val.setData(priceService.getDataPriceByDate(auth.getIdcompany(), auth.getIdbranch(),pricedate));
+				}
+//				else if(type.equals("PRICELIST")) {
+//					long pricedate = (long) param.get("pricedate");
+//					val.setData(priceService.getDataPriceByDate(auth.getIdcompany(), auth.getIdbranch(),pricedate));
+//				}
+				else if(type.equals("GETITEMS")) {
+					long idproduct = (long) param.get("idproduct");
+					long idcategoryproduct = (long) param.get("idcategoryproduct");
+					val.setData(purchaseReceiveService.getItemInLastDocumentPR(auth.getIdcompany(), auth.getIdbranch(),idproduct,idcategoryproduct));
 				}
 			}
 
