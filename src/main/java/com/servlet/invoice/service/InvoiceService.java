@@ -3,6 +3,7 @@ package com.servlet.invoice.service;
 import com.servlet.invoice.entity.*;
 import com.servlet.pelunasanpiutang.entity.FilterParamPelunasanPiutang;
 import com.servlet.shared.ReturnData;
+import com.servlet.stockitems.entity.ReportKartuStock;
 
 import java.util.List;
 
@@ -23,4 +24,5 @@ public interface InvoiceService {
     ReturnData catatDownload(Long id,Long idcompany, Long idbranch, Long iduser);
     List<InvoiceDataReportPiutang> getListInvoiceReportPiutang(Long idcompany, Long idbranch, ParamSearchInvoice param);
     List<InvoiceDataReportPelunasanPiutang> getListInvoiceReportPelunasanPiutang(Long idcompany, Long idbranch, ParamSearchInvoice param);
+    List<ReportKartuStock> getListInvoiceReportKartuStock(Long idcompany, Long idbranch, ParamSearchInvoice param);
 }

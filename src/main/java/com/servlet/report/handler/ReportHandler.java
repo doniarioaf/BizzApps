@@ -25,6 +25,7 @@ import com.servlet.mappingstock.entity.MappingStockList;
 import com.servlet.mappingstock.service.MappingStockService;
 import com.servlet.packinglist.entity.PackingListDataItemDetail;
 import com.servlet.packinglist.entity.ParamCalculateQtyPL;
+import com.servlet.packinglist.entity.ParamSearchPackingList;
 import com.servlet.packinglist.entity.PrintPackingList;
 import com.servlet.packinglist.service.PackingListService;
 import com.servlet.pelunasanhutang.entity.FilterParamPelunasanHutang;
@@ -35,6 +36,9 @@ import com.servlet.pelunasanhutang.service.PelunasanHutangService;
 import com.servlet.pelunasanpiutang.entity.FilterParamPelunasanPiutang;
 import com.servlet.pelunasanpiutang.entity.ReportPelunasanPiutang;
 import com.servlet.pelunasanpiutang.service.PelunasanPiutangService;
+import com.servlet.product.entity.ListProductData;
+import com.servlet.product.entity.ParamProduct;
+import com.servlet.product.service.ProductService;
 import com.servlet.purchasereceive.entity.*;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
 import com.servlet.report.entity.*;
@@ -43,6 +47,7 @@ import com.servlet.shared.GlobalFunc;
 import com.servlet.stockadjusment.entity.ParamCalculateQtySA;
 import com.servlet.stockadjusment.service.StockAdjusmentService;
 import com.servlet.stockitems.entity.ParamCalculateQty;
+import com.servlet.stockitems.entity.ReportKartuStock;
 import com.servlet.stockitems.service.StockItemService;
 import com.servlet.user.entity.UserListData;
 import com.servlet.user.service.UserAppsService;
@@ -118,6 +123,8 @@ public class ReportHandler implements ReportService {
 
     @Autowired
     UserAppsService userAppsService;
+    @Autowired
+    ProductService productService;
 
     @Override
     public ReportWorkBookExcel getExcelPackingListByID(long id, long idcompany, long idbranch,long iduser) {
@@ -3422,6 +3429,438 @@ public class ReportHandler implements ReportService {
         paramVendor.setVendorTypes("'UDANG'");
         ReportTemplate data = new ReportTemplate();
         data.setVendorOpt(vendorService.getListDropdown (idcompany,idbranch,paramVendor));
+        return data;
+    }
+
+    @Override
+    public ReportWorkBookExcel reportReportKartuStock(long idcompany, long idbranch, ParamReportKartuStock param) {
+        ReportWorkBookExcel data = new ReportWorkBookExcel();
+        XSSFWorkbook workbook = new XSSFWorkbook();
+
+        XSSFDataFormat format = workbook.createDataFormat();
+
+        XSSFSheet sheet = workbook.createSheet("Laporan Kartu Stock");
+        sheet.setDefaultColumnWidth(1000);
+        List<Integer> columns = getWidthColumns(15);
+
+        List<ListProductData> listPd = productService.getListAll(idcompany,idbranch);
+        String namaCabang = "";
+        Branch branch = branchService.getBranchByID(idbranch);
+        String idProducts = "";
+        if(branch != null){
+            namaCabang = branch.getNama();
+        }
+        String namaProduct = "";
+
+        if(param.getListIdProduct().equals("ALL")){
+            namaProduct = "All";
+        }else{
+            idProducts = param.getListIdProduct();
+        }
+        ParamProduct paramProduct = new ParamProduct();
+        paramProduct.setListIdProduct(idProducts);
+        List<ListProductData> listProd = productService.getListAll(idcompany,idbranch,paramProduct);
+        if(!param.getListIdProduct().equals("ALL")){
+            for(ListProductData prod : listProd){
+                if(namaProduct == ""){
+                    namaProduct = prod.getNama();
+                } else{
+                    namaProduct= namaProduct+","+prod.getNama();
+                }
+            }
+        }
+
+        int fontHeight = 12;
+        CellStyle style = workbook.createCellStyle();
+        CellStyle styleBold = workbook.createCellStyle();
+        CellStyle styleAmount = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setBold(false);
+        font.setFontHeight(fontHeight);
+        style.setFont(font);
+        styleAmount.setFont(font);
+
+        XSSFFont fontBold = workbook.createFont();
+        fontBold.setBold(true);
+        fontBold.setFontHeight(fontHeight);
+        styleBold.setFont(fontBold);
+
+        int rowcount = 2;
+        Row row = sheet.createRow(rowcount);
+        createCell(row, 0, "PT Sumber Berlian Samudra", style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Laporan Kartu Stock", style, sheet,columns);
+
+        String dateFrom = "";
+        try {
+            dateFrom = GlobalFunc.getDateLongToString(param.getFrom(), "dd-MMMM-yyyy");
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String dateThru = "";
+        try {
+            dateThru = GlobalFunc.getDateLongToString(param.getTo(), "dd-MMMM-yyyy");
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Periode", style, sheet,columns);
+        createCell(row, 1, dateFrom+" s/d "+dateThru, style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Product", style, sheet,columns);
+        createCell(row, 1, namaProduct, style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Cabang", style, sheet,columns);
+        createCell(row, 1, namaCabang, style, sheet,columns);
+
+
+        int colomcount = 0;
+        rowcount++;
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, colomcount, "Produk", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Ukuran", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Tanggal", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Qty", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Qty In", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Qty Out", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "No Document", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Keterangan", style, sheet,columns);
+
+        String listIdProduct = "";
+        if(!param.getListIdProduct().equals("ALL")){
+            listIdProduct = param.getListIdProduct();
+        }
+        ParamCalculateQtySA paramSA = new ParamCalculateQtySA();
+        paramSA.setDateFrom(param.getFrom());
+        paramSA.setDateThru(param.getTo());
+        paramSA.setListidproduct(listIdProduct);
+        List<ReportKartuStock> itemsSA = stockAdjusmentService.getListReportKartuStock(idcompany,idbranch,paramSA);
+
+        FilterParamPurchaseReceive paramPR = new FilterParamPurchaseReceive();
+        paramPR.setFrom(param.getFrom());
+        paramPR.setTo(param.getTo());
+        paramPR.setListIdProduct(listIdProduct);
+        List<ReportKartuStock> itemsPR = purchaseReceiveService.getListPrReportKartuStock(idcompany,idbranch,paramPR);
+
+        ParamSearchPackingList paramPL = new ParamSearchPackingList();
+        paramPL.setFrom(param.getFrom());
+        paramPL.setTo(param.getTo());
+        paramPL.setListIdProduct(listIdProduct);
+        List<ReportKartuStock> itemsPL = packingListService.getListReportKartuStock(idcompany,idbranch,paramPL);
+
+        List<ReportKartuStock> listItems = new ArrayList<>();
+        if(itemsSA != null && itemsSA.size() > 0){
+            listItems.addAll(itemsSA);
+        }
+        if(itemsPR != null && itemsPR.size() > 0){
+            listItems.addAll(itemsPR);
+        }
+        if(itemsPL != null && itemsPL.size() > 0){
+            listItems.addAll(itemsPL);
+        }
+        Collections.sort(listItems);
+
+        List<MappingStockList> listMapping = mappingStockService.getListAll(idcompany,idbranch);
+        HashMap<Long, Long> mapMapStock = new HashMap<>();
+        HashMap<Long, List<String>> mapMapStockByIDMapping = new HashMap<>();
+        for(MappingStockList val : listMapping){
+            mapMapStock.put(val.getCategoryproductid(), val.getCategoryproductidmapping());
+            List<String> tempList = new ArrayList<>();
+            if(mapMapStockByIDMapping.get(val.getCategoryproductidmapping()) != null){
+                tempList = new ArrayList<>();
+                tempList = mapMapStockByIDMapping.get(val.getCategoryproductidmapping());
+                tempList.add(Long.toString(val.getCategoryproductid()));
+                mapMapStockByIDMapping.put(val.getCategoryproductidmapping(), tempList);
+            }else{
+                tempList = new ArrayList<>();
+                tempList.add(Long.toString(val.getCategoryproductid()));
+                mapMapStockByIDMapping.put(val.getCategoryproductidmapping(), tempList);
+            }
+        }
+
+        HashMap<String, List<ReportKartuStock>> mapsGrupByIdProdAndCP = new HashMap<>();
+        if(listItems != null && listItems.size() > 0){
+            for(ReportKartuStock val : listItems){
+                    String key = val.getIdproduct()+"-"+ val.getIdcategoryproduct();
+                    Long idMapping = mapMapStock.get(val.getIdcategoryproduct());
+                    if(idMapping != null){
+                        key = val.getIdproduct()+"-"+ idMapping;
+                    }
+                    List<ReportKartuStock> tempList =  new ArrayList<>();
+                    if(mapsGrupByIdProdAndCP.get(key) != null){
+                        tempList = new ArrayList<>();
+                        tempList =  mapsGrupByIdProdAndCP.get(key);
+                        tempList.add(val);
+                        mapsGrupByIdProdAndCP.put(key,tempList);
+                    }else{
+                        tempList = new ArrayList<>();
+                        tempList.add(val);
+                        mapsGrupByIdProdAndCP.put(key,tempList);
+                    }
+
+            }
+        }
+        Long dateMinus1 = 0L;
+        try {
+            dateMinus1 = GlobalFunc.addDays(param.getFrom(),-1);
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        //56169461 = 01-Jan-70
+        Long satuJan70 = 56169461L;
+        List<CategoryProductList> listCP = categoryProductService.getListAll(idcompany,idbranch);
+        if(listProd != null && listProd.size() > 0){
+            for(ListProductData val : listProd){
+
+                for(CategoryProductList valCp : listCP){
+                    String namaProduk = val.getNama();
+                    String key = val.getId()+"-"+ valCp.getId();
+                    String size = valCp.getSize();
+                    List<ReportKartuStock> tempList = mapsGrupByIdProdAndCP.get(key);
+                    if(tempList != null){
+                        for(ReportKartuStock valKS : tempList){
+
+                            //Stock Awal (From)
+                            if(!namaProduk.equals("")){
+                                List<String> listIdCPMapping = mapMapStockByIDMapping.get(valCp.getId());
+                                String idcategorys = "";
+                                if(listIdCPMapping != null){
+                                    idcategorys = listIdCPMapping.toString().replaceAll("\\[","");
+                                    idcategorys = idcategorys.replaceAll("\\]","");
+                                }
+
+                                ParamCalculateQtyPR paramCalcPR = new ParamCalculateQtyPR();
+                                paramCalcPR.setDateFrom(satuJan70);
+                                paramCalcPR.setDateThru(dateMinus1);
+                                if(listIdCPMapping != null){
+                                    paramCalcPR.setListidcategoryproduct(idcategorys);
+                                }else{
+                                    paramCalcPR.setIdcategoryproduct(valKS.getIdcategoryproduct());
+                                }
+
+
+                                ParamCalculateQtySA paramCalcSA = new ParamCalculateQtySA();
+                                paramCalcSA.setDateFrom(satuJan70);
+                                paramCalcSA.setDateThru(dateMinus1);
+                                if(listIdCPMapping != null){
+                                    paramCalcSA.setListidcategoryproduct(idcategorys);
+                                }else{
+                                    paramCalcSA.setIdcategoryproduct(valKS.getIdcategoryproduct());
+                                }
+
+                                ParamCalculateQtyPL paramCalcPL = new ParamCalculateQtyPL();
+                                paramCalcPL.setDateFrom(satuJan70);
+                                paramCalcPL.setDateThru(dateMinus1);
+                                if(listIdCPMapping != null){
+                                    paramCalcPL.setListidcategoryproduct(idcategorys);
+                                }else{
+                                    paramCalcPL.setIdcategoryproduct(valKS.getIdcategoryproduct());
+                                }
+
+                                ParamCalculateQty paramQty = new ParamCalculateQty();
+                                paramQty.setParamCalculateQtyPR(paramCalcPR);
+                                paramQty.setParamCalculateQtySA(paramCalcSA);
+                                paramQty.setParamCalculateQtyPL(paramCalcPL);
+
+                                Long stockMinus1DateFrom = stockItemService.calculateQty(idcompany,idbranch,paramQty);
+
+                                colomcount = 0;
+                                rowcount++;
+                                row = sheet.createRow(rowcount);
+                                createCell(row, colomcount, namaProduk, style, sheet,columns);
+
+                                colomcount++;
+                                createCell(row, colomcount, size, style, sheet,columns);
+
+                                String tanggal = "";
+                                try {
+                                    tanggal = GlobalFunc.getDateLongToString(param.getFrom(), "dd-MMMM-yyyy");
+                                } catch (ParseException e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                }
+                                colomcount++;
+                                createCell(row, colomcount, tanggal, style, sheet,columns);
+
+                                colomcount++;
+                                createCell(row, colomcount, stockMinus1DateFrom, style, sheet,columns);
+
+                                String qtyIn = "";
+                                String qtyOut = "";
+                                colomcount++;
+                                createCell(row, colomcount, qtyIn, style, sheet,columns);
+
+                                colomcount++;
+                                createCell(row, colomcount, qtyOut, style, sheet,columns);
+
+                                colomcount++;
+                                createCell(row, colomcount, "", style, sheet,columns);
+
+                                colomcount++;
+                                createCell(row, colomcount, "", style, sheet,columns);
+
+                                namaProduk = "";
+                                size = "";
+                            }
+
+                            colomcount = 0;
+                            rowcount++;
+                            row = sheet.createRow(rowcount);
+                            createCell(row, colomcount, namaProduk, style, sheet,columns);
+
+                            colomcount++;
+                            createCell(row, colomcount, size, style, sheet,columns);
+
+                            String tanggal = "";
+                            try {
+                                tanggal = GlobalFunc.getDateLongToString(valKS.getDate().getTime(), "dd-MMMM-yyyy");
+                            } catch (ParseException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                            colomcount++;
+                            createCell(row, colomcount, tanggal, style, sheet,columns);
+
+                            colomcount++;
+                            createCell(row, colomcount, "", style, sheet,columns);
+
+                            String qtyIn = "";
+                            String qtyOut = "";
+                            if(valKS.getType().equals("PACKINGLIST") || valKS.getType().equals("SA_M")){
+                                qtyOut = valKS.getQty().toString();
+                            }else if(valKS.getType().equals("SA_H") || valKS.getType().equals("PR")){
+                                qtyIn = valKS.getQty().toString();
+                            }
+                            colomcount++;
+                            createCell(row, colomcount, qtyIn, style, sheet,columns);
+
+                            colomcount++;
+                            createCell(row, colomcount, qtyOut, style, sheet,columns);
+
+                            colomcount++;
+                            createCell(row, colomcount, valKS.getNodocument(), style, sheet,columns);
+
+                            colomcount++;
+                            createCell(row, colomcount, valKS.getKeterangan(), style, sheet,columns);
+                        }
+
+                        //Stock Akhir (Thru)
+                            List<String> listIdCPMapping = mapMapStockByIDMapping.get(valCp.getId());
+                            String idcategorys = "";
+                            if(listIdCPMapping != null){
+                                idcategorys = listIdCPMapping.toString().replaceAll("\\[","");
+                                idcategorys = idcategorys.replaceAll("\\]","");
+                            }
+                            ParamCalculateQtyPR paramCalcPR = new ParamCalculateQtyPR();
+                            paramCalcPR.setDateFrom(satuJan70);
+                            paramCalcPR.setDateThru(param.getTo());
+                            if(listIdCPMapping != null){
+                                paramCalcPR.setListidcategoryproduct(idcategorys);
+                            }else{
+                                paramCalcPR.setIdcategoryproduct(valCp.getId());
+                            }
+
+                            ParamCalculateQtySA paramCalcSA = new ParamCalculateQtySA();
+                            paramCalcSA.setDateFrom(satuJan70);
+                            paramCalcSA.setDateThru(param.getTo());
+                            if(listIdCPMapping != null){
+                                paramCalcSA.setListidcategoryproduct(idcategorys);
+                            }else{
+                                paramCalcSA.setIdcategoryproduct(valCp.getId());
+                            }
+
+                            ParamCalculateQtyPL paramCalcPL = new ParamCalculateQtyPL();
+                            paramCalcPL.setDateFrom(satuJan70);
+                            paramCalcPL.setDateThru(param.getTo());
+                            if(listIdCPMapping != null){
+                                paramCalcPL.setListidcategoryproduct(idcategorys);
+                            }else{
+                                paramCalcPL.setIdcategoryproduct(valCp.getId());
+                            }
+
+                            ParamCalculateQty paramQty = new ParamCalculateQty();
+                            paramQty.setParamCalculateQtyPR(paramCalcPR);
+                            paramQty.setParamCalculateQtySA(paramCalcSA);
+                            paramQty.setParamCalculateQtyPL(paramCalcPL);
+                            Long stockThru = stockItemService.calculateQty(idcompany,idbranch,paramQty);
+
+                            colomcount = 0;
+                            rowcount++;
+                            row = sheet.createRow(rowcount);
+                            createCell(row, colomcount, namaProduk, style, sheet,columns);
+
+                            colomcount++;
+                            createCell(row, colomcount, size, style, sheet,columns);
+
+                            String tanggal = "";
+                            try {
+                                tanggal = GlobalFunc.getDateLongToString(param.getTo(), "dd-MMMM-yyyy");
+                            } catch (ParseException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                            colomcount++;
+                            createCell(row, colomcount, tanggal, style, sheet,columns);
+
+                            colomcount++;
+                            createCell(row, colomcount, stockThru, style, sheet,columns);
+
+                            String qtyIn = "";
+                            String qtyOut = "";
+                            colomcount++;
+                            createCell(row, colomcount, qtyIn, style, sheet,columns);
+
+                            colomcount++;
+                            createCell(row, colomcount, qtyOut, style, sheet,columns);
+
+                            colomcount++;
+                            createCell(row, colomcount, "", style, sheet,columns);
+
+                            colomcount++;
+                            createCell(row, colomcount, "", style, sheet,columns);
+
+                            rowcount++;
+
+
+                    }
+                }
+            }
+        }
+        data.setWorkbook(workbook);
+        return data;
+    }
+
+    @Override
+    public ReportTemplate reportTemplateReportKartuStock(long idcompany, long idbranch) {
+        ReportTemplate data = new ReportTemplate();
+        data.setProductOpt(productService.getListAll(idcompany,idbranch));
         return data;
     }
 

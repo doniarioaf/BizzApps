@@ -246,6 +246,35 @@ public class ReportAPI {
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
+    @GetMapping("/reportkartustock")
+    ResponseEntity<Response> getReportKartuStock( @RequestParam("idproducts") String idproducts, @RequestParam("from") Long from,@RequestParam("to") Long to, HttpServletResponse response, @RequestHeader(ConstansKey.AUTH) String authorization) throws IOException{
+        ParamReportKartuStock body = new ParamReportKartuStock();
+        body.setFrom(from);
+        body.setTo(to);
+        body.setListIdProduct(idproducts);
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "REPORTKARTUSTOCK");
+        param.put("body", body);
+        Response response1 = securityService.response(ConstansPermission.READ_REPORT_KARTUSTOCK,param,authorization);
+        if(response1.getHttpcode() == HttpStatus.OK.value()) {
+            XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+            export(response, workbook);
+
+            return ResponseEntity.ok().build();
+        }else{
+            return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
+        }
+
+    }
+
+    @GetMapping("/reportkartustock/template")
+    ResponseEntity<Response> getReportKartuStockTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "REPORTKARTUSTOCK_TEMPLATE");
+        Response response = securityService.response(ConstansPermission.READ_REPORT_KARTUSTOCK,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
     private void export(HttpServletResponse response, XSSFWorkbook workbook) throws IOException {
         ServletOutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);

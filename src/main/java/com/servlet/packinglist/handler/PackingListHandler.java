@@ -25,6 +25,7 @@ import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.stockitems.entity.ReportKartuStock;
 import com.servlet.stockitems.service.StockItemService;
 import com.servlet.user.entity.UserListData;
 import com.servlet.user.service.UserAppsService;
@@ -336,9 +337,15 @@ public class PackingListHandler implements PackingListService {
             selectidPr += " and pr.date <= '"+dt.toString()+"' ";
         }
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateQtyPL().schema());
-        sqlBuilder.append(" where data.idcategoryproduct = ? and data.idpackinglist in ("+selectidPr+") ");
+        sqlBuilder.append(" where data.idpackinglist in ("+selectidPr+") ");
+        if(param.getIdcategoryproduct() != null){
+            sqlBuilder.append(" and data.idcategoryproduct = "+param.getIdcategoryproduct()+" ");
+        }
+        if(param.getListidcategoryproduct() != null && !param.getListidcategoryproduct().equals("")){
+            sqlBuilder.append(" and data.idcategoryproduct in ("+param.getListidcategoryproduct()+") ");
+        }
 
-        final Object[] queryParameters = new Object[] {param.getIdcategoryproduct()};
+        final Object[] queryParameters = new Object[] {};
         List<Long> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateQtyPL(), queryParameters);
         if(list != null && list.size() > 0){
             return list.get(0);
@@ -364,6 +371,28 @@ public class PackingListHandler implements PackingListService {
         data.setSuccess(validations.size() > 0?false:true);
         data.setValidations(validations);
         return data;
+    }
+
+    @Override
+    public List<ReportKartuStock> getListReportKartuStock(Long idcompany, Long idbranch, ParamSearchPackingList param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPackingListReportKartuStock().schema());
+        sqlBuilder.append(" where pl.idcompany = ? and pl.idbranch = ? and pl.isdelete = false  ");
+        if(param.getFrom() != null){
+            Date dt = new Date(param.getFrom());
+            sqlBuilder.append(" and pl.date >= '"+dt.toString()+"'");
+        }
+        if(param.getTo() != null){
+            Date dt = new Date(param.getTo());
+            sqlBuilder.append(" and pl.date <= '"+dt.toString()+"'");
+        }
+        if(param.getListIdProduct() != null && !param.getListIdProduct().equals("")){
+            sqlBuilder.append(" and data.idproduct in ("+param.getListIdProduct()+") ");
+        }
+        if(param.getListIdCategoryProduct() != null && !param.getListIdCategoryProduct().equals("")){
+            sqlBuilder.append(" and data.idcategoryproduct in ("+param.getListIdCategoryProduct()+") ");
+        }
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPackingListReportKartuStock(), queryParameters);
     }
 
     private HashMap<Object,Object> tambahStockItems(Long idcompany, Long idbranch, Long idpackinglist){

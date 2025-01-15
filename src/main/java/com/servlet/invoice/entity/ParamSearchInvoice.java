@@ -6,6 +6,24 @@ public class ParamSearchInvoice {
     private Long idcustomer;
     private String listGroup;
     private String status;
+    private String listIdProduct;
+    private String listIdCategoryProduct;
+
+    public String getListIdProduct() {
+        return listIdProduct;
+    }
+
+    public void setListIdProduct(String listIdProduct) {
+        this.listIdProduct = listIdProduct;
+    }
+
+    public String getListIdCategoryProduct() {
+        return listIdCategoryProduct;
+    }
+
+    public void setListIdCategoryProduct(String listIdCategoryProduct) {
+        this.listIdCategoryProduct = listIdCategoryProduct;
+    }
 
     public Long getIdcustomer() {
         return idcustomer;

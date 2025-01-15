@@ -16,6 +16,7 @@ import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.stockitems.entity.ReportKartuStock;
 import com.servlet.user.entity.UserListData;
 import com.servlet.user.service.UserAppsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -421,6 +422,28 @@ public class InvoiceHandler implements InvoiceService {
         sqlBuilder.append(" order by cust.grupcode, data.date ");
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryInvoiceReportPelunasanPiutang(), queryParameters);
+    }
+
+    @Override
+    public List<ReportKartuStock> getListInvoiceReportKartuStock(Long idcompany, Long idbranch, ParamSearchInvoice param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryInvoiceReportKartuStock().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        if(param.getFrom() != null){
+            Date dt = new Date(param.getFrom());
+            sqlBuilder.append(" and data.date >= '"+dt.toString()+"'");
+        }
+        if(param.getTo() != null){
+            Date dt = new Date(param.getTo());
+            sqlBuilder.append(" and data.date <= '"+dt.toString()+"'");
+        }
+        if(param.getListIdProduct() != null && !param.getListIdProduct().equals("")){
+            sqlBuilder.append(" and pli.idproduct in ("+param.getListIdProduct()+") ");
+        }
+        if(param.getListIdCategoryProduct() != null && !param.getListIdCategoryProduct().equals("")){
+            sqlBuilder.append(" and pli.idcategoryproduct in ("+param.getListIdCategoryProduct()+") ");
+        }
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryInvoiceReportKartuStock(), queryParameters);
     }
 
 }

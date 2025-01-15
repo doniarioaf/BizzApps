@@ -5,6 +5,15 @@ public class ParamCalculateQtyPR {
     private Long dateFrom;
     private Long dateThru;
     private Long idvendor;
+    private String listidcategoryproduct;
+
+    public String getListidcategoryproduct() {
+        return listidcategoryproduct;
+    }
+
+    public void setListidcategoryproduct(String listidcategoryproduct) {
+        this.listidcategoryproduct = listidcategoryproduct;
+    }
 
     public Long getIdvendor() {
         return idvendor;

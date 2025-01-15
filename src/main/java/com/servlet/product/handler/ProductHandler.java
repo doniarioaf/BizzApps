@@ -1,9 +1,6 @@
 package com.servlet.product.handler;
 
-import com.servlet.product.entity.BodyProduct;
-import com.servlet.product.entity.ListProductData;
-import com.servlet.product.entity.Product;
-import com.servlet.product.entity.ProductDataDetail;
+import com.servlet.product.entity.*;
 import com.servlet.product.mapper.QueryProductDetail;
 import com.servlet.product.mapper.QueryProductList;
 import com.servlet.product.repo.ProductRepo;
@@ -126,5 +123,16 @@ public class ProductHandler implements ProductService {
         data.setSuccess(validations.size() > 0?false:true);
         data.setValidations(validations);
         return data;
+    }
+
+    @Override
+    public List<ListProductData> getListAll(Long idcompany, Long idbranch, ParamProduct param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryProductList().schema());
+        sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false ");
+        if(param.getListIdProduct() != null && !param.getListIdProduct().equals("")){
+            sqlBuilder.append(" and data.id in ("+param.getListIdProduct()+") ");
+        }
+        final Object[] queryParameters = new Object[] {idcompany};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryProductList(), queryParameters);
     }
 }

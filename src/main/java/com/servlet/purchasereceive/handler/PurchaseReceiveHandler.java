@@ -34,6 +34,7 @@ import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.stockitems.entity.ReportKartuStock;
 import com.servlet.stockitems.service.StockItemService;
 import com.servlet.user.entity.UserListData;
 import com.servlet.user.service.UserAppsService;
@@ -606,9 +607,14 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             selectidPr += " and pr.idvendor = "+param.getIdvendor()+" ";
         }
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateQty().schema());
-        sqlBuilder.append(" where data.idcategoryproduct = ? and data.type = 'H' and data.idpurchasereceive in ("+selectidPr+") ");
-
-        final Object[] queryParameters = new Object[] {param.getIdcategoryproduct()};
+        sqlBuilder.append(" where data.type = 'H' and data.idpurchasereceive in ("+selectidPr+") ");
+        if(param.getIdcategoryproduct() != null){
+            sqlBuilder.append(" and data.idcategoryproduct = "+param.getIdcategoryproduct()+"  ");
+        }
+        if(param.getListidcategoryproduct() != null && !param.getListidcategoryproduct().equals("")){
+            sqlBuilder.append(" and data.idcategoryproduct in ("+param.getListidcategoryproduct()+") ");
+        }
+        final Object[] queryParameters = new Object[] {};
         List<Long> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateQty(), queryParameters);
         if(list != null && list.size() > 0){
             return list.get(0);
@@ -749,6 +755,30 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             return list.get(0);
         }
         return null;
+    }
+
+    @Override
+    public List<ReportKartuStock> getListPrReportKartuStock(Long idcompany, Long idbranch, FilterParamPurchaseReceive param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPRReportKartuStock().schema());
+        sqlBuilder.append(" where pr.idcompany = ? and pr.idbranch = ? and pr.isdelete = false  ");
+        if(param.getFrom() != null){
+            Date dt = new Date(param.getFrom());
+            sqlBuilder.append(" and pr.transactiondate >= '"+dt.toString()+"'");
+        }
+        if(param.getTo() != null){
+            Date dt = new Date(param.getTo());
+            sqlBuilder.append(" and pr.transactiondate <= '"+dt.toString()+"'");
+        }
+
+        if(param.getListIdProduct() != null && !param.getListIdProduct().equals("")){
+            sqlBuilder.append(" and data.idproduct in ("+param.getListIdProduct()+") ");
+        }
+        if(param.getListIdCategoryProduct() != null && !param.getListIdCategoryProduct().equals("")){
+            sqlBuilder.append(" and data.idcategoryproduct in ("+param.getListIdCategoryProduct()+") ");
+        }
+
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPRReportKartuStock(), queryParameters);
     }
 
     private List<PrintDataPurchaseReceiveInventori> getPrintDataItemsInventori(Long idpurchasereceive){

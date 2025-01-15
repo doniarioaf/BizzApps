@@ -7,6 +7,24 @@ public class FilterParamPurchaseReceive {
     private String status;
     private String orderBy;
     private String listIdVendor;
+    private String listIdProduct;
+    private String listIdCategoryProduct;
+
+    public String getListIdProduct() {
+        return listIdProduct;
+    }
+
+    public void setListIdProduct(String listIdProduct) {
+        this.listIdProduct = listIdProduct;
+    }
+
+    public String getListIdCategoryProduct() {
+        return listIdCategoryProduct;
+    }
+
+    public void setListIdCategoryProduct(String listIdCategoryProduct) {
+        this.listIdCategoryProduct = listIdCategoryProduct;
+    }
 
     public String getListIdVendor() {
         return listIdVendor;

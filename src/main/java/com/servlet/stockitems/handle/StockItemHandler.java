@@ -106,12 +106,17 @@ public class StockItemHandler implements StockItemService {
     @Override
     public Long calculateQty(Long idcompany, Long idbranch, ParamCalculateQty param) {
         Long qtyMasuk1 = purchaseReceiveService.calculateQtyPr(idcompany,idbranch, param.getParamCalculateQtyPR());
+//        System.out.println("qtyMasuk1 "+qtyMasuk1);
         //Type udah hidup
         Long qtyMasuk2 = stockAdjusmentService.calculateQtySA(idcompany,idbranch,"H", param.getParamCalculateQtySA());
+//        System.out.println("qtyMasuk2 "+qtyMasuk2);
         Long qtyKeluar1 = packingListService.calculateQtyPL(idcompany,idbranch, param.getParamCalculateQtyPL());
+//        System.out.println("qtyKeluar1 "+qtyKeluar1);
         //Type udah hidup
         Long qtyKeluar2 = stockAdjusmentService.calculateQtySA(idcompany,idbranch,"M", param.getParamCalculateQtySA());
-        Long hasil = (qtyMasuk1.longValue() + qtyMasuk2.longValue()) - (qtyKeluar1.longValue() - qtyKeluar2.longValue());
+//        System.out.println("qtyKeluar2 "+qtyKeluar2);
+
+        Long hasil = (qtyMasuk1.longValue() + qtyMasuk2.longValue()) - (qtyKeluar1.longValue() + qtyKeluar2.longValue());
         return hasil;
     }
 }

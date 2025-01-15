@@ -20,4 +20,6 @@ public interface ReportService {
     ReportWorkBookExcel reportPelunasanPiutang(long idcompany, long idbranch, ParamReportPelunasanPiutang param);
     ReportWorkBookExcel reportKartuDeposit(long idcompany, long idbranch, ParamReportKartuDeposit param);
     ReportTemplate reportTemplateReportKartuDeposit(long idcompany, long idbranch);
+    ReportWorkBookExcel reportReportKartuStock(long idcompany, long idbranch, ParamReportKartuStock param);
+    ReportTemplate reportTemplateReportKartuStock(long idcompany, long idbranch);
 }

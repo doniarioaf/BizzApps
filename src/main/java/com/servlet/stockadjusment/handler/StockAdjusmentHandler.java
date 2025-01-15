@@ -4,9 +4,7 @@ import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.mappingstock.entity.MappingStockCategoryID;
 import com.servlet.mappingstock.service.MappingStockService;
-import com.servlet.packinglist.mapper.QueryCalculateQtyPL;
 import com.servlet.product.service.ProductService;
-import com.servlet.purchasereceive.entity.PurchaseReceiveItemsNotJoin;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
@@ -17,6 +15,7 @@ import com.servlet.stockadjusment.mapper.*;
 import com.servlet.stockadjusment.repo.StockAdjusmentItemRepo;
 import com.servlet.stockadjusment.repo.StockAdjusmentRepo;
 import com.servlet.stockadjusment.service.StockAdjusmentService;
+import com.servlet.stockitems.entity.ReportKartuStock;
 import com.servlet.stockitems.service.StockItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -221,14 +220,51 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
         selectidPr += " and pr.type = '"+type+"' ";
 
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateQtySA().schema());
-        sqlBuilder.append(" where data.idcategoryproduct = ? and data.idstockadjusment in ("+selectidPr+") ");
+        sqlBuilder.append(" where data.idstockadjusment in ("+selectidPr+") ");
 
-        final Object[] queryParameters = new Object[] {param.getIdcategoryproduct()};
+        if(param.getIdcategoryproduct() != null){
+            sqlBuilder.append(" and data.idcategoryproduct = "+param.getIdcategoryproduct()+" ");
+        }
+
+        if(param.getListidcategoryproduct() != null && !param.getListidcategoryproduct().equals("")){
+            sqlBuilder.append(" and data.idcategoryproduct in ("+param.getListidcategoryproduct()+") ");
+        }
+
+        final Object[] queryParameters = new Object[] {};
         List<Long> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateQtySA(), queryParameters);
         if(list != null && list.size() > 0){
             return list.get(0);
         }
         return 0L;
+    }
+
+    @Override
+    public List<ReportKartuStock> getListReportKartuStock(Long idcompany, Long idbranch, ParamCalculateQtySA param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryStockAdjusmentReportKartuStock().schema());
+        sqlBuilder.append(" where sa.idcompany = ? and sa.idbranch = ? and sa.isdelete = false  ");
+        if(param != null){
+            if(param.getDateFrom() != null){
+                Date dt = new Date(param.getDateFrom());
+                sqlBuilder.append(" and sa.date >= '"+dt.toString()+"'");
+            }
+            if(param.getDateThru() != null){
+                Date dt = new Date(param.getDateThru());
+                sqlBuilder.append(" and sa.date <= '"+dt.toString()+"'");
+            }
+            if(param.getType() != null){
+                sqlBuilder.append(" and sa.type = '"+param.getType()+"' ");
+            }
+            if(param.getListidproduct() != null && !param.getListidproduct().equals("")){
+                sqlBuilder.append(" and data.idproduct in ("+param.getListidproduct()+") ");
+            }
+            if(param.getListidcategoryproduct() != null && !param.getListidcategoryproduct().equals("")){
+                sqlBuilder.append(" and data.idcategoryproduct in ("+param.getListidcategoryproduct()+") ");
+            }
+        }
+
+//        sqlBuilder.append(" order by sa.id ");
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryStockAdjusmentReportKartuStock(), queryParameters);
     }
 
     private List<StockAdjsumentDataItem> getItems(Long idstockadjusment){

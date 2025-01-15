@@ -2,6 +2,7 @@ package com.servlet.packinglist.service;
 
 import com.servlet.packinglist.entity.*;
 import com.servlet.shared.ReturnData;
+import com.servlet.stockitems.entity.ReportKartuStock;
 
 import java.util.List;
 
@@ -16,4 +17,5 @@ public interface PackingListService {
     PrintPackingList getPrintData(Long id,Long idcompany, Long idbranch,Long iduser);
     Long calculateQtyPL(Long idcompany, Long idbranch, ParamCalculateQtyPL param);
     ReturnData catatDownload(Long id,Long idcompany, Long idbranch, Long iduser);
+    List<ReportKartuStock> getListReportKartuStock(Long idcompany, Long idbranch, ParamSearchPackingList param);
 }

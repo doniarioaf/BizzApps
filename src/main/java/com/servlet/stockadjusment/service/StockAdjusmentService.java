@@ -2,6 +2,7 @@ package com.servlet.stockadjusment.service;
 
 import com.servlet.shared.ReturnData;
 import com.servlet.stockadjusment.entity.*;
+import com.servlet.stockitems.entity.ReportKartuStock;
 
 import java.util.List;
 
@@ -13,4 +14,5 @@ public interface StockAdjusmentService {
     StockAdjusmentTemplate getTemplate(Long idcompany, Long idbranch);
     StockAdjsumentDataDetail getDetail(Long idcompany, Long idbranch,Long id);
     Long calculateQtySA(Long idcompany, Long idbranch,String type, ParamCalculateQtySA param);
+    List<ReportKartuStock> getListReportKartuStock(Long idcompany, Long idbranch, ParamCalculateQtySA param);
 }

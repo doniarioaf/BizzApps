@@ -1,0 +1,31 @@
+package com.servlet.report.entity;
+
+public class ParamReportKartuStock {
+    private Long from;
+    private Long to;
+    private String listIdProduct;
+
+    public Long getFrom() {
+        return from;
+    }
+
+    public void setFrom(Long from) {
+        this.from = from;
+    }
+
+    public Long getTo() {
+        return to;
+    }
+
+    public void setTo(Long to) {
+        this.to = to;
+    }
+
+    public String getListIdProduct() {
+        return listIdProduct;
+    }
+
+    public void setListIdProduct(String listIdProduct) {
+        this.listIdProduct = listIdProduct;
+    }
+}

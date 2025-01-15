@@ -2,6 +2,7 @@ package com.servlet.report.entity;
 
 import com.servlet.customer.entity.CustomerGrup;
 import com.servlet.customer.entity.ListCustomerData;
+import com.servlet.product.entity.ListProductData;
 import com.servlet.vendor.entity.VendorDataForTemplate;
 
 import java.util.List;
@@ -10,6 +11,15 @@ public class ReportTemplate {
     private List<VendorDataForTemplate> vendorOpt;
     private List<ListCustomerData> customerOpt;
     private List<CustomerGrup> customerGrupOpt;
+    private List<ListProductData> productOpt;
+
+    public List<ListProductData> getProductOpt() {
+        return productOpt;
+    }
+
+    public void setProductOpt(List<ListProductData> productOpt) {
+        this.productOpt = productOpt;
+    }
 
     public List<ListCustomerData> getCustomerOpt() {
         return customerOpt;

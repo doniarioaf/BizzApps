@@ -6,6 +6,7 @@ import com.servlet.pelunasanhutang.entity.ReportPelunasanHutangDocumentHutang;
 import com.servlet.purchasereceive.entity.*;
 import com.servlet.report.entity.ParamReportPembelian;
 import com.servlet.shared.ReturnData;
+import com.servlet.stockitems.entity.ReportKartuStock;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,4 +36,5 @@ public interface PurchaseReceiveService {
     Double calculateSetorByIdVendorAndDate(Long idcompany, Long idbranch, Long idvendor, Long date);
     List<ReportKartuDeposit> getListPrReportKartuDeposit(Long idcompany, Long idbranch, FilterParamPurchaseReceive param);
     PurchaseReceiveItemsNotJoin getItemInLastDocumentPR(Long idcompany, Long idbranch, Long idproduct, Long idcategoryproduct);
+    List<ReportKartuStock> getListPrReportKartuStock(Long idcompany, Long idbranch, FilterParamPurchaseReceive param);
 }
