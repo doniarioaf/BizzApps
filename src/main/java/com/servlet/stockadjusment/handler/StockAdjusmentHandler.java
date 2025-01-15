@@ -230,6 +230,14 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
             sqlBuilder.append(" and data.idcategoryproduct in ("+param.getListidcategoryproduct()+") ");
         }
 
+        if(param.getIdproduct() != null){
+            sqlBuilder.append(" and data.idproduct = "+param.getIdproduct()+" ");
+        }
+
+        if(param.getListidproduct() != null && !param.getListidproduct().equals("")){
+            sqlBuilder.append(" and data.idproduct in ("+param.getListidproduct()+") ");
+        }
+
         final Object[] queryParameters = new Object[] {};
         List<Long> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateQtySA(), queryParameters);
         if(list != null && list.size() > 0){

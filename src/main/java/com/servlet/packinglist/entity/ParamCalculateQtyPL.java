@@ -2,9 +2,27 @@ package com.servlet.packinglist.entity;
 
 public class ParamCalculateQtyPL {
     private Long idcategoryproduct;
+    private Long idproduct;
     private Long dateFrom;
     private Long dateThru;
     private String listidcategoryproduct;
+    private String listidproduct;
+
+    public Long getIdproduct() {
+        return idproduct;
+    }
+
+    public void setIdproduct(Long idproduct) {
+        this.idproduct = idproduct;
+    }
+
+    public String getListidproduct() {
+        return listidproduct;
+    }
+
+    public void setListidproduct(String listidproduct) {
+        this.listidproduct = listidproduct;
+    }
 
     public String getListidcategoryproduct() {
         return listidcategoryproduct;

@@ -2,11 +2,20 @@ package com.servlet.stockadjusment.entity;
 
 public class ParamCalculateQtySA {
     private Long idcategoryproduct;
+    private Long idproduct;
     private Long dateFrom;
     private Long dateThru;
     private String listidproduct;
     private String listidcategoryproduct;
     private String type;
+
+    public Long getIdproduct() {
+        return idproduct;
+    }
+
+    public void setIdproduct(Long idproduct) {
+        this.idproduct = idproduct;
+    }
 
     public String getType() {
         return type;

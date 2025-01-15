@@ -3659,6 +3659,7 @@ public class ReportHandler implements ReportService {
                                 ParamCalculateQtyPR paramCalcPR = new ParamCalculateQtyPR();
                                 paramCalcPR.setDateFrom(satuJan70);
                                 paramCalcPR.setDateThru(dateMinus1);
+                                paramCalcPR.setIdproduct(val.getId());
                                 if(listIdCPMapping != null){
                                     paramCalcPR.setListidcategoryproduct(idcategorys);
                                 }else{
@@ -3669,6 +3670,7 @@ public class ReportHandler implements ReportService {
                                 ParamCalculateQtySA paramCalcSA = new ParamCalculateQtySA();
                                 paramCalcSA.setDateFrom(satuJan70);
                                 paramCalcSA.setDateThru(dateMinus1);
+                                paramCalcSA.setIdproduct(val.getId());
                                 if(listIdCPMapping != null){
                                     paramCalcSA.setListidcategoryproduct(idcategorys);
                                 }else{
@@ -3678,6 +3680,7 @@ public class ReportHandler implements ReportService {
                                 ParamCalculateQtyPL paramCalcPL = new ParamCalculateQtyPL();
                                 paramCalcPL.setDateFrom(satuJan70);
                                 paramCalcPL.setDateThru(dateMinus1);
+                                paramCalcPL.setIdproduct(val.getId());
                                 if(listIdCPMapping != null){
                                     paramCalcPL.setListidcategoryproduct(idcategorys);
                                 }else{
@@ -3781,6 +3784,7 @@ public class ReportHandler implements ReportService {
                             ParamCalculateQtyPR paramCalcPR = new ParamCalculateQtyPR();
                             paramCalcPR.setDateFrom(satuJan70);
                             paramCalcPR.setDateThru(param.getTo());
+                            paramCalcPR.setIdproduct(val.getId());
                             if(listIdCPMapping != null){
                                 paramCalcPR.setListidcategoryproduct(idcategorys);
                             }else{
@@ -3790,6 +3794,7 @@ public class ReportHandler implements ReportService {
                             ParamCalculateQtySA paramCalcSA = new ParamCalculateQtySA();
                             paramCalcSA.setDateFrom(satuJan70);
                             paramCalcSA.setDateThru(param.getTo());
+                            paramCalcSA.setIdproduct(val.getId());
                             if(listIdCPMapping != null){
                                 paramCalcSA.setListidcategoryproduct(idcategorys);
                             }else{
@@ -3799,6 +3804,7 @@ public class ReportHandler implements ReportService {
                             ParamCalculateQtyPL paramCalcPL = new ParamCalculateQtyPL();
                             paramCalcPL.setDateFrom(satuJan70);
                             paramCalcPL.setDateThru(param.getTo());
+                            paramCalcPL.setIdproduct(val.getId());
                             if(listIdCPMapping != null){
                                 paramCalcPL.setListidcategoryproduct(idcategorys);
                             }else{
