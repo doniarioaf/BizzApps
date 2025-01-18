@@ -6,6 +6,7 @@ import com.servlet.cargo.entity.CargoDataReportStatusTagihanCargo;
 import com.servlet.cargo.entity.ParamCargoSearch;
 import com.servlet.cargo.service.CargoService;
 import com.servlet.categoryproduct.entity.CategoryProductList;
+import com.servlet.categoryproduct.entity.ParamTemplate;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.charge.entity.ChargeList;
 import com.servlet.charge.service.ChargeService;
@@ -22,6 +23,7 @@ import com.servlet.invoice.entity.ParamSearchInvoice;
 import com.servlet.invoice.entity.PrintInvoice;
 import com.servlet.invoice.service.InvoiceService;
 import com.servlet.mappingstock.entity.MappingStockList;
+import com.servlet.mappingstock.entity.ParamSearchMappingStock;
 import com.servlet.mappingstock.service.MappingStockService;
 import com.servlet.packinglist.entity.PackingListDataItemDetail;
 import com.servlet.packinglist.entity.ParamCalculateQtyPL;
@@ -3443,7 +3445,7 @@ public class ReportHandler implements ReportService {
         sheet.setDefaultColumnWidth(1000);
         List<Integer> columns = getWidthColumns(15);
 
-        List<ListProductData> listPd = productService.getListAll(idcompany,idbranch);
+//        List<ListProductData> listPd = productService.getListAll(idcompany,idbranch);
         String namaCabang = "";
         Branch branch = branchService.getBranchByID(idbranch);
         String idProducts = "";
@@ -3466,6 +3468,40 @@ public class ReportHandler implements ReportService {
                     namaProduct = prod.getNama();
                 } else{
                     namaProduct= namaProduct+","+prod.getNama();
+                }
+            }
+        }
+
+        String idCategoryProducts = "";
+        String namaCP = "";
+        if(param.getListIdCategoryProduct().equals("ALL")){
+            namaCP = "All";
+        }else{
+            ParamSearchMappingStock paramMS =new ParamSearchMappingStock();
+            paramMS.setListIdCategoryProduct(param.getListIdCategoryProduct());
+            List<Long> listCPID = mappingStockService.getCategoryProducts(idcompany,idbranch,paramMS);
+            if(listCPID != null && listCPID.size() > 0){
+                idCategoryProducts = listCPID.toString().replaceAll("\\[","");
+                idCategoryProducts = idCategoryProducts.replaceAll("\\]","");
+                idCategoryProducts = idCategoryProducts+","+param.getListIdCategoryProduct();
+            }else{
+                idCategoryProducts = param.getListIdCategoryProduct();
+            }
+
+        }
+
+        ParamTemplate paramCP = new ParamTemplate();
+        if(!param.getListIdCategoryProduct().equals("ALL")){
+            paramCP.setListidcategoryproduct(param.getListIdCategoryProduct());
+        }
+        List<CategoryProductList> listCP = categoryProductService.getDataForTemplate(idcompany,idbranch,paramCP);
+
+        if(!param.getListIdCategoryProduct().equals("ALL")){
+            for(CategoryProductList cp : listCP){
+                if(namaCP == ""){
+                    namaCP = cp.getSize();
+                } else{
+                    namaCP= namaCP+","+cp.getSize();
                 }
             }
         }
@@ -3520,6 +3556,11 @@ public class ReportHandler implements ReportService {
 
         rowcount++;
         row = sheet.createRow(rowcount);
+        createCell(row, 0, "Ukuran", style, sheet,columns);
+        createCell(row, 1, namaCP, style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
         createCell(row, 0, "Cabang", style, sheet,columns);
         createCell(row, 1, namaCabang, style, sheet,columns);
 
@@ -3559,18 +3600,21 @@ public class ReportHandler implements ReportService {
         paramSA.setDateFrom(param.getFrom());
         paramSA.setDateThru(param.getTo());
         paramSA.setListidproduct(listIdProduct);
+        paramSA.setListidcategoryproduct(idCategoryProducts);
         List<ReportKartuStock> itemsSA = stockAdjusmentService.getListReportKartuStock(idcompany,idbranch,paramSA);
 
         FilterParamPurchaseReceive paramPR = new FilterParamPurchaseReceive();
         paramPR.setFrom(param.getFrom());
         paramPR.setTo(param.getTo());
         paramPR.setListIdProduct(listIdProduct);
+        paramPR.setListIdCategoryProduct(idCategoryProducts);
         List<ReportKartuStock> itemsPR = purchaseReceiveService.getListPrReportKartuStock(idcompany,idbranch,paramPR);
 
         ParamSearchPackingList paramPL = new ParamSearchPackingList();
         paramPL.setFrom(param.getFrom());
         paramPL.setTo(param.getTo());
         paramPL.setListIdProduct(listIdProduct);
+        paramPL.setListIdCategoryProduct(idCategoryProducts);
         List<ReportKartuStock> itemsPL = packingListService.getListReportKartuStock(idcompany,idbranch,paramPL);
 
         List<ReportKartuStock> listItems = new ArrayList<>();
@@ -3635,7 +3679,7 @@ public class ReportHandler implements ReportService {
 
         //56169461 = 01-Jan-70
         Long satuJan70 = 56169461L;
-        List<CategoryProductList> listCP = categoryProductService.getListAll(idcompany,idbranch);
+
         if(listProd != null && listProd.size() > 0){
             for(ListProductData val : listProd){
 
@@ -3867,6 +3911,9 @@ public class ReportHandler implements ReportService {
     public ReportTemplate reportTemplateReportKartuStock(long idcompany, long idbranch) {
         ReportTemplate data = new ReportTemplate();
         data.setProductOpt(productService.getListAll(idcompany,idbranch));
+        ParamTemplate paramCP = new ParamTemplate();
+        paramCP.setShowOnlyCpMapping(true);
+        data.setCategoryProductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,paramCP));
         return data;
     }
 

@@ -247,11 +247,12 @@ public class ReportAPI {
     }
 
     @GetMapping("/reportkartustock")
-    ResponseEntity<Response> getReportKartuStock( @RequestParam("idproducts") String idproducts, @RequestParam("from") Long from,@RequestParam("to") Long to, HttpServletResponse response, @RequestHeader(ConstansKey.AUTH) String authorization) throws IOException{
+    ResponseEntity<Response> getReportKartuStock( @RequestParam("idproducts") String idproducts,@RequestParam("idcategoryproducts") String idcategoryproducts, @RequestParam("from") Long from,@RequestParam("to") Long to, HttpServletResponse response, @RequestHeader(ConstansKey.AUTH) String authorization) throws IOException{
         ParamReportKartuStock body = new ParamReportKartuStock();
         body.setFrom(from);
         body.setTo(to);
         body.setListIdProduct(idproducts);
+        body.setListIdCategoryProduct(idcategoryproducts);
         HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("type", "REPORTKARTUSTOCK");
         param.put("body", body);

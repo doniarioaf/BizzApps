@@ -4,6 +4,15 @@ public class ParamTemplate {
     private String menu;
     private Boolean showOnlyCpMapping;
     private long idvendor;
+    private String listidcategoryproduct;
+
+    public String getListidcategoryproduct() {
+        return listidcategoryproduct;
+    }
+
+    public void setListidcategoryproduct(String listidcategoryproduct) {
+        this.listidcategoryproduct = listidcategoryproduct;
+    }
 
     public Boolean getShowOnlyCpMapping() {
         return showOnlyCpMapping;

@@ -14,4 +14,5 @@ public interface MappingStockService {
     MappingStockTemplateData getTemplate(Long idcompany, Long idbranch);
     MappingStockCategoryID getDetailMapping(Long id, Long idcompany, Long idbranch);
     String getSelectidCategory(Long idcompany, Long idbranch);
+    List<Long> getCategoryProducts(Long idcompany, Long idbranch, ParamSearchMappingStock param);
 }

@@ -4,6 +4,15 @@ public class ParamReportKartuStock {
     private Long from;
     private Long to;
     private String listIdProduct;
+    private String listIdCategoryProduct;
+
+    public String getListIdCategoryProduct() {
+        return listIdCategoryProduct;
+    }
+
+    public void setListIdCategoryProduct(String listIdCategoryProduct) {
+        this.listIdCategoryProduct = listIdCategoryProduct;
+    }
 
     public Long getFrom() {
         return from;

@@ -173,6 +173,9 @@ public class CategoryProductHandler implements CategoryProductService {
                     sqlBuilder.append(" and data.id not in ("+mappingStockService.getSelectidCategory(idcompany,idbranch)+")");
                 }
             }
+            if(param.getListidcategoryproduct() != null && !param.getListidcategoryproduct().equals("")){
+                sqlBuilder.append(" and data.id in ("+param.getListidcategoryproduct()+")");
+            }
         }
         sqlBuilder.append(" order by data.weightfromingram desc ");
         final Object[] queryParameters = new Object[] {idcompany};
