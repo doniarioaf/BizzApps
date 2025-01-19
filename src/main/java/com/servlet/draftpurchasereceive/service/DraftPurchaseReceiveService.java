@@ -16,4 +16,5 @@ public interface DraftPurchaseReceiveService {
     boolean checkIDVendor(Long idvendor);
     List<DraftPurchaseReceiveDropDownList> getDropDownList(Long idcompany, Long idbranch, ParamGetDataDraftPR param);
     List<DraftPurchaseReceiveItemsDetailData> getListItemsByID(Long iddraftpurchasereceive);
+    List<DraftPurchaseReceiveItemsDetailData> getListItemsByIDForPR(Long iddraftpurchasereceive);
 }

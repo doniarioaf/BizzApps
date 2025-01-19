@@ -6,6 +6,8 @@ import java.util.HashMap;
 
 import com.servlet.area.entity.BodyArea;
 import com.servlet.area.service.AreaService;
+import com.servlet.bank.entity.BodyBank;
+import com.servlet.bank.service.BankService;
 import com.servlet.cargo.entity.BodyCargo;
 import com.servlet.cargo.entity.ParamCargoSearch;
 import com.servlet.cargo.service.CargoService;
@@ -152,6 +154,8 @@ public class ProcessHandler implements ProcessService{
 
 	@Autowired
 	PelunasanPiutangService pelunasanPiutangService;
+	@Autowired
+	BankService bankService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -964,6 +968,24 @@ public class ProcessHandler implements ProcessService{
 				}
 			}
 
+			else if(codepermission.equals(ConstansPermission.CREATE_BANK)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				ReturnData valReturn = new ReturnData();
+				if(type.equals("CREATE")) {
+					BodyBank body = (BodyBank) param.get("body");
+					valReturn = bankService.save(auth.getIdcompany(), auth.getIdbranch(), auth.getId(), body);
+				}
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}
+
 			else if(codepermission.equals(ConstansPermission.LOGOUT)) {
 				ReturnData valReturn = userAppsService.logout(auth.getId());
 				val.setSuccess(valReturn.isSuccess());
@@ -1182,7 +1204,7 @@ public class ProcessHandler implements ProcessService{
 					val.setData(purchaseReceiveService.catatDownload(id,auth.getIdcompany(), auth.getIdbranch(),auth.getId()));
 				}else if(type.equals("GETITEMDRAFT")) {
 					long id = (long) param.get("iddraft");
-					val.setData(draftPurchaseReceiveService.getListItemsByID(id));
+					val.setData(draftPurchaseReceiveService.getListItemsByIDForPR(id));
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_DEPOSIT)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
@@ -1459,6 +1481,17 @@ public class ProcessHandler implements ProcessService{
 					val.setData(reportService.reportReportKartuStock(auth.getIdcompany(), auth.getIdbranch(),body).getWorkbook());
 				}else if(type.equals("REPORTKARTUSTOCK_TEMPLATE")) {
 					val.setData(reportService.reportTemplateReportKartuStock(auth.getIdcompany(), auth.getIdbranch()));
+				}
+			}
+
+			else if(codepermission.equals(ConstansPermission.READ_BANK)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					val.setData(bankService.getList(auth.getIdcompany(), auth.getIdbranch(), auth.getId()));
+				}
+				else if(type.equals("TEMPLATE")) {
+					val.setData(cargoService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}
 

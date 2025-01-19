@@ -323,6 +323,17 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
         return getListItems(iddraftpurchasereceive,null,null);
     }
 
+    @Override
+    public List<DraftPurchaseReceiveItemsDetailData> getListItemsByIDForPR(Long iddraftpurchasereceive) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataItemsDetail().schema());
+        sqlBuilder.append(" where data.iddraftpurchasereceive = ?  ");
+        sqlBuilder.append(" order by cp.weightfromingram desc  ");
+        final Object[] queryParameters = new Object[] {iddraftpurchasereceive};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataItemsDetail(), queryParameters);
+    }
+
+
+
     private HashMap<Object,Object> setItems(Long idcompany, Long idbranch, Long iddraftpurchasereceive, BodyDraftPurchaseReceiveItems[] items){
         List<ValidationDataMessage> validations = new ArrayList<>();
         HashMap<Object,Object> maps = new HashMap<>();
