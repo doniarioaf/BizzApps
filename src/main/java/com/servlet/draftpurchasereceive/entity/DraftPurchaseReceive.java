@@ -31,6 +31,9 @@ public class DraftPurchaseReceive implements Serializable {
     private Long deleteby;
     private Timestamp deletedate;
     private Double persentase;
+    private String flightno;
+    private String notes1;
+    private String notes2;
 
     @Override
     public String toString() {
@@ -44,7 +47,34 @@ public class DraftPurchaseReceive implements Serializable {
                 ", totalekor=" + totalekor +
                 ", totalkg=" + totalkg +
                 ", persentase=" + persentase +
+                ", flightno=" + flightno +
+                ", notes1=" + notes1 +
+                ", notes2=" + notes2 +
                 '}';
+    }
+
+    public String getFlightno() {
+        return flightno;
+    }
+
+    public void setFlightno(String flightno) {
+        this.flightno = flightno;
+    }
+
+    public String getNotes1() {
+        return notes1;
+    }
+
+    public void setNotes1(String notes1) {
+        this.notes1 = notes1;
+    }
+
+    public String getNotes2() {
+        return notes2;
+    }
+
+    public void setNotes2(String notes2) {
+        this.notes2 = notes2;
     }
 
     public Double getPersentase() {

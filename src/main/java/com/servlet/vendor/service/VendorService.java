@@ -15,4 +15,5 @@ public interface VendorService {
     List<VendorDataForTemplate> getListDropdown(Long idcompany, Long idbranch);
     List<VendorDataForTemplate> getListDropdown(Long idcompany, Long idbranch, ParamVendor param);
     String queryIdVendorCategoryProductNotInclud(Long idcompany, Long idbranch,Long idvendor);
+    ListVendorData checkVendorIsParent(Long idcompany, Long idbranch,Long idvendor);
 }

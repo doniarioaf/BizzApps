@@ -20,6 +20,8 @@ import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 import com.servlet.upload.image.FileStorageService;
 import com.servlet.upload.image.InfoFile;
+import com.servlet.vendor.entity.ListVendorData;
+import com.servlet.vendor.entity.ParamVendor;
 import com.servlet.vendor.service.VendorService;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,11 +140,25 @@ public class DepositHandler implements DepositService {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
-        String docNumber = runningNumberService.getDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_DEPOSIT, ts);
-        if(docNumber.equals("")) {
-            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_GENERATE_DOC_NUMBER,"Gagal Generate Document Number");
-            validations.add(msg);
+
+        if(validations.size() == 0) {
+            ListVendorData ven = vendorService.checkVendorIsParent(idcompany,idbranch, body.getIdvendor());
+            if(ven == null){
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_PARENT, "Vendor Bukan Parent");
+                validations.add(msg);
+            }
         }
+
+        String docNumber = "";
+        if(validations.size() == 0) {
+            docNumber = runningNumberService.getDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_DEPOSIT, ts);
+            if(docNumber.equals("")) {
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_GENERATE_DOC_NUMBER,"Gagal Generate Document Number");
+                validations.add(msg);
+            }
+        }
+
+
         if(validations.size() == 0) {
             try {
                 Deposit table = new Deposit();
@@ -189,6 +205,13 @@ public class DepositHandler implements DepositService {
                 PurchaseReceiveDataList check = purchaseReceiveService.checkIdDeposit(id);
                 if(check != null){
                     ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_PURCHASERECEIVE, "deposit ini terpasang pada purchase receive ("+check.getNodocument()+") ");
+                    validations.add(msg);
+                }
+            }
+            if(validations.size() == 0) {
+                ListVendorData ven = vendorService.checkVendorIsParent(idcompany,idbranch, body.getIdvendor());
+                if(ven == null){
+                    ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_PARENT, "Vendor Bukan Parent");
                     validations.add(msg);
                 }
             }
@@ -259,7 +282,9 @@ public class DepositHandler implements DepositService {
     @Override
     public DepositTemplate getTemplate(Long idcompany, Long idbranch) {
         DepositTemplate template = new DepositTemplate();
-        template.setVendorOpt(vendorService.getListDropdown(idcompany,idbranch));
+        ParamVendor paramVendor = new ParamVendor();
+        paramVendor.setOnlyParent("Y");
+        template.setVendorOpt(vendorService.getListDropdown(idcompany,idbranch,paramVendor));
         return template;
     }
 

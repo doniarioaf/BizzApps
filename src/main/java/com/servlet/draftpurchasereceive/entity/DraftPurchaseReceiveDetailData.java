@@ -15,6 +15,9 @@ public class DraftPurchaseReceiveDetailData {
     private Time arriveltime;
     private Time receivetime;
     private String smu;
+    private String flightno;
+    private String notes1;
+    private String notes2;
     private Long totalekor;
     private Long totalkg;
     private Double persentase;
@@ -27,6 +30,30 @@ public class DraftPurchaseReceiveDetailData {
     private Timestamp modifieddate;
     private Long deleteby;
     private List<DraftPurchaseReceiveItemsDetailData> items;
+
+    public String getFlightno() {
+        return flightno;
+    }
+
+    public void setFlightno(String flightno) {
+        this.flightno = flightno;
+    }
+
+    public String getNotes1() {
+        return notes1;
+    }
+
+    public void setNotes1(String notes1) {
+        this.notes1 = notes1;
+    }
+
+    public String getNotes2() {
+        return notes2;
+    }
+
+    public void setNotes2(String notes2) {
+        this.notes2 = notes2;
+    }
 
     public Double getPersentase() {
         return persentase;

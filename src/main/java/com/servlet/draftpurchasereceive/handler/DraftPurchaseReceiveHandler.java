@@ -128,7 +128,9 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
                 }else{
                     table.setReceivetime(null);
                 }
-
+                table.setFlightno(body.getFlightno());
+                table.setNotes1(body.getNotes1());
+                table.setNotes2(body.getNotes2());
                 table.setSmu(body.getSmu());
                 table.setTotalekor(body.getTotalekor());
                 table.setTotalkg(body.getTotalkg());
@@ -209,6 +211,9 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
                         table.setReceivetime(null);
                     }
 
+                    table.setFlightno(body.getFlightno());
+                    table.setNotes1(body.getNotes1());
+                    table.setNotes2(body.getNotes2());
                     table.setSmu(body.getSmu());
                     table.setTotalekor(body.getTotalekor());
                     table.setTotalkg(body.getTotalkg());

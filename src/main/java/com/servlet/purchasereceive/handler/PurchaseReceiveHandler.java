@@ -207,6 +207,9 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                 table.setIddeposit(iddeposit);
                 table.setIddraftpurchasereceive(body.getIddraftpurchasereceive());
                 table.setIdarea(body.getIdarea());
+                table.setFlightno(body.getFlightno());
+                table.setSmu(body.getSmu());
+                table.setNotes2(body.getNotes2());
                 table.setCreateddate(ts);
                 table.setCreatedby(iduser);
                 idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
@@ -279,6 +282,9 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                     table.setIsdefaultvaluesetor(body.isIsdefaultvaluesetor());
                     table.setIdarea(body.getIdarea());
                     table.setOutstanding(body.getTotalprice().doubleValue() - body.getSetor().doubleValue());
+                    table.setFlightno(body.getFlightno());
+                    table.setSmu(body.getSmu());
+                    table.setNotes2(body.getNotes2());
                     table.setModifiedby(iduser);
                     table.setModifieddate(ts);
                     idsave = purchaseReceiveRepo.saveAndFlush(table).getId();

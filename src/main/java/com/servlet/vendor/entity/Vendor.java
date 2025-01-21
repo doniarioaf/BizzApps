@@ -34,13 +34,13 @@ public class Vendor implements Serializable {
     private Double komisi;
     private Double profit;
     private Double value1;
+    private Boolean isparent;
+    private Long idvendorparent;
 
     @Override
     public String toString() {
         return "Vendor{" +
                 "id=" + id +
-                ", idcompany=" + idcompany +
-                ", idbranch=" + idbranch +
                 ", nama='" + nama + '\'' +
                 ", alias='" + alias + '\'' +
                 ", type='" + type + '\'' +
@@ -54,7 +54,26 @@ public class Vendor implements Serializable {
                 ", komisi='" + komisi + '\'' +
                 ", profit='" + profit + '\'' +
                 ", value1='" + value1 + '\'' +
+                ", isparent='" + isparent + '\'' +
+                ", idvendorparent='" + idvendorparent + '\'' +
                 '}';
+    }
+
+    public Long getIdvendorparent() {
+        return idvendorparent;
+    }
+
+    public void setIdvendorparent(Long idvendorparent) {
+        this.idvendorparent = idvendorparent;
+    }
+
+
+    public Boolean getIsparent() {
+        return isparent;
+    }
+
+    public void setIsparent(Boolean isparent) {
+        this.isparent = isparent;
     }
 
     public Double getPacking() {

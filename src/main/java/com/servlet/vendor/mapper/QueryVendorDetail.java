@@ -15,15 +15,17 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.id as id, data.nama as nama, data.alias as alias,data.type as type, ");
         sqlBuilder.append("data.bank as bank, data.accountnobank as accountnobank, data.accountnamebank as accountnamebank, ");
-        sqlBuilder.append("data.pricebox as pricebox, data.priceongkos as priceongkos, ");
+        sqlBuilder.append("data.pricebox as pricebox, data.priceongkos as priceongkos, data.isparent as isparent, data.idvendorparent as idvendorparent, ");
         sqlBuilder.append("data.packing as packing, data.kurir as kurir, ");
         sqlBuilder.append("data.komisi as komisi, data.profit as profit,data.value1 as value1, ");
+        sqlBuilder.append("ven.nama as vennama, ven.alias as venalias, ");
         sqlBuilder.append("data.createddate as createddate, data.modifieddate as modifieddate, data.deletedate as deletedate, ");
         sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama, userdelete.nama as deletenama ");
         sqlBuilder.append("from m_vendor as data ");
         sqlBuilder.append("left join m_user_apps as usercreate on usercreate.id = data.createdby ");
         sqlBuilder.append("left join m_user_apps as usermodified on usermodified.id = data.modifiedby ");
         sqlBuilder.append("left join m_user_apps as userdelete on userdelete.id = data.deleteby ");
+        sqlBuilder.append("left join m_vendor as ven on ven.id = data.idvendorparent ");
 
         this.schemaSql = sqlBuilder.toString();
     }
@@ -54,6 +56,10 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         final Double komisi = rs.getDouble("komisi");
         final Double profit = rs.getDouble("profit");
         final Double value1 = rs.getDouble("value1");
+        final Boolean isparent = rs.getBoolean("isparent");
+        final Long idvendorparent = rs.getLong("idvendorparent");
+        final String vennama = rs.getString("vennama");
+        final String venalias = rs.getString("venalias");
 
         VendorData data = new VendorData();
         data.setId(id);
@@ -76,6 +82,10 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         data.setKomisi(komisi);
         data.setProfit(profit);
         data.setValue1(value1);
+        data.setIsparent(isparent);
+        data.setIdvendorparent(idvendorparent);
+        data.setVendorParentName(vennama);
+        data.setVendorParentAlias(venalias);
         return data;
     }
 }

@@ -32,6 +32,33 @@ public class PurchaseReceiveDataDetail {
     private String namaArea;
     private String aliasArea;
     private Double outstanding;
+    private String flightno;
+    private String smu;
+    private String notes2;
+
+    public String getFlightno() {
+        return flightno;
+    }
+
+    public void setFlightno(String flightno) {
+        this.flightno = flightno;
+    }
+
+    public String getSmu() {
+        return smu;
+    }
+
+    public void setSmu(String smu) {
+        this.smu = smu;
+    }
+
+    public String getNotes2() {
+        return notes2;
+    }
+
+    public void setNotes2(String notes2) {
+        this.notes2 = notes2;
+    }
 
     public Double getOutstanding() {
         return outstanding;

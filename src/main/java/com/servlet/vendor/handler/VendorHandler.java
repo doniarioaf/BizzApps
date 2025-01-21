@@ -75,45 +75,60 @@ public class VendorHandler implements VendorService {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
         Timestamp ts = new Timestamp(new Date().getTime());
-        try{
-            Vendor vendor = new Vendor();
-            vendor.setIdcompany(idcompany);
-            vendor.setIdbranch(idbranch);
-            vendor.setNama(body.getNama());
-            vendor.setAlias(body.getAlias());
-            vendor.setType(body.getType());
-            vendor.setBank(body.getBank());
-            vendor.setAccountnobank(body.getAccountnobank());
-            vendor.setAccountnamebank(body.getAccountnamebank());
-            vendor.setPricebox(body.getPricebox());
-            vendor.setPriceongkos(body.getPriceongkos());
-            vendor.setPacking(body.getPacking());
-            vendor.setKurir(body.getKurir());
-            vendor.setKomisi(body.getKomisi());
-            vendor.setProfit(body.getProfit());
-            vendor.setValue1(body.getValue1());
-            vendor.setIsdelete(false);
-            vendor.setCreateddate(ts);
-            vendor.setCreatedby(iduser);
-            idsave = repo.saveAndFlush(vendor).getId();
-            HashMap<Object,Object> mapsItems = setItems(body.getIdcategoryproduct(), idsave);
-            List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
-            if(validationsItems.size() == 0){
-                String data = vendor.toString();
-                String dataItems = (String) mapsItems.get("dataItems");
-                String mixData = "header = "+data+" | Items = "+dataItems;
-                historyAppsService.saveHistory(idcompany,idbranch,iduser,"ADD",namaMenu,mixData,"","",ts);
-            }else{
+        if(!body.getIsparent()) {
+            ListVendorData ven = checkVendorIsParent(idcompany,idbranch, body.getIdvendorparent());
+            if(ven == null){
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_PARENT, "Vendor Bukan Parent");
+                validations.add(msg);
+            }
+        }
+        if(validations.size() == 0) {
+            try {
+                Vendor vendor = new Vendor();
+                vendor.setIdcompany(idcompany);
+                vendor.setIdbranch(idbranch);
+                vendor.setNama(body.getNama());
+                vendor.setAlias(body.getAlias());
+                vendor.setType(body.getType());
+                vendor.setBank(body.getBank());
+                vendor.setAccountnobank(body.getAccountnobank());
+                vendor.setAccountnamebank(body.getAccountnamebank());
+                vendor.setPricebox(body.getPricebox());
+                vendor.setPriceongkos(body.getPriceongkos());
+                vendor.setPacking(body.getPacking());
+                vendor.setKurir(body.getKurir());
+                vendor.setKomisi(body.getKomisi());
+                vendor.setProfit(body.getProfit());
+                vendor.setValue1(body.getValue1());
+                vendor.setIsparent(body.getIsparent());
+                if (body.getIsparent()) {
+                    vendor.setIdvendorparent(null);
+                } else {
+                    vendor.setIdvendorparent(body.getIdvendorparent());
+                }
+                vendor.setIsdelete(false);
+                vendor.setCreateddate(ts);
+                vendor.setCreatedby(iduser);
+                idsave = repo.saveAndFlush(vendor).getId();
+                HashMap<Object, Object> mapsItems = setItems(body.getIdcategoryproduct(), idsave);
+                List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
+                if (validationsItems.size() == 0) {
+                    String data = vendor.toString();
+                    String dataItems = (String) mapsItems.get("dataItems");
+                    String mixData = "header = " + data + " | Items = " + dataItems;
+                    historyAppsService.saveHistory(idcompany, idbranch, iduser, "ADD", namaMenu, mixData, "", "", ts);
+                } else {
 //                repo.deleteById(idsave);
 //                vendorCategoryProductNotIncludeRepo.deleteAllByIdVendor(idsave);
 
-                validations.add(validationsItems.get(0));
-            }
+                    validations.add(validationsItems.get(0));
+                }
 
-        }catch (Exception e){
-            // TODO: handle exception
-            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
-            validations.add(msg);
+            } catch (Exception e) {
+                // TODO: handle exception
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
         }
         ReturnData data = new ReturnData();
         data.setId(idsave);
@@ -125,53 +140,69 @@ public class VendorHandler implements VendorService {
     @Override
     public ReturnData update(Long id, Long idcompany, Long idbranch, Long iduser, BodyVendor body) {
         List<ValidationDataMessage> validations = new ArrayList<>();
+
         long idsave = 0;
         Timestamp ts = new Timestamp(new Date().getTime());
-        try{
-            Vendor vendor = repo.getById(id);
-            vendor.setNama(body.getNama());
-            vendor.setAlias(body.getAlias());
-            vendor.setType(body.getType());
-            vendor.setBank(body.getBank());
-            vendor.setAccountnobank(body.getAccountnobank());
-            vendor.setAccountnamebank(body.getAccountnamebank());
-            vendor.setPricebox(body.getPricebox());
-            vendor.setPriceongkos(body.getPriceongkos());
-            vendor.setPacking(body.getPacking());
-            vendor.setKurir(body.getKurir());
-            vendor.setKomisi(body.getKomisi());
-            vendor.setProfit(body.getProfit());
-            vendor.setValue1(body.getValue1());
-            vendor.setModifieddate(ts);
-            vendor.setModifiedby(iduser);
-            idsave = repo.saveAndFlush(vendor).getId();
-
-            List<VendorCategoryProductNotIncludeData> listItems = getListItems(idsave);
-            List<String> ls = new ArrayList<>();
-            if(ls != null && ls.size() > 0){
-                for(VendorCategoryProductNotIncludeData val : listItems){
-                    ls.add(val.getIdcategoryproduct().toString());
+        if(!body.getIsparent()) {
+            ListVendorData ven = checkVendorIsParent(idcompany,idbranch, body.getIdvendorparent());
+            if(ven == null){
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_PARENT, "Vendor Bukan Parent");
+                validations.add(msg);
+            }
+        }
+        if(validations.size() == 0) {
+            try {
+                Vendor vendor = repo.getById(id);
+                vendor.setNama(body.getNama());
+                vendor.setAlias(body.getAlias());
+                vendor.setType(body.getType());
+                vendor.setBank(body.getBank());
+                vendor.setAccountnobank(body.getAccountnobank());
+                vendor.setAccountnamebank(body.getAccountnamebank());
+                vendor.setPricebox(body.getPricebox());
+                vendor.setPriceongkos(body.getPriceongkos());
+                vendor.setPacking(body.getPacking());
+                vendor.setKurir(body.getKurir());
+                vendor.setKomisi(body.getKomisi());
+                vendor.setProfit(body.getProfit());
+                vendor.setValue1(body.getValue1());
+                vendor.setIsparent(body.getIsparent());
+                if (body.getIsparent()) {
+                    vendor.setIdvendorparent(null);
+                } else {
+                    vendor.setIdvendorparent(body.getIdvendorparent());
                 }
-            }
-            String dataBefore = vendor.toString();
-            String dataItemsBefore = ls.toString();
-            String mixDataBefore = "header = "+dataBefore+" | Items = "+dataItemsBefore;
+                vendor.setModifieddate(ts);
+                vendor.setModifiedby(iduser);
+                idsave = repo.saveAndFlush(vendor).getId();
 
-            vendorCategoryProductNotIncludeRepo.deleteAllByIdVendor(id);
-            HashMap<Object,Object> mapsItems = setItems(body.getIdcategoryproduct(), idsave);
-            List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
-            if(validationsItems.size() == 0){
-                String data = vendor.toString();
-                String dataItems = (String) mapsItems.get("dataItems");
-                String mixData = "header = "+data+" | Items = "+dataItems;
-                historyAppsService.saveHistory(idcompany,idbranch,iduser,"EDIT",namaMenu,"",mixData,mixDataBefore,ts);
-            }else{
-                validations.add(validationsItems.get(0));
+                List<VendorCategoryProductNotIncludeData> listItems = getListItems(idsave);
+                List<String> ls = new ArrayList<>();
+                if (ls != null && ls.size() > 0) {
+                    for (VendorCategoryProductNotIncludeData val : listItems) {
+                        ls.add(val.getIdcategoryproduct().toString());
+                    }
+                }
+                String dataBefore = vendor.toString();
+                String dataItemsBefore = ls.toString();
+                String mixDataBefore = "header = " + dataBefore + " | Items = " + dataItemsBefore;
+
+                vendorCategoryProductNotIncludeRepo.deleteAllByIdVendor(id);
+                HashMap<Object, Object> mapsItems = setItems(body.getIdcategoryproduct(), idsave);
+                List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
+                if (validationsItems.size() == 0) {
+                    String data = vendor.toString();
+                    String dataItems = (String) mapsItems.get("dataItems");
+                    String mixData = "header = " + data + " | Items = " + dataItems;
+                    historyAppsService.saveHistory(idcompany, idbranch, iduser, "EDIT", namaMenu, "", mixData, mixDataBefore, ts);
+                } else {
+                    validations.add(validationsItems.get(0));
+                }
+            } catch (Exception e) {
+                // TODO: handle exception
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
             }
-        }catch (Exception e){
-            // TODO: handle exception
-            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
-            validations.add(msg);
         }
         ReturnData data = new ReturnData();
         data.setId(idsave);
@@ -207,6 +238,9 @@ public class VendorHandler implements VendorService {
     public VendorTemplate getTemplate(Long idcompany, Long idbranch) {
         VendorTemplate template = new VendorTemplate();
         template.setCategoryProductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,null));
+        ParamVendor pv = new ParamVendor();
+        pv.setOnlyParent("Y");
+        template.setVendorParentOpt(getListDropdown(idcompany,idbranch,pv));
         return template;
     }
 
@@ -228,6 +262,9 @@ public class VendorHandler implements VendorService {
         if(param.getVendorTypes() != null && !param.getVendorTypes().equals("")){
             sqlBuilder.append(" and data.type in ("+param.getVendorTypes()+") ");
         }
+        if(param.getOnlyParent() != null && !param.getOnlyParent().equals("")){
+            sqlBuilder.append(" and data.isparent = true ");
+        }
 
         final Object[] queryParameters = new Object[] {idcompany};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryListForDropdownList(), queryParameters);
@@ -238,6 +275,18 @@ public class VendorHandler implements VendorService {
         String query = "select idcategoryproduct from vendor_categoryproduct_not_include as vc ";
         query += " where vc.idvendor = "+idvendor;
         return query;
+    }
+
+    @Override
+    public ListVendorData checkVendorIsParent(Long idcompany, Long idbranch, Long idvendor) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryListVendor().schema());
+        sqlBuilder.append(" where data.id = ? and data.idcompany = ?  and data.isdelete = false and data.isparent = true ");
+        final Object[] queryParameters = new Object[] {idvendor,idcompany};
+        List<ListVendorData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryListVendor(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return null;
     }
 
     private HashMap<Object,Object> setItems(Long[] items, Long idvendor){

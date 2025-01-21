@@ -15,6 +15,24 @@ public class BodyVendor {
     private Double komisi;
     private Double profit;
     private Double value1;
+    private Boolean isparent;
+    private Long idvendorparent;
+
+    public Long getIdvendorparent() {
+        return idvendorparent;
+    }
+
+    public void setIdvendorparent(Long idvendorparent) {
+        this.idvendorparent = idvendorparent;
+    }
+
+    public Boolean getIsparent() {
+        return isparent;
+    }
+
+    public void setIsparent(Boolean isparent) {
+        this.isparent = isparent;
+    }
 
     public Double getPacking() {
         return packing;

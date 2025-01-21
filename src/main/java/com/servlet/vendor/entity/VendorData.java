@@ -24,6 +24,42 @@ public class VendorData {
     private Double komisi;
     private Double profit;
     private Double value1;
+    private Boolean isparent;
+    private Long idvendorparent;
+    private String vendorParentName;
+    private String vendorParentAlias;
+
+    public String getVendorParentName() {
+        return vendorParentName;
+    }
+
+    public void setVendorParentName(String vendorParentName) {
+        this.vendorParentName = vendorParentName;
+    }
+
+    public String getVendorParentAlias() {
+        return vendorParentAlias;
+    }
+
+    public void setVendorParentAlias(String vendorParentAlias) {
+        this.vendorParentAlias = vendorParentAlias;
+    }
+
+    public Long getIdvendorparent() {
+        return idvendorparent;
+    }
+
+    public void setIdvendorparent(Long idvendorparent) {
+        this.idvendorparent = idvendorparent;
+    }
+
+    public Boolean getIsparent() {
+        return isparent;
+    }
+
+    public void setIsparent(Boolean isparent) {
+        this.isparent = isparent;
+    }
 
     public Double getPacking() {
         return packing;

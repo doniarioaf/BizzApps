@@ -6,6 +6,15 @@ import java.util.List;
 
 public class VendorTemplate {
     private List<CategoryProductList> categoryProductOpt;
+    private List<VendorDataForTemplate> vendorParentOpt;
+
+    public List<VendorDataForTemplate> getVendorParentOpt() {
+        return vendorParentOpt;
+    }
+
+    public void setVendorParentOpt(List<VendorDataForTemplate> vendorParentOpt) {
+        this.vendorParentOpt = vendorParentOpt;
+    }
 
     public List<CategoryProductList> getCategoryProductOpt() {
         return categoryProductOpt;

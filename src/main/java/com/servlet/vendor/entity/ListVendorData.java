@@ -5,6 +5,15 @@ public class ListVendorData {
     private String nama;
     private String alias;
     private String type;
+    private Boolean isparent;
+
+    public Boolean getIsparent() {
+        return isparent;
+    }
+
+    public void setIsparent(Boolean isparent) {
+        this.isparent = isparent;
+    }
 
     public Long getId() {
         return id;

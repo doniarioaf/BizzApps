@@ -18,6 +18,7 @@ public class QueryDataDetail implements RowMapper<PurchaseReceiveDataDetail> {
         sqlBuilder.append("data.transactiondate as transactiondate, data.koli as koli, data.notes as notes, ");
         sqlBuilder.append("data.bank as bank, data.accountnobank as accountnobank, data.accountnamebank as accountnamebank, ");
         sqlBuilder.append("data.totalprice as totalprice, data.setor as setor, data.iddeposit as iddeposit,data.isdefaultvaluesetor as isdefaultvaluesetor, data.outstanding as outstanding, ");
+        sqlBuilder.append("data.flightno as flightno, data.smu as smu, data.notes2 as notes2, ");
         sqlBuilder.append("ven.nama as vennama, ven.alias as venalias, ");
         sqlBuilder.append("data.idarea as idarea, area.nama as areanama, area.alias as areaalias, ");
         sqlBuilder.append("data.iddraftpurchasereceive as iddraftpurchasereceive ,dpr.nodocument as nodocumentdraft, dpr.smu as smudraft, ");
@@ -67,7 +68,9 @@ public class QueryDataDetail implements RowMapper<PurchaseReceiveDataDetail> {
         final String areanama = rs.getString("areanama");
         final Long idarea = rs.getLong("idarea");
         final Double outstanding = rs.getDouble("outstanding");
-
+        final String flightno = rs.getString("flightno");
+        final String smu = rs.getString("smu");
+        final String notes2 = rs.getString("notes2");
 
         PurchaseReceiveDataDetail data = new PurchaseReceiveDataDetail();
         data.setId(id);
@@ -96,7 +99,9 @@ public class QueryDataDetail implements RowMapper<PurchaseReceiveDataDetail> {
         data.setModifieddate(modifieddate);
         data.setCreatedbyName(createdname);
         data.setModifiedbyName(modifiednama);
-
+        data.setFlightno(flightno);
+        data.setSmu(smu);
+        data.setNotes2(notes2);
         return data;
     }
 }
