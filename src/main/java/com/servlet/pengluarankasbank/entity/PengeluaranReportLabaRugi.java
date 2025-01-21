@@ -8,6 +8,24 @@ public class PengeluaranReportLabaRugi {
     private Double amount;
     private String namabank;
     private Date paymentdate;
+    private Long idinvoiceitem;
+    private Long idpaymentitem;
+
+    public Long getIdinvoiceitem() {
+        return idinvoiceitem;
+    }
+
+    public void setIdinvoiceitem(Long idinvoiceitem) {
+        this.idinvoiceitem = idinvoiceitem;
+    }
+
+    public Long getIdpaymentitem() {
+        return idpaymentitem;
+    }
+
+    public void setIdpaymentitem(Long idpaymentitem) {
+        this.idpaymentitem = idpaymentitem;
+    }
 
     public Date getPaymentdate() {
         return paymentdate;

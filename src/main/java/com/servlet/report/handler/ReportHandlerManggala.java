@@ -699,13 +699,14 @@ public class ReportHandlerManggala implements ReportServiceManggala{
         createCell(row, 2, "Transaksi", style,sheet);
 		createCell(row, 3, "Kategori", style,sheet);
         createCell(row, 4, "No. WO", style,sheet);
-        createCell(row, 5, "Nomor AJU", style,sheet);
-        createCell(row, 6, "No. Invoice", style,sheet);
-        createCell(row, 7, "Nama Customer", style,sheet);
-        createCell(row, 8, "Keterangan", style,sheet);
-        createCell(row, 9, "Uang Masuk", style,sheet);
-        createCell(row, 10, "Uang Keluar", style,sheet);
-        createCell(row, 11, "Saldo", style,sheet);
+		createCell(row, 5, "Jenis", style,sheet);
+        createCell(row, 6, "Nomor AJU", style,sheet);
+        createCell(row, 7, "No. Invoice", style,sheet);
+        createCell(row, 8, "Nama Customer", style,sheet);
+        createCell(row, 9, "Keterangan", style,sheet);
+        createCell(row, 10, "Uang Masuk", style,sheet);
+        createCell(row, 11, "Uang Keluar", style,sheet);
+        createCell(row, 12, "Saldo", style,sheet);
         
 //        List<PenerimaanPengeluaranData> list = penerimaanKasBankService.getPenerimaanPengeluaranData(idcompany, idbranch, new Date(body.getFromDate()), new Date(body.getToDate()), body.getIdbank());
 //        if(list != null && list.size() > 0) {
@@ -721,6 +722,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 			createCell(rowDataSaldoAwal, columnCount++, "", style,sheet);
 			createCell(rowDataSaldoAwal, columnCount++, "", style,sheet);
 			createCell(rowDataSaldoAwal, columnCount++, "", style,sheet);
+		createCell(rowDataSaldoAwal, columnCount++, "", style,sheet);
 			createCell(rowDataSaldoAwal, columnCount++, "", style,sheet);
 			createCell(rowDataSaldoAwal, columnCount++, "Saldo Awal", style,sheet);
 			createCell(rowDataSaldoAwal, columnCount++, "", style,sheet);
@@ -816,6 +818,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style,sheet);
+						createCell(rowData, columnCount++, "", style,sheet);
 						createCell(rowData, columnCount++, (dataKasBank.getPenerimaannoAju() != null && !dataKasBank.getPenerimaannoAju().equals("") ? new Integer(dataKasBank.getPenerimaannoAju()):""), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoInvoice(), style,sheet);
 						String penerimaanNama = "";
@@ -866,12 +869,19 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						}else if(dataKasBank.getPengeluaran_paymentto().equals("VENDOR")) {
 							pengeluaranNamaPaymentTo = dataKasBank.getPengeluaran_vendorname();
 						}
-						
+						String typeKBKTypeReimbursementOrNon = "";
+						if(dataKasBank.getPengeluaran_invItemName() != null && !dataKasBank.getPengeluaran_invItemName().equals("")) {
+							typeKBKTypeReimbursementOrNon = "Reimbursement";
+						}else if(dataKasBank.getPengeluaran_payItemName() != null && !dataKasBank.getPengeluaran_payItemName().equals("")) {
+							typeKBKTypeReimbursementOrNon = "Non-Reimbursement";
+						}
+
 						createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPengeluarantanggalTransaksi(),""), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPengeluarannoVoucher(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPengeluarancoa(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPengeluaran_KategoriName(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPengeluarannoWO(), style,sheet);
+						createCell(rowData, columnCount++, typeKBKTypeReimbursementOrNon, style,sheet);
 						
 				        
 						createCell(rowData, columnCount++, (dataKasBank.getPengeluarannoAju() != null && !dataKasBank.getPengeluarannoAju().equals("") ? new Integer(dataKasBank.getPengeluarannoAju()):""), style,sheet);
@@ -912,7 +922,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style,sheet);
-//						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoAju(), style,sheet);
+						createCell(rowData, columnCount++, "", style,sheet);
 						createCell(rowData, columnCount++, (dataKasBank.getPenerimaannoAju() != null && !dataKasBank.getPenerimaannoAju().equals("") ? new Integer(dataKasBank.getPenerimaannoAju()):""), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoInvoice(), style,sheet);
 						String penerimaanNama = "";
@@ -964,16 +974,21 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, dataKasBank.getPengeluarannoVoucher(), style,sheet);
 						
 						String transaksiName = "";
+						String typeKBKTypeReimbursementOrNon = "";
 						if(dataKasBank.getPengeluaran_invItemName() != null && !dataKasBank.getPengeluaran_invItemName().equals("")) {
-							transaksiName = dataKasBank.getPengeluaran_invItemName(); 
+							transaksiName = dataKasBank.getPengeluaran_invItemName();
+							typeKBKTypeReimbursementOrNon = "Reimbursement";
 						}else if(dataKasBank.getPengeluaran_payItemName() != null && !dataKasBank.getPengeluaran_payItemName().equals("")) {
-							transaksiName = dataKasBank.getPengeluaran_payItemName(); 
-						} 
+							transaksiName = dataKasBank.getPengeluaran_payItemName();
+							typeKBKTypeReimbursementOrNon = "Non-Reimbursement";
+						}
+
+
 						createCell(rowData, columnCount++, transaksiName, style,sheet);
 //						createCell(rowData, columnCount++, dataKasBank.getPengeluarancoa(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPengeluaran_KategoriName(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPengeluarannoWO(), style,sheet);
-//						createCell(rowData, columnCount++, dataKasBank.getPengeluarannoAju(), style,sheet);
+						createCell(rowData, columnCount++, typeKBKTypeReimbursementOrNon, style,sheet);
 						createCell(rowData, columnCount++, (dataKasBank.getPengeluarannoAju() != null && !dataKasBank.getPengeluarannoAju().equals("") ? new Integer(dataKasBank.getPengeluarannoAju()):""), style,sheet);
 						createCell(rowData, columnCount++, "", style,sheet);
 						createCell(rowData, columnCount++, pengeluaranNamaPaymentTo, style,sheet);
@@ -1252,6 +1267,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 		createCell(row, 14, "No Faktur Pajak", styleBold,sheet);
 		createCell(row, 15, "Rekening Penerima", styleBold,sheet);
 		createCell(row, 16, "Voucher Keluar", styleBold,sheet);
+		createCell(row, 16, "Jenis", styleBold,sheet);
 		createCell(row, 17, "Tanggal Vch KBK", styleBold,sheet);
 		createCell(row, 18, "Rekening Pengeluaran", styleBold,sheet);
 		createCell(row, 19, "Keterangan KBK", styleBold,sheet);
