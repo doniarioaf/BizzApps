@@ -17,6 +17,15 @@ public class StockAdjusmentItem implements Serializable {
     private Long qty;
     private Double price;
     private Double subtotalprice;
+    private String stocktime;
+
+    public String getStocktime() {
+        return stocktime;
+    }
+
+    public void setStocktime(String stocktime) {
+        this.stocktime = stocktime;
+    }
 
     public StockAdjusmentItemPK getStockAdjusmentItemPK() {
         return stockAdjusmentItemPK;

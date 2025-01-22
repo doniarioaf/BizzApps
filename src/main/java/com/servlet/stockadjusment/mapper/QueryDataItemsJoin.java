@@ -13,7 +13,7 @@ public class QueryDataItemsJoin implements RowMapper<StockAdjsumentDataItem> {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.idstockadjusment as idstockadjusment, data.idproduct as idproduct, data.idcategoryproduct as idcategoryproduct, ");
-        sqlBuilder.append("data.qty as qty,data.price as price, data.subtotalprice as subtotalprice, data.type as type, ");
+        sqlBuilder.append("data.qty as qty,data.price as price, data.subtotalprice as subtotalprice, data.type as type,data.stocktime as stocktime, ");
         sqlBuilder.append("prod.nama as prodnama, ");
         sqlBuilder.append("cprod.nama as cprodnama, cprod.size as cprodsize, cprod.weightfromingram as cprodweightfromingram, cprod.weighttoingram as cprodweighttoingram ");
         sqlBuilder.append("from stock_adjusment_item as data ");
@@ -41,6 +41,8 @@ public class QueryDataItemsJoin implements RowMapper<StockAdjsumentDataItem> {
         final String cprodsize = rs.getString("cprodsize");
         final Long cprodweightfromingram = rs.getLong("cprodweightfromingram");
         final Long cprodweighttoingram = rs.getLong("cprodweighttoingram");
+        final String stocktime = rs.getString("stocktime");
+
         StockAdjsumentDataItem data = new StockAdjsumentDataItem();
         data.setIdproduct(idproduct);
         data.setProductName(prodnama);
@@ -53,6 +55,7 @@ public class QueryDataItemsJoin implements RowMapper<StockAdjsumentDataItem> {
         data.setQty(qty);
         data.setPrice(price);
         data.setSubtotalprice(subtotalprice);
+        data.setStocktime(stocktime);
         return data;
     }
 }

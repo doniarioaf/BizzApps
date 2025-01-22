@@ -295,6 +295,7 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
         HashMap<String, StockAdjusmentItem> mapsStock = new HashMap<>();
         try{
             if(items.length > 0){
+                long count = 1;
                 for(BodyStockAdjusmentItem val : items){
                     String keyMaps = idstockadjusment+val.getIdcategoryproduct()+val.getIdproduct()+val.getType();
                     StockAdjusmentItemPK itemsPK = new StockAdjusmentItemPK();
@@ -302,12 +303,15 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
                     itemsPK.setIdcategoryproduct(val.getIdcategoryproduct());
                     itemsPK.setIdproduct(val.getIdproduct());
                     itemsPK.setType(val.getType());
+                    itemsPK.setCounting(count);
                     StockAdjusmentItem table = new StockAdjusmentItem();
                     table.setStockAdjusmentItemPK(itemsPK);
                     table.setQty(val.getQty());
                     table.setPrice(val.getPrice());
                     table.setSubtotalprice(val.getSubtotalprice());
+                    table.setStocktime(val.getStocktime());
                     stockAdjusmentItemRepo.saveAndFlush(table);
+                    count++;
                     mapsStock.put(keyMaps,table);
                 }
             }

@@ -9,7 +9,16 @@ public class StockAdjusmentItemPK implements Serializable {
     private long idstockadjusment;
     private long idproduct;
     private long idcategoryproduct;
+    private long counting;
     private String type;
+
+    public long getCounting() {
+        return counting;
+    }
+
+    public void setCounting(long counting) {
+        this.counting = counting;
+    }
 
     public long getIdstockadjusment() {
         return idstockadjusment;
