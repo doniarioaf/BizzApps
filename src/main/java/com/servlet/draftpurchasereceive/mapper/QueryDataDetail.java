@@ -13,7 +13,7 @@ public class QueryDataDetail implements RowMapper<DraftPurchaseReceiveDetailData
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.date as date, data.idvendor as idvendor, ");
         sqlBuilder.append("data.arriveltime as arriveltime, data.receivetime as receivetime, data.totalekor as totalekor, data.totalkg as totalkg, data.persentase as persentase, ");
-        sqlBuilder.append("data.flightno as flightno, data.notes1 as notes1, data.notes2 as notes2, ");
+        sqlBuilder.append("data.flightno as flightno, data.notes1 as notes1, data.notes2 as notes2,data.box as box, ");
         sqlBuilder.append("data.smu as smu, ven.nama as venNama, ven.alias as venAlias, ");
         sqlBuilder.append("data.createddate as createddate, data.modifieddate as modifieddate, ");
         sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama ");
@@ -53,6 +53,7 @@ public class QueryDataDetail implements RowMapper<DraftPurchaseReceiveDetailData
         final String flightno = rs.getString("flightno");
         final String notes1 = rs.getString("notes1");
         final String notes2 = rs.getString("notes2");
+        final Long box = rs.getLong("box");
 
         DraftPurchaseReceiveDetailData data = new DraftPurchaseReceiveDetailData();
         data.setId(id);
@@ -74,6 +75,7 @@ public class QueryDataDetail implements RowMapper<DraftPurchaseReceiveDetailData
         data.setFlightno(flightno);
         data.setNotes1(notes1);
         data.setNotes2(notes2);
+        data.setBox(box);
         return data;
     }
 }

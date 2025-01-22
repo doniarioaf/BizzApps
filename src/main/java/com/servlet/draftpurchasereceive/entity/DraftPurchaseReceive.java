@@ -34,6 +34,7 @@ public class DraftPurchaseReceive implements Serializable {
     private String flightno;
     private String notes1;
     private String notes2;
+    private Long box;
 
     @Override
     public String toString() {
@@ -50,7 +51,16 @@ public class DraftPurchaseReceive implements Serializable {
                 ", flightno=" + flightno +
                 ", notes1=" + notes1 +
                 ", notes2=" + notes2 +
+                ", box=" + box +
                 '}';
+    }
+
+    public Long getBox() {
+        return box;
+    }
+
+    public void setBox(Long box) {
+        this.box = box;
     }
 
     public String getFlightno() {

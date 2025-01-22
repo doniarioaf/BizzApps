@@ -14,7 +14,7 @@ public interface PackingListService {
     ReturnData update(Long id, Long idcompany, Long idbranch, Long iduser, BodyPackingList body);
     ReturnData delete(Long id, Long idcompany, Long idbranch, Long iduser);
     List<PackingListDropDown> getDropDown(Long idcompany, Long idbranch, ParamDropDownPackingList param);
-    PrintPackingList getPrintData(Long id,Long idcompany, Long idbranch,Long iduser);
+    PrintPackingList getPrintData(Long id,Long idcompany, Long idbranch,Long iduser, ParamPrint paramPrint);
     Long calculateQtyPL(Long idcompany, Long idbranch, ParamCalculateQtyPL param);
     ReturnData catatDownload(Long id,Long idcompany, Long idbranch, Long iduser);
     List<ReportKartuStock> getListReportKartuStock(Long idcompany, Long idbranch, ParamSearchPackingList param);

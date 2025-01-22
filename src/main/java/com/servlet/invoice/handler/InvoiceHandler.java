@@ -206,7 +206,7 @@ public class InvoiceHandler implements InvoiceService {
     }
 
     @Override
-    public PrintInvoice getPrintDataByID(Long id, Long idcompany, Long idbranch,Long iduser) {
+    public PrintInvoice getPrintDataByID(Long id, Long idcompany, Long idbranch,Long iduser,ParamPrintInvoice paramPrintInvoice) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPrintInvoice().schema());
         sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
 
@@ -239,6 +239,14 @@ public class InvoiceHandler implements InvoiceService {
                     namaUser = user.getNama();
                 }
                 det.setNamaUser(namaUser);
+            }
+
+            if(paramPrintInvoice != null){
+                if(paramPrintInvoice.getNamaMenu() != null){
+                    if(paramPrintInvoice.getNamaMenu().equals("PRINT")){
+                        catatDownload(id,idcompany,idbranch,iduser);
+                    }
+                }
             }
 
             return det;

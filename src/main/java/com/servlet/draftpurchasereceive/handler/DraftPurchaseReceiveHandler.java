@@ -132,6 +132,7 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
                 table.setNotes1(body.getNotes1());
                 table.setNotes2(body.getNotes2());
                 table.setSmu(body.getSmu());
+                table.setBox(body.getBox());
                 table.setTotalekor(body.getTotalekor());
                 table.setTotalkg(body.getTotalkg());
                 table.setPersentase(body.getPersentase());
@@ -214,10 +215,12 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
                     table.setFlightno(body.getFlightno());
                     table.setNotes1(body.getNotes1());
                     table.setNotes2(body.getNotes2());
+                    table.setBox(body.getBox());
                     table.setSmu(body.getSmu());
                     table.setTotalekor(body.getTotalekor());
                     table.setTotalkg(body.getTotalkg());
                     table.setPersentase(body.getPersentase());
+                    table.setBox(body.getBox());
                     table.setModifiedby(iduser);
                     table.setModifieddate(ts);
                     idsave = repo.saveAndFlush(table).getId();

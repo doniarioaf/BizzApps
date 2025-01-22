@@ -476,6 +476,8 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         print.setCharges(charges);
         print.setInventori(inventori);
 
+        catatDownload(id,idcompany,idbranch,iduser);
+
         return print;
     }
     private PrintDataPurchaseReceive getPrintDataNotaSupplier(Long id,Long iduser, Long idcompany,Long idbranch,PrintDataPurchaseReceive value){
@@ -496,6 +498,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             namaUser = user.getNama();
         }
         print.setNamaUser(namaUser);
+        catatDownload(id,idcompany,idbranch,iduser);
         return print;
     }
 

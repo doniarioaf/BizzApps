@@ -293,7 +293,7 @@ public class PackingListHandler implements PackingListService {
     }
 
     @Override
-    public PrintPackingList getPrintData(Long id, Long idcompany, Long idbranch,Long iduser) {
+    public PrintPackingList getPrintData(Long id, Long idcompany, Long idbranch,Long iduser,ParamPrint paramPrint) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataPrint().schema());
         sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
         final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
@@ -319,6 +319,13 @@ public class PackingListHandler implements PackingListService {
                     namaUser = user.getNama();
                 }
                 data.setNamaUser(namaUser);
+            }
+            if(paramPrint != null){
+                if(paramPrint.getNamaMenu() != null){
+                    if(paramPrint.getNamaMenu().equals("PRINT")){
+                        catatDownload(id,idcompany,idbranch,iduser);
+                    }
+                }
             }
             return data;
         }

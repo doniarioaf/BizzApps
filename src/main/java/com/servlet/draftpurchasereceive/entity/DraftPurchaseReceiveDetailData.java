@@ -30,6 +30,15 @@ public class DraftPurchaseReceiveDetailData {
     private Timestamp modifieddate;
     private Long deleteby;
     private List<DraftPurchaseReceiveItemsDetailData> items;
+    private Long box;
+
+    public Long getBox() {
+        return box;
+    }
+
+    public void setBox(Long box) {
+        this.box = box;
+    }
 
     public String getFlightno() {
         return flightno;

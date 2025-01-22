@@ -14,6 +14,15 @@ public class BodyDraftPurchaseReceive {
     private String flightno;
     private String notes1;
     private String notes2;
+    private Long box;
+
+    public Long getBox() {
+        return box;
+    }
+
+    public void setBox(Long box) {
+        this.box = box;
+    }
 
     public String getFlightno() {
         return flightno;

@@ -24,11 +24,13 @@ import com.servlet.draftpurchasereceive.service.DraftPurchaseReceiveService;
 import com.servlet.inventori.entity.BodyInventori;
 import com.servlet.inventori.service.InventoriService;
 import com.servlet.invoice.entity.BodyInvoice;
+import com.servlet.invoice.entity.ParamPrintInvoice;
 import com.servlet.invoice.entity.ParamSearchInvoice;
 import com.servlet.invoice.service.InvoiceService;
 import com.servlet.mappingstock.entity.BodyMappingStock;
 import com.servlet.mappingstock.service.MappingStockService;
 import com.servlet.packinglist.entity.BodyPackingList;
+import com.servlet.packinglist.entity.ParamPrint;
 import com.servlet.packinglist.entity.ParamSearchPackingList;
 import com.servlet.packinglist.service.PackingListService;
 import com.servlet.parameterclient.entity.BodyParameterClient;
@@ -1293,7 +1295,9 @@ public class ProcessHandler implements ProcessService{
 					val.setData(packingListService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("PRINT")) {
 					long id = (long) param.get("id");
-					val.setData(packingListService.getPrintData(id,auth.getIdcompany(), auth.getIdbranch(),auth.getId()));
+					ParamPrint pp = new ParamPrint();
+					pp.setNamaMenu("PRINT");
+					val.setData(packingListService.getPrintData(id,auth.getIdcompany(), auth.getIdbranch(),auth.getId(),pp));
 				}else if(type.equals("DOWNLOAD_PRINTPDF")) {
 					long id = (long) param.get("id");
 					val.setData(packingListService.catatDownload(id,auth.getIdcompany(), auth.getIdbranch(),auth.getId()));
@@ -1324,7 +1328,9 @@ public class ProcessHandler implements ProcessService{
 					val.setData(packingListService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("PRINT")) {
 					long id = (long) param.get("id");
-					val.setData(invoiceService.getPrintDataByID(id,auth.getIdcompany(), auth.getIdbranch(), auth.getId()));
+					ParamPrintInvoice pp = new ParamPrintInvoice();
+					pp.setNamaMenu("PRINT");
+					val.setData(invoiceService.getPrintDataByID(id,auth.getIdcompany(), auth.getIdbranch(), auth.getId(),pp));
 				}else if(type.equals("DOWNLOAD_PRINTPDF")) {
 					long id = (long) param.get("id");
 					val.setData(invoiceService.catatDownload(id,auth.getIdcompany(), auth.getIdbranch(), auth.getId()));

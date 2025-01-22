@@ -146,7 +146,7 @@ public class ReportHandler implements ReportService {
         columns.add(5000); //5
         columns.add(5000); //6
 
-        PrintPackingList print = packingListService.getPrintData(id,idcompany,idbranch,null);
+        PrintPackingList print = packingListService.getPrintData(id,idcompany,idbranch,null,null);
         if(print != null) {
             int fontHeight = 12;
             CellStyle style = workbook.createCellStyle();
@@ -375,7 +375,7 @@ public class ReportHandler implements ReportService {
         columns.add(5000); //6
         columns.add(5000); //6
 
-        PrintInvoice print = invoiceService.getPrintDataByID(id,idcompany,idbranch,null);
+        PrintInvoice print = invoiceService.getPrintDataByID(id,idcompany,idbranch,null,null);
         if(print != null){
             int fontHeight = 12;
             CellStyle style = workbook.createCellStyle();

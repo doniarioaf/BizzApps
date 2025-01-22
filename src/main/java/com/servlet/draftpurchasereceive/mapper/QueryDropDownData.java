@@ -15,7 +15,7 @@ public class QueryDropDownData implements RowMapper<DraftPurchaseReceiveDropDown
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.date as date, ");
-        sqlBuilder.append("data.smu as smu, data.flightno as flightno, data.notes1 as notes1, data.notes2 as notes2 ");
+        sqlBuilder.append("data.smu as smu, data.flightno as flightno, data.notes1 as notes1, data.notes2 as notes2, data.box as box ");
         sqlBuilder.append("from draft_purchasereceive as data ");
 
         this.schemaSql = sqlBuilder.toString();
@@ -35,6 +35,7 @@ public class QueryDropDownData implements RowMapper<DraftPurchaseReceiveDropDown
         final String flightno = rs.getString("flightno");
         final String notes1 = rs.getString("notes1");
         final String notes2 = rs.getString("notes2");
+        final Long box = rs.getLong("box");
         DraftPurchaseReceiveDropDownList data = new DraftPurchaseReceiveDropDownList();
         data.setId(id);
         data.setNodocument(nodocument);
@@ -43,6 +44,7 @@ public class QueryDropDownData implements RowMapper<DraftPurchaseReceiveDropDown
         data.setFlightno(flightno);
         data.setNotes1(notes1);
         data.setNotes2(notes2);
+        data.setBox(box);
         return data;
     }
 }
