@@ -21,9 +21,9 @@ public interface PurchaseReceiveService {
     ReturnData delete(Long id,Long idcompany, Long idbranch, Long iduser);
     ReturnData catatDownload(Long id,Long idcompany, Long idbranch, Long iduser);
     SearchDataTemplateByVendor searchDataByVendor(Long idcompany, Long idbranch,Long idvendor);
-    Double calculateSetorByIdVendor(Long idcompany, Long idbranch, Long idvendor);
+    Double calculateSetorByIdVendor(Long idcompany, Long idbranch, Long idvendor,String listidvendor);
     PrintDataPurchaseReceive printNotaPurchaseReceive(Long idcompany, Long idbranch,Long iduser, Long id,String printtype);
-    Double calculateSetorByIdVendorAndCreatedDate(Long idcompany, Long idbranch, Long idvendor, Long date);
+    Double calculateSetorByIdVendorAndCreatedDate(Long idcompany, Long idbranch, Long idvendor, Long date, String listidvendor);
     PurchaseReceiveDataList checkIdDeposit(Long iddeposit);
     PurchaseReceiveDataList getDataByIdDratPurchaseReceive(Long iddraftpurchasereceive,Long idcompany, Long idbranch);
     boolean checkIDVendor(Long idvendor);
@@ -33,7 +33,7 @@ public interface PurchaseReceiveService {
     ReturnData updateOustandingKurang(Long id,Double bayar);
     List<PurchaseReceiveDataPelunasanHutang> getListForPelunasanHutang(Long idcompany, Long idbranch, FilterParamPelunasanHutang param);
     List<ReportPelunasanHutangDocumentHutang> getListPRReportHutang(Long idcompany, Long idbranch, FilterParamPurchaseReceive param);
-    Double calculateSetorByIdVendorAndDate(Long idcompany, Long idbranch, Long idvendor, Long date);
+    Double calculateSetorByIdVendorAndDate(Long idcompany, Long idbranch, Long idvendor, Long date, String listidvendor);
     List<ReportKartuDeposit> getListPrReportKartuDeposit(Long idcompany, Long idbranch, FilterParamPurchaseReceive param);
     PurchaseReceiveItemsNotJoin getItemInLastDocumentPR(Long idcompany, Long idbranch, Long idproduct, Long idcategoryproduct);
     List<ReportKartuStock> getListPrReportKartuStock(Long idcompany, Long idbranch, FilterParamPurchaseReceive param);

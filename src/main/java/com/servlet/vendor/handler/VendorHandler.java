@@ -9,10 +9,7 @@ import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 import com.servlet.vendor.entity.*;
-import com.servlet.vendor.mapper.QueryListForDropdownList;
-import com.servlet.vendor.mapper.QueryListVendor;
-import com.servlet.vendor.mapper.QueryVendorCategoryProductNotInclude;
-import com.servlet.vendor.mapper.QueryVendorDetail;
+import com.servlet.vendor.mapper.*;
 import com.servlet.vendor.repo.VendorCategoryProductNotIncludeRepo;
 import com.servlet.vendor.repo.VendorRepo;
 import com.servlet.vendor.service.VendorService;
@@ -288,6 +285,28 @@ public class VendorHandler implements VendorService {
         }
         return null;
     }
+
+    @Override
+    public Long getIdParent(Long idcompany, Long idbranch, Long idvendor) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryGetIdParent().schema());
+        sqlBuilder.append(" where data.id = ? and data.idcompany = ?  and data.isdelete = false ");
+        final Object[] queryParameters = new Object[] {idvendor,idcompany};
+        List<Long> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryGetIdParent(), queryParameters);
+        if(list != null && list.size() > 0){
+            //Jika ada id parent maka ambil idparent
+            return list.get(0) != null && list.get(0)  != 0?list.get(0):idvendor;
+        }
+        return null;
+    }
+
+    @Override
+    public List<Long> getListSubIdParent(Long idcompany, Long idbranch, Long idvendor) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryGetId().schema());
+        sqlBuilder.append(" where data.idvendorparent = ? and data.idcompany = ?  and data.isdelete = false ");
+        final Object[] queryParameters = new Object[] {idvendor,idcompany};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryGetId(), queryParameters);
+    }
+
 
     private HashMap<Object,Object> setItems(Long[] items, Long idvendor){
         List<ValidationDataMessage> validations = new ArrayList<>();

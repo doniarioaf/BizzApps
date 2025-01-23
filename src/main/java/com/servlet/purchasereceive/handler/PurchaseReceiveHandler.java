@@ -384,10 +384,16 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     }
 
     @Override
-    public Double calculateSetorByIdVendor(Long idcompany, Long idbranch, Long idvendor) {
+    public Double calculateSetorByIdVendor(Long idcompany, Long idbranch, Long idvendor,String listidvendor) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountSetor().schema());
-        sqlBuilder.append(" where data.idcompany = ? and data.idvendor = ?  and data.isdelete = false ");
-        final Object[] queryParameters = new Object[] {idcompany,idvendor};
+        sqlBuilder.append(" where data.idcompany = ? and data.isdelete = false ");
+        if(idvendor != null){
+            sqlBuilder.append(" and data.idvendor = "+idvendor+" ");
+        }
+        if(listidvendor != null && !listidvendor.equals("")){
+            sqlBuilder.append(" and data.idvendor in ("+listidvendor+") ");
+        }
+        final Object[] queryParameters = new Object[] {idcompany};
         List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateAmountSetor(), queryParameters);
         if(list != null && list.size() > 0){
             return list.get(0);
@@ -503,11 +509,17 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     }
 
     @Override
-    public Double calculateSetorByIdVendorAndCreatedDate(Long idcompany, Long idbranch, Long idvendor, Long date) {
+    public Double calculateSetorByIdVendorAndCreatedDate(Long idcompany, Long idbranch, Long idvendor, Long date,String listidvendor) {
         Timestamp dt = new Timestamp(date);
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountSetor().schema());
-        sqlBuilder.append(" where data.idcompany = ? and data.idvendor = ?  and data.isdelete = false and data.createddate < '"+dt+"' ");
-        final Object[] queryParameters = new Object[] {idcompany,idvendor};
+        sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false and data.createddate < '"+dt+"' ");
+        if(idvendor != null){
+            sqlBuilder.append(" and data.idvendor = "+idvendor+"  ");
+        }
+        if(listidvendor != null && !listidvendor.equals("")){
+            sqlBuilder.append(" and data.idvendor in ("+listidvendor+")  ");
+        }
+        final Object[] queryParameters = new Object[] {idcompany};
         List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateAmountSetor(), queryParameters);
         if(list != null && list.size() > 0){
             return list.get(0);
@@ -567,9 +579,17 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             selectIdPR += " and pr.transactiondate <= '"+dt.toString()+"' ";
         }
         if(param.getIdvendor() != null){
-            sqlBuilder.append(" and data.idvendor = "+param.getIdvendor().longValue()+" ");
-            selectIdPR += " and pr.idvendor = "+param.getIdvendor().longValue()+" ";
+            if(param.getIdvendor().longValue() > 0){
+                sqlBuilder.append(" and data.idvendor = "+param.getIdvendor().longValue()+" ");
+                selectIdPR += " and pr.idvendor = "+param.getIdvendor().longValue()+" ";
+            }
         }
+
+        if(param.getListidvendor() != null && !param.getListidvendor().equals("")){
+            sqlBuilder.append(" and data.idvendor in ("+param.getListidvendor()+") ");
+            selectIdPR += " and pr.idvendor in ("+param.getListidvendor()+") ";
+        }
+
         if(param.getIdarea() != null){
             sqlBuilder.append(" and data.idarea = "+param.getIdarea().longValue()+" ");
             selectIdPR += " and pr.idarea = "+param.getIdarea().longValue()+" ";
@@ -725,11 +745,18 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     }
 
     @Override
-    public Double calculateSetorByIdVendorAndDate(Long idcompany, Long idbranch, Long idvendor, Long date) {
+    public Double calculateSetorByIdVendorAndDate(Long idcompany, Long idbranch, Long idvendor, Long date,String listidvendor) {
         Date dt = new Date(date);
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountSetor().schema());
-        sqlBuilder.append(" where data.idcompany = ? and data.idvendor = ?  and data.isdelete = false and data.transactiondate < '"+dt+"' ");
-        final Object[] queryParameters = new Object[] {idcompany,idvendor};
+        sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false and data.transactiondate < '"+dt+"' ");
+        if(idvendor != null){
+            sqlBuilder.append(" and data.idvendor = "+idvendor+" ");
+        }
+
+        if(listidvendor != null && !listidvendor.equals("")){
+            sqlBuilder.append(" and data.idvendor in ("+listidvendor+") ");
+        }
+        final Object[] queryParameters = new Object[] {idcompany};
         List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateAmountSetor(), queryParameters);
         if(list != null && list.size() > 0){
             return list.get(0);

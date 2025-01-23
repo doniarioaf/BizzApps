@@ -5,6 +5,23 @@ public class ParamReportPembelian {
     private Long to;
     private Long idvendor;
     private Long idarea;
+    private String listidvendor;
+
+    public void setFrom(Long from) {
+        this.from = from;
+    }
+
+    public void setTo(Long to) {
+        this.to = to;
+    }
+
+    public String getListidvendor() {
+        return listidvendor;
+    }
+
+    public void setListidvendor(String listidvendor) {
+        this.listidvendor = listidvendor;
+    }
 
     public Long getFrom() {
         return from;
