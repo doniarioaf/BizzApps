@@ -17,4 +17,5 @@ public interface DraftPurchaseReceiveService {
     List<DraftPurchaseReceiveDropDownList> getDropDownList(Long idcompany, Long idbranch, ParamGetDataDraftPR param);
     List<DraftPurchaseReceiveItemsDetailData> getListItemsByID(Long iddraftpurchasereceive);
     List<DraftPurchaseReceiveItemsDetailData> getListItemsByIDForPR(Long iddraftpurchasereceive);
+    List<DraftPurchaseReceiveList> getListNotLinksInPR(Long idcompany, Long idbranch, ParamSearchDraftPurchaseReceive param);
 }

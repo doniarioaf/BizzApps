@@ -340,6 +340,25 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataItemsDetail(), queryParameters);
     }
 
+    @Override
+    public List<DraftPurchaseReceiveList> getListNotLinksInPR(Long idcompany, Long idbranch, ParamSearchDraftPurchaseReceive param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataList().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        String selectidPR = "select id from purchasereceive as pr where pr.idcompany = "+idcompany+" and pr.idbranch = "+idbranch+" and pr.isdelete = false ";
+        selectidPR += " and pr.iddraftpurchasereceive notnull ";
+        sqlBuilder.append(" and data.id not in ("+selectidPR+")  ");
+//        if(param.getFrom() != null){
+//            Date dt = new Date(param.getFrom());
+//            sqlBuilder.append(" and data.date >= '"+dt.toString()+"'");
+//        }
+//        if(param.getTo() != null){
+//            Date dt = new Date(param.getTo());
+//            sqlBuilder.append(" and data.date <= '"+dt.toString()+"'");
+//        }
+
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataList(), queryParameters);
+    }
 
 
     private HashMap<Object,Object> setItems(Long idcompany, Long idbranch, Long iddraftpurchasereceive, BodyDraftPurchaseReceiveItems[] items){
