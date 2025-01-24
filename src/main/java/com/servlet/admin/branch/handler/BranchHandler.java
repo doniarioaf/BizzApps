@@ -6,6 +6,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.servlet.admin.branch.entity.UserBranchAllData;
+import com.servlet.admin.branch.mapper.GetUserBranchAll;
+import com.servlet.runningnumber.service.RunningNumberService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,9 @@ public class BranchHandler implements BranchService{
 	private BranchRepo repository;
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	private RunningNumberService runningNumberService;
 	
 	@Override
 	public List<Branch> getListBranchActive() {
@@ -67,6 +73,7 @@ public class BranchHandler implements BranchService{
 		table.setModified(ts);
 		table.setIsdelete(false);
 		Branch returntable = repository.saveAndFlush(table);
+		runningNumberService.saveList(1L,returntable.getId());
 		BranchData data = new BranchData();
 		data.setId(returntable.getId());
 		data.setName(branch.getNama());
@@ -123,5 +130,13 @@ public class BranchHandler implements BranchService{
 		return data;
 	}
 
-	
+	@Override
+	public List<UserBranchAllData> getAllListUserBranch() {
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetUserBranchAll().schema());
+		sqlBuilder.append(" where b.isdelete = false and b.isactive = true ");
+		final Object[] queryParameters = new Object[] {  };
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetUserBranchAll(), queryParameters);
+	}
+
+
 }

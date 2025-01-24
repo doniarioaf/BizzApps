@@ -38,6 +38,13 @@ public class GlobalFunc {
 	     cal.add(Calendar.DATE, days); //minus number would decrement the days
 	     return new Timestamp(cal.getTime().getTime());
 	}
+
+	public static Long addDays(Long lgdate,int days) throws ParseException {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date(lgdate));// w ww.  j ava  2  s  .co m
+		cal.add(Calendar.DATE, days); //minus number would decrement the days
+		return cal.getTime().getTime();
+	}
 	
 	public static Timestamp addDaysByType(Timestamp ts,int days,String type) throws ParseException {
 		 Calendar cal = Calendar.getInstance();
@@ -86,5 +93,21 @@ public class GlobalFunc {
 	        return false;
 	    }
 		return true;
+	}
+
+	public static boolean checkIsDecimal(double nilai) {
+		//jika true, berati bukan decimal
+		//jika false , decimal. Ex, 3.1,2.3 dst
+		double nilaiComma = round(nilai,2);
+		return nilaiComma % 1 == 0;
+	}
+
+	private static double round(double value, int places) {
+		if (places < 0) throw new IllegalArgumentException();
+
+		long factor = (long) Math.pow(10, places);
+		value = value * factor;
+		long tmp = Math.round(value);
+		return (double) tmp / factor;
 	}
 }

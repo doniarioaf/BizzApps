@@ -6,6 +6,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import com.servlet.admin.branch.service.BranchService;
+import com.servlet.admin.userbranch.service.UserBranchService;
+import com.servlet.user.entity.UserListData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,13 +59,18 @@ public class SecurityHandler implements SecurityService{
 	UserMobileService usermobileservice;
 	@Autowired
 	CompanyService companyService;
+
+	@Autowired
+	UserBranchService userBranchService;
+	@Autowired
+	BranchService branchService;
 	@Autowired
 	LogsService logsService;
 	
 	@Override
 	public Response response(String codepermission, Object data, String authorization) {
 		Response value = new Response();
-		if(authorization.equals("loginweb") || authorization.equals("loginmobile")) {
+		if(authorization.equals("preloginweb") || authorization.equals("loginweb") || authorization.equals("loginmobile")) {
 			if(authorization.equals("loginmobile")) {
 				ReturnLoginMobile mobile = (ReturnLoginMobile) data;
 				if(mobile.getReturnData() != null) {
@@ -140,6 +148,32 @@ public class SecurityHandler implements SecurityService{
 					if(!web.getUsername().equals("")) {
 						setLogs(web.getIdcompany(), web.getIdbranch(), web.getUsername(), "loginweb", "Failed (Username Or Password Wrong)");
 					}
+				}
+			}else if(authorization.equals("preloginweb")) {
+				ReturnData web = (ReturnData) data;
+				if(web.getId() > 0) {
+					UserListData dtuser = userappsservice.getUserByID(web.getId());
+					value.setSuccess(true);
+					value.setMessagecode(ConstansCodeMessage.CODE_MESSAGE_SUCCESS);
+					value.setMessage("SUCCESS");
+					if(dtuser != null){
+						if(dtuser.isIsallbranch()){
+							value.setData(branchService.getAllListUserBranch());
+						}else{
+							value.setData(userBranchService.getListUserBranchByIdUserJoinBranch(web.getId()));
+						}
+					}else{
+						value.setData(userBranchService.getListUserBranchByIdUserJoinBranch(web.getId()));
+					}
+
+					value.setHttpcode(HttpStatus.OK.value());
+					value.setValidations(web.getValidations());
+				}else{
+					value.setSuccess(false);
+					value.setMessagecode(ConstansCodeMessage.CODE_MESSAGE_USERNAME_OR_PASSWORD_WRONG);
+					value.setMessage("Username Or Password Wrong");
+					value.setData(null);
+					value.setHttpcode(HttpStatus.UNAUTHORIZED.value());
 				}
 			}
 			

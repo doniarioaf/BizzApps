@@ -11,6 +11,16 @@ public class BodyUserApps {
 //	private long idcompany;
 //	private long idbranch;
 	private Long[] roles;
+	private boolean isallbranch;
+
+	public boolean isIsallbranch() {
+		return isallbranch;
+	}
+
+	public void setIsallbranch(boolean isallbranch) {
+		this.isallbranch = isallbranch;
+	}
+
 	public Long[] getRoles() {
 		return roles;
 	}
@@ -29,6 +39,20 @@ public class BodyUserApps {
 //	public void setIdbranch(long idbranch) {
 //		this.idbranch = idbranch;
 //	}
+	private Long[] branchs;
+
+	public boolean isIsactive() {
+		return isactive;
+	}
+
+	public Long[] getBranchs() {
+		return branchs;
+	}
+
+	public void setBranchs(Long[] branchs) {
+		this.branchs = branchs;
+	}
+
 	public String getUsername() {
 		return username;
 	}

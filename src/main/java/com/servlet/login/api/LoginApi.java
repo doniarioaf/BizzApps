@@ -38,7 +38,13 @@ public class LoginApi {
 	
 	@PostMapping("/login")
 	ResponseEntity<Response> getLogin(@RequestBody @Validated BodyLogin bodylogin){
-		Response response = securityService.response("loginweb",userappsservice.actionLogin(bodylogin.getUser(), bodylogin.getPassword()),"loginweb");
+		Response response = securityService.response("loginweb",userappsservice.actionLogin(bodylogin.getUser(), bodylogin.getPassword(),bodylogin.getIdbranch().longValue()),"loginweb");
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+
+	@PostMapping("/prelogin")
+	ResponseEntity<Response> getPreLogin(@RequestBody @Validated BodyLogin bodylogin){
+		Response response = securityService.response("preloginweb",userappsservice.loginGetListBranch(bodylogin.getUser(), bodylogin.getPassword()),"preloginweb");
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	

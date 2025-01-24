@@ -6,6 +6,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+import com.servlet.admin.branch.service.BranchService;
+import com.servlet.admin.userbranch.entity.UserBranch;
+import com.servlet.admin.userbranch.entity.UserBranchData;
+import com.servlet.admin.userbranch.entity.UserBranchPK;
+import com.servlet.admin.userbranch.service.UserBranchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -53,6 +59,12 @@ public class UserAppsHandler implements UserAppsService{
 	@Autowired
 	RoleService roleService;
 
+	@Autowired
+	UserBranchService userBranchService;
+
+	@Autowired
+	BranchService branchService;
+
 	@Override
 	public List<UserApps> getListLogin(HashMap<String, Object> hashparam) {
 		// TODO Auto-generated method stub
@@ -70,7 +82,7 @@ public class UserAppsHandler implements UserAppsService{
 	}
 
 	@Override
-	public ReturnLoginApps actionLogin(String username, String password) {
+	public ReturnLoginApps actionLogin(String username, String password,long idbranch) {
 		// TODO Auto-generated method stub
 		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
 		AESEncryptionDecryption aesEncryptionDecryption = new AESEncryptionDecryption();
@@ -79,13 +91,13 @@ public class UserAppsHandler implements UserAppsService{
 		List<UserApps> list = repository.getUserLoginByUsername(username);
 		String tempusername = "";
 		long idcompany = 0;
-		long idbranch = 0;
+//		long idbranch = 0;
 		for(UserApps user : list) {
 			String passwordDB = aesEncryptionDecryption.decrypt(user.getPassword());
 			if(passwordDB.equals(password)) {
 				tempusername = username;
 				idcompany = user.getIdcompany();
-				idbranch = user.getIdbranch();
+//				idbranch = user.getIdbranch();
 				SecurityLicenseData license = securityService.checkLicense(user.getIdcompany(), null, null);
 				returndata = new ReturnData();
 				returndata = license.getReturnData();
@@ -100,7 +112,7 @@ public class UserAppsHandler implements UserAppsService{
 					dataauth.setDatelogin(ts);
 					dataauth.setPasswordtoken(encryptedPassToken);
 					dataauth.setIdcompany(user.getIdcompany());
-					dataauth.setIdbranch(user.getIdbranch());
+					dataauth.setIdbranch(idbranch);
 					dataauth.setTypelogin(ConstansKey.TYPE_WEB);
 					
 					String encryptedString = aesEncryptionDecryption.encrypt(new ConvertJson().toJsonString(dataauth));
@@ -124,7 +136,32 @@ public class UserAppsHandler implements UserAppsService{
 		data.setIdbranch(idbranch);
 		return data;
 	}
-	
+
+	@Override
+	public ReturnData loginGetListBranch(String username, String password) {
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
+		List<UserApps> list = repository.getUserLoginByUsername(username);
+		long iduser = 0;
+		if(list != null && list.size() > 0){
+			AESEncryptionDecryption aesEncryptionDecryption = new AESEncryptionDecryption();
+			for(UserApps user : list) {
+				String passwordDB = aesEncryptionDecryption.decrypt(user.getPassword());
+				if(passwordDB.equals(password)) {
+					iduser = user.getId();
+					break;
+				}
+			}
+		}else{
+			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_USERNAME_OR_PASSWORD_WRONG,"Username or password wrong");
+			validations.add(msg);
+		}
+		ReturnData data = new ReturnData();
+		data.setId(iduser);
+		data.setSuccess(validations.size() > 0?false:true);
+		data.setValidations(validations);
+		return data;
+	}
+
 	private List<String> setPermissions(long id){
 		List<String> list = new ArrayList<String>();
 		List<UserPermissionData> listp = new ArrayList<UserPermissionData>(getListUserPermission(id));
@@ -154,9 +191,10 @@ public class UserAppsHandler implements UserAppsService{
 		table.setNotelepon(userapps.getNotelepon());
 		table.setIsactive(true);
 		table.setIdcompany(idcompany);
-		table.setIdbranch(idbranch);
+		table.setIdbranch(0);
 		table.setEmail(userapps.getEmail());
 		table.setAddress(userapps.getAddress());
+		table.setIsallbranch(userapps.isIsallbranch());
 		table.setIsdelete(false);
 		table.setCreated(ts);
 		table.setModified(ts);
@@ -195,6 +233,20 @@ public class UserAppsHandler implements UserAppsService{
 				}
 				userAppsRoleService.saveUserAppsRoleList(listsave);
 			}
+
+			List<UserBranch> listUserBranch =  new ArrayList<>();
+			if(userapps.getBranchs().length > 0){
+				for (int i = 0; i < userapps.getBranchs().length; i++) {
+					UserBranchPK ubPK = new UserBranchPK();
+					ubPK.setIduser(user.getId());
+					ubPK.setIdbranch(userapps.getBranchs()[i]);
+					UserBranch ub = new UserBranch();
+					ub.setUserBranchPK(ubPK);
+					listUserBranch.add(ub);
+				}
+				userBranchService.saveUserBranchList(listUserBranch);
+			}
+
 		}
 		
 		ReturnData data = new ReturnData();
@@ -207,7 +259,7 @@ public class UserAppsHandler implements UserAppsService{
 	@Override
 	public UserDetailData getDetailUserApps(long id,long idcompany,long idbranch) {
 		// TODO Auto-generated method stub
-		List<UserApps> list = repository.getUserById(id, idcompany, idbranch);
+		List<UserApps> list = repository.getUserById(id);
 		if(list != null && list.size() > 0) {
 			List<UserAppsRoleData> listroleuser = new ArrayList<UserAppsRoleData>(userAppsRoleService.getListUserAppsRole(id));
 			UserApps data = list.get(0);
@@ -230,10 +282,15 @@ public class UserAppsHandler implements UserAppsService{
 			datadetail.setIsdelete(data.isIsdelete());
 			datadetail.setCreated(data.getCreated());
 			datadetail.setModified(data.getModified());
-			
+			datadetail.setIsallbranch(data.isIsallbranch());
+
 			UserDetailData userdetail = new UserDetailData();
 			userdetail.setUser(datadetail);
 			userdetail.setRoles(listroleuser);
+			if(!data.isIsallbranch()){
+				List<UserBranchData> listUB = userBranchService.getListUserBranchByIdUserJoinBranch(id);
+				userdetail.setBranchs(listUB);
+			}
 			return userdetail;
 		}
 		return null;
@@ -250,6 +307,7 @@ public class UserAppsHandler implements UserAppsService{
 		table.setIsactive(userapps.getIsactive());
 		table.setEmail(userapps.getEmail());
 		table.setAddress(userapps.getAddress());
+		table.setIsallbranch(userapps.isIsallbranch());
 		table.setModified(ts);
 		
 		UserApps user = repository.saveAndFlush(table);
@@ -278,6 +336,31 @@ public class UserAppsHandler implements UserAppsService{
 			}
 			userAppsRoleService.saveUserAppsRoleList(listsave);
 		}
+
+		List<UserBranchPK> listdeleteUB = new ArrayList<UserBranchPK>();
+		List<UserBranchData> listUB = new ArrayList<UserBranchData>(userBranchService.getListUserBranchByIdUser(id));
+		if(listUB.size() > 0) {
+			for(UserBranchData data : listUB) {
+				UserBranchPK pk = new UserBranchPK();
+				pk.setIdbranch(data.getIdbranch());
+				pk.setIduser(data.getIduser());
+				listdeleteUB.add(pk);
+			}
+			userBranchService.deleteAllUserBranchByListPK(listdeleteUB);
+		}
+
+		List<UserBranch> listUserBranch =  new ArrayList<>();
+		if(userapps.getBranchs().length > 0){
+			for (int i = 0; i < userapps.getBranchs().length; i++) {
+				UserBranchPK ubPK = new UserBranchPK();
+				ubPK.setIduser(user.getId());
+				ubPK.setIdbranch(userapps.getBranchs()[i]);
+				UserBranch ub = new UserBranch();
+				ub.setUserBranchPK(ubPK);
+				listUserBranch.add(ub);
+			}
+			userBranchService.saveUserBranchList(listUserBranch);
+		}
 		
 		ReturnData data = new ReturnData();
 		data.setId(user.getId());
@@ -289,8 +372,8 @@ public class UserAppsHandler implements UserAppsService{
 	public List<UserListData> getListAllUser(long idcompany, long idbranch) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListAllUser().schema());
-		sqlBuilder.append(" where mua.idcompany = ? and mua.idbranch = ? and mua.isdelete = false ");
-		final Object[] queryParameters = new Object[] { idcompany , idbranch};
+		sqlBuilder.append(" where mua.idcompany = ?  and mua.isdelete = false ");
+		final Object[] queryParameters = new Object[] { idcompany };
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListAllUser(), queryParameters);
 	}
 	
@@ -320,7 +403,8 @@ public class UserAppsHandler implements UserAppsService{
 	public TemplateInternalUser getTemplate(long idcompany, long idbranch) {
 		// TODO Auto-generated method stub
 		TemplateInternalUser data = new TemplateInternalUser();
-		data.setRoleoptions(roleService.getAllListRole(idcompany, idbranch));
+		data.setRoleoptions(roleService.getAllListRole(idcompany));
+		data.setBranchOptions(branchService.getAllListUserBranch());
 		return data;
 	}
 
@@ -334,6 +418,18 @@ public class UserAppsHandler implements UserAppsService{
 		data.setId(user.getId());
 		data.setSuccess(true);
 		return data;
+	}
+
+	@Override
+	public UserListData getUserByID(long iduser) {
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListAllUser().schema());
+		sqlBuilder.append(" where mua.id = ? and mua.isdelete = false ");
+		final Object[] queryParameters = new Object[] { iduser };
+		List<UserListData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetListAllUser(), queryParameters);
+		if(list != null && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
 	}
 
 }

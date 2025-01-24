@@ -354,7 +354,7 @@ public class UserMobileHandler implements UserMobileService{
 	public TemplateUserMobile getTemplateUserMobile(long idcompany, long idbranch) {
 		// TODO Auto-generated method stub
 		TemplateUserMobile data = new TemplateUserMobile();
-		data.setRoleoptions(roleService.getAllListRole(idcompany, idbranch));
+		data.setRoleoptions(roleService.getAllListRole(idcompany));
 		return data;
 	}
 

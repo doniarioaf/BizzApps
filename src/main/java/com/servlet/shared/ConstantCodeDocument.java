@@ -1,12 +1,17 @@
 package com.servlet.shared;
 
 public class ConstantCodeDocument {
+	public static final String DOC_PURCHASERECEIVE = "PRC";
+	public static final String DOC_DRAFTPURCHASERECEIVE = "DPRC";
+	public static final String DOC_STOCKADJUSMENT = "SA";
+	public static final String DOC_PACKINGLIST = "PL";
 	public static final String DOC_INVOICE = "INV";
-	public static final String DOC_INVOICEDP = "INVDP";
-	public static final String DOC_INVOICEREIMBURSEMENT = "INVR";
-	public static final String DOC_WORKINGORDER = "DWO";
-	public static final String DOC_PRICELIST = "PRC";
-	public static final String DOC_SURATJALAN = "SJ";
-	public static final String DOC_PENERIMAANKASBANK = "KBM";
-	public static final String DOC_PENGELUARANKASBANK = "KBK";
+	public static final String DOC_PELUNASANHUTANG = "PH";
+	public static final String DOC_PELUNASANPIUTANG = "PP";
+	public static final String DOC_DEPOSIT = "DS";
+
+	/**
+	 * Jika ada penambahan tambahkan pada RunningNumberHandler, SaveList
+	 */
+
 }

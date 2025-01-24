@@ -30,8 +30,16 @@ public class UserApps implements Serializable{
 	private boolean isdelete;
 	private Timestamp created;
 	private Timestamp modified;
-	
-	
+	private boolean isallbranch;
+
+	public boolean isIsallbranch() {
+		return isallbranch;
+	}
+
+	public void setIsallbranch(boolean isallbranch) {
+		this.isallbranch = isallbranch;
+	}
+
 	public String getAddress() {
 		return address;
 	}

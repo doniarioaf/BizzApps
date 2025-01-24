@@ -29,13 +29,13 @@ public class RoleHandler implements RoleService{
 	private RolePermissionService rolePermissionService;
 	
 	@Override
-	public List<Role> getAllListRole(long idcompany, long idbranch) {
+	public List<Role> getAllListRole(long idcompany) {
 		// TODO Auto-generated method stub
-		return repository.getAllRole(idcompany, idbranch);
+		return repository.getAllRole(idcompany);
 	}
 
 	@Override
-	public ReturnData saveRole(BodyRole role,long idcompany,long idbranch) {
+	public ReturnData saveRole(BodyRole role,long idcompany, long idbranch) {
 		// TODO Auto-generated method stub
 		Timestamp ts = new Timestamp(new Date().getTime());
 		Role table = new Role();
@@ -125,10 +125,10 @@ public class RoleHandler implements RoleService{
 	}
 
 	@Override
-	public RoleDetail getRoleDetail(long id,long idcompany, long idbranch) {
+	public RoleDetail getRoleDetail(long id,long idcompany) {
 		// TODO Auto-generated method stub
 		RoleDetail data = new RoleDetail();
-		List<Role> value = repository.getRoleById(id, idcompany, idbranch);
+		List<Role> value = repository.getRoleById(id, idcompany);
 		if(value != null && value.size() > 0) {
 			List<RolePermissionData> listrolepermission = new ArrayList<RolePermissionData>(rolePermissionService.getListRolePermissions(id));
 			data.setRole(value.get(0));

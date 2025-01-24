@@ -1,8 +1,14 @@
 package com.servlet.runningnumber.handler;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import com.servlet.shared.ConstansCodeMessage;
+import com.servlet.shared.ConstantCodeDocument;
+import com.servlet.shared.ReturnData;
+import com.servlet.shared.ValidationDataMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
@@ -17,7 +23,7 @@ public class RunningNumberHandler implements RunningNumberService{
 	private RunningNumberRepo repository;
 	
 	@Override
-	public String getDocNumber(Long idcompany, Long idbranch, String code,Timestamp currDate) {
+	public String getDocNumber(Long idcompany,Long idbranch, String code,Timestamp currDate) {
 		// TODO Auto-generated method stub
 		RunningNumberPK pk = new RunningNumberPK();
 		pk.setIdcompany(idcompany);
@@ -31,18 +37,15 @@ public class RunningNumberHandler implements RunningNumberService{
 			int runningNumber = table.getValue().intValue();
 			table.setValue(table.getValue().longValue() + 1);
 			repository.saveAndFlush(table);
-			return generateDocNumber(code,runningNumber,currDate);
+			return generateDocNumber(code,idbranch,runningNumber,currDate);
 			}catch (Exception e) {
 				return "";
 			}
-			
-			
-			
 		}
 		return "";
 	}
 	
-	private String generateDocNumber(String code,int number,Timestamp currDate) {
+	private String generateDocNumber(String code,Long idbranch,int number,Timestamp currDate) {
 		String runningNumber = "";
 		if(number > 0 && number < 10) {
 			runningNumber = "00000"+number;
@@ -62,14 +65,14 @@ public class RunningNumberHandler implements RunningNumberService{
 		
 		String valNumber = "";
 		if(!runningNumber.equals("")) {
-			String s = new SimpleDateFormat("yyMMdd").format(currDate);
-			valNumber = code+"-"+runningNumber;//+"-"+s;
+//			String s = new SimpleDateFormat("yyMMdd").format(currDate);
+			valNumber = code+"-"+idbranch+runningNumber;//+"-"+s;
 		}
 		return valNumber;
 	}
 
 	@Override
-	public String rollBackDocNumber(Long idcompany, Long idbranch, String code) {
+	public String rollBackDocNumber(Long idcompany,Long idbranch, String code) {
 		// TODO Auto-generated method stub
 		RunningNumberPK pk = new RunningNumberPK();
 		pk.setIdcompany(idcompany);
@@ -92,6 +95,45 @@ public class RunningNumberHandler implements RunningNumberService{
 			
 		}
 		return "";
+	}
+
+	@Override
+	public ReturnData saveList(Long idcompany,Long idbranch) {
+		List<String> arr = new ArrayList<>();
+		arr.add(ConstantCodeDocument.DOC_PURCHASERECEIVE);
+		arr.add(ConstantCodeDocument.DOC_DRAFTPURCHASERECEIVE);
+		arr.add(ConstantCodeDocument.DOC_STOCKADJUSMENT);
+		arr.add(ConstantCodeDocument.DOC_PACKINGLIST);
+		arr.add(ConstantCodeDocument.DOC_INVOICE);
+		arr.add(ConstantCodeDocument.DOC_PELUNASANHUTANG);
+		arr.add(ConstantCodeDocument.DOC_PELUNASANPIUTANG);
+		arr.add(ConstantCodeDocument.DOC_DEPOSIT);
+		List<RunningNumber> list = new ArrayList<>();
+		for(String code : arr){
+			RunningNumberPK pk = new RunningNumberPK();
+			pk.setIdcompany(idcompany);
+			pk.setIdbranch(idbranch);
+			pk.setCode(code);
+			RunningNumber table = new RunningNumber();
+			table.setRunningNumberPK(pk);
+			table.setValue(1L);
+			list.add(table);
+		}
+		List<ValidationDataMessage> validations = new ArrayList<>();
+		try{
+			if(list.size() > 0){
+				repository.saveAllAndFlush(list);
+			}
+
+		}catch (Exception e) {
+			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+			validations.add(msg);
+		}
+		ReturnData data = new ReturnData();
+		data.setId(0L);
+		data.setSuccess(validations.size() > 0?false:true);
+		data.setValidations(validations);
+		return data;
 	}
 
 }

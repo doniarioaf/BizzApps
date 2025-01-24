@@ -6,6 +6,16 @@ public class UserListData {
 	private String username;
 	private String notelepon;
 	private boolean isactive;
+	private boolean isallbranch;
+
+	public boolean isIsallbranch() {
+		return isallbranch;
+	}
+
+	public void setIsallbranch(boolean isallbranch) {
+		this.isallbranch = isallbranch;
+	}
+
 	public boolean isIsactive() {
 		return isactive;
 	}
