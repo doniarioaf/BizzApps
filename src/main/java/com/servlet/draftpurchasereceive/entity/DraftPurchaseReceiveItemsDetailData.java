@@ -9,7 +9,7 @@ public class DraftPurchaseReceiveItemsDetailData {
     private Long weightfromingramcategoryproduct;
     private Long weighttoingramcategoryproduct;
     private Long ekor;
-    private Long kilo;
+    private Double kilo;
     private String type;
 
     public Long getWeightfromingramcategoryproduct() {
@@ -76,11 +76,11 @@ public class DraftPurchaseReceiveItemsDetailData {
         this.ekor = ekor;
     }
 
-    public Long getKilo() {
+    public Double getKilo() {
         return kilo;
     }
 
-    public void setKilo(Long kilo) {
+    public void setKilo(Double kilo) {
         this.kilo = kilo;
     }
 

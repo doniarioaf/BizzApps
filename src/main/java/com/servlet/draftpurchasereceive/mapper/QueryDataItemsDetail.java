@@ -31,7 +31,7 @@ public class QueryDataItemsDetail implements RowMapper<DraftPurchaseReceiveItems
         final Long idproduct = rs.getLong("idproduct");
         final Long idcategoryproduct = rs.getLong("idcategoryproduct");
         final Long ekor = rs.getLong("ekor");
-        final Long kilo = rs.getLong("kilo");
+        final Double kilo = rs.getDouble("kilo");
         final Long boxsequence = rs.getLong("boxsequence");
         final String type = rs.getString("type");
         final String cpnama = rs.getString("cpnama");

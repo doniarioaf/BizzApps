@@ -22,7 +22,7 @@ public class DraftPurchaseReceive implements Serializable {
     private Time receivetime;
     private String smu;
     private Long totalekor;
-    private Long totalkg;
+    private Double totalkg;
     private boolean isdelete;
     private Long createdby;
     private Timestamp createddate;
@@ -175,11 +175,11 @@ public class DraftPurchaseReceive implements Serializable {
         this.totalekor = totalekor;
     }
 
-    public Long getTotalkg() {
+    public Double getTotalkg() {
         return totalkg;
     }
 
-    public void setTotalkg(Long totalkg) {
+    public void setTotalkg(Double totalkg) {
         this.totalkg = totalkg;
     }
 

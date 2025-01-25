@@ -16,7 +16,7 @@ public class DraftPurchaseReceiveItems implements Serializable {
     private DraftPurchaseReceiveItemsPK draftPurchaseReceiveItemsPK;
 
     private Long ekor;
-    private Long kilo;
+    private Double kilo;
     private String type;
 
     public String getType() {
@@ -43,11 +43,11 @@ public class DraftPurchaseReceiveItems implements Serializable {
         this.ekor = ekor;
     }
 
-    public Long getKilo() {
+    public Double getKilo() {
         return kilo;
     }
 
-    public void setKilo(Long kilo) {
+    public void setKilo(Double kilo) {
         this.kilo = kilo;
     }
 }
