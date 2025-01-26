@@ -17,6 +17,15 @@ public class BodyVendor {
     private Double value1;
     private Boolean isparent;
     private Long idvendorparent;
+    private Long idvendorbroker;
+
+    public Long getIdvendorbroker() {
+        return idvendorbroker;
+    }
+
+    public void setIdvendorbroker(Long idvendorbroker) {
+        this.idvendorbroker = idvendorbroker;
+    }
 
     public Long getIdvendorparent() {
         return idvendorparent;

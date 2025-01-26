@@ -72,7 +72,7 @@ public class VendorHandler implements VendorService {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
         Timestamp ts = new Timestamp(new Date().getTime());
-        if(!body.getIsparent()) {
+        if(!body.getIsparent() && !body.getType().equals("BROKER")) {
             ListVendorData ven = checkVendorIsParent(idcompany,idbranch, body.getIdvendorparent());
             if(ven == null){
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_PARENT, "Vendor Bukan Parent");
@@ -102,6 +102,9 @@ public class VendorHandler implements VendorService {
                     vendor.setIdvendorparent(null);
                 } else {
                     vendor.setIdvendorparent(body.getIdvendorparent());
+                }
+                if(body.getType().equals("UDANG")){
+                    vendor.setIdvendorbroker(body.getIdvendorbroker());
                 }
                 vendor.setIsdelete(false);
                 vendor.setCreateddate(ts);
@@ -140,7 +143,7 @@ public class VendorHandler implements VendorService {
 
         long idsave = 0;
         Timestamp ts = new Timestamp(new Date().getTime());
-        if(!body.getIsparent()) {
+        if(!body.getIsparent() && !body.getType().equals("BROKER")) {
             ListVendorData ven = checkVendorIsParent(idcompany,idbranch, body.getIdvendorparent());
             if(ven == null){
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_PARENT, "Vendor Bukan Parent");
@@ -168,6 +171,11 @@ public class VendorHandler implements VendorService {
                     vendor.setIdvendorparent(null);
                 } else {
                     vendor.setIdvendorparent(body.getIdvendorparent());
+                }
+                if(body.getType().equals("UDANG")){
+                    vendor.setIdvendorbroker(body.getIdvendorbroker());
+                }else{
+                    vendor.setIdvendorbroker(null);
                 }
                 vendor.setModifieddate(ts);
                 vendor.setModifiedby(iduser);
@@ -238,6 +246,10 @@ public class VendorHandler implements VendorService {
         ParamVendor pv = new ParamVendor();
         pv.setOnlyParent("Y");
         template.setVendorParentOpt(getListDropdown(idcompany,idbranch,pv));
+
+        ParamVendor pvbroker = new ParamVendor();
+        pvbroker.setVendorTypes("'BROKER'");
+        template.setVendorBrokerOpt(getListDropdown(idcompany,idbranch,pvbroker));
         return template;
     }
 

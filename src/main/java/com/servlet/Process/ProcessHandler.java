@@ -27,6 +27,9 @@ import com.servlet.invoice.entity.BodyInvoice;
 import com.servlet.invoice.entity.ParamPrintInvoice;
 import com.servlet.invoice.entity.ParamSearchInvoice;
 import com.servlet.invoice.service.InvoiceService;
+import com.servlet.komisi.entity.BodyKomisi;
+import com.servlet.komisi.entity.ParamKomisi;
+import com.servlet.komisi.service.KomisiService;
 import com.servlet.mappingstock.entity.BodyMappingStock;
 import com.servlet.mappingstock.service.MappingStockService;
 import com.servlet.packinglist.entity.BodyPackingList;
@@ -158,6 +161,9 @@ public class ProcessHandler implements ProcessService{
 	PelunasanPiutangService pelunasanPiutangService;
 	@Autowired
 	BankService bankService;
+
+	@Autowired
+	KomisiService komisiService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -988,6 +994,43 @@ public class ProcessHandler implements ProcessService{
 				}
 			}
 
+			else if(codepermission.equals(ConstansPermission.CREATE_KOMISI)) {
+				BodyKomisi param = (BodyKomisi) data;
+				ReturnData valReturn = komisiService.save(auth.getIdcompany(), auth.getIdbranch(), auth.getId(), param);
+				if (valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				} else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_KOMISI)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyKomisi body  = (BodyKomisi) param.get("body");
+				ReturnData valReturn = komisiService.update(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId(),body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_KOMISI)) {
+				long id = (long) data;
+				ReturnData valReturn = komisiService.delete(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId());
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}
+
 			else if(codepermission.equals(ConstansPermission.LOGOUT)) {
 				ReturnData valReturn = userAppsService.logout(auth.getId());
 				val.setSuccess(valReturn.isSuccess());
@@ -1487,6 +1530,26 @@ public class ProcessHandler implements ProcessService{
 					val.setData(reportService.reportReportKartuStock(auth.getIdcompany(), auth.getIdbranch(),body).getWorkbook());
 				}else if(type.equals("REPORTKARTUSTOCK_TEMPLATE")) {
 					val.setData(reportService.reportTemplateReportKartuStock(auth.getIdcompany(), auth.getIdbranch()));
+				}
+			}
+
+			else if(codepermission.equals(ConstansPermission.READ_KOMISI)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				ParamKomisi paramsearch = (ParamKomisi) param.get("paramsearch");
+				if(type.equals("ALL")) {
+					val.setData(komisiService.getAll(auth.getIdcompany(), auth.getIdbranch(),paramsearch));
+				}else if(type.equals("KOMISI")) {
+					val.setData(komisiService.getList(auth.getIdcompany(), auth.getIdbranch(),paramsearch));
+				}else if(type.equals("PURCHASERECEIVE")) {
+					val.setData(purchaseReceiveService.getListKomisi(auth.getIdcompany(), auth.getIdbranch(),paramsearch));
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(komisiService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("BAYAR_LISTPR")) {
+					val.setData(purchaseReceiveService.getListKomisi(auth.getIdcompany(), auth.getIdbranch(),paramsearch));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(komisiService.getDetail(auth.getIdcompany(), auth.getIdbranch(), id));
 				}
 			}
 

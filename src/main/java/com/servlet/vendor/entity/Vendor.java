@@ -36,6 +36,7 @@ public class Vendor implements Serializable {
     private Double value1;
     private Boolean isparent;
     private Long idvendorparent;
+    private Long idvendorbroker;
 
     @Override
     public String toString() {
@@ -56,7 +57,16 @@ public class Vendor implements Serializable {
                 ", value1='" + value1 + '\'' +
                 ", isparent='" + isparent + '\'' +
                 ", idvendorparent='" + idvendorparent + '\'' +
+                ", idvendorbroker='" + idvendorbroker + '\'' +
                 '}';
+    }
+
+    public Long getIdvendorbroker() {
+        return idvendorbroker;
+    }
+
+    public void setIdvendorbroker(Long idvendorbroker) {
+        this.idvendorbroker = idvendorbroker;
     }
 
     public Long getIdvendorparent() {

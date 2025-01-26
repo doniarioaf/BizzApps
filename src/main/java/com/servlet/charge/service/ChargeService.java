@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface ChargeService {
     List<ChargeList> getListCharge(Long idcompany,Long idbranch);
+    ChargeList getChargeByName(Long idcompany,Long idbranch,String name);
 }

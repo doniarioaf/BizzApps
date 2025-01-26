@@ -3,6 +3,7 @@ package com.servlet.purchasereceive.handler;
 import com.servlet.area.service.AreaService;
 import com.servlet.categoryproduct.entity.ParamTemplate;
 import com.servlet.categoryproduct.service.CategoryProductService;
+import com.servlet.charge.entity.ChargeList;
 import com.servlet.charge.service.ChargeService;
 import com.servlet.deposit.entity.BodyDeposit;
 import com.servlet.deposit.entity.ReportKartuDeposit;
@@ -11,6 +12,7 @@ import com.servlet.draftpurchasereceive.entity.ParamGetDataDraftPR;
 import com.servlet.draftpurchasereceive.service.DraftPurchaseReceiveService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.inventori.service.InventoriService;
+import com.servlet.komisi.entity.ParamKomisi;
 import com.servlet.mappingstock.entity.MappingStockCategoryID;
 import com.servlet.mappingstock.service.MappingStockService;
 import com.servlet.parameterclient.entity.ValueParameter;
@@ -822,6 +824,43 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
 
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPRReportKartuStock(), queryParameters);
+    }
+
+    @Override
+    public List<PurchaseReceiveDataKomisi> getListKomisi(Long idcompany, Long idbranch, ParamKomisi param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPurchaseReceiveKomisi(param.getIdbox()).schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        if(param.getFrom() != null){
+            Date dt = new Date(param.getFrom());
+            sqlBuilder.append(" and data.transactiondate >= '"+dt.toString()+"'");
+        }
+        if(param.getTo() != null){
+            Date dt = new Date(param.getTo());
+            sqlBuilder.append(" and data.transactiondate <= '"+dt.toString()+"'");
+        }
+
+        if(param.getListIdVendor() != null && !param.getListIdVendor().equals("")){
+            sqlBuilder.append(" and ven.idvendorbroker in ("+param.getListIdVendor()+") ");
+        }
+
+        if(param.getListidpurchaisereceive() != null && !param.getListidpurchaisereceive().equals("")){
+            sqlBuilder.append(" and data.id in ("+param.getListidpurchaisereceive()+") ");
+        }
+        if(param.getMenu() != null && !param.getMenu().equals("")){
+            if(param.getMenu().equals("DETAILITEMKOMISI")){
+                if(param.getIdkomisi() != null){
+                    sqlBuilder.append(" and data.id in (select ki.idpurchasereceive from komisi_item as ki where ki.idkomisi = "+param.getIdkomisi()+"  ) ");
+                }
+
+            }
+        }else{
+            sqlBuilder.append(" and data.id not in (select ki.idpurchasereceive from komisi_item as ki left join komisi as k on k.id = ki.idkomisi where k.idcompany = "+idcompany+" and k.idbranch = "+idbranch+" and k.isdelete = false  ) ");
+            sqlBuilder.append(" and ven.idvendorbroker notnull ");
+        }
+
+
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPurchaseReceiveKomisi(param.getIdbox()), queryParameters);
     }
 
     private List<PrintDataPurchaseReceiveInventori> getPrintDataItemsInventori(Long idpurchasereceive){

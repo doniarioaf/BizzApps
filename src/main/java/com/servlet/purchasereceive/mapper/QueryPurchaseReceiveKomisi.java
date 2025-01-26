@@ -1,0 +1,59 @@
+package com.servlet.purchasereceive.mapper;
+
+import com.servlet.purchasereceive.entity.PurchaseReceiveDataKomisi;
+import org.springframework.jdbc.core.RowMapper;
+
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class QueryPurchaseReceiveKomisi implements RowMapper<PurchaseReceiveDataKomisi> {
+    private String schemaSql;
+
+    public QueryPurchaseReceiveKomisi(Long idchargebox) {
+        // TODO Auto-generated constructor stub
+        final StringBuilder sqlBuilder = new StringBuilder(10);
+        sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.transactiondate as transactiondate, venbroker.id as venbrokerid, ");
+        sqlBuilder.append("venbroker.nama as venbrokerNama, venbroker.alias as venbrokerAlias, prcharge.qty as koli, ");
+        sqlBuilder.append("venbroker.komisi as komisi ");
+        sqlBuilder.append("from purchasereceive as data ");
+        sqlBuilder.append("left join m_vendor as ven on ven.id = data.idvendor ");
+        sqlBuilder.append("left join m_vendor as venbroker on ven.idvendorbroker = venbroker.id ");
+        sqlBuilder.append("left join purchasereceive_charge as prcharge on prcharge.idpurchasereceive = data.id and prcharge.idcharge = "+idchargebox+" ");
+        //
+
+        this.schemaSql = sqlBuilder.toString();
+    }
+
+    public String schema() {
+        return this.schemaSql;
+    }
+
+
+    @Override
+    public PurchaseReceiveDataKomisi mapRow(ResultSet rs, int rowNum) throws SQLException {
+        final Long id = rs.getLong("id");
+        final String nodocument = rs.getString("nodocument");
+        final Date transactiondate = rs.getDate("transactiondate");
+        final Long venbrokerid = rs.getLong("venbrokerid");
+        final String venbrokerNama = rs.getString("venbrokerNama");
+        final String venbrokerAlias = rs.getString("venbrokerAlias");
+        final Long koli = rs.getLong("koli");
+        final Double komisi = rs.getDouble("komisi");
+        PurchaseReceiveDataKomisi data = new PurchaseReceiveDataKomisi();
+        data.setId(id);
+        data.setIdvendorbroker(venbrokerid);
+        data.setVendornamabroker(venbrokerNama);
+        data.setVendoraliasbroker(venbrokerAlias);
+        data.setNodocument(nodocument);
+        data.setDate(transactiondate);
+        data.setKoli(koli);
+        data.setKomisi(komisi);
+        double subtotal = 0;
+        if(komisi != null && koli != null){
+            subtotal = komisi.doubleValue() * koli.doubleValue();
+        }
+        data.setSubTotalkomisi(subtotal);
+        return data;
+    }
+}

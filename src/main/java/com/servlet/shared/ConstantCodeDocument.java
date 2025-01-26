@@ -9,6 +9,7 @@ public class ConstantCodeDocument {
 	public static final String DOC_PELUNASANHUTANG = "PH";
 	public static final String DOC_PELUNASANPIUTANG = "PP";
 	public static final String DOC_DEPOSIT = "DS";
+	public static final String DOC_KOMISI = "K";
 
 	/**
 	 * Jika ada penambahan tambahkan pada RunningNumberHandler, SaveList

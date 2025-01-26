@@ -19,6 +19,7 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         sqlBuilder.append("data.packing as packing, data.kurir as kurir, ");
         sqlBuilder.append("data.komisi as komisi, data.profit as profit,data.value1 as value1, ");
         sqlBuilder.append("ven.nama as vennama, ven.alias as venalias, ");
+        sqlBuilder.append("data.idvendorbroker as idvendorbroker, venbroker.nama as venbrokernama, venbroker.alias as venbrokeralias, ");
         sqlBuilder.append("data.createddate as createddate, data.modifieddate as modifieddate, data.deletedate as deletedate, ");
         sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama, userdelete.nama as deletenama ");
         sqlBuilder.append("from m_vendor as data ");
@@ -26,6 +27,7 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         sqlBuilder.append("left join m_user_apps as usermodified on usermodified.id = data.modifiedby ");
         sqlBuilder.append("left join m_user_apps as userdelete on userdelete.id = data.deleteby ");
         sqlBuilder.append("left join m_vendor as ven on ven.id = data.idvendorparent ");
+        sqlBuilder.append("left join m_vendor as venbroker on venbroker.id = data.idvendorbroker ");
 
         this.schemaSql = sqlBuilder.toString();
     }
@@ -60,6 +62,9 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         final Long idvendorparent = rs.getLong("idvendorparent");
         final String vennama = rs.getString("vennama");
         final String venalias = rs.getString("venalias");
+        final Long idvendorbroker = rs.getLong("idvendorbroker");
+        final String venbrokernama = rs.getString("venbrokernama");
+        final String venbrokeralias = rs.getString("venbrokeralias");
 
         VendorData data = new VendorData();
         data.setId(id);
@@ -86,6 +91,9 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         data.setIdvendorparent(idvendorparent);
         data.setVendorParentName(vennama);
         data.setVendorParentAlias(venalias);
+        data.setIdvendorparent(idvendorbroker);
+        data.setVendorBrokerName(venbrokernama);
+        data.setVendorBrokerAlias(venbrokeralias);
         return data;
     }
 }

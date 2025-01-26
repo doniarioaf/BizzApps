@@ -28,6 +28,33 @@ public class VendorData {
     private Long idvendorparent;
     private String vendorParentName;
     private String vendorParentAlias;
+    private Long idvendorbroker;
+    private String vendorBrokerName;
+    private String vendorBrokerAlias;
+
+    public Long getIdvendorbroker() {
+        return idvendorbroker;
+    }
+
+    public void setIdvendorbroker(Long idvendorbroker) {
+        this.idvendorbroker = idvendorbroker;
+    }
+
+    public String getVendorBrokerName() {
+        return vendorBrokerName;
+    }
+
+    public void setVendorBrokerName(String vendorBrokerName) {
+        this.vendorBrokerName = vendorBrokerName;
+    }
+
+    public String getVendorBrokerAlias() {
+        return vendorBrokerAlias;
+    }
+
+    public void setVendorBrokerAlias(String vendorBrokerAlias) {
+        this.vendorBrokerAlias = vendorBrokerAlias;
+    }
 
     public String getVendorParentName() {
         return vendorParentName;

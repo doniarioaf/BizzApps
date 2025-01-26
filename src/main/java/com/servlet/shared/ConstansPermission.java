@@ -120,5 +120,9 @@ public class ConstansPermission {
 	public static final String READ_REPORT_KARTUSTOCK = "READ_REPORT_KARTUSTOCK";
 	public static final String READ_BANK = "READ_BANK";
 	public static final String CREATE_BANK = "CREATE_BANK";
+	public static final String READ_KOMISI = "READ_KOMISI";
+	public static final String CREATE_KOMISI = "CREATE_KOMISI";
+	public static final String EDIT_KOMISI = "EDIT_KOMISI";
+	public static final String DELETE_KOMISI = "DELETE_KOMISI";
 	
 }

@@ -1,6 +1,7 @@
 package com.servlet.purchasereceive.service;
 
 import com.servlet.deposit.entity.ReportKartuDeposit;
+import com.servlet.komisi.entity.ParamKomisi;
 import com.servlet.pelunasanhutang.entity.FilterParamPelunasanHutang;
 import com.servlet.pelunasanhutang.entity.ReportPelunasanHutangDocumentHutang;
 import com.servlet.purchasereceive.entity.*;
@@ -37,4 +38,5 @@ public interface PurchaseReceiveService {
     List<ReportKartuDeposit> getListPrReportKartuDeposit(Long idcompany, Long idbranch, FilterParamPurchaseReceive param);
     PurchaseReceiveItemsNotJoin getItemInLastDocumentPR(Long idcompany, Long idbranch, Long idproduct, Long idcategoryproduct);
     List<ReportKartuStock> getListPrReportKartuStock(Long idcompany, Long idbranch, FilterParamPurchaseReceive param);
+    List<PurchaseReceiveDataKomisi> getListKomisi(Long idcompany, Long idbranch, ParamKomisi param);
 }
