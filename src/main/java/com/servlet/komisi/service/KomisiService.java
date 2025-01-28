@@ -15,4 +15,4 @@ public interface KomisiService {
 
     KomisiDetail getDetail(Long idcompany, Long idbranch, Long id);
     PrintNotaKomisi getPrint(Long id,Long idcompany, Long idbranch,Long iduser, ParamPrintKomisi param);
-}
+    KomisiItemJoinHeader getDetailItemByIdPR(Long idcompany, Long idbranch, Long idpr);}

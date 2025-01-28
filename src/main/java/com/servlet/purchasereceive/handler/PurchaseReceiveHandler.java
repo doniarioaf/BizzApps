@@ -12,7 +12,10 @@ import com.servlet.draftpurchasereceive.entity.ParamGetDataDraftPR;
 import com.servlet.draftpurchasereceive.service.DraftPurchaseReceiveService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.inventori.service.InventoriService;
+import com.servlet.komisi.entity.KomisiItemJoinHeader;
+import com.servlet.komisi.entity.KomisiItemNotJoin;
 import com.servlet.komisi.entity.ParamKomisi;
+import com.servlet.komisi.service.KomisiService;
 import com.servlet.mappingstock.entity.MappingStockCategoryID;
 import com.servlet.mappingstock.service.MappingStockService;
 import com.servlet.parameterclient.entity.ValueParameter;
@@ -104,6 +107,8 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     private PelunasanHutangService pelunasanHutangService;
     @Autowired
     private AreaService areaService;
+    @Autowired
+    private KomisiService komisiService;
     protected final String namaMenu = "PURCHASE_RECEIVE";
 
     @Override
@@ -256,6 +261,13 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             validations.add(msg);
         }
         if(validations.size() == 0) {
+            KomisiItemJoinHeader komisiitems = komisiService.getDetailItemByIdPR(idcompany,idbranch,id);
+            if(komisiitems != null){
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_KOMISI,"document ini terpasang pada document komisi ("+komisiitems.getNodocument()+") ");
+                validations.add(msg);
+            }
+        }
+        if(validations.size() == 0) {
             try {
                 PurchaseReceive table = purchaseReceiveRepo.getById(id);
                 if (table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue() && !table.isIsdelete()) {
@@ -326,20 +338,35 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
-        try {
-            PurchaseReceive table = purchaseReceiveRepo.getById(id);
-            if(table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue() && !table.isIsdelete()) {
-                table.setIsdelete(true);
-                table.setDeleteby(iduser);
-                table.setDeletedate(ts);
-                idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
 
-                kurangiStockItems(idcompany, idbranch, id);
-                historyAppsService.saveHistory(table.getIdcompany(), table.getIdbranch(), iduser, "DELETE", namaMenu, table.toString(), "", "", ts);
-            }
-        }catch (Exception e) {
-            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+        List<PelunasanHutangDataNotJoin> list = pelunasanHutangService.getDataByIdPr(idcompany,idbranch,id);
+        if(list != null && list.size() > 0){
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_PELUNASANHUTANG,"document ini terpasang pada pelunasan hutang ("+list.get(0).getNodocument()+")");
             validations.add(msg);
+        }
+        if(validations.size() == 0) {
+            KomisiItemJoinHeader komisiitems = komisiService.getDetailItemByIdPR(idcompany,idbranch,id);
+            if(komisiitems != null){
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_KOMISI,"document ini terpasang pada document komisi ("+komisiitems.getNodocument()+") ");
+                validations.add(msg);
+            }
+        }
+        if(validations.size() == 0) {
+            try {
+                PurchaseReceive table = purchaseReceiveRepo.getById(id);
+                if (table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue() && !table.isIsdelete()) {
+                    table.setIsdelete(true);
+                    table.setDeleteby(iduser);
+                    table.setDeletedate(ts);
+                    idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
+
+                    kurangiStockItems(idcompany, idbranch, id);
+                    historyAppsService.saveHistory(table.getIdcompany(), table.getIdbranch(), iduser, "DELETE", namaMenu, table.toString(), "", "", ts);
+                }
+            } catch (Exception e) {
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
         }
 
         ReturnData data = new ReturnData();

@@ -13,4 +13,5 @@ public interface PelunasanPiutangService {
     List<PelunasanPiutangList> getPelunasanPiutangList(Long idcompany, Long idbranch, FilterParamPelunasanPiutang param);
     PelunasanPiutangDetail getDetail(Long id, Long idcompany, Long idbranch);
     List<ReportPelunasanPiutang> getReportPelunasanPiutang(Long idcompany, Long idbranch, FilterParamPelunasanPiutang param);
+    PelunasanPiutangItemJoinHeader getPelunasanPiutangItemByIdInvoice(Long idcompany, Long idbranch, Long idinvoice);
 }

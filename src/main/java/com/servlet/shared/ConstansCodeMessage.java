@@ -68,5 +68,7 @@ public class ConstansCodeMessage {
 	public static final String THIS_ID_ALREADY_INSTALLED_PELUNASANHUTANG = "this.id.already.installed.pelunasanhutang";
 	public static final String VALIDASI_DOCUMENT_INCORRECT_FORMAT = "document.incorrect.format";
 	public static final String VENDOR_NOT_PARENT = "vendor.not.parent";
+	public static final String THIS_ID_ALREADY_INSTALLED_KOMISI = "this.id.already.installed.komisi";
+	public static final String THIS_ID_ALREADY_INSTALLED_PELUNASANPIUTANG = "this.id.already.installed.pelunasanpiutang";
 
 }

@@ -5,6 +5,7 @@ import com.servlet.charge.service.ChargeService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.komisi.entity.*;
 import com.servlet.komisi.mapper.QueryKomisiDetail;
+import com.servlet.komisi.mapper.QueryKomisiItemJoinHeader;
 import com.servlet.komisi.mapper.QueryKomisiItemNotJoin;
 import com.servlet.komisi.mapper.QueryKomisiList;
 import com.servlet.komisi.repo.KomisiItemRepo;
@@ -303,6 +304,19 @@ public class KomisiHandler implements KomisiService {
             return print;
         }
 
+        return null;
+    }
+
+    @Override
+    public KomisiItemJoinHeader getDetailItemByIdPR(Long idcompany, Long idbranch, Long idpr) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryKomisiItemJoinHeader().schema());
+        sqlBuilder.append(" where data.idpurchasereceive = ?  ");
+        sqlBuilder.append(" and komisi.idcompany = "+idcompany+" and komisi.idbranch = "+idbranch+" and komisi.isdelete = false  ");
+        final Object[] queryParameters = new Object[] {idpr};
+        List<KomisiItemJoinHeader> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryKomisiItemJoinHeader(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
         return null;
     }
 

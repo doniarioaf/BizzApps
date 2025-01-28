@@ -10,6 +10,8 @@ import com.servlet.packinglist.service.PackingListService;
 import com.servlet.parameterclient.entity.ValueParameter;
 import com.servlet.parameterclient.service.ParameterClientService;
 import com.servlet.pelunasanpiutang.entity.FilterParamPelunasanPiutang;
+import com.servlet.pelunasanpiutang.entity.PelunasanPiutangItemJoinHeader;
+import com.servlet.pelunasanpiutang.service.PelunasanPiutangService;
 import com.servlet.purchasereceive.entity.PurchaseReceive;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
@@ -44,6 +46,9 @@ public class InvoiceHandler implements InvoiceService {
     private PackingListService packingListService;
     @Autowired
     private ParameterClientService parameterClientService;
+
+    @Autowired
+    private PelunasanPiutangService pelunasanPiutangService;
     @Autowired
     private UserAppsService userAppsService;
 
@@ -140,7 +145,11 @@ public class InvoiceHandler implements InvoiceService {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
-
+        PelunasanPiutangItemJoinHeader pp = pelunasanPiutangService.getPelunasanPiutangItemByIdInvoice(idcompany,idbranch,id);
+        if(pp != null){
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_PELUNASANPIUTANG,"invoice ini terpasang pada Pelunasan Piutang ("+pp.getNodocument()+")");
+            validations.add(msg);
+        }
         if(validations.size() == 0) {
             try{
                 Invoice table = repo.getById(id);
@@ -176,6 +185,11 @@ public class InvoiceHandler implements InvoiceService {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        PelunasanPiutangItemJoinHeader pp = pelunasanPiutangService.getPelunasanPiutangItemByIdInvoice(idcompany,idbranch,id);
+        if(pp != null){
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_PELUNASANPIUTANG,"invoice ini terpasang pada Pelunasan Piutang ("+pp.getNodocument()+")");
+            validations.add(msg);
+        }
 
         if(validations.size() == 0) {
             try{
