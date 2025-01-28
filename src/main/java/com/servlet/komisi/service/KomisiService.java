@@ -14,4 +14,5 @@ public interface KomisiService {
     ReturnData delete(Long id,Long idcompany, Long idbranch, Long iduser);
 
     KomisiDetail getDetail(Long idcompany, Long idbranch, Long id);
+    PrintNotaKomisi getPrint(Long id,Long idcompany, Long idbranch,Long iduser, ParamPrintKomisi param);
 }

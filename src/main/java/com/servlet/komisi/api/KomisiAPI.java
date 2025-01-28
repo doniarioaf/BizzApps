@@ -42,6 +42,15 @@ public class KomisiAPI {
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
+    @GetMapping("/print/{id}")
+    ResponseEntity<Response> getPrintById(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "PRINT");
+        param.put("id", id);
+        Response response = securityService.response(ConstansPermission.READ_KOMISI,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
     @PostMapping("/listall")
     ResponseEntity<Response> getListAll(@RequestBody @Validated ParamKomisi body, @RequestHeader(ConstansKey.AUTH) String authorization) {
         HashMap<String, Object> param = new HashMap<String, Object>();

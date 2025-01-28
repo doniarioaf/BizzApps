@@ -29,6 +29,7 @@ import com.servlet.invoice.entity.ParamSearchInvoice;
 import com.servlet.invoice.service.InvoiceService;
 import com.servlet.komisi.entity.BodyKomisi;
 import com.servlet.komisi.entity.ParamKomisi;
+import com.servlet.komisi.entity.ParamPrintKomisi;
 import com.servlet.komisi.service.KomisiService;
 import com.servlet.mappingstock.entity.BodyMappingStock;
 import com.servlet.mappingstock.service.MappingStockService;
@@ -1550,6 +1551,11 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
 					val.setData(komisiService.getDetail(auth.getIdcompany(), auth.getIdbranch(), id));
+				}else if(type.equals("PRINT")) {
+					long id = (long) param.get("id");
+					ParamPrintKomisi paramkomisi = new ParamPrintKomisi();
+					paramkomisi.setMenu("PRINT");
+					val.setData(komisiService.getPrint(id,auth.getIdcompany(), auth.getIdbranch(), auth.getId(), paramkomisi));
 				}
 			}
 

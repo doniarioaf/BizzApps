@@ -10,14 +10,14 @@ import com.servlet.komisi.mapper.QueryKomisiList;
 import com.servlet.komisi.repo.KomisiItemRepo;
 import com.servlet.komisi.repo.KomisiRepo;
 import com.servlet.komisi.service.KomisiService;
-import com.servlet.packinglist.entity.BodyPackingListItem;
-import com.servlet.packinglist.entity.PackingList;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.user.entity.UserListData;
+import com.servlet.user.service.UserAppsService;
 import com.servlet.vendor.entity.ParamVendor;
 import com.servlet.vendor.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +55,9 @@ public class KomisiHandler implements KomisiService {
 
     @Autowired
     private RunningNumberService runningNumberService;
+
+    @Autowired
+    private UserAppsService userAppsService;
 
     protected final String namaMenu = "Komisi";
 
@@ -252,6 +255,74 @@ public class KomisiHandler implements KomisiService {
 
         }
         return null;
+    }
+
+    @Override
+    public PrintNotaKomisi getPrint(Long id,Long idcompany, Long idbranch, Long iduser,ParamPrintKomisi param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryKomisiList().schema());
+        sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+
+        final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+        List<KomisiList> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryKomisiList(), queryParameters);
+        if(list != null && list.size() > 0){
+            long idbox = 0;
+            ChargeList chargeList = chargeService.getChargeByName(idcompany,idbranch,"BOX");
+            if(chargeList != null){
+                idbox = chargeList.getId().longValue();
+            }
+
+            ParamKomisi pk = new ParamKomisi();
+            pk.setMenu("DETAILITEMKOMISI");
+            pk.setIdkomisi(id);
+            pk.setIdbox(idbox);
+
+            KomisiList komisi = list.get(0);
+            PrintNotaKomisi print = new PrintNotaKomisi();
+            print.setId(komisi.getId());
+            print.setNodocument(komisi.getNodocument());
+            print.setDate(komisi.getDate());
+            print.setNote(komisi.getNote());
+            print.setItems(purchaseReceiveService.getListKomisi(idcompany,idbranch,pk));
+            print.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADPDF",namaMenu));
+            print.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
+            if(iduser != null) {
+                UserListData user = userAppsService.getUserByID(iduser);
+                String namaUser = "";
+                if (user != null) {
+                    namaUser = user.getNama();
+                }
+                print.setNamaUser(namaUser);
+            }
+            if(param != null){
+                if(param.getMenu() != null){
+                    if(param.getMenu().equals("PRINT")){
+                        catatDownload(id,idcompany,idbranch,iduser);
+                    }
+                }
+            }
+            return print;
+        }
+
+        return null;
+    }
+
+    private ReturnData catatDownload(Long id, Long idcompany, Long idbranch, Long iduser) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        try {
+            Komisi table = repo.getById(id);
+            historyAppsService.saveHistory(table.getIdcompany(),table.getIdbranch(),iduser,"DOWNLOADPDF",namaMenu,id.toString(),"","",ts);
+        }catch (Exception e) {
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+            validations.add(msg);
+        }
+
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
     }
 
     private HashMap<Object,Object> setItems(Long idcompany, Long idbranch, Long idkomisi, BodyKomisiItem[] items){
