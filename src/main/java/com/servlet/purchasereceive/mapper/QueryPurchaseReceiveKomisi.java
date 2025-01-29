@@ -15,6 +15,7 @@ public class QueryPurchaseReceiveKomisi implements RowMapper<PurchaseReceiveData
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.transactiondate as transactiondate, venbroker.id as venbrokerid, ");
         sqlBuilder.append("venbroker.nama as venbrokerNama, venbroker.alias as venbrokerAlias, prcharge.qty as koli, ");
+        sqlBuilder.append("ven.id as venid, ven.nama as venNama, ven.alias as venAlias, ");
         sqlBuilder.append("venbroker.komisi as komisi ");
         sqlBuilder.append("from purchasereceive as data ");
         sqlBuilder.append("left join m_vendor as ven on ven.id = data.idvendor ");
@@ -40,11 +41,18 @@ public class QueryPurchaseReceiveKomisi implements RowMapper<PurchaseReceiveData
         final String venbrokerAlias = rs.getString("venbrokerAlias");
         final Long koli = rs.getLong("koli");
         final Double komisi = rs.getDouble("komisi");
+        final Long venid = rs.getLong("venid");
+        final String venNama = rs.getString("venNama");
+        final String venAlias = rs.getString("venAlias");
+
         PurchaseReceiveDataKomisi data = new PurchaseReceiveDataKomisi();
         data.setId(id);
         data.setIdvendorbroker(venbrokerid);
         data.setVendornamabroker(venbrokerNama);
         data.setVendoraliasbroker(venbrokerAlias);
+        data.setIdvendor(venid);
+        data.setVendornama(venNama);
+        data.setVendoralias(venAlias);
         data.setNodocument(nodocument);
         data.setDate(transactiondate);
         data.setKoli(koli);

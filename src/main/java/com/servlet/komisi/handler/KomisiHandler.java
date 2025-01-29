@@ -4,10 +4,7 @@ import com.servlet.charge.entity.ChargeList;
 import com.servlet.charge.service.ChargeService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.komisi.entity.*;
-import com.servlet.komisi.mapper.QueryKomisiDetail;
-import com.servlet.komisi.mapper.QueryKomisiItemJoinHeader;
-import com.servlet.komisi.mapper.QueryKomisiItemNotJoin;
-import com.servlet.komisi.mapper.QueryKomisiList;
+import com.servlet.komisi.mapper.*;
 import com.servlet.komisi.repo.KomisiItemRepo;
 import com.servlet.komisi.repo.KomisiRepo;
 import com.servlet.komisi.service.KomisiService;
@@ -318,6 +315,30 @@ public class KomisiHandler implements KomisiService {
             return list.get(0);
         }
         return null;
+    }
+
+    @Override
+    public List<KomisiDataReportKomisi> getListReportKomisi(Long idcompany, Long idbranch, ParamKomisiReportKomisi param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryKomisiReportKomisi().schema());
+        sqlBuilder.append(" where komisi.idcompany = ? and komisi.idbranch = ? and komisi.isdelete = false  ");
+        if(param.getFrom() != null){
+            Date dt = new Date(param.getFrom());
+            sqlBuilder.append(" and komisi.date >= '"+dt.toString()+"'");
+        }
+        if(param.getTo() != null){
+            Date dt = new Date(param.getTo());
+            sqlBuilder.append(" and komisi.date <= '"+dt.toString()+"'");
+        }
+        if(param.getIdvendor() != null){
+            sqlBuilder.append(" and ven.idvendorbroker = "+param.getIdvendor()+" ");
+        }
+
+        if(param.getListIdvendor() != null && !param.getListIdvendor().equals("")){
+            sqlBuilder.append(" and ven.idvendorbroker in ("+param.getListIdvendor()+") ");
+        }
+
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryKomisiReportKomisi(), queryParameters);
     }
 
     private ReturnData catatDownload(Long id, Long idcompany, Long idbranch, Long iduser) {

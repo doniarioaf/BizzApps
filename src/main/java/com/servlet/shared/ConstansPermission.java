@@ -124,5 +124,6 @@ public class ConstansPermission {
 	public static final String CREATE_KOMISI = "CREATE_KOMISI";
 	public static final String EDIT_KOMISI = "EDIT_KOMISI";
 	public static final String DELETE_KOMISI = "DELETE_KOMISI";
+	public static final String READ_REPORT_KOMISI = "READ_REPORT_KOMISI";
 	
 }

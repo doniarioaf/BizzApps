@@ -276,6 +276,35 @@ public class ReportAPI {
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
+    @GetMapping("/reportkomisi")
+    ResponseEntity<Response> getReportKomisi( @RequestParam("idvendorbrokers") String idvendorbrokers, @RequestParam("from") Long from,@RequestParam("to") Long to, HttpServletResponse response, @RequestHeader(ConstansKey.AUTH) String authorization) throws IOException{
+        ParamReportKomisi body = new ParamReportKomisi();
+        body.setFrom(from);
+        body.setTo(to);
+        body.setListIdvendorbroker(idvendorbrokers);
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "REPORTKOMISI");
+        param.put("body", body);
+        Response response1 = securityService.response(ConstansPermission.READ_REPORT_KOMISI,param,authorization);
+        if(response1.getHttpcode() == HttpStatus.OK.value()) {
+            XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+            export(response, workbook);
+
+            return ResponseEntity.ok().build();
+        }else{
+            return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
+        }
+
+    }
+
+    @GetMapping("/reportkomisi/template")
+    ResponseEntity<Response> getReportKomisi(@RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "REPORTKOMISI_TEMPLATE");
+        Response response = securityService.response(ConstansPermission.READ_REPORT_KOMISI,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
     private void export(HttpServletResponse response, XSSFWorkbook workbook) throws IOException {
         ServletOutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);

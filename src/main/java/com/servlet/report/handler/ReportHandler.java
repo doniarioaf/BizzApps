@@ -22,6 +22,9 @@ import com.servlet.invoice.entity.InvoiceDataReportPiutang;
 import com.servlet.invoice.entity.ParamSearchInvoice;
 import com.servlet.invoice.entity.PrintInvoice;
 import com.servlet.invoice.service.InvoiceService;
+import com.servlet.komisi.entity.KomisiDataReportKomisi;
+import com.servlet.komisi.entity.ParamKomisiReportKomisi;
+import com.servlet.komisi.service.KomisiService;
 import com.servlet.mappingstock.entity.MappingStockList;
 import com.servlet.mappingstock.entity.ParamSearchMappingStock;
 import com.servlet.mappingstock.service.MappingStockService;
@@ -127,6 +130,9 @@ public class ReportHandler implements ReportService {
     UserAppsService userAppsService;
     @Autowired
     ProductService productService;
+
+    @Autowired
+    KomisiService komisiService;
 
     @Override
     public ReportWorkBookExcel getExcelPackingListByID(long id, long idcompany, long idbranch,long iduser) {
@@ -3914,6 +3920,272 @@ public class ReportHandler implements ReportService {
         ParamTemplate paramCP = new ParamTemplate();
         paramCP.setShowOnlyCpMapping(true);
         data.setCategoryProductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,paramCP));
+        return data;
+    }
+
+    @Override
+    public ReportWorkBookExcel reportReportKomisi(long idcompany, long idbranch, ParamReportKomisi param) {
+        ReportWorkBookExcel data = new ReportWorkBookExcel();
+        XSSFWorkbook workbook = new XSSFWorkbook();
+
+        XSSFDataFormat format = workbook.createDataFormat();
+
+        XSSFSheet sheet = workbook.createSheet("Laporan Komisi");
+        sheet.setDefaultColumnWidth(1000);
+        List<Integer> columns = getWidthColumns(15);
+
+        String namaCabang = "";
+        Branch branch = branchService.getBranchByID(idbranch);
+        if(branch != null){
+            namaCabang = branch.getNama();
+        }
+
+        int fontHeight = 12;
+        CellStyle style = workbook.createCellStyle();
+        CellStyle styleBold = workbook.createCellStyle();
+        CellStyle styleAmount = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setBold(false);
+        font.setFontHeight(fontHeight);
+        style.setFont(font);
+        styleAmount.setFont(font);
+
+        XSSFFont fontBold = workbook.createFont();
+        fontBold.setBold(true);
+        fontBold.setFontHeight(fontHeight);
+        styleBold.setFont(fontBold);
+
+        String namaVendor = "";
+        ParamVendor paramvendor =  new ParamVendor();
+        paramvendor.setVendorTypes("'BROKER'");
+        if(!param.getListIdvendorbroker().equals("ALL")){
+            paramvendor.setListIdVendor(param.getListIdvendorbroker());
+        }
+        List<String> list = new ArrayList<>();
+        List<VendorDataForTemplate> getListVendor = vendorService.getListDropdown(idcompany,idbranch,paramvendor);
+        List<String> idvendors = new ArrayList<>();
+        for(VendorDataForTemplate ven : getListVendor){
+            list.add(ven.getNama());
+            idvendors.add(ven.getId().toString());
+        }
+        String listIdVendor = idvendors.toString().replaceAll("\\[","");
+        listIdVendor = listIdVendor.replaceAll("\\]","");
+        if(!param.getListIdvendorbroker().equals("ALL")){
+            for(String nama :list){
+                if(namaVendor == ""){
+                    namaVendor = nama;
+                } else{
+                    namaVendor= namaVendor+","+nama;
+                }
+            }
+        }else{
+            namaVendor = "ALL";
+        }
+
+        int rowcount = 2;
+        Row row = sheet.createRow(rowcount);
+        createCell(row, 0, "PT Sumber Berlian Samudra", style, sheet,columns);
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Laporan Kartu Deposit", style, sheet,columns);
+
+        String dateFrom = "";
+        try {
+            dateFrom = GlobalFunc.getDateLongToString(param.getFrom(), "dd-MMMM-yyyy");
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String dateThru = "";
+        try {
+            dateThru = GlobalFunc.getDateLongToString(param.getTo(), "dd-MMMM-yyyy");
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Periode", style, sheet,columns);
+        createCell(row, 1, dateFrom+" s/d "+dateThru, style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Broker", style, sheet,columns);
+        createCell(row, 1, namaVendor, style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Cabang", style, sheet,columns);
+        createCell(row, 1, namaCabang, style, sheet,columns);
+
+        int colomcount = 0;
+        rowcount++;
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, colomcount, "No", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Nama Broker", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Vendor", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "No Document", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Tanggal", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Koli", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Komisi Per Koli", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Subtotal Komisi", style, sheet,columns);
+
+        ParamKomisiReportKomisi paramKomisi = new ParamKomisiReportKomisi();
+        paramKomisi.setFrom(param.getFrom());
+        paramKomisi.setTo(param.getTo());
+        if(!param.getListIdvendorbroker().equals("ALL")){
+            paramKomisi.setListIdvendor(listIdVendor);
+        }
+        List<KomisiDataReportKomisi> listkomisi = komisiService.getListReportKomisi(idcompany,idbranch,paramKomisi);
+        HashMap<Long,List<KomisiDataReportKomisi>> grupByIdVendorBroker = new HashMap<>();
+        if(listkomisi != null && listkomisi.size() > 0){
+            for(KomisiDataReportKomisi kom : listkomisi){
+                if(grupByIdVendorBroker.get(kom.getIdvendorbroker()) == null){
+                    List<KomisiDataReportKomisi> temp = new ArrayList<>();
+                    temp.add(kom);
+                    grupByIdVendorBroker.put(kom.getIdvendorbroker(),temp);
+                }else{
+                    List<KomisiDataReportKomisi> temp = new ArrayList<>();
+                    temp = grupByIdVendorBroker.get(kom.getIdvendorbroker());
+                    temp.add(kom);
+                    grupByIdVendorBroker.put(kom.getIdvendorbroker(),temp);
+                }
+            }
+
+            for(VendorDataForTemplate ven : getListVendor){
+                List<KomisiDataReportKomisi> listKomPerVendor = grupByIdVendorBroker.get(ven.getId());
+                if(listKomPerVendor != null){
+                    int no = 1;
+                    double totalSubTotalKomisi = 0.0;
+                    for(KomisiDataReportKomisi kom : listKomPerVendor){
+                        colomcount = 0;
+                        rowcount++;
+                        row = sheet.createRow(rowcount);
+                        createCell(row, colomcount, no, style, sheet,columns);
+
+                        colomcount++;
+                        createCell(row, colomcount, ven.getNama(), style, sheet,columns);
+
+                        colomcount++;
+                        createCell(row, colomcount, kom.getVendoralias(), style, sheet,columns);
+
+                        colomcount++;
+                        createCell(row, colomcount, kom.getNodocumentPR(), style, sheet,columns);
+
+                        String transDate = "";
+                        try {
+                            transDate = GlobalFunc.getDateLongToString(kom.getDate().getTime(), "dd-MMMM-yyyy");
+                        } catch (ParseException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+
+                        colomcount++;
+                        createCell(row, colomcount, transDate, style, sheet,columns);
+
+                        colomcount++;
+                        createCell(row, colomcount, kom.getKoli(), style, sheet,columns);
+
+                        if(kom.getKomisiperkoli().doubleValue() > 1){
+                            styleAmount = workbook.createCellStyle();
+                            if(GlobalFunc.checkIsDecimal(kom.getKomisiperkoli())) {
+                                styleAmount.setDataFormat(format.getFormat("#,###"));
+                            }else {
+                                styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                            }
+                            colomcount++;
+                            createCell(row, colomcount, kom.getKomisiperkoli(), styleAmount, sheet,columns);
+                        }else{
+                            colomcount++;
+                            createCell(row, colomcount, 0, style, sheet,columns);
+                        }
+
+                        if(kom.getSubtotalkomisi().doubleValue() > 1){
+                            styleAmount = workbook.createCellStyle();
+                            if(GlobalFunc.checkIsDecimal(kom.getSubtotalkomisi())) {
+                                styleAmount.setDataFormat(format.getFormat("#,###"));
+                            }else {
+                                styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                            }
+                            colomcount++;
+                            createCell(row, colomcount, kom.getSubtotalkomisi(), styleAmount, sheet,columns);
+                        }else{
+                            colomcount++;
+                            createCell(row, colomcount, 0, style, sheet,columns);
+                        }
+                        totalSubTotalKomisi += kom.getSubtotalkomisi().doubleValue();
+                        no++;
+                    }
+
+                    colomcount = 0;
+                    rowcount++;
+                    row = sheet.createRow(rowcount);
+                    createCell(row, colomcount, "", style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, "", style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, "", style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, "Total", style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, "", style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, "", style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, "", style, sheet,columns);
+
+                    if(totalSubTotalKomisi > 1){
+                        styleAmount = workbook.createCellStyle();
+                        if(GlobalFunc.checkIsDecimal(totalSubTotalKomisi)) {
+                            styleAmount.setDataFormat(format.getFormat("#,###"));
+                        }else {
+                            styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                        }
+                        colomcount++;
+                        createCell(row, colomcount, totalSubTotalKomisi, styleAmount, sheet,columns);
+                    }else{
+                        colomcount++;
+                        createCell(row, colomcount, 0, style, sheet,columns);
+                    }
+                    rowcount++;
+
+                }
+            }
+        }
+
+        data.setWorkbook(workbook);
+        return data;
+    }
+
+    @Override
+    public ReportTemplate reportTemplateReportKomisi(long idcompany, long idbranch) {
+        ParamVendor paramvendor =  new ParamVendor();
+        paramvendor.setVendorTypes("'BROKER'");
+        List<VendorDataForTemplate> getListVendor = vendorService.getListDropdown(idcompany,idbranch,paramvendor);
+        ReportTemplate data = new ReportTemplate();
+        data.setVendorOpt(getListVendor);
         return data;
     }
 

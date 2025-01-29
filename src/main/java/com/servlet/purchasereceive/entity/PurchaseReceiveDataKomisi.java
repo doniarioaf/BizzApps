@@ -7,11 +7,40 @@ public class PurchaseReceiveDataKomisi {
     private Long idvendorbroker;
     private String vendornamabroker;
     private String vendoraliasbroker;
+
+    private Long idvendor;
+    private String vendornama;
+    private String vendoralias;
+
     private String nodocument;
     private Date date;
     private Long koli;
     private Double komisi;
     private Double subTotalkomisi;
+
+    public Long getIdvendor() {
+        return idvendor;
+    }
+
+    public void setIdvendor(Long idvendor) {
+        this.idvendor = idvendor;
+    }
+
+    public String getVendornama() {
+        return vendornama;
+    }
+
+    public void setVendornama(String vendornama) {
+        this.vendornama = vendornama;
+    }
+
+    public String getVendoralias() {
+        return vendoralias;
+    }
+
+    public void setVendoralias(String vendoralias) {
+        this.vendoralias = vendoralias;
+    }
 
     public Double getSubTotalkomisi() {
         return subTotalkomisi;

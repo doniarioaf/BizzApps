@@ -22,4 +22,6 @@ public interface ReportService {
     ReportTemplate reportTemplateReportKartuDeposit(long idcompany, long idbranch);
     ReportWorkBookExcel reportReportKartuStock(long idcompany, long idbranch, ParamReportKartuStock param);
     ReportTemplate reportTemplateReportKartuStock(long idcompany, long idbranch);
+    ReportWorkBookExcel reportReportKomisi(long idcompany, long idbranch, ParamReportKomisi param);
+    ReportTemplate reportTemplateReportKomisi(long idcompany, long idbranch);
 }
