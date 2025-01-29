@@ -8,6 +8,9 @@ import com.servlet.draftpurchasereceive.repo.DraftPurchaseReceiveItemsRepo;
 import com.servlet.draftpurchasereceive.repo.DraftPurchaseReceiveRepo;
 import com.servlet.draftpurchasereceive.service.DraftPurchaseReceiveService;
 import com.servlet.historyapps.service.HistoryAppsService;
+import com.servlet.komisi.entity.Komisi;
+import com.servlet.komisi.entity.KomisiList;
+import com.servlet.komisi.mapper.QueryKomisiList;
 import com.servlet.product.service.ProductService;
 import com.servlet.purchasereceive.entity.PurchaseReceiveDataList;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
@@ -16,6 +19,8 @@ import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.user.entity.UserListData;
+import com.servlet.user.service.UserAppsService;
 import com.servlet.vendor.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -53,6 +58,9 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
     private RunningNumberService runningNumberService;
     @Autowired
     private PurchaseReceiveService purchaseReceiveService;
+
+    @Autowired
+    private UserAppsService userAppsService;
 
     protected final String namaMenu = "DraftPurchaseReceive";
 
@@ -358,6 +366,52 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
 
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataList(), queryParameters);
+    }
+
+    @Override
+    public PrintDataDraftPR printDataDraftPR(Long idcompany, Long idbranch, Long iduser, Long id) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPrintDraftPR().schema());
+        sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+
+        final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+        List<PrintDataDraftPR> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPrintDraftPR(), queryParameters);
+        if(list != null && list.size() > 0){
+            PrintDataDraftPR print = list.get(0);
+
+            print.setItems(getListItems(id,idcompany,idbranch));
+            print.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADPDF",namaMenu));
+            print.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
+            if(iduser != null) {
+                UserListData user = userAppsService.getUserByID(iduser);
+                String namaUser = "";
+                if (user != null) {
+                    namaUser = user.getNama();
+                }
+                print.setNamaUser(namaUser);
+            }
+            catatDownload(id,idcompany,idbranch,iduser);
+            return print;
+        }
+        return null;
+    }
+
+    private ReturnData catatDownload(Long id, Long idcompany, Long idbranch, Long iduser) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        try {
+//            DraftPurchaseReceive table = repo.getById(id);
+//            historyAppsService.saveHistory(table.getIdcompany(),table.getIdbranch(),iduser,"DOWNLOADPDF",namaMenu,id.toString(),"","",ts);
+        }catch (Exception e) {
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+            validations.add(msg);
+        }
+
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
     }
 
 

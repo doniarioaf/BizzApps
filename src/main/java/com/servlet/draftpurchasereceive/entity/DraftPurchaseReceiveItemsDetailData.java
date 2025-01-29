@@ -3,6 +3,7 @@ package com.servlet.draftpurchasereceive.entity;
 public class DraftPurchaseReceiveItemsDetailData {
     private long boxsequence;
     private Long idproduct;
+    private String productName;
     private Long idcategoryproduct;
     private String namacategoryproduct;
     private String sizecategoryproduct;
@@ -11,6 +12,14 @@ public class DraftPurchaseReceiveItemsDetailData {
     private Long ekor;
     private Double kilo;
     private String type;
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
 
     public Long getWeightfromingramcategoryproduct() {
         return weightfromingramcategoryproduct;
