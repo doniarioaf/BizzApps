@@ -1328,6 +1328,9 @@ public class ProcessHandler implements ProcessService{
 					long idproduct = (long) param.get("idproduct");
 					long idcategoryproduct = (long) param.get("idcategoryproduct");
 					val.setData(purchaseReceiveService.getItemInLastDocumentPR(auth.getIdcompany(), auth.getIdbranch(),idproduct,idcategoryproduct));
+				}else if(type.equals("PRINT")) {
+					long id = (long) param.get("id");
+					val.setData(stockAdjusmentService.getPrintData(auth.getIdcompany(), auth.getIdbranch(), auth.getId(), id));
 				}
 			}
 

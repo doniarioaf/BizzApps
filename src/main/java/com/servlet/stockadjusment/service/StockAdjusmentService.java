@@ -15,4 +15,5 @@ public interface StockAdjusmentService {
     StockAdjsumentDataDetail getDetail(Long idcompany, Long idbranch,Long id);
     Long calculateQtySA(Long idcompany, Long idbranch,String type, ParamCalculateQtySA param);
     List<ReportKartuStock> getListReportKartuStock(Long idcompany, Long idbranch, ParamCalculateQtySA param);
+    PrintDataStockUdangMati getPrintData(Long idcompany, Long idbranch,Long iduser,Long id);
 }

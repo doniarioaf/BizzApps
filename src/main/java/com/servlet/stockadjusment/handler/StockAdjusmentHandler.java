@@ -1,6 +1,7 @@
 package com.servlet.stockadjusment.handler;
 
 import com.servlet.categoryproduct.service.CategoryProductService;
+import com.servlet.draftpurchasereceive.entity.DraftPurchaseReceive;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.mappingstock.entity.MappingStockCategoryID;
 import com.servlet.mappingstock.service.MappingStockService;
@@ -17,6 +18,8 @@ import com.servlet.stockadjusment.repo.StockAdjusmentRepo;
 import com.servlet.stockadjusment.service.StockAdjusmentService;
 import com.servlet.stockitems.entity.ReportKartuStock;
 import com.servlet.stockitems.service.StockItemService;
+import com.servlet.user.entity.UserListData;
+import com.servlet.user.service.UserAppsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -46,6 +49,8 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
 
     @Autowired
     private RunningNumberService runningNumberService;
+    @Autowired
+    private UserAppsService userAppsService;
     @Autowired
     private HistoryAppsService historyAppsService;
     protected final String namaMenu = "STOCKADJUSMENT";
@@ -273,6 +278,52 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
 //        sqlBuilder.append(" order by sa.id ");
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryStockAdjusmentReportKartuStock(), queryParameters);
+    }
+
+    @Override
+    public PrintDataStockUdangMati getPrintData(Long idcompany, Long idbranch, Long iduser, Long id) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPrintDataStockUdangMati().schema());
+        sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        sqlBuilder.append(" and data.type = 'M' ");
+
+        final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+        List<PrintDataStockUdangMati> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPrintDataStockUdangMati(), queryParameters);
+        if(list != null && list.size() > 0){
+            PrintDataStockUdangMati print = list.get(0);
+            print.setItems(getItems(id));
+            print.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADPDF",namaMenu));
+            print.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
+            if(iduser != null) {
+                UserListData user = userAppsService.getUserByID(iduser);
+                String namaUser = "";
+                if (user != null) {
+                    namaUser = user.getNama();
+                }
+                print.setNamaUser(namaUser);
+            }
+            catatDownload(id,idcompany,idbranch,iduser);
+            return print;
+        }
+        return null;
+    }
+
+    private ReturnData catatDownload(Long id, Long idcompany, Long idbranch, Long iduser) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        try {
+            StockAdjusment table = repo.getById(id);
+            historyAppsService.saveHistory(table.getIdcompany(),table.getIdbranch(),iduser,"DOWNLOADPDF",namaMenu,id.toString(),"","",ts);
+        }catch (Exception e) {
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+            validations.add(msg);
+        }
+
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
     }
 
     private List<StockAdjsumentDataItem> getItems(Long idstockadjusment){

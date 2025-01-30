@@ -400,8 +400,8 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
         long idsave = 0;
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
         try {
-//            DraftPurchaseReceive table = repo.getById(id);
-//            historyAppsService.saveHistory(table.getIdcompany(),table.getIdbranch(),iduser,"DOWNLOADPDF",namaMenu,id.toString(),"","",ts);
+            DraftPurchaseReceive table = repo.getById(id);
+            historyAppsService.saveHistory(table.getIdcompany(),table.getIdbranch(),iduser,"DOWNLOADPDF",namaMenu,id.toString(),"","",ts);
         }catch (Exception e) {
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
             validations.add(msg);
