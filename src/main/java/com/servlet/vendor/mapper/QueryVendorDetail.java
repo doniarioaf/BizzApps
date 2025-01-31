@@ -91,7 +91,7 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         data.setIdvendorparent(idvendorparent);
         data.setVendorParentName(vennama);
         data.setVendorParentAlias(venalias);
-        data.setIdvendorparent(idvendorbroker);
+        data.setIdvendorbroker(idvendorbroker);
         data.setVendorBrokerName(venbrokernama);
         data.setVendorBrokerAlias(venbrokeralias);
         return data;

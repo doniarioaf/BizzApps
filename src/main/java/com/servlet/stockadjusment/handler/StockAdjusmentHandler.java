@@ -1,5 +1,6 @@
 package com.servlet.stockadjusment.handler;
 
+import com.servlet.categoryproduct.entity.ParamTemplate;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.draftpurchasereceive.entity.DraftPurchaseReceive;
 import com.servlet.historyapps.service.HistoryAppsService;
@@ -301,6 +302,10 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
                 }
                 print.setNamaUser(namaUser);
             }
+            ParamTemplate paramcp = new ParamTemplate();
+            paramcp.setShowOnlyCpMapping(true);
+            print.setListcp(categoryProductService.getDataForTemplate(idcompany,idbranch,paramcp));
+            print.setMappingstock(mappingStockService.getListAll(idcompany,idbranch));
             catatDownload(id,idcompany,idbranch,iduser);
             return print;
         }

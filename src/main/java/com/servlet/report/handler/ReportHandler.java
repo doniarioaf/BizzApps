@@ -3987,7 +3987,7 @@ public class ReportHandler implements ReportService {
         createCell(row, 0, "PT Sumber Berlian Samudra", style, sheet,columns);
         rowcount++;
         row = sheet.createRow(rowcount);
-        createCell(row, 0, "Laporan Kartu Deposit", style, sheet,columns);
+        createCell(row, 0, "Laporan Komisi", style, sheet,columns);
 
         String dateFrom = "";
         try {

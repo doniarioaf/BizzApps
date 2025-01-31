@@ -1,5 +1,8 @@
 package com.servlet.stockadjusment.entity;
 
+import com.servlet.categoryproduct.entity.CategoryProductList;
+import com.servlet.mappingstock.entity.MappingStockList;
+
 import java.sql.Date;
 import java.util.List;
 
@@ -14,6 +17,24 @@ public class PrintDataStockUdangMati {
     private Long countEdit;
     private String namaUser;
     private List<StockAdjsumentDataItem> items;
+    private List<MappingStockList> mappingstock;
+    private List<CategoryProductList> listcp;
+
+    public List<MappingStockList> getMappingstock() {
+        return mappingstock;
+    }
+
+    public void setMappingstock(List<MappingStockList> mappingstock) {
+        this.mappingstock = mappingstock;
+    }
+
+    public List<CategoryProductList> getListcp() {
+        return listcp;
+    }
+
+    public void setListcp(List<CategoryProductList> listcp) {
+        this.listcp = listcp;
+    }
 
     public Long getId() {
         return id;
