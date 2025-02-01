@@ -3,17 +3,16 @@ package com.servlet.purchasereceive.handler;
 import com.servlet.area.service.AreaService;
 import com.servlet.categoryproduct.entity.ParamTemplate;
 import com.servlet.categoryproduct.service.CategoryProductService;
-import com.servlet.charge.entity.ChargeList;
 import com.servlet.charge.service.ChargeService;
 import com.servlet.deposit.entity.BodyDeposit;
 import com.servlet.deposit.entity.ReportKartuDeposit;
 import com.servlet.deposit.service.DepositService;
 import com.servlet.draftpurchasereceive.entity.ParamGetDataDraftPR;
+import com.servlet.draftpurchasereceive.entity.ParamSearchDraftPurchaseReceive;
 import com.servlet.draftpurchasereceive.service.DraftPurchaseReceiveService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.inventori.service.InventoriService;
 import com.servlet.komisi.entity.KomisiItemJoinHeader;
-import com.servlet.komisi.entity.KomisiItemNotJoin;
 import com.servlet.komisi.entity.ParamKomisi;
 import com.servlet.komisi.service.KomisiService;
 import com.servlet.mappingstock.entity.MappingStockCategoryID;
@@ -127,6 +126,19 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataList(), queryParameters);
 
+    }
+
+    @Override
+    public PurchaseReceiveAllTabData getListAllTab(Long idcompany, Long idbranch, Long from, Long to) {
+        PurchaseReceiveAllTabData data = new PurchaseReceiveAllTabData();
+        data.setListPr(getListAll(idcompany,idbranch,from,to));
+
+        ParamSearchDraftPurchaseReceive paramDpr = new ParamSearchDraftPurchaseReceive();
+        paramDpr.setFrom(from);
+        paramDpr.setTo(to);
+        paramDpr.setOnlyShowNotInLinkedPR(true);
+        data.setListDpr(draftPurchaseReceiveService.getList(idcompany,idbranch,paramDpr));
+        return data;
     }
 
     @Override

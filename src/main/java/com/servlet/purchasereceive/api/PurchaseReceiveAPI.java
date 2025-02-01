@@ -37,6 +37,36 @@ public class PurchaseReceiveAPI {
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
+    @GetMapping("/listalltab")
+    ResponseEntity<Response> getListAllTab(@RequestParam("from") Long from, @RequestParam("to") Long to, @RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "ALLTAB");
+        param.put("from", from);
+        param.put("to", to);
+        Response response = securityService.response(ConstansPermission.READ_PURCHASERECEIVE,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @GetMapping("/tabpr")
+    ResponseEntity<Response> getListTabPr(@RequestParam("from") Long from, @RequestParam("to") Long to, @RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "TABPR");
+        param.put("from", from);
+        param.put("to", to);
+        Response response = securityService.response(ConstansPermission.READ_PURCHASERECEIVE,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @GetMapping("/tabdpr")
+    ResponseEntity<Response> getListTabDpr(@RequestParam("from") Long from, @RequestParam("to") Long to, @RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "TABDPR");
+        param.put("from", from);
+        param.put("to", to);
+        Response response = securityService.response(ConstansPermission.READ_PURCHASERECEIVE,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
     @GetMapping("{id}")
     ResponseEntity<Response> getById(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
         HashMap<String, Object> param = new HashMap<String, Object>();

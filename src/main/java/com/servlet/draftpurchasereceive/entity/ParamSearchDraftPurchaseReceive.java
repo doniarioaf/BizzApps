@@ -3,6 +3,15 @@ package com.servlet.draftpurchasereceive.entity;
 public class ParamSearchDraftPurchaseReceive {
     private Long from;
     private Long to;
+    private Boolean onlyShowNotInLinkedPR;
+
+    public Boolean getOnlyShowNotInLinkedPR() {
+        return onlyShowNotInLinkedPR;
+    }
+
+    public void setOnlyShowNotInLinkedPR(Boolean onlyShowNotInLinkedPR) {
+        this.onlyShowNotInLinkedPR = onlyShowNotInLinkedPR;
+    }
 
     public Long getFrom() {
         return from;

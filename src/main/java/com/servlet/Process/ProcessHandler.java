@@ -1233,6 +1233,22 @@ public class ProcessHandler implements ProcessService{
 					Long from = (Long) param.get("from");
 					Long to = (Long) param.get("to");
 					val.setData(purchaseReceiveService.getListAll(auth.getIdcompany(), auth.getIdbranch(),from,to));
+				}else if(type.equals("ALLTAB")) {
+					Long from = (Long) param.get("from");
+					Long to = (Long) param.get("to");
+					val.setData(purchaseReceiveService.getListAllTab(auth.getIdcompany(), auth.getIdbranch(),from,to));
+				}else if(type.equals("TABPR")) {
+					Long from = (Long) param.get("from");
+					Long to = (Long) param.get("to");
+					val.setData(purchaseReceiveService.getListAll(auth.getIdcompany(), auth.getIdbranch(),from,to));
+				}else if(type.equals("TABDPR")) {
+					Long from = (Long) param.get("from");
+					Long to = (Long) param.get("to");
+					ParamSearchDraftPurchaseReceive paramDpr = new ParamSearchDraftPurchaseReceive();
+					paramDpr.setFrom(from);
+					paramDpr.setTo(to);
+					paramDpr.setOnlyShowNotInLinkedPR(true);
+					val.setData(draftPurchaseReceiveService.getList(auth.getIdcompany(), auth.getIdbranch(),paramDpr));
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
 					val.setData(purchaseReceiveService.getDetail(auth.getIdcompany(), auth.getIdbranch(),id));

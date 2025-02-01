@@ -14,6 +14,7 @@ import java.util.List;
 
 public interface PurchaseReceiveService {
     List<PurchaseReceiveDataList> getListAll(Long idcompany, Long idbranch, Long from, Long to);
+    PurchaseReceiveAllTabData getListAllTab(Long idcompany, Long idbranch, Long from, Long to);
     PurchaseReceiveDataDetail getDetail(Long idcompany, Long idbranch, Long id);
     PurchaseReceiveTemplate getTemplate(Long idcompany, Long idbranch);
     ReportPurchaseReceiveTemplate getReportTemplate(Long idcompany, Long idbranch);

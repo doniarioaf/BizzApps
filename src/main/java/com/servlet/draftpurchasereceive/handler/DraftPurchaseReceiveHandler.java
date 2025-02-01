@@ -76,6 +76,11 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
             Date dt = new Date(param.getTo());
             sqlBuilder.append(" and data.date <= '"+dt.toString()+"'");
         }
+        if(param.getOnlyShowNotInLinkedPR() != null){
+            if(param.getOnlyShowNotInLinkedPR().booleanValue()){
+                sqlBuilder.append(" and data.id not in (select pr.iddraftpurchasereceive from purchasereceive as pr where pr.idcompany = "+idcompany+" and pr.idbranch = "+idbranch+" and pr.isdelete = false and pr.iddraftpurchasereceive notnull) ");
+            }
+        }
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataList(), queryParameters);
     }
