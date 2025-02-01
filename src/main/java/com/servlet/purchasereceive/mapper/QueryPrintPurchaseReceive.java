@@ -15,7 +15,7 @@ public class QueryPrintPurchaseReceive implements RowMapper<PrintDataPurchaseRec
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(20);
         sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.idvendor as idvendor, ");
-        sqlBuilder.append("data.transactiondate as transactiondate, data.koli as koli, data.notes as notes, ");
+        sqlBuilder.append("data.transactiondate as transactiondate, data.koli as koli, data.notes as notes, data.notes2 as notes2, ");
         sqlBuilder.append("data.bank as bank, data.accountnobank as accountnobank, data.accountnamebank as accountnamebank, ");
         sqlBuilder.append("data.totalprice as totalprice, data.setor as setor, data.iddeposit as iddeposit, data.createddate as createddate, ");
         sqlBuilder.append("ven.nama as vennama, ven.alias as venalias, ");
@@ -42,6 +42,7 @@ public class QueryPrintPurchaseReceive implements RowMapper<PrintDataPurchaseRec
         final Date transactiondate = rs.getDate("transactiondate");
         final String koli = rs.getString("koli");
         final String notes = rs.getString("notes");
+        final String notes2 = rs.getString("notes2");
         final String bank = rs.getString("bank");
         final String accountnobank = rs.getString("accountnobank");
         final String accountnamebank = rs.getString("accountnamebank");
@@ -65,6 +66,7 @@ public class QueryPrintPurchaseReceive implements RowMapper<PrintDataPurchaseRec
         data.setTransactiondate(transactiondate);
         data.setKoli(koli);
         data.setNotes(notes);
+        data.setNotes2(notes2);
         data.setBank(bank);
         data.setAccountnobank(accountnobank);
         data.setAccountnamebank(accountnamebank);

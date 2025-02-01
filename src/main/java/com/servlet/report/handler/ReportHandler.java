@@ -751,7 +751,10 @@ public class ReportHandler implements ReportService {
             createCell(row, colomcount, "Transfer", style, sheet,columns);
 
             colomcount++;
-            createCell(row, colomcount, "Catatan", style, sheet,columns);
+            createCell(row, colomcount, "Catatan 1", style, sheet,columns);
+
+            colomcount++;
+            createCell(row, colomcount, "Catatan 2", style, sheet,columns);
 
             HashMap<String, Object> getData = purchaseReceiveService.getDataForReport(idcompany,idbranch,param);
             List<PrintDataPurchaseReceive> listPR = (List<PrintDataPurchaseReceive>) getData.get("listPR");
@@ -949,6 +952,9 @@ public class ReportHandler implements ReportService {
 
                     colomcount++;
                     createCell(row, colomcount, value.getNotes(), style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, value.getNotes2(), style, sheet,columns);
 
                 }
             }

@@ -14,6 +14,7 @@ public class PrintDataPurchaseReceive {
     private Date transactiondate;
     private String koli;
     private String notes;
+    private String notes2;
     private String bank;
     private String accountnobank;
     private String accountnamebank;
@@ -40,6 +41,14 @@ public class PrintDataPurchaseReceive {
     private String noSMU;
     private String namaArea;
     private String aliasArea;
+
+    public String getNotes2() {
+        return notes2;
+    }
+
+    public void setNotes2(String notes2) {
+        this.notes2 = notes2;
+    }
 
     public String getNoSMU() {
         return noSMU;
