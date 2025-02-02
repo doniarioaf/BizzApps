@@ -1549,7 +1549,7 @@ public class ReportHandler implements ReportService {
         HashMap<Long, VendorDataForTemplate> mapVendor = new HashMap<>();
         for(VendorDataForTemplate ven : getListVendor){
             mapVendor.put(ven.getId(), ven);
-            list.add(ven.getNama());
+            list.add(ven.getAlias());
         }
         if(!param.getIdvendors().equals("ALL")){
             for(String nama :list){
@@ -1661,7 +1661,7 @@ public class ReportHandler implements ReportService {
                     colomcount = 0;
                     rowcount++;
                     row = sheet.createRow(rowcount);
-                    createCell(row, colomcount, ven.getNama(), style, sheet,columns);
+                    createCell(row, colomcount, ven.getAlias(), style, sheet,columns);
 
                     String transDate = "";
                     try {
@@ -3143,7 +3143,7 @@ public class ReportHandler implements ReportService {
         List<VendorDataForTemplate> getListVendor = vendorService.getListDropdown(idcompany,idbranch,paramvendor);
         List<String> idvendors = new ArrayList<>();
         for(VendorDataForTemplate ven : getListVendor){
-            list.add(ven.getNama());
+            list.add(ven.getAlias());
             idvendors.add(ven.getId().toString());
         }
         String listIdVendor = idvendors.toString().replaceAll("\\[","");
@@ -3353,7 +3353,7 @@ public class ReportHandler implements ReportService {
                         colomcount = 0;
                         rowcount++;
                         row = sheet.createRow(rowcount);
-                        createCell(row, colomcount, ven.getNama(), style, sheet,columns);
+                        createCell(row, colomcount, ven.getAlias(), style, sheet,columns);
 
                         transDate = "";
                         try {
@@ -3971,7 +3971,7 @@ public class ReportHandler implements ReportService {
         List<VendorDataForTemplate> getListVendor = vendorService.getListDropdown(idcompany,idbranch,paramvendor);
         List<String> idvendors = new ArrayList<>();
         for(VendorDataForTemplate ven : getListVendor){
-            list.add(ven.getNama());
+            list.add(ven.getAlias());
             idvendors.add(ven.getId().toString());
         }
         String listIdVendor = idvendors.toString().replaceAll("\\[","");
@@ -4086,7 +4086,7 @@ public class ReportHandler implements ReportService {
                         createCell(row, colomcount, no, style, sheet,columns);
 
                         colomcount++;
-                        createCell(row, colomcount, ven.getNama(), style, sheet,columns);
+                        createCell(row, colomcount, ven.getAlias(), style, sheet,columns);
 
                         colomcount++;
                         createCell(row, colomcount, kom.getVendoralias(), style, sheet,columns);
@@ -4204,7 +4204,7 @@ public class ReportHandler implements ReportService {
                 int colomcount = 0;
                 rowcount++;
                 row = sheet.createRow(rowcount);
-                createCell(row, colomcount, ven.getNama(), style, sheet,columns);
+                createCell(row, colomcount, ven.getAlias(), style, sheet,columns);
 
                 colomcount++;
                 createCell(row, colomcount, ven.getType(), style, sheet,columns);
