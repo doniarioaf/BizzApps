@@ -1371,7 +1371,8 @@ public class ProcessHandler implements ProcessService{
 					val.setData(packingListService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("PRICELIST")) {
 					long pricedate = (long) param.get("pricedate");
-					val.setData(priceService.getDataPriceByDate(auth.getIdcompany(), auth.getIdbranch(),pricedate));
+					long idcustomer = (long) param.get("idcustomer");
+					val.setData(priceService.getDataPriceByDate(auth.getIdcompany(), auth.getIdbranch(),pricedate,idcustomer));
 				}else if(type.equals("PRINTEXCEL")) {
 					long id = (long) param.get("id");
 					val.setData(reportService.getExcelPackingListByID(id,auth.getIdcompany(), auth.getIdbranch(), auth.getId()).getWorkbook());

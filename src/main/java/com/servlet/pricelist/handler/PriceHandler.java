@@ -2,6 +2,7 @@ package com.servlet.pricelist.handler;
 
 import com.servlet.categoryproduct.entity.ParamTemplate;
 import com.servlet.categoryproduct.service.CategoryProductService;
+import com.servlet.customer.service.CustomerService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.pricelist.entity.*;
 import com.servlet.pricelist.mapper.QueryDataDetail;
@@ -42,6 +43,9 @@ public class PriceHandler implements PriceService {
     private HistoryAppsService historyAppsService;
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private CustomerService customerService;
     protected final String namaMenu = "PriceList";
 
     @Override
@@ -80,6 +84,7 @@ public class PriceHandler implements PriceService {
         PriceListTemplate data = new PriceListTemplate();
         data.setProductOpt(productService.getListAll(idcompany,idbranch));
         data.setCategoryProductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,paramCP));
+        data.setCustopt(customerService.getListAll(idcompany,idbranch));
 
         //priicelistudang harian ketika membuat dokumen baru , akan mengambil data dari dokumen terakhir dan diisi langsung seperti dokumen terakhir baru diedit oleh user lalu  disave
         data.setItems(getItemFromLastPriceListDoc(idcompany,idbranch));
@@ -103,6 +108,7 @@ public class PriceHandler implements PriceService {
                 table.setPricedate(new Date(body.getPricedate()));
                 table.setPricedatethru(new Date(body.getPricedatethru()));
                 table.setNotes(body.getNotes());
+                table.setIdcustomer(body.getIdcustomer());
                 table.setCreateddate(ts);
                 table.setCreatedby(iduser);
                 idsave = priceListRepo.saveAndFlush(table).getId();
@@ -142,6 +148,7 @@ public class PriceHandler implements PriceService {
             PriceList table = priceListRepo.getById(id);
             if(table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue() && !table.isIsdelete()){
                 table.setNotes(body.getNotes());
+                table.setIdcustomer(body.getIdcustomer());
                 table.setModifieddate(ts);
                 table.setModifiedby(iduser);
                 idsave = priceListRepo.saveAndFlush(table).getId();
@@ -218,16 +225,16 @@ public class PriceHandler implements PriceService {
     }
 
     @Override
-    public PriceItemsDataForTemplate getDataPriceByDate(Long idcompany, Long idbranch, Long priceDate) {
+    public PriceItemsDataForTemplate getDataPriceByDate(Long idcompany, Long idbranch, Long priceDate, Long idcustomer) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataList().schema());
-        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        sqlBuilder.append(" where data.idcustomer = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
 
         if(priceDate != null && priceDate.longValue() != 0){
             Date dt = new Date(priceDate.longValue());
             sqlBuilder.append(" and data.pricedate <= '"+dt.toString()+"' and data.pricedatethru >= '"+dt.toString()+"' ");
             sqlBuilder.append(" order by id desc limit 1 ");
 
-            final Object[] queryParameters = new Object[] {idcompany,idbranch};
+            final Object[] queryParameters = new Object[] {idcustomer,idcompany,idbranch};
             List<PriceListData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataList(), queryParameters);
             if(list != null && list.size() > 0){
                 PriceListData data = list.get(0);

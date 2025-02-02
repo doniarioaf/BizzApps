@@ -72,10 +72,11 @@ public class PackingListAPI {
     }
 
     @GetMapping("/pricelist")
-    ResponseEntity<Response> getPriceList(@RequestParam("pricedate") Long pricedate, @RequestHeader(ConstansKey.AUTH) String authorization) {
+    ResponseEntity<Response> getPriceList(@RequestParam("pricedate") Long pricedate,@RequestParam("idcustomer") Long idcustomer, @RequestHeader(ConstansKey.AUTH) String authorization) {
         HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("type", "PRICELIST");
         param.put("pricedate", pricedate);
+        param.put("idcustomer", idcustomer);
         Response response = securityService.response(ConstansPermission.READ_PACKINGLIST,param,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }

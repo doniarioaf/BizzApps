@@ -16,10 +16,12 @@ public class QueryDataDetail implements RowMapper<PriceListDetail> {
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.id as id, data.pricedate as pricedate,data.pricedatethru as pricedatethru,data.notes as notes, ");
         sqlBuilder.append("data.createddate as createddate, data.modifieddate as modifieddate, ");
-        sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama ");
+        sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama, ");
+        sqlBuilder.append("data.idcustomer as idcustomer, cust.nama as custnama, cust.alias as custalias ");
         sqlBuilder.append("from pricelist as data ");
         sqlBuilder.append("left join m_user_apps as usercreate on usercreate.id = data.createdby ");
         sqlBuilder.append("left join m_user_apps as usermodified on usermodified.id = data.modifiedby ");
+        sqlBuilder.append("left join m_customer as cust on cust.id = data.idcustomer ");
 
         this.schemaSql = sqlBuilder.toString();
     }
@@ -37,7 +39,9 @@ public class QueryDataDetail implements RowMapper<PriceListDetail> {
         final String modifiednama = rs.getString("modifiednama");
         final Date pricedatethru = rs.getDate("pricedatethru");
         final String notes = rs.getString("notes");
-
+        final Long idcustomer = rs.getLong("idcustomer");
+        final String custnama = rs.getString("custnama");
+        final String custalias = rs.getString("custalias");
 
         PriceListDetail data = new PriceListDetail();
         data.setId(id);
@@ -48,6 +52,9 @@ public class QueryDataDetail implements RowMapper<PriceListDetail> {
         data.setModifieddate(modifieddate);
         data.setCreatedbyName(createdname);
         data.setModifiedbyName(modifiednama);
+        data.setIdcustomer(idcustomer);
+        data.setCustomerName(custnama);
+        data.setCustomerAlias(custalias);
         return data;
     }
 }

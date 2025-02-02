@@ -4,7 +4,16 @@ public class BodyPriceList {
     private long pricedate;
     private long pricedatethru;
     private String notes;
+    private Long idcustomer;
     private BodyPriceItem[] items;
+
+    public Long getIdcustomer() {
+        return idcustomer;
+    }
+
+    public void setIdcustomer(Long idcustomer) {
+        this.idcustomer = idcustomer;
+    }
 
     public String getNotes() {
         return notes;
