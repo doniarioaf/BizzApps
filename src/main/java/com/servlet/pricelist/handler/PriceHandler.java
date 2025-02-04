@@ -254,6 +254,7 @@ public class PriceHandler implements PriceService {
     private List<PriceListItemData> getPriceListItems(Long idpricelist){
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataPriceItem().schema());
         sqlBuilder.append(" where data.pricelistid = ? ");
+        sqlBuilder.append(" order by cp.weightfromingram desc ");
         final Object[] queryParameters = new Object[] {idpricelist};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataPriceItem(), queryParameters);
     }

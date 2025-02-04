@@ -3,8 +3,26 @@ package com.servlet.purchasereceive.entity;
 public class PurchaseReceiveDataPelunasanHutang {
     private Long id;
     private String nodocument;
+    private String vendorName;
+    private String vendorAlias;
     private Double totalprice;
     private Double outstanding;
+
+    public String getVendorName() {
+        return vendorName;
+    }
+
+    public void setVendorName(String vendorName) {
+        this.vendorName = vendorName;
+    }
+
+    public String getVendorAlias() {
+        return vendorAlias;
+    }
+
+    public void setVendorAlias(String vendorAlias) {
+        this.vendorAlias = vendorAlias;
+    }
 
     public Long getId() {
         return id;

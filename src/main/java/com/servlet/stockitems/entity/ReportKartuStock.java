@@ -13,6 +13,10 @@ public class ReportKartuStock implements Comparable<ReportKartuStock>{
     private Date date;
     private Long qty;
     private String nodocument;
+    private String vendorName;
+    private String vendorAlias;
+    private String customerName;
+    private String customerAlias;
     private String keterangan;
     private String type;
 
@@ -27,6 +31,38 @@ public class ReportKartuStock implements Comparable<ReportKartuStock>{
                 ", keterangan='" + keterangan + '\'' +
                 ", type='" + type + '\'' +
                 '}';
+    }
+
+    public String getVendorName() {
+        return vendorName;
+    }
+
+    public void setVendorName(String vendorName) {
+        this.vendorName = vendorName;
+    }
+
+    public String getVendorAlias() {
+        return vendorAlias;
+    }
+
+    public void setVendorAlias(String vendorAlias) {
+        this.vendorAlias = vendorAlias;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getCustomerAlias() {
+        return customerAlias;
+    }
+
+    public void setCustomerAlias(String customerAlias) {
+        this.customerAlias = customerAlias;
     }
 
     public String getType() {

@@ -861,6 +861,10 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             sqlBuilder.append(" and data.idcategoryproduct in ("+param.getListIdCategoryProduct()+") ");
         }
 
+        if(param.getType() != null && !param.getType().equals("")){
+            sqlBuilder.append(" and data.type = '"+param.getType()+"' ");
+        }
+
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPRReportKartuStock(), queryParameters);
     }

@@ -3143,7 +3143,7 @@ public class ReportHandler implements ReportService {
         List<VendorDataForTemplate> getListVendor = vendorService.getListDropdown(idcompany,idbranch,paramvendor);
         List<String> idvendors = new ArrayList<>();
         for(VendorDataForTemplate ven : getListVendor){
-            list.add(ven.getAlias());
+            list.add(ven.getNama()+" ("+ven.getAlias()+")");
             idvendors.add(ven.getId().toString());
         }
         String listIdVendor = idvendors.toString().replaceAll("\\[","");
@@ -3308,7 +3308,7 @@ public class ReportHandler implements ReportService {
                 colomcount = 0;
                 rowcount++;
                 row = sheet.createRow(rowcount);
-                createCell(row, colomcount, ven.getNama(), style, sheet,columns);
+                createCell(row, colomcount, ven.getNama()+" ("+ven.getAlias()+")", style, sheet,columns);
 
                 String transDate = "";
                 try {
@@ -3602,6 +3602,9 @@ public class ReportHandler implements ReportService {
         createCell(row, colomcount, "No Document", style, sheet,columns);
 
         colomcount++;
+        createCell(row, colomcount, "Nama", style, sheet,columns);
+
+        colomcount++;
         createCell(row, colomcount, "Keterangan", style, sheet,columns);
 
         String listIdProduct = "";
@@ -3620,6 +3623,7 @@ public class ReportHandler implements ReportService {
         paramPR.setTo(param.getTo());
         paramPR.setListIdProduct(listIdProduct);
         paramPR.setListIdCategoryProduct(idCategoryProducts);
+        paramPR.setType("H");
         List<ReportKartuStock> itemsPR = purchaseReceiveService.getListPrReportKartuStock(idcompany,idbranch,paramPR);
 
         ParamSearchPackingList paramPL = new ParamSearchPackingList();
@@ -3785,6 +3789,9 @@ public class ReportHandler implements ReportService {
                                 colomcount++;
                                 createCell(row, colomcount, "", style, sheet,columns);
 
+                                colomcount++;
+                                createCell(row, colomcount, "", style, sheet,columns);
+
                                 namaProduk = "";
                                 size = "";
                             }
@@ -3826,6 +3833,15 @@ public class ReportHandler implements ReportService {
                             colomcount++;
                             createCell(row, colomcount, valKS.getNodocument(), style, sheet,columns);
 
+                            String nama = "";
+                            if(valKS.getVendorAlias() != null){
+                                nama = valKS.getVendorAlias();
+                            }else if(valKS.getCustomerAlias() != null){
+                                nama = valKS.getCustomerAlias();
+                            }
+                            colomcount++;
+                            createCell(row, colomcount, nama, style, sheet,columns);
+
                             colomcount++;
                             createCell(row, colomcount, valKS.getKeterangan(), style, sheet,columns);
                         }
@@ -3834,6 +3850,7 @@ public class ReportHandler implements ReportService {
                             List<String> listIdCPMapping = mapMapStockByIDMapping.get(valCp.getId());
                             String idcategorys = "";
                             if(listIdCPMapping != null){
+                                listIdCPMapping.add(valCp.getId().toString());
                                 idcategorys = listIdCPMapping.toString().replaceAll("\\[","");
                                 idcategorys = idcategorys.replaceAll("\\]","");
                             }
@@ -3901,6 +3918,9 @@ public class ReportHandler implements ReportService {
 
                             colomcount++;
                             createCell(row, colomcount, qtyOut, style, sheet,columns);
+
+                            colomcount++;
+                            createCell(row, colomcount, "", style, sheet,columns);
 
                             colomcount++;
                             createCell(row, colomcount, "", style, sheet,columns);

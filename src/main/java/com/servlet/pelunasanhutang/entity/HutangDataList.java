@@ -1,19 +1,20 @@
 package com.servlet.pelunasanhutang.entity;
 
 import com.servlet.cargo.entity.CargoDataNotJoin;
+import com.servlet.cargo.entity.CargoPelunasanHutang;
 import com.servlet.purchasereceive.entity.PurchaseReceiveDataPelunasanHutang;
 
 import java.util.List;
 
 public class HutangDataList {
     private List<PurchaseReceiveDataPelunasanHutang> listPR;
-    private List<CargoDataNotJoin> listCargo;
+    private List<CargoPelunasanHutang> listCargo;
 
-    public List<CargoDataNotJoin> getListCargo() {
+    public List<CargoPelunasanHutang> getListCargo() {
         return listCargo;
     }
 
-    public void setListCargo(List<CargoDataNotJoin> listCargo) {
+    public void setListCargo(List<CargoPelunasanHutang> listCargo) {
         this.listCargo = listCargo;
     }
 

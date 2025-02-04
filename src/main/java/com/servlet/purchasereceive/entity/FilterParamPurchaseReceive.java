@@ -9,6 +9,15 @@ public class FilterParamPurchaseReceive {
     private String listIdVendor;
     private String listIdProduct;
     private String listIdCategoryProduct;
+    private String type;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public String getListIdProduct() {
         return listIdProduct;

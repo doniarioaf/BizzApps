@@ -311,8 +311,8 @@ public class CargoHandler implements CargoService {
     }
 
     @Override
-    public List<CargoDataNotJoin> getListCargoPelunasanHutang(Long idcompany, Long idbranch, ParamCargoSearch param) {
-        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCargoNotJoin().schema());
+    public List<CargoPelunasanHutang> getListCargoPelunasanHutang(Long idcompany, Long idbranch, ParamCargoSearch param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCargoPelunasanHutang().schema());
         sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
         String selecetIdVendor ="";
         if(param.getCategory().equals("CARGO")){
@@ -329,7 +329,7 @@ public class CargoHandler implements CargoService {
             sqlBuilder.append(" and data.outstanding >= 1  ");
         }
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
-        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCargoNotJoin(), queryParameters);
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCargoPelunasanHutang(), queryParameters);
     }
 
     @Override
