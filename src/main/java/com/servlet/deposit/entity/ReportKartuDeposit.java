@@ -7,6 +7,9 @@ import java.sql.Date;
 public class ReportKartuDeposit implements Comparable<ReportKartuDeposit>{
     private Long id;
     private Long idvendor;
+    private String vendorName;
+    private String vendorAlias;
+    private Long idvendorParent;
     private String documentNumber;
     private Double amount;
     private Date date;
@@ -14,6 +17,30 @@ public class ReportKartuDeposit implements Comparable<ReportKartuDeposit>{
 
     public Long getIdvendor() {
         return idvendor;
+    }
+
+    public String getVendorName() {
+        return vendorName;
+    }
+
+    public void setVendorName(String vendorName) {
+        this.vendorName = vendorName;
+    }
+
+    public String getVendorAlias() {
+        return vendorAlias;
+    }
+
+    public void setVendorAlias(String vendorAlias) {
+        this.vendorAlias = vendorAlias;
+    }
+
+    public Long getIdvendorParent() {
+        return idvendorParent;
+    }
+
+    public void setIdvendorParent(Long idvendorParent) {
+        this.idvendorParent = idvendorParent;
     }
 
     public void setIdvendor(Long idvendor) {

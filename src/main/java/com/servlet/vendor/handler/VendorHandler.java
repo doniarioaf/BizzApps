@@ -319,6 +319,15 @@ public class VendorHandler implements VendorService {
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryGetId(), queryParameters);
     }
 
+    @Override
+    public List<Long> getListSubIdParentByListIdParent(Long idcompany, Long idbranch, String listidvendorparents) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryGetId().schema());
+        sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false ");
+        sqlBuilder.append(" and data.idvendorparent in ("+listidvendorparents+") ");
+        final Object[] queryParameters = new Object[] {idcompany};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryGetId(), queryParameters);
+    }
+
 
     private HashMap<Object,Object> setItems(Long[] items, Long idvendor){
         List<ValidationDataMessage> validations = new ArrayList<>();

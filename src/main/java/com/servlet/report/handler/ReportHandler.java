@@ -16,6 +16,9 @@ import com.servlet.customer.service.CustomerService;
 import com.servlet.deposit.entity.ParamList;
 import com.servlet.deposit.entity.ReportKartuDeposit;
 import com.servlet.deposit.service.DepositService;
+import com.servlet.draftpurchasereceive.entity.ParamCalculateQtyDPR;
+import com.servlet.draftpurchasereceive.entity.ParamSearchDraftPurchaseReceive;
+import com.servlet.draftpurchasereceive.service.DraftPurchaseReceiveService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.invoice.entity.InvoiceDataReportPelunasanPiutang;
 import com.servlet.invoice.entity.InvoiceDataReportPiutang;
@@ -95,6 +98,9 @@ public class ReportHandler implements ReportService {
 
     @Autowired
     PurchaseReceiveService purchaseReceiveService;
+
+    @Autowired
+    DraftPurchaseReceiveService draftPurchaseReceiveService;
 
     @Autowired
     StockItemService stockItemService;
@@ -1064,7 +1070,7 @@ public class ReportHandler implements ReportService {
         Long satuJan70 = 56169461L;
         for(CategoryProductList cp : listCP){
             cpByIDcategory.put(cp.getId(), cp);
-            ParamCalculateQtyPR paramPR = new ParamCalculateQtyPR();
+            ParamCalculateQtyDPR paramPR = new ParamCalculateQtyDPR();
             paramPR.setDateFrom(satuJan70);
             paramPR.setDateThru(dateMinus1);
             paramPR.setIdcategoryproduct(cp.getId());
@@ -1080,7 +1086,7 @@ public class ReportHandler implements ReportService {
             paramPL.setIdcategoryproduct(cp.getId());
 
             ParamCalculateQty paramQty = new ParamCalculateQty();
-            paramQty.setParamCalculateQtyPR(paramPR);
+            paramQty.setParamCalculateQtyDPR(paramPR);
             paramQty.setParamCalculateQtySA(paramSA);
             paramQty.setParamCalculateQtyPL(paramPL);
             Long stockKolamTerakhir = stockItemService.calculateQty(idcompany,idbranch,paramQty);
@@ -3140,6 +3146,7 @@ public class ReportHandler implements ReportService {
             paramvendor.setListIdVendor(param.getIdvendors());
         }
         List<String> list = new ArrayList<>();
+        //ini list vendorparent
         List<VendorDataForTemplate> getListVendor = vendorService.getListDropdown(idcompany,idbranch,paramvendor);
         List<String> idvendors = new ArrayList<>();
         for(VendorDataForTemplate ven : getListVendor){
@@ -3148,6 +3155,14 @@ public class ReportHandler implements ReportService {
         }
         String listIdVendor = idvendors.toString().replaceAll("\\[","");
         listIdVendor = listIdVendor.replaceAll("\\]","");
+
+        List<Long> listIdParentAndSubIdParent = vendorService.getListSubIdParentByListIdParent(idcompany,idbranch,listIdVendor);
+        for(VendorDataForTemplate ven : getListVendor){
+            listIdParentAndSubIdParent.add(ven.getId());
+        }
+        String listIdVendorSubParent = listIdParentAndSubIdParent.toString().replaceAll("\\[","");
+        listIdVendorSubParent = listIdVendorSubParent.replaceAll("\\]","");
+
         if(!param.getIdvendors().equals("ALL")){
             for(String nama :list){
                 if(namaVendor == ""){
@@ -3231,14 +3246,15 @@ public class ReportHandler implements ReportService {
             ParamList paramdp = new ParamList();
             paramdp.setFrom(param.getFrom());
             paramdp.setTo(param.getTo());
-            paramdp.setListIdVendor(listIdVendor);
+            paramdp.setListIdVendor(listIdVendorSubParent);
             List<ReportKartuDeposit> listdp = depositService.getListReportKartuDeposit(idcompany,idbranch,paramdp);
 
             FilterParamPurchaseReceive paramPR = new FilterParamPurchaseReceive();
             paramPR.setFrom(param.getFrom());
             paramPR.setTo(param.getTo());
-            paramPR.setListIdVendor(listIdVendor);
+            paramPR.setListIdVendor(listIdVendorSubParent);
             List<ReportKartuDeposit> listSetorPR = purchaseReceiveService.getListPrReportKartuDeposit(idcompany,idbranch,paramPR);
+
 
             if(listdp != null && listdp.size() > 0){
                 listKartuDeposit.addAll(listdp);
@@ -3250,44 +3266,77 @@ public class ReportHandler implements ReportService {
             if(listKartuDeposit != null && listKartuDeposit.size() > 0){
                 Collections.sort(listKartuDeposit);
             }
-            HashMap<Long, List<ReportKartuDeposit>> grupByVendor = new HashMap<>();
+
+            HashMap<Long, List<ReportKartuDeposit>> grupByVendorParent = new HashMap<>();
             HashMap<Long, Double> grupByVendorMasuk = new HashMap<>();
             HashMap<Long, Double> grupByVendorKeluar = new HashMap<>();
-            List<ReportKartuDeposit> listKDTemp = new ArrayList<>();
-            if(listKartuDeposit != null && listKartuDeposit.size() > 0){
-                for(ReportKartuDeposit kd : listKartuDeposit){
-                    if(grupByVendor.get(kd.getIdvendor()) == null){
-                        listKDTemp = new ArrayList<>();
-                        listKDTemp.add(kd);
-                        grupByVendor.put(kd.getIdvendor(),listKDTemp);
-                    }else{
-                        listKDTemp = new ArrayList<>();
-                        listKDTemp = grupByVendor.get(kd.getIdvendor());
-                        listKDTemp.add(kd);
-                        grupByVendor.put(kd.getIdvendor(),listKDTemp);
-                    }
-
-                    if(param.getShowNol().equals("NO")){
-                        if(kd.getType().equals("DEPOSIT")){
-                            if(grupByVendorMasuk.get(kd.getIdvendor()) == null){
-                                grupByVendorMasuk.put(kd.getIdvendor(),kd.getAmount());
-                            }else {
-                                Double amt = kd.getAmount().doubleValue() + grupByVendorMasuk.get(kd.getIdvendor()).doubleValue();
-                                grupByVendorMasuk.put(kd.getIdvendor(),amt);
-                            }
-                        }else{
-                            if(grupByVendorKeluar.get(kd.getIdvendor()) == null){
-                                grupByVendorKeluar.put(kd.getIdvendor(),kd.getAmount());
-                            }else {
-                                Double amt = kd.getAmount().doubleValue() + grupByVendorKeluar.get(kd.getIdvendor()).doubleValue();
-                                grupByVendorKeluar.put(kd.getIdvendor(),amt);
+            if(listKartuDeposit != null && listKartuDeposit.size() > 0) {
+                for (VendorDataForTemplate ven : getListVendor) {
+                    List<ReportKartuDeposit> listKDTemp = new ArrayList<>();
+                    for (ReportKartuDeposit kd : listKartuDeposit) {
+                        if (ven.getId().longValue() == kd.getIdvendor().longValue() || ven.getId().longValue() == kd.getIdvendorParent().longValue()) {
+                            listKDTemp.add(kd);
+                        }
+                        if(param.getShowNol().equals("NO")){
+                            if(kd.getType().equals("DEPOSIT")){
+                                if(grupByVendorMasuk.get(ven.getId()) == null){
+                                    grupByVendorMasuk.put(ven.getId(),kd.getAmount());
+                                }else {
+                                    Double amt = kd.getAmount().doubleValue() + grupByVendorMasuk.get(kd.getIdvendor()).doubleValue();
+                                    grupByVendorMasuk.put(ven.getId(),amt);
+                                }
+                            }else{
+                                if(grupByVendorKeluar.get(ven.getId()) == null){
+                                    grupByVendorKeluar.put(ven.getId(),kd.getAmount());
+                                }else {
+                                    Double amt = kd.getAmount().doubleValue() + grupByVendorKeluar.get(kd.getIdvendor()).doubleValue();
+                                    grupByVendorKeluar.put(ven.getId(),amt);
+                                }
                             }
                         }
                     }
-
+                    grupByVendorParent.put(ven.getId(), listKDTemp);
                 }
             }
 
+
+//            HashMap<Long, List<ReportKartuDeposit>> grupByVendor = new HashMap<>();
+//            HashMap<Long, Double> grupByVendorMasuk = new HashMap<>();
+//            HashMap<Long, Double> grupByVendorKeluar = new HashMap<>();
+//            List<ReportKartuDeposit> listKDTemp = new ArrayList<>();
+//            if(listKartuDeposit != null && listKartuDeposit.size() > 0){
+//                for(ReportKartuDeposit kd : listKartuDeposit){
+//                    if(grupByVendor.get(kd.getIdvendor()) == null){
+//                        listKDTemp = new ArrayList<>();
+//                        listKDTemp.add(kd);
+//                        grupByVendor.put(kd.getIdvendor(),listKDTemp);
+//                    }else{
+//                        listKDTemp = new ArrayList<>();
+//                        listKDTemp = grupByVendor.get(kd.getIdvendor());
+//                        listKDTemp.add(kd);
+//                        grupByVendor.put(kd.getIdvendor(),listKDTemp);
+//                    }
+//
+//                    if(param.getShowNol().equals("NO")){
+//                        if(kd.getType().equals("DEPOSIT")){
+//                            if(grupByVendorMasuk.get(kd.getIdvendor()) == null){
+//                                grupByVendorMasuk.put(kd.getIdvendor(),kd.getAmount());
+//                            }else {
+//                                Double amt = kd.getAmount().doubleValue() + grupByVendorMasuk.get(kd.getIdvendor()).doubleValue();
+//                                grupByVendorMasuk.put(kd.getIdvendor(),amt);
+//                            }
+//                        }else{
+//                            if(grupByVendorKeluar.get(kd.getIdvendor()) == null){
+//                                grupByVendorKeluar.put(kd.getIdvendor(),kd.getAmount());
+//                            }else {
+//                                Double amt = kd.getAmount().doubleValue() + grupByVendorKeluar.get(kd.getIdvendor()).doubleValue();
+//                                grupByVendorKeluar.put(kd.getIdvendor(),amt);
+//                            }
+//                        }
+//                    }
+//
+//                }
+//            }
             for(VendorDataForTemplate ven : getListVendor){
                 Double saldoAwal = depositService.calculateSaldoDepositByIdVendorAndBeforeDate(idcompany,idbranch, ven.getId(), param.getFrom());
                 Double saldo = saldoAwal;
@@ -3305,6 +3354,7 @@ public class ReportHandler implements ReportService {
                         continue;
                     }
                 }
+
                 colomcount = 0;
                 rowcount++;
                 row = sheet.createRow(rowcount);
@@ -3347,13 +3397,13 @@ public class ReportHandler implements ReportService {
                 colomcount++;
                 createCell(row, colomcount, "", style, sheet,columns);
 
-                List<ReportKartuDeposit> listKD = grupByVendor.get(ven.getId());
+                List<ReportKartuDeposit> listKD = grupByVendorParent.get(ven.getId());
                 if(listKD != null && listKD.size() > 0){
                     for(ReportKartuDeposit kd : listKD){
                         colomcount = 0;
                         rowcount++;
                         row = sheet.createRow(rowcount);
-                        createCell(row, colomcount, ven.getAlias(), style, sheet,columns);
+                        createCell(row, colomcount, kd.getVendorAlias(), style, sheet,columns);
 
                         transDate = "";
                         try {
@@ -3428,9 +3478,151 @@ public class ReportHandler implements ReportService {
                     colomcount++;
                     createCell(row, colomcount, "", style, sheet,columns);
                 }
-
                 rowcount++;
             }
+//            for(VendorDataForTemplate ven : getListVendor){
+//                Double saldoAwal = depositService.calculateSaldoDepositByIdVendorAndBeforeDate(idcompany,idbranch, ven.getId(), param.getFrom());
+//                Double saldo = saldoAwal;
+//                if(param.getShowNol().equals("NO")){
+//                    Double tempSaldo = saldoAwal;
+//                    Double saldomasuk = grupByVendorMasuk.get(ven.getId());
+//                    Double saldokeluar = grupByVendorKeluar.get(ven.getId());
+//                    if(saldomasuk != null){
+//                        tempSaldo = tempSaldo.doubleValue() + saldomasuk.doubleValue();
+//                    }
+//                    if(saldokeluar != null){
+//                        tempSaldo = tempSaldo.doubleValue() - saldokeluar.doubleValue();
+//                    }
+//                    if(tempSaldo.doubleValue() < 1){
+//                        continue;
+//                    }
+//                }
+//                colomcount = 0;
+//                rowcount++;
+//                row = sheet.createRow(rowcount);
+//                createCell(row, colomcount, ven.getNama()+" ("+ven.getAlias()+")", style, sheet,columns);
+//
+//                String transDate = "";
+//                try {
+//                    transDate = GlobalFunc.getDateLongToString(param.getFrom(), "dd-MMMM-yyyy");
+//                } catch (ParseException e) {
+//                    // TODO Auto-generated catch block
+//                    e.printStackTrace();
+//                }
+//                colomcount++;
+//                createCell(row, colomcount, transDate, style, sheet,columns);
+//
+//                if(saldoAwal.doubleValue() > 1){
+//                    styleAmount = workbook.createCellStyle();
+//                    if(GlobalFunc.checkIsDecimal(saldoAwal)) {
+//                        styleAmount.setDataFormat(format.getFormat("#,###"));
+//                    }else {
+//                        styleAmount.setDataFormat(format.getFormat("#,###.##"));
+//                    }
+//                    colomcount++;
+//                    createCell(row, colomcount, saldoAwal, styleAmount, sheet,columns);
+//                }else{
+//                    colomcount++;
+//                    createCell(row, colomcount, 0, style, sheet,columns);
+//                }
+//
+//
+//                colomcount++;
+//                createCell(row, colomcount, "", style, sheet,columns);
+//
+//                colomcount++;
+//                createCell(row, colomcount, "", style, sheet,columns);
+//
+//                colomcount++;
+//                createCell(row, colomcount, "", style, sheet,columns);
+//
+//                colomcount++;
+//                createCell(row, colomcount, "", style, sheet,columns);
+//
+//                List<ReportKartuDeposit> listKD = grupByVendor.get(ven.getId());
+//                if(listKD != null && listKD.size() > 0){
+//                    for(ReportKartuDeposit kd : listKD){
+//                        colomcount = 0;
+//                        rowcount++;
+//                        row = sheet.createRow(rowcount);
+//                        createCell(row, colomcount, ven.getAlias(), style, sheet,columns);
+//
+//                        transDate = "";
+//                        try {
+//                            transDate = GlobalFunc.getDateLongToString(kd.getDate().getTime(), "dd-MMMM-yyyy");
+//                        } catch (ParseException e) {
+//                            // TODO Auto-generated catch block
+//                            e.printStackTrace();
+//                        }
+//                        colomcount++;
+//                        createCell(row, colomcount, transDate, style, sheet,columns);
+//
+//                        colomcount++;
+//                        createCell(row, colomcount, "", style, sheet,columns);
+//
+//                        styleAmount = workbook.createCellStyle();
+//                        if(GlobalFunc.checkIsDecimal(kd.getAmount())) {
+//                            styleAmount.setDataFormat(format.getFormat("#,###"));
+//                        }else {
+//                            styleAmount.setDataFormat(format.getFormat("#,###.##"));
+//                        }
+//                        if(kd.getType().equals("DEPOSIT")){
+//                            colomcount++;
+//                            createCell(row, colomcount, "", style, sheet,columns);
+//
+//                            colomcount++;
+//                            createCell(row, colomcount, kd.getAmount(), styleAmount, sheet,columns);
+//
+//                            saldo = saldo + kd.getAmount();
+//                        }else{
+//                            colomcount++;
+//                            createCell(row, colomcount, kd.getAmount(), styleAmount, sheet,columns);
+//
+//                            colomcount++;
+//                            createCell(row, colomcount, "", style, sheet,columns);
+//                            saldo = saldo - kd.getAmount();
+//                        }
+//
+//
+//                        colomcount++;
+//                        createCell(row, colomcount, "", style, sheet,columns);
+//
+//                        colomcount++;
+//                        createCell(row, colomcount, kd.getDocumentNumber(), style, sheet,columns);
+//                    }
+//
+//                    colomcount = 0;
+//                    rowcount++;
+//                    row = sheet.createRow(rowcount);
+//                    createCell(row, colomcount, "", style, sheet,columns);
+//
+//                    colomcount++;
+//                    createCell(row, colomcount, "", style, sheet,columns);
+//
+//                    colomcount++;
+//                    createCell(row, colomcount, "", style, sheet,columns);
+//
+//                    colomcount++;
+//                    createCell(row, colomcount, "", style, sheet,columns);
+//
+//                    colomcount++;
+//                    createCell(row, colomcount, "", style, sheet,columns);
+//
+//                    styleAmount = workbook.createCellStyle();
+//                    if(GlobalFunc.checkIsDecimal(saldo)) {
+//                        styleAmount.setDataFormat(format.getFormat("#,###"));
+//                    }else {
+//                        styleAmount.setDataFormat(format.getFormat("#,###.##"));
+//                    }
+//                    colomcount++;
+//                    createCell(row, colomcount, saldo, styleAmount, sheet,columns);
+//
+//                    colomcount++;
+//                    createCell(row, colomcount, "", style, sheet,columns);
+//                }
+//
+//                rowcount++;
+//            }
         }
 
         data.setWorkbook(workbook);
@@ -3441,6 +3633,7 @@ public class ReportHandler implements ReportService {
     public ReportTemplate reportTemplateReportKartuDeposit(long idcompany, long idbranch) {
         ParamVendor paramVendor = new ParamVendor();
         paramVendor.setVendorTypes("'UDANG'");
+        paramVendor.setOnlyParent("Y");
         ReportTemplate data = new ReportTemplate();
         data.setVendorOpt(vendorService.getListDropdown (idcompany,idbranch,paramVendor));
         return data;
@@ -3618,13 +3811,14 @@ public class ReportHandler implements ReportService {
         paramSA.setListidcategoryproduct(idCategoryProducts);
         List<ReportKartuStock> itemsSA = stockAdjusmentService.getListReportKartuStock(idcompany,idbranch,paramSA);
 
-        FilterParamPurchaseReceive paramPR = new FilterParamPurchaseReceive();
-        paramPR.setFrom(param.getFrom());
-        paramPR.setTo(param.getTo());
-        paramPR.setListIdProduct(listIdProduct);
-        paramPR.setListIdCategoryProduct(idCategoryProducts);
-        paramPR.setType("H");
-        List<ReportKartuStock> itemsPR = purchaseReceiveService.getListPrReportKartuStock(idcompany,idbranch,paramPR);
+        ParamSearchDraftPurchaseReceive paramDPR = new ParamSearchDraftPurchaseReceive();
+        paramDPR.setFrom(param.getFrom());
+        paramDPR.setTo(param.getTo());
+        paramDPR.setListIdProduct(listIdProduct);
+        paramDPR.setListIdCategoryProduct(idCategoryProducts);
+        paramDPR.setType("H");
+//        List<ReportKartuStock> itemsPR = purchaseReceiveService.getListPrReportKartuStock(idcompany,idbranch,paramPR);
+        List<ReportKartuStock> itemsDPR = draftPurchaseReceiveService.getListDprReportKartuStock(idcompany,idbranch,paramDPR);
 
         ParamSearchPackingList paramPL = new ParamSearchPackingList();
         paramPL.setFrom(param.getFrom());
@@ -3637,8 +3831,8 @@ public class ReportHandler implements ReportService {
         if(itemsSA != null && itemsSA.size() > 0){
             listItems.addAll(itemsSA);
         }
-        if(itemsPR != null && itemsPR.size() > 0){
-            listItems.addAll(itemsPR);
+        if(itemsDPR != null && itemsDPR.size() > 0){
+            listItems.addAll(itemsDPR);
         }
         if(itemsPL != null && itemsPL.size() > 0){
             listItems.addAll(itemsPL);
@@ -3716,7 +3910,7 @@ public class ReportHandler implements ReportService {
                                     idcategorys = idcategorys.replaceAll("\\]","");
                                 }
 
-                                ParamCalculateQtyPR paramCalcPR = new ParamCalculateQtyPR();
+                                ParamCalculateQtyDPR paramCalcPR = new ParamCalculateQtyDPR();
                                 paramCalcPR.setDateFrom(satuJan70);
                                 paramCalcPR.setDateThru(dateMinus1);
                                 paramCalcPR.setIdproduct(val.getId());
@@ -3748,7 +3942,7 @@ public class ReportHandler implements ReportService {
                                 }
 
                                 ParamCalculateQty paramQty = new ParamCalculateQty();
-                                paramQty.setParamCalculateQtyPR(paramCalcPR);
+                                paramQty.setParamCalculateQtyDPR(paramCalcPR);
                                 paramQty.setParamCalculateQtySA(paramCalcSA);
                                 paramQty.setParamCalculateQtyPL(paramCalcPL);
 
@@ -3821,7 +4015,7 @@ public class ReportHandler implements ReportService {
                             String qtyOut = "";
                             if(valKS.getType().equals("PACKINGLIST") || valKS.getType().equals("SA_M")){
                                 qtyOut = valKS.getQty().toString();
-                            }else if(valKS.getType().equals("SA_H") || valKS.getType().equals("PR")){
+                            }else if(valKS.getType().equals("SA_H") || valKS.getType().equals("DPR")){
                                 qtyIn = valKS.getQty().toString();
                             }
                             colomcount++;
@@ -3854,7 +4048,7 @@ public class ReportHandler implements ReportService {
                                 idcategorys = listIdCPMapping.toString().replaceAll("\\[","");
                                 idcategorys = idcategorys.replaceAll("\\]","");
                             }
-                            ParamCalculateQtyPR paramCalcPR = new ParamCalculateQtyPR();
+                            ParamCalculateQtyDPR paramCalcPR = new ParamCalculateQtyDPR();
                             paramCalcPR.setDateFrom(satuJan70);
                             paramCalcPR.setDateThru(param.getTo());
                             paramCalcPR.setIdproduct(val.getId());
@@ -3885,7 +4079,7 @@ public class ReportHandler implements ReportService {
                             }
 
                             ParamCalculateQty paramQty = new ParamCalculateQty();
-                            paramQty.setParamCalculateQtyPR(paramCalcPR);
+                            paramQty.setParamCalculateQtyDPR(paramCalcPR);
                             paramQty.setParamCalculateQtySA(paramCalcSA);
                             paramQty.setParamCalculateQtyPL(paramCalcPL);
                             Long stockThru = stockItemService.calculateQty(idcompany,idbranch,paramQty);

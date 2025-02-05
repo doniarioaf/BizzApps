@@ -18,4 +18,5 @@ public interface VendorService {
     ListVendorData checkVendorIsParent(Long idcompany, Long idbranch,Long idvendor);
     Long getIdParent(Long idcompany, Long idbranch,Long idvendor);
     List<Long> getListSubIdParent(Long idcompany, Long idbranch,Long idvendor);
+    List<Long> getListSubIdParentByListIdParent(Long idcompany, Long idbranch,String listidvendorparents);
 }

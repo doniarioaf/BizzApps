@@ -1,5 +1,6 @@
 package com.servlet.stockitems.handle;
 
+import com.servlet.draftpurchasereceive.service.DraftPurchaseReceiveService;
 import com.servlet.packinglist.service.PackingListService;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
 import com.servlet.shared.ConstansCodeMessage;
@@ -25,6 +26,8 @@ public class StockItemHandler implements StockItemService {
 
     @Autowired
     private PurchaseReceiveService purchaseReceiveService;
+    @Autowired
+    private DraftPurchaseReceiveService draftPurchaseReceiveService;
     @Autowired
     private StockAdjusmentService stockAdjusmentService;
     @Autowired
@@ -105,7 +108,8 @@ public class StockItemHandler implements StockItemService {
 
     @Override
     public Long calculateQty(Long idcompany, Long idbranch, ParamCalculateQty param) {
-        Long qtyMasuk1 = purchaseReceiveService.calculateQtyPr(idcompany,idbranch, param.getParamCalculateQtyPR());
+        Long qtyMasuk1 = draftPurchaseReceiveService.calculateQtyDpr(idcompany,idbranch, param.getParamCalculateQtyDPR());
+//        Long qtyMasuk1 = purchaseReceiveService.calculateQtyPr(idcompany,idbranch, param.getParamCalculateQtyPR());
 //        System.out.println("qtyMasuk1 "+qtyMasuk1);
         //Type udah hidup
         Long qtyMasuk2 = stockAdjusmentService.calculateQtySA(idcompany,idbranch,"H", param.getParamCalculateQtySA());

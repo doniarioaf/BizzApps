@@ -4,6 +4,33 @@ public class ParamSearchDraftPurchaseReceive {
     private Long from;
     private Long to;
     private Boolean onlyShowNotInLinkedPR;
+    private String listIdProduct;
+    private String listIdCategoryProduct;
+    private String type;
+
+    public String getListIdProduct() {
+        return listIdProduct;
+    }
+
+    public void setListIdProduct(String listIdProduct) {
+        this.listIdProduct = listIdProduct;
+    }
+
+    public String getListIdCategoryProduct() {
+        return listIdCategoryProduct;
+    }
+
+    public void setListIdCategoryProduct(String listIdCategoryProduct) {
+        this.listIdCategoryProduct = listIdCategoryProduct;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public Boolean getOnlyShowNotInLinkedPR() {
         return onlyShowNotInLinkedPR;

@@ -13,12 +13,15 @@ import com.servlet.komisi.entity.KomisiList;
 import com.servlet.komisi.mapper.QueryKomisiList;
 import com.servlet.product.service.ProductService;
 import com.servlet.purchasereceive.entity.PurchaseReceiveDataList;
+import com.servlet.purchasereceive.mapper.QueryCalculateQty;
+import com.servlet.purchasereceive.mapper.QueryPRReportKartuStock;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.stockitems.entity.ReportKartuStock;
 import com.servlet.user.entity.UserListData;
 import com.servlet.user.service.UserAppsService;
 import com.servlet.vendor.service.VendorService;
@@ -398,6 +401,72 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
             return print;
         }
         return null;
+    }
+
+    @Override
+    public Long calculateQtyDpr(Long idcompany, Long idbranch, ParamCalculateQtyDPR param) {
+        String selectidPr = " select pr.id from draft_purchasereceive as pr where pr.idcompany = "+idcompany+" and pr.idbranch = "+idbranch+" and pr.isdelete = false ";
+        if(param.getDateFrom() != null){
+            Date dt = new Date(param.getDateFrom());
+            selectidPr += " and pr.date >= '"+dt.toString()+"' ";
+        }
+        if(param.getDateThru() != null){
+            Date dt = new Date(param.getDateThru());
+            selectidPr += " and pr.date <= '"+dt.toString()+"' ";
+        }
+        if(param.getIdvendor() != null){
+            selectidPr += " and pr.idvendor = "+param.getIdvendor()+" ";
+        }
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateQtyDpr().schema());
+        sqlBuilder.append(" where data.type = 'H' and data.iddraftpurchasereceive in ("+selectidPr+") ");
+        if(param.getIdcategoryproduct() != null){
+            sqlBuilder.append(" and data.idcategoryproduct = "+param.getIdcategoryproduct()+"  ");
+        }
+        if(param.getListidcategoryproduct() != null && !param.getListidcategoryproduct().equals("")){
+            sqlBuilder.append(" and data.idcategoryproduct in ("+param.getListidcategoryproduct()+") ");
+        }
+        if(param.getIdproduct() != null){
+            sqlBuilder.append(" and data.idproduct = "+param.getIdproduct()+"  ");
+        }
+        if(param.getListidproduct() != null && !param.getListidproduct().equals("")){
+            sqlBuilder.append(" and data.idproduct in ("+param.getListidproduct()+") ");
+        }
+
+        final Object[] queryParameters = new Object[] {};
+        List<Long> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateQtyDpr(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return 0L;
+    }
+
+    @Override
+    public List<ReportKartuStock> getListDprReportKartuStock(Long idcompany, Long idbranch, ParamSearchDraftPurchaseReceive param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDPRReportKartuStock().schema());
+        sqlBuilder.append(" where pr.idcompany = ? and pr.idbranch = ? and pr.isdelete = false  ");
+        if(param.getFrom() != null){
+            Date dt = new Date(param.getFrom());
+            sqlBuilder.append(" and pr.date >= '"+dt.toString()+"'");
+        }
+        if(param.getTo() != null){
+            Date dt = new Date(param.getTo());
+            sqlBuilder.append(" and pr.date <= '"+dt.toString()+"'");
+        }
+
+        if(param.getListIdProduct() != null && !param.getListIdProduct().equals("")){
+            sqlBuilder.append(" and data.idproduct in ("+param.getListIdProduct()+") ");
+        }
+        if(param.getListIdCategoryProduct() != null && !param.getListIdCategoryProduct().equals("")){
+            sqlBuilder.append(" and data.idcategoryproduct in ("+param.getListIdCategoryProduct()+") ");
+        }
+
+        if(param.getType() != null && !param.getType().equals("")){
+            sqlBuilder.append(" and data.type = '"+param.getType()+"' ");
+        }
+        sqlBuilder.append(" and data.ekor > 0 ");
+
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDPRReportKartuStock(), queryParameters);
     }
 
     private ReturnData catatDownload(Long id, Long idcompany, Long idbranch, Long iduser) {
