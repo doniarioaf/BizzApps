@@ -12,8 +12,17 @@ public class PrintDataPurchaseReceiveItems {
     private String type;
     private Long qty;
     private Long qtybonus;
+    private Long qtynota;
     private Double price;
     private Double subtotalprice;
+
+    public Long getQtynota() {
+        return qtynota;
+    }
+
+    public void setQtynota(Long qtynota) {
+        this.qtynota = qtynota;
+    }
 
     public String getProductName() {
         return productName;

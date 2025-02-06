@@ -5,6 +5,7 @@ public class BodyPurchaseReceiveItems {
     private long idcategoryproduct;
     private long qty;
     private long qtybonus;
+    private Long qtynota;
     private Double price;
     private Double subtotalprice;
     private String type;
@@ -16,10 +17,19 @@ public class BodyPurchaseReceiveItems {
                 ", idcategoryproduct=" + idcategoryproduct +
                 ", qty=" + qty +
                 ", qtybonus=" + qtybonus +
+                ", qtynota=" + qtynota +
                 ", price=" + price +
                 ", subtotalprice=" + subtotalprice +
                 ", type='" + type + '\'' +
                 '}';
+    }
+
+    public Long getQtynota() {
+        return qtynota;
+    }
+
+    public void setQtynota(Long qtynota) {
+        this.qtynota = qtynota;
     }
 
     public String getType() {

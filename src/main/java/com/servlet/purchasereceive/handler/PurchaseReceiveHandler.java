@@ -993,6 +993,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                     table.setPurchaseReceiveItemsPK(itemsPK);
                     table.setQty(val.getQty());
                     table.setQtybonus(val.getQtybonus());
+                    table.setQtynota(val.getQtynota());
                     table.setPrice(val.getPrice());
                     table.setSubtotalprice(val.getSubtotalprice());
                     purchaseReceiveItemsRepo.saveAndFlush(table);

@@ -13,7 +13,7 @@ public class QueryPrintDataPurchaseReceiveItems implements RowMapper<PrintDataPu
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.idpurchasereceive as idpurchasereceive, data.idproduct as idproduct, data.idcategoryproduct as idcategoryproduct, ");
-        sqlBuilder.append("data.qty as qty, data.qtybonus as qtybonus,data.price as price, data.subtotalprice as subtotalprice, data.type as type, ");
+        sqlBuilder.append("data.qty as qty, data.qtybonus as qtybonus,data.qtynota as qtynota,data.price as price, data.subtotalprice as subtotalprice, data.type as type, ");
         sqlBuilder.append("prod.nama as prodnama, ");
         sqlBuilder.append("cprod.nama as cprodnama, cprod.size as cprodsize, cprod.weightfromingram as cprodweightfromingram, cprod.weighttoingram as cprodweighttoingram ");
         sqlBuilder.append("from purchasereceive_item as data ");
@@ -34,6 +34,7 @@ public class QueryPrintDataPurchaseReceiveItems implements RowMapper<PrintDataPu
         final Long idcategoryproduct = rs.getLong("idcategoryproduct");
         final Long qty = rs.getLong("qty");
         final Long qtybonus = rs.getLong("qtybonus");
+        final Long qtynota = rs.getLong("qtynota");
         final Double price = rs.getDouble("price");
         final Double subtotalprice = rs.getDouble("subtotalprice");
         final String type = rs.getString("type");
@@ -55,6 +56,7 @@ public class QueryPrintDataPurchaseReceiveItems implements RowMapper<PrintDataPu
         data.setType(type);
         data.setQty(qty);
         data.setQtybonus(qtybonus);
+        data.setQtynota(qtynota);
         data.setPrice(price);
         data.setSubtotalprice(subtotalprice);
         return data;

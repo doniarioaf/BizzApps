@@ -12,11 +12,20 @@ public class PurchaseReceiveItems implements Serializable {
     private PurchaseReceiveItemsPK purchaseReceiveItemsPK;
     private Long qty;
     private Long qtybonus;
+    private Long qtynota;
     private Double price;
     private Double subtotalprice;
 
     public PurchaseReceiveItemsPK getPurchaseReceiveItemsPK() {
         return purchaseReceiveItemsPK;
+    }
+
+    public Long getQtynota() {
+        return qtynota;
+    }
+
+    public void setQtynota(Long qtynota) {
+        this.qtynota = qtynota;
     }
 
     public void setPurchaseReceiveItemsPK(PurchaseReceiveItemsPK purchaseReceiveItemsPK) {
