@@ -23,4 +23,6 @@ public interface DepositService {
     List<ReportKartuDeposit> getListReportKartuDeposit(Long idcompany, Long idbranch, ParamList param);
     ReturnData uploadFileDoc(Long id, MultipartFile file, Long idcompany, Long idbranch, Long iduser);
     FileDocumentData downloadFile(Long id, Long idcompany, Long idbranch);
+    List<DepositDataNotJoin> getListDepositActive(Long idcompany, Long idbranch, ParamList param);
+    ReturnData updateStatusDeposit(Long id,Long idcompany, Long idbranch, Long iduser,Boolean status);
 }

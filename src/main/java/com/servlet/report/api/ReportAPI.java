@@ -44,9 +44,10 @@ public class ReportAPI {
     }
 
     @GetMapping("/reportrekapbarangmasuk")
-    ResponseEntity<Response> getReportRekapanBarangMasuk(@RequestParam("from") Long date, HttpServletResponse response, @RequestHeader(ConstansKey.AUTH) String authorization) throws IOException{
+    ResponseEntity<Response> getReportRekapanBarangMasuk(@RequestParam("from") Long date,@RequestParam("shownol") String shownol, HttpServletResponse response, @RequestHeader(ConstansKey.AUTH) String authorization) throws IOException{
         ParamReportRekapStock body = new ParamReportRekapStock();
         body.setDate(date);
+        body.setShowNol(shownol);
         HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("type", "REPORTREKAPANBARANGMASUK");
         param.put("body", body);

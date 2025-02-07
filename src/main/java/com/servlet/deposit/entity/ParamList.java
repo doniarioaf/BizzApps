@@ -5,6 +5,15 @@ public class ParamList {
     private Long to;
     private Long idvendor;
     private String listIdVendor;
+    private String isactive;
+
+    public String getIsactive() {
+        return isactive;
+    }
+
+    public void setIsactive(String isactive) {
+        this.isactive = isactive;
+    }
 
     public Long getFrom() {
         return from;

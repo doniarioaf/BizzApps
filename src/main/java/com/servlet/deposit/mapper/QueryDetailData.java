@@ -14,7 +14,7 @@ public class QueryDetailData implements RowMapper<DepositDetail> {
     public QueryDetailData() {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
-        sqlBuilder.append("data.id as id,data.nodocument as nodocument, data.idvendor as idvendor, data.amount as amount, data.depositdate as depositdate, ");
+        sqlBuilder.append("data.id as id,data.nodocument as nodocument, data.idvendor as idvendor, data.amount as amount, data.depositdate as depositdate,data.isactive as isactive, ");
         sqlBuilder.append("ven.nama as venNama, ven.alias as venAlias, ");
         sqlBuilder.append("data.createddate as createddate, data.modifieddate as modifieddate, ");
         sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama ");
@@ -43,6 +43,7 @@ public class QueryDetailData implements RowMapper<DepositDetail> {
         final Timestamp modifieddate = rs.getTimestamp("modifieddate");
         final String createdname = rs.getString("createdname");
         final String modifiednama = rs.getString("modifiednama");
+        final Boolean isactive = rs.getBoolean("isactive");
 
         DepositDetail data = new DepositDetail();
         data.setId(id);
@@ -52,6 +53,7 @@ public class QueryDetailData implements RowMapper<DepositDetail> {
         data.setVendorAlias(venAlias);
         data.setAmount(amount);
         data.setDepositdate(depositdate);
+        data.setIsactive(isactive);
         data.setCreateddate(createddate);
         data.setModifieddate(modifieddate);
         data.setCreatedbyName(createdname);

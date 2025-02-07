@@ -5,6 +5,8 @@ import com.servlet.categoryproduct.entity.ParamTemplate;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.charge.service.ChargeService;
 import com.servlet.deposit.entity.BodyDeposit;
+import com.servlet.deposit.entity.DepositDataNotJoin;
+import com.servlet.deposit.entity.ParamList;
 import com.servlet.deposit.entity.ReportKartuDeposit;
 import com.servlet.deposit.service.DepositService;
 import com.servlet.draftpurchasereceive.entity.ParamGetDataDraftPR;
@@ -27,10 +29,7 @@ import com.servlet.pricelist.service.PriceService;
 import com.servlet.product.service.ProductService;
 import com.servlet.purchasereceive.entity.*;
 import com.servlet.purchasereceive.mapper.*;
-import com.servlet.purchasereceive.repo.PurchaseReceiveChargeRepo;
-import com.servlet.purchasereceive.repo.PurchaseReceiveInventoriRepo;
-import com.servlet.purchasereceive.repo.PurchaseReceiveItemsRepo;
-import com.servlet.purchasereceive.repo.PurchaseReceiveRepo;
+import com.servlet.purchasereceive.repo.*;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
 import com.servlet.report.entity.ParamReportPembelian;
 import com.servlet.runningnumber.service.RunningNumberService;
@@ -67,6 +66,8 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     private PurchaseReceiveChargeRepo purchaseReceiveChargeRepo;
     @Autowired
     private PurchaseReceiveInventoriRepo purchaseReceiveInventoriRepo;
+    @Autowired
+    private PurchaseReceiveDepositRepo purchaseReceiveDepositRepo;
 
     @Autowired
     private VendorService vendorService;
@@ -232,12 +233,18 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                 table.setCreateddate(ts);
                 table.setCreatedby(iduser);
                 idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
+
+
                 HashMap<Object, Object> mapsItems = setItems(idcompany,idbranch,body.getCharges(), body.getItems(),body.getInventori(), idsave);
                 List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
                 if(validationsItems.size() == 0){
+                    HashMap<Object, Object> mapsItemsDeposit = setItemsDeposit(idcompany,idbranch,iduser,idsave, body.getIdvendor());
+                    List<ValidationDataMessage> validationsItemsDeposit = (List<ValidationDataMessage>) mapsItemsDeposit.get("validations");
+                    String dataItemsDeposit = (String) mapsItemsDeposit.get("dataItems");
+
                     String data = table.toString();
                     String dataItems = (String) mapsItems.get("dataItems");
-                    String mixData = "header = "+data+" | Items = "+dataItems;
+                    String mixData = "header = "+data+" | Items = "+dataItems+" | Deposit = "+dataItemsDeposit;
                     historyAppsService.saveHistory(idcompany,idbranch,iduser,"ADD",namaMenu,mixData,"","",ts);
                 }else{
 
@@ -371,6 +378,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                     table.setDeleteby(iduser);
                     table.setDeletedate(ts);
                     idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
+                    aktivasiDeposit(idcompany,idbranch,iduser,id);
 
                     kurangiStockItems(idcompany, idbranch, id);
                     historyAppsService.saveHistory(table.getIdcompany(), table.getIdbranch(), iduser, "DELETE", namaMenu, table.toString(), "", "", ts);
@@ -906,6 +914,13 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPurchaseReceiveKomisi(param.getIdbox()), queryParameters);
     }
 
+    private List<Long> getListIdDeposit(Long idpurchasereceive){
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataPurchaseReceiveDeposit().schema());
+        sqlBuilder.append(" where data.idpurchasereceive = ?  ");
+
+        final Object[] queryParameters = new Object[] {idpurchasereceive};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataPurchaseReceiveDeposit(), queryParameters);
+    }
     private List<PrintDataPurchaseReceiveInventori> getPrintDataItemsInventori(Long idpurchasereceive){
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPrintDataPurchaseReceiveInventori().schema());
         sqlBuilder.append(" where data.idpurchasereceive = ?  ");
@@ -972,6 +987,51 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         maps.put("validations",validations);
         return maps;
     }
+    private HashMap<Object,Object> setItemsDeposit(Long idcompany, Long idbranch,Long iduser,Long idpr,Long idvendor){
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        HashMap<Object,Object> maps = new HashMap<>();
+        Long idparent = vendorService.getIdParent(idcompany,idbranch,idvendor);
+        ParamList paramDeposit = new ParamList();
+        paramDeposit.setIdvendor(idparent);
+        List<DepositDataNotJoin> listDeposit = depositService.getListDepositActive(idcompany,idbranch,paramDeposit);
+        List<String> listDepo = new ArrayList<>();
+        if(listDeposit != null && listDeposit.size() > 0){
+            for(DepositDataNotJoin depo : listDeposit){
+                depositService.updateStatusDeposit(depo.getId(), idcompany,idbranch,iduser,false);
+                listDepo.add(depo.getId().toString());
+
+                PurchaseReceiveDepositPK pkDepo = new PurchaseReceiveDepositPK();
+                pkDepo.setIdpurchasereceive(idpr);
+                pkDepo.setIddeposit(depo.getId());
+                PurchaseReceiveDeposit table = new PurchaseReceiveDeposit();
+                table.setPurchaseReceiveDepositPK(pkDepo);
+                purchaseReceiveDepositRepo.saveAndFlush(table);
+            }
+        }
+        String dataItems = listDepo.toString();
+        maps.put("validations",validations);
+        maps.put("dataItems",dataItems);
+        return maps;
+    }
+
+    private HashMap<Object,Object> aktivasiDeposit(Long idcompany, Long idbranch,Long iduser,Long idpr){
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        HashMap<Object,Object> maps = new HashMap<>();
+        List<Long> listDeposit = getListIdDeposit(idpr);
+        List<String> listDepo = new ArrayList<>();
+        if(listDeposit != null && listDeposit.size() > 0){
+            for(Long iddeposit : listDeposit){
+                if(iddeposit.longValue() > 0){
+                    depositService.updateStatusDeposit(iddeposit, idcompany,idbranch,iduser,true);
+                }
+            }
+        }
+        String dataItems = listDepo.toString();
+        maps.put("validations",validations);
+        maps.put("dataItems",dataItems);
+        return maps;
+    }
+
     private HashMap<Object,Object> setItems(Long idcompany, Long idbranch,BodyPurchaseReceiveCharge[] charges, BodyPurchaseReceiveItems[] items,BodyPurchaseReceiveInventori[] inventori, Long idpurchasereceive){
         List<ValidationDataMessage> validations = new ArrayList<>();
         HashMap<Object,Object> maps = new HashMap<>();

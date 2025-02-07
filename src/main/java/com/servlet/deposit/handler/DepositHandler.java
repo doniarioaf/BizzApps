@@ -1,10 +1,7 @@
 package com.servlet.deposit.handler;
 
 import com.servlet.deposit.entity.*;
-import com.servlet.deposit.mapper.QueryCalculateAmountDeposit;
-import com.servlet.deposit.mapper.QueryDetailData;
-import com.servlet.deposit.mapper.QueryListData;
-import com.servlet.deposit.mapper.QueryReportKartuDeposit;
+import com.servlet.deposit.mapper.*;
 import com.servlet.deposit.repo.DepositRepo;
 import com.servlet.deposit.service.DepositService;
 import com.servlet.filedocument.entity.BodyFileDocument;
@@ -80,6 +77,14 @@ public class DepositHandler implements DepositService {
 
         if(param.getIdvendor() != null){
             sqlBuilder.append(" and data.idvendor = "+param.getIdvendor().longValue()+" ");
+        }
+        if(param.getIsactive() != null && !param.getIsactive().equals("")){
+            if(param.getIsactive().equals("Y")){
+                sqlBuilder.append(" and data.isactive = true ");
+            }else{
+                sqlBuilder.append(" and data.isactive = false ");
+            }
+
         }
         sqlBuilder.append(" order by  data.depositdate desc ");
         final Object[] queryParameters = new Object[] {idcompany};
@@ -202,6 +207,7 @@ public class DepositHandler implements DepositService {
                 table.setIdvendor(body.getIdvendor());
                 table.setAmount(body.getAmount());
                 table.setDepositdate(new Date(body.getDepositdate()));
+                table.setIsactive(true);
                 table.setCreateddate(ts);
                 table.setCreatedby(iduser);
                 idsave = repo.saveAndFlush(table).getId();
@@ -226,52 +232,57 @@ public class DepositHandler implements DepositService {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        Deposit table = repo.getById(id);
+        if(!table.getIsactive()){
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.STATUS_DEPOSIT_NON_ACTIVE,"Status Deposit Non Active");
+            validations.add(msg);
+        }
+        if(validations.size() == 0) {
+            try {
+                double summaryDeposit = calculateAmountByIdVendorNotInIDDeposit(id, idcompany, idbranch, table.getIdvendor()).doubleValue() + body.getAmount().doubleValue();
+                List<Long> listidven = vendorService.getListSubIdParent(idcompany, idbranch, table.getIdvendor());
+                //kenapa di add, karena di anggap ini idparent, jika query diatas ga dapet, hanya sub nya saja
+                listidven.add(table.getIdvendor());
+                String listidvendor = "";
+                if (listidven != null && listidven.size() > 0) {
+                    listidvendor = listidven.toString().replaceAll("\\[", "");
+                    listidvendor = listidvendor.replaceAll("\\]", "");
+                }
 
-        try {
-            Deposit table = repo.getById(id);
-            double summaryDeposit = calculateAmountByIdVendorNotInIDDeposit(id,idcompany,idbranch, table.getIdvendor()).doubleValue() + body.getAmount().doubleValue();
-            List<Long> listidven = vendorService.getListSubIdParent(idcompany,idbranch, table.getIdvendor());
-            //kenapa di add, karena di anggap ini idparent, jika query diatas ga dapet, hanya sub nya saja
-            listidven.add(table.getIdvendor());
-            String listidvendor = "";
-            if(listidven != null && listidven.size() > 0){
-                listidvendor = listidven.toString().replaceAll("\\[","");
-                listidvendor = listidvendor.replaceAll("\\]","");
-            }
+                double summarySetorPurchaseReceive = purchaseReceiveService.calculateSetorByIdVendor(idcompany, idbranch, null, listidvendor).doubleValue();
+                if (summarySetorPurchaseReceive > summaryDeposit) {
+                    ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.TOTAL_SETOR_GREATER_THAN, "Total Setor Lebih besar dari total deposit");
+                    validations.add(msg);
+                }
+                if (validations.size() == 0) {
+                    PurchaseReceiveDataList check = purchaseReceiveService.checkIdDeposit(id);
+                    if (check != null) {
+                        ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_PURCHASERECEIVE, "deposit ini terpasang pada purchase receive (" + check.getNodocument() + ") ");
+                        validations.add(msg);
+                    }
+                }
+                if (validations.size() == 0) {
+                    ListVendorData ven = vendorService.checkVendorIsParent(idcompany, idbranch, body.getIdvendor());
+                    if (ven == null) {
+                        ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_PARENT, "Vendor Bukan Parent");
+                        validations.add(msg);
+                    }
+                }
+                if (validations.size() == 0 && !table.isIsdelete()) {
+                    String dataBefore = table.toString();
+                    table.setDepositdate(new Date(body.getDepositdate()));
+                    table.setAmount(body.getAmount());
+                    table.setModifieddate(ts);
+                    table.setModifiedby(iduser);
+                    idsave = repo.saveAndFlush(table).getId();
 
-            double summarySetorPurchaseReceive =  purchaseReceiveService.calculateSetorByIdVendor(idcompany,idbranch,null,listidvendor).doubleValue();
-            if(summarySetorPurchaseReceive > summaryDeposit){
-                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.TOTAL_SETOR_GREATER_THAN, "Total Setor Lebih besar dari total deposit");
+                    String data = table.toString();
+                    historyAppsService.saveHistory(idcompany, idbranch, iduser, "EDIT", namaMenu, "", data, dataBefore, ts);
+                }
+            } catch (Exception e) {
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
                 validations.add(msg);
             }
-            if(validations.size() == 0) {
-                PurchaseReceiveDataList check = purchaseReceiveService.checkIdDeposit(id);
-                if(check != null){
-                    ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_PURCHASERECEIVE, "deposit ini terpasang pada purchase receive ("+check.getNodocument()+") ");
-                    validations.add(msg);
-                }
-            }
-            if(validations.size() == 0) {
-                ListVendorData ven = vendorService.checkVendorIsParent(idcompany,idbranch, body.getIdvendor());
-                if(ven == null){
-                    ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_PARENT, "Vendor Bukan Parent");
-                    validations.add(msg);
-                }
-            }
-            if(validations.size() == 0 && !table.isIsdelete()) {
-                String dataBefore = table.toString();
-                table.setDepositdate(new Date(body.getDepositdate()));
-                table.setAmount(body.getAmount());
-                table.setModifieddate(ts);
-                table.setModifiedby(iduser);
-                idsave = repo.saveAndFlush(table).getId();
-
-                String data = table.toString();
-                historyAppsService.saveHistory(idcompany, idbranch, iduser, "EDIT", namaMenu, "", data, dataBefore, ts);
-            }
-        }catch (Exception e) {
-            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
-            validations.add(msg);
         }
         ReturnData data = new ReturnData();
         data.setId(idsave);
@@ -285,44 +296,50 @@ public class DepositHandler implements DepositService {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
-        try {
-            Deposit table = repo.getById(id);
-            double summaryDeposit = calculateAmountByIdVendorNotInIDDeposit(id,idcompany,idbranch, table.getIdvendor()).doubleValue();
-            List<Long> listidven = vendorService.getListSubIdParent(idcompany,idbranch, table.getIdvendor());
-            //kenapa di add, karena di anggap ini idparent, jika query diatas ga dapet, hanya sub nya saja
-            listidven.add(table.getIdvendor());
-            String listidvendor = "";
-            if(listidven != null && listidven.size() > 0){
-                listidvendor = listidven.toString().replaceAll("\\[","");
-                listidvendor = listidvendor.replaceAll("\\]","");
-            }
+        Deposit table = repo.getById(id);
+        if(!table.getIsactive()){
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.STATUS_DEPOSIT_NON_ACTIVE,"Status Deposit Non Active");
+            validations.add(msg);
+        }
+        if(validations.size() == 0) {
+            try {
+                double summaryDeposit = calculateAmountByIdVendorNotInIDDeposit(id, idcompany, idbranch, table.getIdvendor()).doubleValue();
+                List<Long> listidven = vendorService.getListSubIdParent(idcompany, idbranch, table.getIdvendor());
+                //kenapa di add, karena di anggap ini idparent, jika query diatas ga dapet, hanya sub nya saja
+                listidven.add(table.getIdvendor());
+                String listidvendor = "";
+                if (listidven != null && listidven.size() > 0) {
+                    listidvendor = listidven.toString().replaceAll("\\[", "");
+                    listidvendor = listidvendor.replaceAll("\\]", "");
+                }
 
-            double summarySetorPurchaseReceive =  purchaseReceiveService.calculateSetorByIdVendor(idcompany,idbranch,null,listidvendor).doubleValue();
-            if(summarySetorPurchaseReceive > summaryDeposit){
-                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.TOTAL_SETOR_GREATER_THAN, "Total Setor Lebih besar dari total deposit");
-                validations.add(msg);
-            }
-
-            if(validations.size() == 0) {
-                PurchaseReceiveDataList check = purchaseReceiveService.checkIdDeposit(id);
-                if(check != null){
-                    ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_PURCHASERECEIVE, "deposit ini terpasang pada purchase receive ("+check.getNodocument()+") ");
+                double summarySetorPurchaseReceive = purchaseReceiveService.calculateSetorByIdVendor(idcompany, idbranch, null, listidvendor).doubleValue();
+                if (summarySetorPurchaseReceive > summaryDeposit) {
+                    ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.TOTAL_SETOR_GREATER_THAN, "Total Setor Lebih besar dari total deposit");
                     validations.add(msg);
                 }
-            }
 
-            if(validations.size() == 0) {
-                table.setIsdelete(true);
-                table.setDeletedate(ts);
-                table.setDeleteby(iduser);
-                idsave = repo.saveAndFlush(table).getId();
+                if (validations.size() == 0) {
+                    PurchaseReceiveDataList check = purchaseReceiveService.checkIdDeposit(id);
+                    if (check != null) {
+                        ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_PURCHASERECEIVE, "deposit ini terpasang pada purchase receive (" + check.getNodocument() + ") ");
+                        validations.add(msg);
+                    }
+                }
 
-                String data = table.toString();
-                historyAppsService.saveHistory(idcompany, idbranch, iduser, "DELETE", namaMenu, data, "", "", ts);
+                if (validations.size() == 0) {
+                    table.setIsdelete(true);
+                    table.setDeletedate(ts);
+                    table.setDeleteby(iduser);
+                    idsave = repo.saveAndFlush(table).getId();
+
+                    String data = table.toString();
+                    historyAppsService.saveHistory(idcompany, idbranch, iduser, "DELETE", namaMenu, data, "", "", ts);
+                }
+            } catch (Exception e) {
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
             }
-        }catch (Exception e) {
-            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
-            validations.add(msg);
         }
         ReturnData data = new ReturnData();
         data.setId(idsave);
@@ -471,6 +488,49 @@ public class DepositHandler implements DepositService {
     @Override
     public FileDocumentData downloadFile(Long id, Long idcompany, Long idbranch) {
         return fileDocumentService.getDetail(id,namaMenu,idcompany,idbranch);
+    }
+
+    @Override
+    public List<DepositDataNotJoin> getListDepositActive(Long idcompany, Long idbranch, ParamList param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataNotJoin().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.isdelete = false  ");
+        if(param.getFrom() != null){
+            Date dt = new Date(param.getFrom());
+            sqlBuilder.append(" and data.depositdate >= '"+dt.toString()+"'");
+        }
+        if(param.getTo() != null){
+            Date dt = new Date(param.getTo());
+            sqlBuilder.append(" and data.depositdate <= '"+dt.toString()+"'");
+        }
+
+        if(param.getIdvendor() != null){
+            sqlBuilder.append(" and data.idvendor = "+param.getIdvendor().longValue()+" ");
+        }
+        sqlBuilder.append(" and data.isactive = true ");
+        final Object[] queryParameters = new Object[] {idcompany};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataNotJoin(), queryParameters);
+    }
+
+    @Override
+    public ReturnData updateStatusDeposit(Long id, Long idcompany, Long idbranch, Long iduser, Boolean status) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        Deposit table = repo.getById(id);
+            try {
+                if (validations.size() == 0) {
+                    table.setIsactive(status);
+                    idsave = repo.saveAndFlush(table).getId();
+                }
+            } catch (Exception e) {
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
     }
 
     private Double summaryCalculateSaldoDepositByIdVendorAndBeforeDateCreated(Long idcompany, Long idbranch, Long idvendor, Long date){

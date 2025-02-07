@@ -10,6 +10,15 @@ public class DepositList {
     private String vendorAlias;
     private Double amount;
     private Date depositdate;
+    private Boolean isactive;
+
+    public Boolean getIsactive() {
+        return isactive;
+    }
+
+    public void setIsactive(Boolean isactive) {
+        this.isactive = isactive;
+    }
 
     public String getNodocument() {
         return nodocument;

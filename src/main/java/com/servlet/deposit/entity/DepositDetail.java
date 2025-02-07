@@ -17,6 +17,15 @@ public class DepositDetail {
     private Timestamp createddate;
     private String modifiedbyName;
     private Timestamp modifieddate;
+    private Boolean isactive;
+
+    public Boolean getIsactive() {
+        return isactive;
+    }
+
+    public void setIsactive(Boolean isactive) {
+        this.isactive = isactive;
+    }
 
     public Long getFileId() {
         return fileId;

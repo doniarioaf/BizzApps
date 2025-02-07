@@ -702,7 +702,7 @@ public class ReportHandler implements ReportService {
                 createCell(row, colomcount, "Qty"+cp.getSize(), style, sheet,columns);
 
                 colomcount++;
-                createCell(row, colomcount, "QtyBns"+cp.getSize(), style, sheet,columns);
+                createCell(row, colomcount, "QtyNota"+cp.getSize(), style, sheet,columns);
 
                 colomcount++;
                 createCell(row, colomcount, "Harga"+cp.getSize(), style, sheet,columns);
@@ -840,7 +840,7 @@ public class ReportHandler implements ReportService {
                             createCell(row, colomcount, det.getQty(), style, sheet,columns);
 
                             colomcount++;
-                            createCell(row, colomcount, det.getQtybonus(), style, sheet,columns);
+                            createCell(row, colomcount, det.getQtynota(), style, sheet,columns);
 
                             colomcount++;
 
@@ -1368,11 +1368,44 @@ public class ReportHandler implements ReportService {
         List<VendorDataForTemplate> listvendor = vendorService.getListDropdown (idcompany,idbranch,paramVendor);
         List<CategoryProductList> listCP = categoryProductService.getDataForTemplate(idcompany,idbranch,null);
 
+        HashMap<String, Long> stockPerVendorPerCategory = new HashMap<>();
+        HashMap<Long, Boolean> vendorIsShow = new HashMap<>();
+        if(param.getShowNol().equals("N")){
+            for(VendorDataForTemplate vendor : listvendor){
+                Long idvendor = vendor.getId();
+                long totalStockPerVendorAllCategory = 0L;
+                for(CategoryProductList cp : listCP) {
+                    ParamCalculateQtyDPR paramPR = new ParamCalculateQtyDPR();
+                    paramPR.setDateFrom(param.getDate());
+                    paramPR.setDateThru(param.getDate());
+                    paramPR.setIdcategoryproduct(cp.getId());
+                    paramPR.setIdvendor(idvendor);
+                    Long stock = draftPurchaseReceiveService.calculateQtyDpr(idcompany, idbranch, paramPR);
+                    totalStockPerVendorAllCategory = totalStockPerVendorAllCategory + stock.longValue();
+                    stockPerVendorPerCategory.put(cp.getId()+"-"+idvendor, stock);
+                }
+                if(totalStockPerVendorAllCategory > 0){
+                    vendorIsShow.put(idvendor,true);
+                }else{
+                    vendorIsShow.put(idvendor,false);
+                }
+            }
+        }
+
         HashMap<Long,Integer> mapsVendorIdxColumn = new HashMap<>();
         for(VendorDataForTemplate vendor : listvendor){
-            colomcount++;
-            mapsVendorIdxColumn.put(vendor.getId(), colomcount);
-            createCell(row, colomcount, vendor.getNama(), style, sheet,columns);
+            if(param.getShowNol().equals("N")){
+                if(vendorIsShow.get(vendor.getId()).booleanValue()){
+                    colomcount++;
+                    mapsVendorIdxColumn.put(vendor.getId(), colomcount);
+                    createCell(row, colomcount, vendor.getNama(), style, sheet,columns);
+                }
+            }else{
+                colomcount++;
+                mapsVendorIdxColumn.put(vendor.getId(), colomcount);
+                createCell(row, colomcount, vendor.getNama(), style, sheet,columns);
+            }
+
         }
 
         colomcount++;
@@ -1385,6 +1418,9 @@ public class ReportHandler implements ReportService {
         long grandTotalEkor = 0L;
         Double grandTotalKg = 0.0;
         Long grandTotalKoli = 0L;
+
+
+
         for(CategoryProductList cp : listCP){
             rowcount++;
             row = sheet.createRow(rowcount);
@@ -1410,12 +1446,18 @@ public class ReportHandler implements ReportService {
             for (HashMap.Entry<Long, Integer> entry : mapsVendorIdxColumn.entrySet()) {
                     Long idvendor = entry.getKey();
                     int idxcolumn = entry.getValue().intValue();
-                ParamCalculateQtyPR paramPR = new ParamCalculateQtyPR();
-                paramPR.setDateFrom(param.getDate());
-                paramPR.setDateThru(param.getDate());
-                paramPR.setIdcategoryproduct(cp.getId());
-                paramPR.setIdvendor(idvendor);
-                Long stock = purchaseReceiveService.calculateQtyPr(idcompany,idbranch,paramPR);
+                Long stock = 0L;
+                if(param.getShowNol().equals("N")){
+                    stock = stockPerVendorPerCategory.get(cp.getId()+"-"+idvendor);
+                }else{
+                    ParamCalculateQtyDPR paramPR = new ParamCalculateQtyDPR();
+                    paramPR.setDateFrom(param.getDate());
+                    paramPR.setDateThru(param.getDate());
+                    paramPR.setIdcategoryproduct(cp.getId());
+                    paramPR.setIdvendor(idvendor);
+                    stock = draftPurchaseReceiveService.calculateQtyDpr(idcompany,idbranch,paramPR);
+                }
+
                 Long tempTotalPerVendor = mapsTotalEkorPerVendor.get(idvendor);
                 if(tempTotalPerVendor != null){
                     tempTotalPerVendor += stock.longValue();
