@@ -4,10 +4,7 @@ import com.servlet.area.service.AreaService;
 import com.servlet.categoryproduct.entity.ParamTemplate;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.charge.service.ChargeService;
-import com.servlet.deposit.entity.BodyDeposit;
-import com.servlet.deposit.entity.DepositDataNotJoin;
-import com.servlet.deposit.entity.ParamList;
-import com.servlet.deposit.entity.ReportKartuDeposit;
+import com.servlet.deposit.entity.*;
 import com.servlet.deposit.service.DepositService;
 import com.servlet.draftpurchasereceive.entity.ParamGetDataDraftPR;
 import com.servlet.draftpurchasereceive.entity.ParamSearchDraftPurchaseReceive;
@@ -457,11 +454,12 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
         List<PrintDataPurchaseReceive> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPrintPurchaseReceive(), queryParameters);
         if(list != null && list.size() > 0){
-            if(printtype.equals("SUPPLIER")){
+            if(printtype.equals("SUPPLIER") || printtype.equals("PAJAK")){
                 return getPrintDataNotaSupplier(id,iduser,idcompany,idbranch,list.get(0));
-            }else if(printtype.equals("INTERNAL") || printtype.equals("PAJAK")){
-                return getPrintDataNotaInternalAndPajak(id,iduser,idcompany,idbranch,list.get(0),printtype);
             }
+//            else if(printtype.equals("INTERNAL") || printtype.equals("PAJAK")){
+//                return getPrintDataNotaInternalAndPajak(id,iduser,idcompany,idbranch,list.get(0),printtype);
+//            }
         }
         return null;
     }
@@ -539,12 +537,30 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         ValueParameter param = parameterClientService.getValueByParamName(idcompany,idbranch,"COMPANYNAME","TEXT");
 
         PrintDataPurchaseReceive print = value;
-        print.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch, print.getIdvendor()));
+        List<PurchaseReceiveDepositData> listdeposit = getListPurchaseReceiveDepositByIdPR(id);
+        List<Long> listIdDeposit = new ArrayList<>();
+        if(listdeposit != null && listdeposit.size() > 0){
+            for(PurchaseReceiveDepositData depo : listdeposit){
+                listIdDeposit.add(depo.getIddeposit());
+            }
+        }
+        String iddeposits = "";
+        if(listIdDeposit.size() > 0){
+            iddeposits = listIdDeposit.toString().replaceAll("\\[","");
+            iddeposits = iddeposits.replaceAll("\\]","");
+        }
+//        print.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch, print.getIdvendor()));
         print.setItems(getPrintDataItems(id));
+        print.setDeposits(listdeposit);
         print.setCharges(getPrintDataCharge(id));
         print.setCompanyName(param.getStrValue());
         print.setInventori(getPrintDataItemsInventori(id));
-        print.setSaldoDepositBeforeNotaSubmit(depositService.calculateSaldoDepositByIdVendorAndBeforeDateCreated(idcompany,idbranch, print.getIdvendor(),print.getCreateddate().getTime()));
+        ParamCalculateDeposit paramCalcDeposit = new ParamCalculateDeposit();
+        paramCalcDeposit.setDate(print.getCreateddate().getTime());
+        paramCalcDeposit.setIdvendor(print.getIdvendor());
+        paramCalcDeposit.setListNotSUMIdDeposit(iddeposits);
+
+        print.setSaldoDepositBeforeNotaSubmit(depositService.calculateSaldoDepositByIdVendorAndBeforeDateCreated(idcompany,idbranch, paramCalcDeposit));
         print.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADNOTA",namaMenu));
         print.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
         UserListData user = userAppsService.getUserByID(iduser);
@@ -968,6 +984,14 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
 
         final Object[] queryParameters = new Object[] {idpurchasereceive};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPrintDataPurchaseReceiveCharge(), queryParameters);
+    }
+
+    private List<PurchaseReceiveDepositData> getListPurchaseReceiveDepositByIdPR(Long idpurchasereceive){
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPurchaseReceiveDepositData().schema());
+        sqlBuilder.append(" where data.idpurchasereceive = ?  ");
+
+        final Object[] queryParameters = new Object[] {idpurchasereceive};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPurchaseReceiveDepositData(), queryParameters);
     }
 
     private HashMap<Object,Object> kurangiStockItems(Long idcompany, Long idbranch, Long idpurchasereceive){

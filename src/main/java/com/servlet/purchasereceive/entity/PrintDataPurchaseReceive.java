@@ -11,6 +11,9 @@ public class PrintDataPurchaseReceive {
     private Long idvendor;
     private String vendorNama;
     private String vendorAlias;
+    private String vendorBank;
+    private String vendorAccNo;
+    private String vendorAccNameBank;
     private Date transactiondate;
     private String koli;
     private String notes;
@@ -37,10 +40,52 @@ public class PrintDataPurchaseReceive {
     private List<PrintDataPurchaseReceiveItems> items;
     private List<PrintDataPurchaseReceiveCharge> charges;
     private List<PrintDataPurchaseReceiveInventori> inventori;
+    private List<PurchaseReceiveDepositData> deposits;
 
     private String noSMU;
+    private String flightno;
     private String namaArea;
     private String aliasArea;
+
+    public String getVendorBank() {
+        return vendorBank;
+    }
+
+    public void setVendorBank(String vendorBank) {
+        this.vendorBank = vendorBank;
+    }
+
+    public String getVendorAccNo() {
+        return vendorAccNo;
+    }
+
+    public void setVendorAccNo(String vendorAccNo) {
+        this.vendorAccNo = vendorAccNo;
+    }
+
+    public String getVendorAccNameBank() {
+        return vendorAccNameBank;
+    }
+
+    public void setVendorAccNameBank(String vendorAccNameBank) {
+        this.vendorAccNameBank = vendorAccNameBank;
+    }
+
+    public String getFlightno() {
+        return flightno;
+    }
+
+    public void setFlightno(String flightno) {
+        this.flightno = flightno;
+    }
+
+    public List<PurchaseReceiveDepositData> getDeposits() {
+        return deposits;
+    }
+
+    public void setDeposits(List<PurchaseReceiveDepositData> deposits) {
+        this.deposits = deposits;
+    }
 
     public String getNotes2() {
         return notes2;
