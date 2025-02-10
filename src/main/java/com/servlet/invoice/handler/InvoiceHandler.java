@@ -258,7 +258,7 @@ public class InvoiceHandler implements InvoiceService {
             if(paramPrintInvoice != null){
                 if(paramPrintInvoice.getNamaMenu() != null){
                     if(paramPrintInvoice.getNamaMenu().equals("PRINT")){
-                        catatDownload(id,idcompany,idbranch,iduser);
+//                        catatDownload(id,idcompany,idbranch,iduser);
                     }
                 }
             }
