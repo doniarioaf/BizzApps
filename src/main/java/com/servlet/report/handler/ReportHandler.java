@@ -4060,11 +4060,22 @@ public class ReportHandler implements ReportService {
                             }else if(valKS.getType().equals("SA_H") || valKS.getType().equals("DPR")){
                                 qtyIn = valKS.getQty().toString();
                             }
+                            styleAmount = workbook.createCellStyle();
+                            styleAmount.setDataFormat(format.getFormat("#,###"));
                             colomcount++;
-                            createCell(row, colomcount, qtyIn, style, sheet,columns);
+                            if(!qtyIn.equals("")){
+                                createCell(row, colomcount, Integer.valueOf(qtyIn), styleAmount, sheet,columns);
+                            }else{
+                                createCell(row, colomcount, qtyIn, style, sheet,columns);
+                            }
 
                             colomcount++;
-                            createCell(row, colomcount, qtyOut, style, sheet,columns);
+                            if(!qtyOut.equals("")){
+                                createCell(row, colomcount, Integer.valueOf(qtyOut), styleAmount, sheet,columns);
+                            }else{
+                                createCell(row, colomcount, qtyOut, style, sheet,columns);
+                            }
+
 
                             colomcount++;
                             createCell(row, colomcount, valKS.getNodocument(), style, sheet,columns);

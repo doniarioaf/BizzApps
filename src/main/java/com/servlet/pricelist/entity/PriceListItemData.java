@@ -6,6 +6,7 @@ public class PriceListItemData {
     private long categoryproductid;
     private String categoryproductidName;
     private String categoryproductSize;
+    private Long jumlahitemsperkoli;
     private Double amount;
     private Double allowance;
 
@@ -19,6 +20,14 @@ public class PriceListItemData {
                 ", idproduct=" + idproduct +
                 ", productName=" + productName +
                 '}';
+    }
+
+    public Long getJumlahitemsperkoli() {
+        return jumlahitemsperkoli;
+    }
+
+    public void setJumlahitemsperkoli(Long jumlahitemsperkoli) {
+        this.jumlahitemsperkoli = jumlahitemsperkoli;
     }
 
     public String getCategoryproductSize() {
