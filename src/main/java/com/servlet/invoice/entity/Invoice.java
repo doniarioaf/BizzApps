@@ -43,6 +43,11 @@ public class Invoice implements Serializable{
 	private Double nilaippn;
 	private String notes1;
 	private String notes2;
+	private String nodocumentreimbursement;
+	private String nodocumentjasa;
+	private Double nilaijasa;
+	private Double nilaireimbursement;
+	private String nofakturpajak;
 
 	public String getNotes1() {
 		return notes1;
@@ -203,5 +208,45 @@ public class Invoice implements Serializable{
 	}
 	public void setDiskonnota(Double diskonnota) {
 		this.diskonnota = diskonnota;
+	}
+
+	public String getNodocumentreimbursement() {
+		return nodocumentreimbursement;
+	}
+
+	public void setNodocumentreimbursement(String nodocumentreimbursement) {
+		this.nodocumentreimbursement = nodocumentreimbursement;
+	}
+
+	public String getNodocumentjasa() {
+		return nodocumentjasa;
+	}
+
+	public void setNodocumentjasa(String nodocumentjasa) {
+		this.nodocumentjasa = nodocumentjasa;
+	}
+
+	public Double getNilaijasa() {
+		return nilaijasa;
+	}
+
+	public void setNilaijasa(Double nilaijasa) {
+		this.nilaijasa = nilaijasa;
+	}
+
+	public Double getNilaireimbursement() {
+		return nilaireimbursement;
+	}
+
+	public void setNilaireimbursement(Double nilaireimbursement) {
+		this.nilaireimbursement = nilaireimbursement;
+	}
+
+	public String getNofakturpajak() {
+		return nofakturpajak;
+	}
+
+	public void setNofakturpajak(String nofakturpajak) {
+		this.nofakturpajak = nofakturpajak;
 	}
 }

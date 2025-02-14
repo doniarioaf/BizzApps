@@ -375,6 +375,52 @@ public class InvoiceHandler implements InvoiceService{
 		}
 		return validations;
 	}
+
+	private List<ValidationDataMessage> checkDataV2(Long idcompany, Long idbranch, BodyInvoiceV2 body,String action,InvoiceData dataTable){
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
+		if(body.getIdcustomer() != null) {
+			HashMap<String, Object> result = customerManggalaService.checkCustomerById(idcompany, idbranch, body.getIdcustomer());
+			if( result.get("ISFOUND") != null && !(boolean)result.get("ISFOUND") ) {
+				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_CUSTOMER_NOT_FOUND,"Customer Not Found");
+				validations.add(msg);
+			}else if( result.get("ISACTIVE") != null && !(boolean)result.get("ISACTIVE") ) {
+				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_CUSTOMER_NOT_ACTIVE,"Customer Not Active");
+				validations.add(msg);
+			}
+		}
+		if(body.getIdwo() != null) {
+			HashMap<String, Object> result = workOrderService.checkWO(idcompany, idbranch, body.getIdwo());
+			if( result.get("ISFOUND") != null && !(boolean)result.get("ISFOUND") ) {
+				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_WO_NOT_FOUND,"WO Not Found");
+				validations.add(msg);
+			}else if( result.get("ISACTIVE") != null && !(boolean)result.get("ISACTIVE") ) {
+				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_WO_NOT_ACTIVE,"WO Not Active");
+				validations.add(msg);
+			}
+//			else if( result.get("ISSTATUSAVAILABLE") != null && !(boolean)result.get("ISSTATUSAVAILABLE") ) {
+//				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_WO_NOT_AVAILABLE,"WO Status Not Available");
+//				validations.add(msg);
+//			}
+
+
+		}
+
+		if(body.getIdsuratjalan() != null) {
+			HashMap<String, Object> result = suratJalanService.checkSuratjalan(idcompany, idbranch, body.getIdsuratjalan());
+			if( result.get("ISFOUND") != null && !(boolean)result.get("ISFOUND") ) {
+				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_SJ_NOT_FOUND,"Surat Jalan Not Found");
+				validations.add(msg);
+			}else if( result.get("ISACTIVE") != null && !(boolean)result.get("ISACTIVE") ) {
+				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_SJ_NOT_ACTIVE,"Surat Jalan Not Active");
+				validations.add(msg);
+			}
+//			else if( result.get("ISSTATUSAVAILABLE") != null && !(boolean)result.get("ISSTATUSAVAILABLE") ) {
+//				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_SJ_NOT_AVAILABLE,"Surat Jalan Status Not Available");
+//				validations.add(msg);
+//			}
+		}
+		return validations;
+	}
 	
 	private InvoiceData checkById(Long idcompany, Long idbranch, Long id) {
 		// TODO Auto-generated method stub
@@ -410,6 +456,8 @@ public class InvoiceHandler implements InvoiceService{
 		}
 		return data;
 	}
+
+
 	
 	private String putDetail(BodyDetailInvoicePrice[] details,Long idcompany, Long idbranch,long idsave,String action) {
 		if(action.equals("EDIT")) {
@@ -697,5 +745,175 @@ public class InvoiceHandler implements InvoiceService{
 		}
 		final Object[] queryParameters = new Object[] {idwo,idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceDataReportLabaRugi(), queryParameters);
+	}
+
+	@Override
+	public ReturnData saveInvoiceV2(Long idcompany, Long idbranch, Long iduser, BodyInvoiceV2 body) {
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
+		List<ValidationDataMessage> validationsCheckData = checkDataV2(idcompany,idbranch,body,"ADD",null);
+		long idsave = 0;
+		validations.addAll(validationsCheckData);
+		Timestamp ts = new Timestamp(new Date().getTime());
+		String docNumber = "";
+//		if(body.getIdinvoicetype().equals("JASA")) {
+//			docNumber = runningNumberService.getDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_INVOICE, ts);
+//		}else if(body.getIdinvoicetype().equals("REIMBURSEMENT")) {
+//			docNumber = runningNumberService.getDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_INVOICEREIMBURSEMENT, ts);
+//		}else if(body.getIdinvoicetype().equals("DP")) {
+//			docNumber = runningNumberService.getDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_INVOICEDP, ts);
+//		}
+		List<InvoiceData> invCheck = checkInvoiceNumber(idcompany,idbranch, body.getInvoicenumber());
+		if(invCheck != null && invCheck.size() > 0){
+			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_NOINVOICE_IS_EXIST,"Invoice number sudah digunakan");
+			validations.add(msg);
+		}
+
+//		if(docNumber.equals("")) {
+//			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_GENERATE_DOC_NUMBER,"Gagal Generate Document Number");
+//			validations.add(msg);
+//		}
+		if(validations.size() == 0 && validationsCheckData.size() == 0) {
+			try{
+				try {
+					Invoice table = new Invoice();
+					table.setIdcompany(idcompany);
+					table.setIdbranch(idbranch);
+//					table.setNodocument(docNumber);
+					table.setNodocument(body.getInvoicenumber());
+					table.setTanggal(new java.sql.Date(body.getTanggal()));
+					table.setIdcustomer(body.getIdcustomer());
+					table.setIdwo(body.getIdwo());
+					table.setIdsuratjalan(body.getIdsuratjalan());
+					table.setRefno(body.getRefno());
+					table.setDeliveredto(body.getDeliveredto());
+					if(body.getDeliverydate() != null) {
+						table.setDeliverydate(new java.sql.Date(body.getDeliverydate()));
+					}else {
+						table.setDeliverydate(null);
+					}
+					table.setNodocumentjasa(body.getNodocumentjasa());
+					table.setNilaijasa(body.getNilaijasa());
+					table.setNodocumentreimbursement(body.getNodocumentreimbursement());
+					table.setNilaireimbursement(body.getNilaireimbursement());
+					table.setNilaippn(body.getNilaippn());
+					table.setTotalinvoice(body.getTotalinvoice());
+					table.setNofakturpajak(body.getNofakturpajak());
+					table.setNotes1(body.getNotes1());
+
+
+					table.setIdinvoicetype("");
+					table.setDiskonnota(0.0);
+					table.setPpn(0.0);
+					table.setIsactive(true);
+					table.setNotes2("");
+					table.setIsdelete(false);
+					table.setCreatedby(iduser.toString());
+					table.setCreateddate(ts);
+
+					idsave = repository.saveAndFlush(table).getId();
+				}catch (Exception e) {
+					// TODO: handle exception
+					runningNumberService.rollBackDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_INVOICE);
+					ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
+					validations.add(msg);
+				}
+			}catch (Exception e) {
+				// TODO: handle exception
+				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
+				validations.add(msg);
+			}
+		}
+		ReturnData data = new ReturnData();
+		data.setId(idsave);
+		data.setSuccess(validations.size() > 0?false:true);
+		data.setValidations(validations);
+		return data;
+	}
+
+	@Override
+	public ReturnData updateInvoiceV2(Long idcompany, Long idbranch, Long iduser, Long id, BodyInvoiceV2 body) {
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
+		InvoiceData value = checkById(idcompany,idbranch,id);
+
+		Timestamp ts = new Timestamp(new Date().getTime());
+		List<ValidationDataMessage> validationsCheckData = checkDataV2(idcompany,idbranch,body,"EDIT",value);
+		long idsave = 0;
+		validations.addAll(validationsCheckData);
+
+
+		List<DetailPenerimaanKasBankData> checkAlreadyPayment = penerimaanKasBankService.getListDetailByIdInvoice(idcompany, idbranch, id);
+		if(checkAlreadyPayment != null && checkAlreadyPayment.size() > 0) {
+			ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_INVOICE_ALREADY_PAYMENT_EDIT,"Tidak Bisa Edit, Sudah Terjadi Pembayaran");
+			validations.add(msg);
+		}
+		if(validations.size() == 0 && validationsCheckData.size() == 0 && value != null) {
+			try{
+				Invoice table = repository.getById(id);
+				table.setTanggal(new java.sql.Date(body.getTanggal()));
+				table.setIdcustomer(body.getIdcustomer());
+				table.setIdwo(body.getIdwo());
+				table.setIdsuratjalan(body.getIdsuratjalan());
+				table.setRefno(body.getRefno());
+				table.setDeliveredto(body.getDeliveredto());
+				if(body.getDeliverydate() != null) {
+					table.setDeliverydate(new java.sql.Date(body.getDeliverydate()));
+				}else {
+					table.setDeliverydate(null);
+				}
+				table.setNilaijasa(body.getNilaijasa());
+				table.setNilaireimbursement(body.getNilaireimbursement());
+				table.setNilaippn(body.getNilaippn());
+				table.setTotalinvoice(body.getTotalinvoice());
+				table.setNofakturpajak(body.getNofakturpajak());
+				table.setNotes1(body.getNotes1());
+
+
+				table.setIdinvoicetype("");
+				table.setDiskonnota(0.0);
+				table.setPpn(0.0);
+//				table.setIsactive(true);
+//				table.setNotes2("");
+//				table.setIsdelete(false);
+				table.setUpdateby(iduser.toString());
+				table.setUpdatedate(ts);
+				idsave = repository.saveAndFlush(table).getId();
+
+			}catch (Exception e) {
+				// TODO: handle exception
+				ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
+				validations.add(msg);
+			}
+		}
+		ReturnData data = new ReturnData();
+		data.setId(idsave);
+		data.setSuccess(validations.size() > 0?false:true);
+		data.setValidations(validations);
+		return data;
+	}
+
+	@Override
+	public InvoiceData getByIdV2(Long idcompany, Long idbranch, Long id) {
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetInvoiceDataJoinTable().schema());
+		sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+		List<InvoiceData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceDataJoinTable(), queryParameters);
+		if(list != null && list.size() > 0) {
+			InvoiceData val = list.get(0);
+//			val.setDetailsprice(getDetailsInvoicePrice(idcompany, idbranch, id));
+//			val.setListpenerimaan(penerimaanKasBankService.getListByDetailIdInvoice(idcompany, idbranch, id));
+//			val.setDetailspenerimaan(penerimaanKasBankService.getListDetailByIdInvoice(idcompany, idbranch, id));
+//			val.setListDP(getListInvoiceDPByIdWo(idcompany, idbranch, val.getIdwo()));
+			val.setTemplate(getTemplateWithData(idcompany, idbranch,val));
+			return val;
+		}
+		return null;
+	}
+
+	private List<InvoiceData> checkInvoiceNumber(Long idcompany, Long idbranch, String nodocument) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataNotJoin().schema());
+		sqlBuilder.append(" where data.nodocument = ? and data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		final Object[] queryParameters = new Object[] {nodocument,idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataNotJoin(), queryParameters);
 	}
 }

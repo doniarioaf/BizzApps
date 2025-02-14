@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.servlet.invoice.entity.BodyInvoiceV2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1184,29 +1185,61 @@ public class ProcessHandler implements ProcessService{
 					val.setData(null);
 				}
 			}else if(codepermission.equals(ConstansPermission.CREATE_INVOICE)) {
-				BodyInvoice param = (BodyInvoice) data;
-				ReturnData valReturn =  invoiceService.saveInvoice(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), param);
-				if(valReturn.isSuccess()) {
-					val.setData(valReturn.getId());
-				}else {
-					val.setSuccess(valReturn.isSuccess());
-					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
-					val.setValidations(valReturn.getValidations());
-					val.setData(null);
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("CREATE")){
+					BodyInvoice body = (BodyInvoice) param.get("body");
+					ReturnData valReturn =  invoiceService.saveInvoice(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), body);
+					if(valReturn.isSuccess()) {
+						val.setData(valReturn.getId());
+					}else {
+						val.setSuccess(valReturn.isSuccess());
+						val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+						val.setValidations(valReturn.getValidations());
+						val.setData(null);
+					}
+				}else if(type.equals("CREATE_V2")){
+					BodyInvoiceV2 body = (BodyInvoiceV2) param.get("body");
+					ReturnData valReturn =  invoiceService.saveInvoiceV2(auth.getIdcompany(),auth.getIdbranch(),auth.getId(), body);
+					if(valReturn.isSuccess()) {
+						val.setData(valReturn.getId());
+					}else {
+						val.setSuccess(valReturn.isSuccess());
+						val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+						val.setValidations(valReturn.getValidations());
+						val.setData(null);
+					}
 				}
+
 			}else if(codepermission.equals(ConstansPermission.EDIT_INVOICE)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
-				long id  = (long) param.get("id");
-				BodyInvoice body  = (BodyInvoice) param.get("body");
-				ReturnData valReturn = invoiceService.updateInvoice(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
-				if(valReturn.isSuccess()) {
-					val.setData(valReturn.getId());
-				}else {
-					val.setSuccess(valReturn.isSuccess());
-					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
-					val.setValidations(valReturn.getValidations());
-					val.setData(null);
+				String type = (String) param.get("type");
+				if(type.equals("UPDATE")){
+					long id  = (long) param.get("id");
+					BodyInvoice body  = (BodyInvoice) param.get("body");
+					ReturnData valReturn = invoiceService.updateInvoice(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+					if(valReturn.isSuccess()) {
+						val.setData(valReturn.getId());
+					}else {
+						val.setSuccess(valReturn.isSuccess());
+						val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+						val.setValidations(valReturn.getValidations());
+						val.setData(null);
+					}
+				}else if(type.equals("UPDATEV2")){
+					long id  = (long) param.get("id");
+					BodyInvoiceV2 body  = (BodyInvoiceV2) param.get("body");
+					ReturnData valReturn = invoiceService.updateInvoiceV2(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id, body);
+					if(valReturn.isSuccess()) {
+						val.setData(valReturn.getId());
+					}else {
+						val.setSuccess(valReturn.isSuccess());
+						val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+						val.setValidations(valReturn.getValidations());
+						val.setData(null);
+					}
 				}
+
 			}else if(codepermission.equals(ConstansPermission.DELETE_INVOICE)) {
 				long id = (long) data;
 				ReturnData valReturn = invoiceService.deleteInvoice(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),id);
@@ -1795,6 +1828,9 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
 					val.setData(invoiceService.getById(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("DETAIL_V2")) {
+					long id = (long) param.get("id");
+					val.setData(invoiceService.getByIdV2(auth.getIdcompany(), auth.getIdbranch(),id));
 				}else if(type.equals("DETAIL_TEMPLATE")) {
 					long id = (long) param.get("id");
 					val.setData(invoiceService.getByIdWithTemplate(auth.getIdcompany(), auth.getIdbranch(),id));

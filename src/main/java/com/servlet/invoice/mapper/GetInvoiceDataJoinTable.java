@@ -18,6 +18,7 @@ public class GetInvoiceDataJoinTable implements RowMapper<InvoiceData>{
 		sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.tanggal as tanggal, data.idcustomer as idcustomer, data.refno as refno, ");
 		sqlBuilder.append("data.deliveredto as deliveredto, data.deliverydate as deliverydate, data.idwo as idwo, data.idsuratjalan as idsuratjalan, ");
 		sqlBuilder.append("data.idinvoicetype as idinvoicetype, data.totalinvoice as totalinvoice, data.isactive as isactive,data.diskonnota as diskonnota, data.ppn as ppn,data.nilaippn as nilaippn, ");
+		sqlBuilder.append("data.nodocumentreimbursement as nodocumentreimbursement, data.nodocumentjasa as nodocumentjasa, data.nilaijasa as nilaijasa,data.nilaireimbursement as nilaireimbursement, data.nofakturpajak as nofakturpajak, ");
 		sqlBuilder.append("cust.customername as customername, wo.nodocument as nodocumentwo, sj.nodocument as nodocumentsj, invtype.codename as invtypename, ");
 		sqlBuilder.append("wo.jalur as jalurwo, wo.noaju as noaju, sj.idwarehouse as idwarehousesj, paramjalur.codename as jalurname, data.notes1 as notes1, data.notes2 as notes2 ");
 		sqlBuilder.append("from m_invoice as data ");
@@ -62,8 +63,12 @@ public class GetInvoiceDataJoinTable implements RowMapper<InvoiceData>{
 		final String notes1 = rs.getString("notes1");
 		final String notes2 = rs.getString("notes2");
 		final String noaju = rs.getString("noaju");
+		final String nodocumentreimbursement = rs.getString("nodocumentreimbursement");
+		final String nodocumentjasa = rs.getString("nodocumentjasa");
+		final Double nilaijasa = rs.getDouble("nilaijasa");
+		final Double nilaireimbursement = rs.getDouble("nilaireimbursement");
+		final String nofakturpajak = rs.getString("nofakturpajak");
 
-		
 		InvoiceData data = new InvoiceData();
 		data.setId(id);
 		data.setNodocument(nodocument);
@@ -90,6 +95,11 @@ public class GetInvoiceDataJoinTable implements RowMapper<InvoiceData>{
 		data.setNilaippn(nilaippn);
 		data.setNotes1(notes1);
 		data.setNotes2(notes2);
+		data.setNodocumentreimbursement(nodocumentreimbursement);
+		data.setNodocumentjasa(nodocumentjasa);
+		data.setNilaijasa(nilaijasa);
+		data.setNilaireimbursement(nilaireimbursement);
+		data.setNofakturpajak(nofakturpajak);
 		return data;
 	}
 
