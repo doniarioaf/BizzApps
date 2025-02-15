@@ -410,6 +410,16 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 					detailPenerimaanKasBank.setIsdownpayment(detail.getIsdownpayment());
 					detailPenerimaanKasBank.setPenyesuaian(detail.getPenyesuaian());
 					detailPenerimaanKasBank.setKeterangan_penyesuaian(detail.getKeterangan_penyesuaian());
+					detailPenerimaanKasBank.setNilaijasa(detail.getNilaijasa());
+					detailPenerimaanKasBank.setNilaireimbursement(detail.getNilaireimbursement());
+					detailPenerimaanKasBank.setNilaibuktipotong(detail.getNilaibuktipotong());
+					detailPenerimaanKasBank.setNobuktipotong(detail.getNobuktipotong());
+					if(detail.getTanggalbuktipotong() != null){
+						detailPenerimaanKasBank.setTanggalbuktipotong(new java.sql.Date(detail.getTanggalbuktipotong()));
+					}else{
+						detailPenerimaanKasBank.setTanggalbuktipotong(null);
+					}
+					detailPenerimaanKasBank.setNilaippn(detail.getNilaippn());
 					
 					detailPenerimaanKasBankRepo.saveAndFlush(detailPenerimaanKasBank);
 					count++;

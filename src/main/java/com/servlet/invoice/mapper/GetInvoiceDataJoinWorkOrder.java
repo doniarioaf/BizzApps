@@ -17,6 +17,7 @@ private String schemaSql;
 		sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.tanggal as tanggal, data.idcustomer as idcustomer, data.refno as refno, ");
 		sqlBuilder.append("data.deliveredto as deliveredto, data.deliverydate as deliverydate, data.idwo as idwo, data.idsuratjalan as idsuratjalan, ");
 		sqlBuilder.append("data.idinvoicetype as idinvoicetype, data.totalinvoice as totalinvoice, data.isactive as isactive, data.diskonnota as diskonnota, ");
+		sqlBuilder.append("data.nodocumentreimbursement as nodocumentreimbursement, data.nodocumentjasa as nodocumentjasa, data.nilaijasa as nilaijasa, data.nilaireimbursement as nilaireimbursement, data.nofakturpajak as nofakturpajak, data.nilaippn as nilaippn, ");
 		sqlBuilder.append("wo.nodocument as nodocumentwo, cust.customername as customername ");
 		sqlBuilder.append("from m_invoice as data ");
 		sqlBuilder.append("left join m_workorder as wo on wo.id = data.idwo ");
@@ -47,7 +48,13 @@ private String schemaSql;
 		final Double diskonnota = rs.getDouble("diskonnota");
 		final String nodocumentwo = rs.getString("nodocumentwo");
 		final String customername = rs.getString("customername");
-		
+		final String nodocumentreimbursement = rs.getString("nodocumentreimbursement");
+		final String nodocumentjasa = rs.getString("nodocumentjasa");
+		final Double nilaijasa = rs.getDouble("nilaijasa");
+		final Double nilaireimbursement = rs.getDouble("nilaireimbursement");
+		final Double nilaippn = rs.getDouble("nilaippn");
+		final String nofakturpajak = rs.getString("nofakturpajak");
+
 		InvoiceData data = new InvoiceData();
 		data.setId(id);
 		data.setNodocument(nodocument);
@@ -66,6 +73,13 @@ private String schemaSql;
 		data.setTotalinvoice(totalinvoice);
 		data.setIsactive(isactive);
 		data.setDiskonnota(diskonnota);
+		data.setNodocumentreimbursement(nodocumentreimbursement);
+		data.setNodocumentjasa(nodocumentjasa);
+		data.setNilaijasa(nilaijasa);
+		data.setNilaireimbursement(nilaireimbursement);
+		data.setNilaippn(nilaippn);
+		data.setNofakturpajak(nofakturpajak);
+
 		return data;
 	}
 }

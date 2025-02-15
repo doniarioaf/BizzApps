@@ -1,6 +1,7 @@
 package com.servlet.penerimaankasbank.entity;
 
 import java.io.Serializable;
+import java.sql.Date;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -22,6 +23,60 @@ public class DetailPenerimaanKasBank implements Serializable{
 	private Long idworkorder;
 	private Double penyesuaian;
 	private String keterangan_penyesuaian;
+	private Double nilaijasa;
+	private Double nilaireimbursement;
+	private Double nilaibuktipotong;
+	private String nobuktipotong;
+	private Date tanggalbuktipotong;
+	private Double nilaippn;
+
+	public Double getNilaijasa() {
+		return nilaijasa;
+	}
+
+	public void setNilaijasa(Double nilaijasa) {
+		this.nilaijasa = nilaijasa;
+	}
+
+	public Double getNilaireimbursement() {
+		return nilaireimbursement;
+	}
+
+	public void setNilaireimbursement(Double nilaireimbursement) {
+		this.nilaireimbursement = nilaireimbursement;
+	}
+
+	public Double getNilaibuktipotong() {
+		return nilaibuktipotong;
+	}
+
+	public void setNilaibuktipotong(Double nilaibuktipotong) {
+		this.nilaibuktipotong = nilaibuktipotong;
+	}
+
+	public String getNobuktipotong() {
+		return nobuktipotong;
+	}
+
+	public void setNobuktipotong(String nobuktipotong) {
+		this.nobuktipotong = nobuktipotong;
+	}
+
+	public Date getTanggalbuktipotong() {
+		return tanggalbuktipotong;
+	}
+
+	public void setTanggalbuktipotong(Date tanggalbuktipotong) {
+		this.tanggalbuktipotong = tanggalbuktipotong;
+	}
+
+	public Double getNilaippn() {
+		return nilaippn;
+	}
+
+	public void setNilaippn(Double nilaippn) {
+		this.nilaippn = nilaippn;
+	}
 
 	public Double getPenyesuaian() {
 		return penyesuaian;
