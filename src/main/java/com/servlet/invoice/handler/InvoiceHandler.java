@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.servlet.invoice.entity.*;
 import com.servlet.invoice.mapper.*;
+import com.servlet.penerimaankasbank.entity.PenerimaanKasBankInvoice;
 import com.servlet.pengluarankasbank.entity.DetailPengeluaranKasBank;
 import com.servlet.pengluarankasbank.entity.DetailPengeluaranKasBankData;
 import com.servlet.pengluarankasbank.entity.DetailPengeluaranKasBankPK;
@@ -637,6 +638,44 @@ public class InvoiceHandler implements InvoiceService{
 //			}
 			
 //			sqlBuilder.append(" and data.id not in (select dpk.idinvoice from detail_penerimaan_kas_bank as dpk where dpk.idcompany = "+idcompany+" and dpk.idbranch = "+idbranch+" ) ");
+			final Object[] queryParameters = new Object[] {idcompany,idbranch};
+			List<InvoiceData> listinv = this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceDataJoinWorkOrder(), queryParameters);
+			List<String> listidinv = new ArrayList<>();
+			for(InvoiceData inv : listinv){
+				listidinv.add(inv.getId().toString());
+			}
+			String liststr = listidinv.toString().replaceAll("\\[", "");
+			liststr = liststr.replaceAll("\\]", "");
+			List<PenerimaanKasBankInvoice> listpenerimaan = penerimaanKasBankService.getListPenerimaanKasBankInvoice(idcompany,idbranch,liststr);
+			if(listpenerimaan != null && listpenerimaan.size() > 0){
+				HashMap<Long,List<PenerimaanKasBankInvoice>> grupByIdInvoice = new HashMap<>();
+				for(PenerimaanKasBankInvoice val : listpenerimaan){
+					if(grupByIdInvoice.get(val.getIdinvoice()) == null){
+						List<PenerimaanKasBankInvoice> temp = new ArrayList<>();
+						temp.add(val);
+						grupByIdInvoice.put(val.getIdinvoice(),temp);
+					}else{
+						List<PenerimaanKasBankInvoice> temp = new ArrayList<>();
+						temp = grupByIdInvoice.get(val.getIdinvoice());
+						temp.add(val);
+						grupByIdInvoice.put(val.getIdinvoice(),temp);
+					}
+				}
+
+				List<InvoiceData> listtemp = new ArrayList<>();
+				for(InvoiceData inv : listinv){
+					InvoiceData temp = inv;
+					if(grupByIdInvoice.get(inv.getId()) != null){
+						temp.setListpenerimaaninvoice(grupByIdInvoice.get(inv.getId()));
+					}
+					listtemp.add(temp);
+				}
+				return listtemp;
+			}else{
+				return listinv;
+			}
+
+
 		}
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceDataJoinWorkOrder(), queryParameters);

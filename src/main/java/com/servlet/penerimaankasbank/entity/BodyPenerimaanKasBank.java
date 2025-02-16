@@ -15,6 +15,16 @@ public class BodyPenerimaanKasBank {
 	private BodyDetailPenerimaanKasBank[] details;
 
 	private Long idwo;
+
+	private Double pph;
+
+	public Double getPph() {
+		return pph;
+	}
+
+	public void setPph(Double pph) {
+		this.pph = pph;
+	}
 	public Long getIdwo() {
 		return idwo;
 	}

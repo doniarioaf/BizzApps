@@ -39,6 +39,15 @@ public class PenerimaanKasBank implements Serializable{
 	private Long idemployee;
 	private String idreceivetype;
 	private Long idwo;
+	private Double pph;
+
+	public Double getPph() {
+		return pph;
+	}
+
+	public void setPph(Double pph) {
+		this.pph = pph;
+	}
 
 	public Long getIdwo() {
 		return idwo;

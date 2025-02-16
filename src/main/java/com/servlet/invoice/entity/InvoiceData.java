@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBankData;
 import com.servlet.penerimaankasbank.entity.PenerimaanKasBankData;
+import com.servlet.penerimaankasbank.entity.PenerimaanKasBankInvoice;
 
 public class InvoiceData {
 	private Long id;
@@ -43,6 +44,15 @@ public class InvoiceData {
 	private Double nilaijasa;
 	private Double nilaireimbursement;
 	private String nofakturpajak;
+	private List<PenerimaanKasBankInvoice> listpenerimaaninvoice;
+
+	public List<PenerimaanKasBankInvoice> getListpenerimaaninvoice() {
+		return listpenerimaaninvoice;
+	}
+
+	public void setListpenerimaaninvoice(List<PenerimaanKasBankInvoice> listpenerimaaninvoice) {
+		this.listpenerimaaninvoice = listpenerimaaninvoice;
+	}
 
 	public String getNodocumentreimbursement() {
 		return nodocumentreimbursement;
