@@ -17,7 +17,7 @@ public class GetPenerimaanKasBankJoinTable implements RowMapper<PenerimaanKasBan
 		sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.receivedate as receivedate, data.receivefrom as receivefrom, data.idcoa as idcoa, ");
 		sqlBuilder.append("data.idbank as idbank, data.keterangan as keterangan, data.isactive as isactive, coa.nama as coaname,	bank.namabank as namabank, ");
 		sqlBuilder.append("data.idcustomer as idcustomer, data.idvendor as idvendor, data.idemployee as idemployee, ");
-		sqlBuilder.append("vendor.nama as vendornama, data.idreceivetype as idreceivetype, cust.customername as customername, emp.nama as empnama  ");
+		sqlBuilder.append("vendor.nama as vendornama, data.idreceivetype as idreceivetype, cust.customername as customername, emp.nama as empnama, data.pph as pph  ");
 		sqlBuilder.append("from m_penerimaan_kas_bank as data ");
 		sqlBuilder.append("left join m_coa as coa on coa.id = data.idcoa ");
 		sqlBuilder.append("left join m_bank_account as bank on bank.id = data.idbank ");
@@ -53,6 +53,9 @@ public class GetPenerimaanKasBankJoinTable implements RowMapper<PenerimaanKasBan
 		final String idreceivetype = rs.getString("idreceivetype");
 		final String customername = rs.getString("customername");
 		final String empnama = rs.getString("empnama");
+
+		final Double pph = rs.getDouble("pph");
+
 		
 		PenerimaanKasBankData data = new PenerimaanKasBankData();
 		data.setId(id);
@@ -73,6 +76,7 @@ public class GetPenerimaanKasBankJoinTable implements RowMapper<PenerimaanKasBan
 		data.setCustomerName(customername);
 		data.setVendorName(vendornama);
 		data.setEmployeeName(empnama);
+		data.setPph(pph);
 		return data;
 	}
 

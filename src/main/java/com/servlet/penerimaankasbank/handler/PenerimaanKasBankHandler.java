@@ -268,7 +268,7 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 						table.setIdwo(null);
 					}
 					table.setIdreceivetype(body.getIdreceivetype());
-
+					table.setPph(body.getPph());
 					table.setUpdateby(iduser.toString());
 					table.setUpdatedate(ts);
 					

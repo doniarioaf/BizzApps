@@ -28,6 +28,15 @@ public class PenerimaanKasBankData {
 	private String receivetypename;
 	private String nodocumentWo;
 	private String noajuWo;
+	private Double pph;
+
+	public Double getPph() {
+		return pph;
+	}
+
+	public void setPph(Double pph) {
+		this.pph = pph;
+	}
 
 	public String getNodocumentWo() {
 		return nodocumentWo;
