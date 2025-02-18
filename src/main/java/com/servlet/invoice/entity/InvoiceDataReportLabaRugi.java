@@ -4,6 +4,7 @@ import java.sql.Date;
 
 public class InvoiceDataReportLabaRugi {
     private Long id;
+    private Long idwo;
     private String nodocument;
     private Date tanggal;
     private String idinvoicetype;
@@ -13,6 +14,59 @@ public class InvoiceDataReportLabaRugi {
     private Double nilaippn;
     private String notes1;
     private String notes2;
+    private String nodocumentreimbursement;
+    private String nodocumentjasa;
+    private Double nilaijasa;
+    private Double nilaireimbursement;
+    private String nofakturpajak;
+
+    public Long getIdwo() {
+        return idwo;
+    }
+
+    public void setIdwo(Long idwo) {
+        this.idwo = idwo;
+    }
+
+    public String getNodocumentreimbursement() {
+        return nodocumentreimbursement;
+    }
+
+    public void setNodocumentreimbursement(String nodocumentreimbursement) {
+        this.nodocumentreimbursement = nodocumentreimbursement;
+    }
+
+    public String getNodocumentjasa() {
+        return nodocumentjasa;
+    }
+
+    public void setNodocumentjasa(String nodocumentjasa) {
+        this.nodocumentjasa = nodocumentjasa;
+    }
+
+    public Double getNilaijasa() {
+        return nilaijasa;
+    }
+
+    public void setNilaijasa(Double nilaijasa) {
+        this.nilaijasa = nilaijasa;
+    }
+
+    public Double getNilaireimbursement() {
+        return nilaireimbursement;
+    }
+
+    public void setNilaireimbursement(Double nilaireimbursement) {
+        this.nilaireimbursement = nilaireimbursement;
+    }
+
+    public String getNofakturpajak() {
+        return nofakturpajak;
+    }
+
+    public void setNofakturpajak(String nofakturpajak) {
+        this.nofakturpajak = nofakturpajak;
+    }
 
     public Long getId() {
         return id;

@@ -196,6 +196,7 @@ public class ConstansPermission {
 	public static final String CREATE_FINANCING_JUNIOR = "CREATE_FINANCING_JUNIOR";
 	public static final String EDIT_FINANCING_JUNIOR = "EDIT_FINANCING_JUNIOR";
 	public static final String DELETE_FINANCING_JUNIOR = "DELETE_FINANCING_JUNIOR";
+	public static final String READ_REPORT_INVOICE = "READ_REPORT_INVOICE";
 
 	
 	

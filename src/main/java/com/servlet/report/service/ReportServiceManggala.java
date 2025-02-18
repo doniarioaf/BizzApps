@@ -1,11 +1,7 @@
 package com.servlet.report.service;
 
-import com.servlet.report.entity.HistoryTruckTemplate;
-import com.servlet.report.entity.ManggalaStatusInvoice;
-import com.servlet.report.entity.Manggala_BodyReportBongkarMuatDanDepo;
-import com.servlet.report.entity.ParamReportManggala;
-import com.servlet.report.entity.ReportSummaryKegiatanTructTemplate;
-import com.servlet.report.entity.ReportWorkBookExcel;
+import com.servlet.invoice.entity.ParamReportInvoice;
+import com.servlet.report.entity.*;
 
 public interface ReportServiceManggala {
 	ReportWorkBookExcel getReportBongkarMuatDanDepo(Manggala_BodyReportBongkarMuatDanDepo body,long idcompany,long idbranch);
@@ -17,4 +13,6 @@ public interface ReportServiceManggala {
 	ReportSummaryKegiatanTructTemplate getSummaryKegiatanTructTemplate(long idcompany,long idbranch);
 	HistoryTruckTemplate getHistoryTrucktTemplate(long idcompany,long idbranch);
 	ReportWorkBookExcel getReportHistoryTruck(ParamReportManggala body,long idcompany,long idbranch);
+	ReportWorkBookExcel getReportInvoice(ParamReportInvoice param, long idcompany, long idbranch);
+	ReportInvoiceTemplate getReportInvoiceTemplate(long idcompany, long idbranch);
 }

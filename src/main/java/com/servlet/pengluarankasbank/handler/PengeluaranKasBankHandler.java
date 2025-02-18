@@ -786,13 +786,16 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 	}
 
 	@Override
-	public List<PengeluaranReportLabaRugi> getDataPengeluaranReportLabaRugi(Long idcompany, Long idbranch, Long idwo, Long idbank) {
+	public List<PengeluaranReportLabaRugi> getDataPengeluaranReportLabaRugi(Long idcompany, Long idbranch, Long idbank, String listIdWO) {
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetPengeluaranReportLabaRugi().schema());
-		sqlBuilder.append(" where pengeluaran.idwo = ? ");
+		sqlBuilder.append(" where pengeluaran.idcompany = ? and pengeluaran.idbranch = ? and pengeluaran.isdelete = false and pengeluaran.isactive = true ");
 		if(idbank != null){
 			sqlBuilder.append(" and pengeluaran.idbank = "+idbank+" ");
 		}
-		final Object[] queryParameters = new Object[] {idwo};
+		if(listIdWO != null && !listIdWO.equals("")){
+			sqlBuilder.append(" and pengeluaran.idwo in ("+listIdWO+") ");
+		}
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetPengeluaranReportLabaRugi(), queryParameters);
 	}
 

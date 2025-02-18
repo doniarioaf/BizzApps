@@ -21,8 +21,9 @@ public interface InvoiceService {
 	List<InvoiceDPData> getListInvoiceDPByIdWo(Long idcompany,Long idbranch,Long idwo);
 
 	List<InvoiceData> getInvoiceYangBelumLunasByWo(Long idcompany,Long idbranch, Long idwo);
-	List<InvoiceDataReportLabaRugi> getListInvoiceByIdWoReportLabaRugi(Long idcompany, Long idbranch, Long idwo, boolean docDPtermasuk);
+	List<InvoiceDataReportLabaRugi> getListInvoiceByIdWoReportLabaRugi(Long idcompany, Long idbranch, boolean docDPtermasuk,String listIDWO);
 	ReturnData saveInvoiceV2(Long idcompany,Long idbranch,Long iduser,BodyInvoiceV2 body);
 	ReturnData updateInvoiceV2(Long idcompany,Long idbranch,Long iduser,Long id,BodyInvoiceV2 body);
 	InvoiceData getByIdV2(Long idcompany,Long idbranch,Long id);
+	List<ReportInvoice> getListReportInvoice(Long idcompany,Long idbranch,ParamReportInvoice param);
 }

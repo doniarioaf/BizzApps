@@ -31,5 +31,5 @@ public interface PengeluaranKasBankService {
 	List<EntityHelperKasBank> getDataReportKasBankPengeluaran(Long idcompany,Long idbranch,Date fromdate, Date todate,Long idbank);
 
 	List<DetailPengeluaranKasBankData> getListDetailByIdInvoice(Long idcompany,Long idbranch,Long idinvoice);
-	List<PengeluaranReportLabaRugi> getDataPengeluaranReportLabaRugi(Long idcompany, Long idbranch, Long idwo, Long idbank);
+	List<PengeluaranReportLabaRugi> getDataPengeluaranReportLabaRugi(Long idcompany, Long idbranch, Long idbank,String listIdWO);
 }

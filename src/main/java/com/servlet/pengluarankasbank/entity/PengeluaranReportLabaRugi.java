@@ -3,6 +3,7 @@ package com.servlet.pengluarankasbank.entity;
 import java.sql.Date;
 
 public class PengeluaranReportLabaRugi {
+    private Long idwo;
     private String noDocument;
     private String keterangan;
     private Double amount;
@@ -10,6 +11,14 @@ public class PengeluaranReportLabaRugi {
     private Date paymentdate;
     private Long idinvoiceitem;
     private Long idpaymentitem;
+
+    public Long getIdwo() {
+        return idwo;
+    }
+
+    public void setIdwo(Long idwo) {
+        this.idwo = idwo;
+    }
 
     public Long getIdinvoiceitem() {
         return idinvoiceitem;

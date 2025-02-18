@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.servlet.invoice.entity.BodyInvoiceV2;
+import com.servlet.invoice.entity.ParamReportInvoice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1340,7 +1341,6 @@ public class ProcessHandler implements ProcessService{
 	public ProcessReturn ProcessingReadFunction(String codepermission, Object data, String authorization) {
 		// TODO Auto-generated method stub
 //		Object val = null;
-		
 		ProcessReturn val = new ProcessReturn();
 		val.setHttpcode(HttpStatus.OK.value());
 		val.setSuccess(true);
@@ -1998,9 +1998,23 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("TEMPLATE")) {
 					val.setData(reportServiceManggala.getHistoryTrucktTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}
+			}else if(codepermission.equals(ConstansPermission.READ_REPORT_INVOICE)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				String typereport = (String) param.get("typereport");
+
+				if(type.equals("REPORT")) {
+					ParamReportInvoice body = (ParamReportInvoice) param.get("body");
+					if(typereport.equals("XLSX")) {
+						val.setData(reportServiceManggala.getReportInvoice(body, auth.getIdcompany(), auth.getIdbranch()).getWorkbook());
+					}
+				}else if(type.equals("TEMPLATE")) {
+					val.setData(reportServiceManggala.getReportInvoiceTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}
 			}
 			
-		}else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
+		}
+		else if(auth.getTypelogin().equals(ConstansKey.TYPE_MOBILE)) {
 			if(codepermission.equals(ConstansPermission.READ_INFO_MOBILE)) {
 				String type = (String) data;
 				if(type.equals("ALL_MOBILE")) {

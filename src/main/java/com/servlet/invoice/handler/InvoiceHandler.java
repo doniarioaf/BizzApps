@@ -775,14 +775,17 @@ public class InvoiceHandler implements InvoiceService{
 	}
 
 	@Override
-	public List<InvoiceDataReportLabaRugi> getListInvoiceByIdWoReportLabaRugi(Long idcompany, Long idbranch, Long idwo, boolean docDPtermasuk) {
+	public List<InvoiceDataReportLabaRugi> getListInvoiceByIdWoReportLabaRugi(Long idcompany, Long idbranch, boolean docDPtermasuk,String listIDWO) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetInvoiceDataReportLabaRugi().schema());
-		sqlBuilder.append(" where data.idwo = ? and data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
 		if(!docDPtermasuk){
 			sqlBuilder.append(" and data.nodocument not like '%INVDP%' ");
 		}
-		final Object[] queryParameters = new Object[] {idwo,idcompany,idbranch};
+		if(listIDWO != null && !listIDWO.equals("")){
+			sqlBuilder.append(" and data.idwo in ("+listIDWO+") ");
+		}
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceDataReportLabaRugi(), queryParameters);
 	}
 
@@ -946,6 +949,27 @@ public class InvoiceHandler implements InvoiceService{
 			return val;
 		}
 		return null;
+	}
+
+	@Override
+	public List<ReportInvoice> getListReportInvoice(Long idcompany, Long idbranch, ParamReportInvoice param) {
+
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryReportInvoice().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
+		sqlBuilder.append(" and penerimaan.idcompany = "+idcompany+" and penerimaan.idbranch = "+idbranch+" and penerimaan.isactive = true  and penerimaan.isdelete = false ");
+		if(param.getFrom() != null){
+			Date dt = new Date(param.getFrom());
+			sqlBuilder.append(" and data.tanggal >= '"+dt.toString()+"'");
+		}
+		if(param.getTo() != null){
+			Date dt = new Date(param.getTo());
+			sqlBuilder.append(" and data.tanggal <= '"+dt.toString()+"'");
+		}
+		if(param.getListCustomerID() != null && !param.getListCustomerID().equals("")){
+			sqlBuilder.append(" and data.idcustomer in ("+param.getListCustomerID()+") ");
+		}
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryReportInvoice(), queryParameters);
 	}
 
 	private List<InvoiceData> checkInvoiceNumber(Long idcompany, Long idbranch, String nodocument) {

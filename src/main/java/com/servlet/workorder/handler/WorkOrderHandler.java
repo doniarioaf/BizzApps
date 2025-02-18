@@ -744,8 +744,9 @@ public class WorkOrderHandler implements WorkOrderService{
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new WorkOrderReportLabaRugi().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		sqlBuilder.append(" and data.tanggal >= '"+new java.sql.Date(param.getFromDate())+"' and data.tanggal <= '"+new java.sql.Date(param.getToDate())+"' ");
 
-		sqlBuilder.append(" and data.id in (select idwo from m_penerimaan_kas_bank as penerimaan where penerimaan.receivedate >= '"+new java.sql.Date(param.getFromDate())+"'  and penerimaan.receivedate <= '"+new java.sql.Date(param.getToDate())+"' ) ");
+//		sqlBuilder.append(" and data.id in (select idwo from m_penerimaan_kas_bank as penerimaan where penerimaan.receivedate >= '"+new java.sql.Date(param.getFromDate())+"'  and penerimaan.receivedate <= '"+new java.sql.Date(param.getToDate())+"' ) ");
 		sqlBuilder.append(" order by data.noaju ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new WorkOrderReportLabaRugi(), queryParameters);

@@ -11,6 +11,7 @@ import java.util.HashMap;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
+import com.servlet.invoice.entity.ParamReportInvoice;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -366,6 +367,51 @@ public class ReportApi {
 			return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
 		}
 		
+	}
+
+	@GetMapping("/manggala/reportinvoice/template")
+	ResponseEntity<Response> getReportInvoiceTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
+		System.out.println("getReportInvoiceTemplate ");
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "TEMPLATE");
+		Response response = securityService.response(ConstansPermission.READ_REPORT_INVOICE,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+
+	@GetMapping("/manggala/reportinvoice")
+	ResponseEntity<Response> getReportInvoice(HttpServletResponse response,@RequestHeader(ConstansKey.AUTH) String authorization,@RequestParam long from,@RequestParam long to,@RequestParam String listcustomerid,@RequestParam String showall,@RequestParam String type) throws IOException {
+		ParamReportInvoice body = new ParamReportInvoice();
+		body.setFrom(from);
+		body.setTo(to);
+		body.setListCustomerID(listcustomerid);
+		body.setShowALL(showall);
+
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "REPORT");
+		param.put("body", body);
+		param.put("typereport", type);
+
+		Response response1 = securityService.response(ConstansPermission.READ_REPORT_INVOICE,param,authorization);
+		if(response1.getHttpcode() == HttpStatus.OK.value()) {
+			if(type.equals("XLSX")) {
+				XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+				export(response, workbook);
+//				return ResponseEntity.ok().build();
+			}else if(type.equals("PPT")){
+				XMLSlideShow ppt = (XMLSlideShow) response1.getData();
+				exportPPT(response,ppt);
+			}else {
+
+				//PDF
+				ReportToPDF pdf = (ReportToPDF) response1.getData();
+				exportToPdf(response,pdf.getDocument(),pdf.getTable());
+//				return ResponseEntity.ok().build();
+			}
+			return ResponseEntity.ok().build();
+		}else {
+			return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
+		}
+
 	}
 	
 	private void export(HttpServletResponse response,XSSFWorkbook workbook) throws IOException {
