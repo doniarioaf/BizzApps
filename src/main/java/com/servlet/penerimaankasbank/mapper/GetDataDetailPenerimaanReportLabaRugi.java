@@ -16,6 +16,7 @@ public class GetDataDetailPenerimaanReportLabaRugi implements RowMapper<DetailPe
         final StringBuilder sqlBuilder = new StringBuilder(400);
         sqlBuilder.append("data.counter as counter, data.idpenerimaankasbank as idpenerimaankasbank, data.idcoa as idcoa, data.catatan as catatan, data.amount as amount, data.isdownpayment as isdownpayment, ");
         sqlBuilder.append("data.idinvoice as idinvoice, data.idworkorder as idworkorder, penerimaan.nodocument as penerimaannodoc, penerimaan.receivedate as penerimaanreceivedate, penerimaan.receivefrom as penerimaanreceivefrom, data.penyesuaian as penyesuaian, ");
+        sqlBuilder.append("data.nilaijasa as nilaijasa, data.nilaireimbursement as nilaireimbursement, data.nilaibuktipotong as nilaibuktipotong, data.nobuktipotong as nobuktipotong, data.tanggalbuktipotong as tanggalbuktipotong, data.nilaippn as nilaippn, ");
         sqlBuilder.append("bank.namabank as namabank ");
         sqlBuilder.append("from detail_penerimaan_kas_bank as data ");
         sqlBuilder.append("left join m_penerimaan_kas_bank as penerimaan on penerimaan.id = data.idpenerimaankasbank ");
@@ -44,7 +45,13 @@ public class GetDataDetailPenerimaanReportLabaRugi implements RowMapper<DetailPe
         final String penerimaanreceivefrom = rs.getString("penerimaanreceivefrom");
         final Double penyesuaian = rs.getDouble("penyesuaian");
         final String namabank = rs.getString("namabank");
-        //
+
+        final Double nilaijasa = rs.getDouble("nilaijasa");
+        final Double nilaireimbursement = rs.getDouble("nilaireimbursement");
+        final Double nilaibuktipotong = rs.getDouble("nilaibuktipotong");
+        final String nobuktipotong = rs.getString("nobuktipotong");
+        final Date tanggalbuktipotong = rs.getDate("tanggalbuktipotong");
+        final Double nilaippn = rs.getDouble("nilaippn");
 
         DetailPenerimaanKasBankDataLabaRugi data = new DetailPenerimaanKasBankDataLabaRugi();
         data.setIdpenerimaankasbank(idpenerimaankasbank);
@@ -60,6 +67,12 @@ public class GetDataDetailPenerimaanReportLabaRugi implements RowMapper<DetailPe
         data.setReceivefrom(penerimaanreceivefrom);
         data.setPenyesuaian(penyesuaian);
         data.setNamabank(namabank);
+        data.setNilaijasa(nilaijasa);
+        data.setNilaireimbursement(nilaireimbursement);
+        data.setNilaibuktipotong(nilaibuktipotong);
+        data.setNobuktipotong(nobuktipotong);
+        data.setTanggalbuktipotong(tanggalbuktipotong);
+        data.setNilaippn(nilaippn);
         return data;
     }
 }
