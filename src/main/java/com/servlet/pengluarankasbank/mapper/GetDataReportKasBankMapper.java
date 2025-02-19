@@ -129,6 +129,14 @@ private String schemaSql;
 		data.setPenerimaannamaCustomer(null);
 		data.setPenerimaanketerangan(null);
 		data.setPenerimaanAmount(0.0);
+		data.setPenerimaanPenyesuain(0.0);
+		data.setPenerimaancoaCode(null);
+		data.setPenerimaannilaijasa(0.0);
+		data.setPenerimaannilaireimbursement(0.0);
+		data.setPenerimaannilaibuktipotong(0.0);
+		data.setPenerimaannobuktipotong(null);
+		data.setPenerimaantanggalbuktipotong(null);
+		data.setPenerimaannilaippn(0.0);
 		
 		data.setPengeluaranid(pengeluaranid);
 		data.setPengeluarantanggalTransaksi(pengeluarantanggaltransaksi);

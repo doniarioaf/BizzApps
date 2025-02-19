@@ -7,6 +7,7 @@ public class EntityHelperKasBank implements Comparable<EntityHelperKasBank> {
 	private Date penerimaantanggalTransaksi;
 	private String penerimaannoVoucher;
 	private String penerimaancoa;
+	private String penerimaancoaCode;
 	private String penerimaannoWO;
 	private String penerimaannoAju;
 	private String penerimaannoInvoice;
@@ -18,7 +19,13 @@ public class EntityHelperKasBank implements Comparable<EntityHelperKasBank> {
 	private double penerimaanAmount;
 	private String penerimaanKategoriName;
 	private Double penerimaanPenyesuain;
-	
+	private Double penerimaannilaijasa;
+	private Double penerimaannilaireimbursement;
+	private Double penerimaannilaibuktipotong;
+	private String penerimaannobuktipotong;
+	private Date penerimaantanggalbuktipotong;
+	private Double penerimaannilaippn;
+
 	private Long pengeluaranid;
 	private Date pengeluarantanggalTransaksi;
 	private String pengeluarannoVoucher;
@@ -38,6 +45,62 @@ public class EntityHelperKasBank implements Comparable<EntityHelperKasBank> {
 	private String pengeluaran_KategoriName;
 	
 	private Date tanggalTransaksi;
+
+	public String getPenerimaancoaCode() {
+		return penerimaancoaCode;
+	}
+
+	public void setPenerimaancoaCode(String penerimaancoaCode) {
+		this.penerimaancoaCode = penerimaancoaCode;
+	}
+
+	public Double getPenerimaannilaijasa() {
+		return penerimaannilaijasa;
+	}
+
+	public void setPenerimaannilaijasa(Double penerimaannilaijasa) {
+		this.penerimaannilaijasa = penerimaannilaijasa;
+	}
+
+	public Double getPenerimaannilaireimbursement() {
+		return penerimaannilaireimbursement;
+	}
+
+	public void setPenerimaannilaireimbursement(Double penerimaannilaireimbursement) {
+		this.penerimaannilaireimbursement = penerimaannilaireimbursement;
+	}
+
+	public Double getPenerimaannilaibuktipotong() {
+		return penerimaannilaibuktipotong;
+	}
+
+	public void setPenerimaannilaibuktipotong(Double penerimaannilaibuktipotong) {
+		this.penerimaannilaibuktipotong = penerimaannilaibuktipotong;
+	}
+
+	public String getPenerimaannobuktipotong() {
+		return penerimaannobuktipotong;
+	}
+
+	public void setPenerimaannobuktipotong(String penerimaannobuktipotong) {
+		this.penerimaannobuktipotong = penerimaannobuktipotong;
+	}
+
+	public Date getPenerimaantanggalbuktipotong() {
+		return penerimaantanggalbuktipotong;
+	}
+
+	public void setPenerimaantanggalbuktipotong(Date penerimaantanggalbuktipotong) {
+		this.penerimaantanggalbuktipotong = penerimaantanggalbuktipotong;
+	}
+
+	public Double getPenerimaannilaippn() {
+		return penerimaannilaippn;
+	}
+
+	public void setPenerimaannilaippn(Double penerimaannilaippn) {
+		this.penerimaannilaippn = penerimaannilaippn;
+	}
 
 	public String getPenerimaanVendorname() {
 		return penerimaanVendorname;

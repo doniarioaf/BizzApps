@@ -791,6 +791,14 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						dataKasBankSort.setPenerimaanketerangan(dataKasBank.getPenerimaanketerangan());
 						dataKasBankSort.setPenerimaanAmount(dataKasBank.getPenerimaanAmount());
 						dataKasBankSort.setPenerimaanPenyesuain(dataKasBank.getPenerimaanPenyesuain());
+
+						dataKasBankSort.setPenerimaancoaCode(dataKasBank.getPenerimaancoaCode());
+						dataKasBankSort.setPenerimaannilaijasa(dataKasBank.getPenerimaannilaijasa());
+						dataKasBankSort.setPenerimaannilaireimbursement(dataKasBank.getPenerimaannilaireimbursement());
+						dataKasBankSort.setPenerimaannilaibuktipotong(dataKasBank.getPenerimaannilaibuktipotong());
+						dataKasBankSort.setPenerimaannobuktipotong(dataKasBank.getPenerimaannobuktipotong());
+						dataKasBankSort.setPenerimaantanggalbuktipotong(dataKasBank.getPenerimaantanggalbuktipotong());
+						dataKasBankSort.setPenerimaannilaippn(dataKasBank.getPenerimaannilaippn());
 						
 						listKasBankSort.add(dataKasBankSort);
 					}
@@ -838,51 +846,183 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						&&
 						(dataKasBank.getPengeluaranid() != null && dataKasBank.getPengeluaranid() != 0)
 					) {
-						
-						createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(),""), style,sheet);
-						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style,sheet);
-						createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style,sheet);
-						createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style,sheet);
-						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style,sheet);
-						createCell(rowData, columnCount++, "", style,sheet);
-						createCell(rowData, columnCount++, (dataKasBank.getPenerimaannoAju() != null && !dataKasBank.getPenerimaannoAju().equals("") ? new Integer(dataKasBank.getPenerimaannoAju()):""), style,sheet);
-						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoInvoice(), style,sheet);
-						String penerimaanNama = "";
-						if(dataKasBank.getPenerimaanIdReceiveType().equals("EMPLOYEE")) {
-							penerimaanNama = dataKasBank.getPenerimaanEmployeename();
-						}else if(dataKasBank.getPenerimaanIdReceiveType().equals("CUSTOMER")) {
-							penerimaanNama = dataKasBank.getPenerimaannamaCustomer();
-						}else if(dataKasBank.getPenerimaanIdReceiveType().equals("VENDOR")) {
-							penerimaanNama = dataKasBank.getPenerimaanVendorname();
-						}
-						createCell(rowData, columnCount++, penerimaanNama, style,sheet);
-						createCell(rowData, columnCount++, dataKasBank.getPenerimaanketerangan(), style,sheet);
-						Double saldoUangMasuk = dataKasBank.getPenerimaanPenyesuain();//dataKasBank.getPenerimaanAmount();
-						saldoUangMasuk = saldoUangMasuk != null?saldoUangMasuk:0.0;
-						
-						compare = new BigDecimal(saldoUangMasuk).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(saldoUangMasuk));
-						styleAmount = workbook.createCellStyle();
-				        styleAmount.setFont(font);
-						if(compare == 0) {
-							styleAmount.setDataFormat(format.getFormat(formatAmount));
+						double saldo = 0.0;
+						if(dataKasBank.getPenerimaancoaCode().equals("9995")){
+							//*** Tagihan Pihak Ke-3 ****
+							createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(), ""), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
+							createCell(rowData, columnCount++, "Tagihan Pihak Ke-3", style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
+							createCell(rowData, columnCount++, "Reimbursement", style, sheet);
+							createCell(rowData, columnCount++, (dataKasBank.getPenerimaannoAju() != null && !dataKasBank.getPenerimaannoAju().equals("") ? new Integer(dataKasBank.getPenerimaannoAju()) : ""), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoInvoice(), style, sheet);
+							String penerimaanNama = "";
+							if (dataKasBank.getPenerimaanIdReceiveType().equals("EMPLOYEE")) {
+								penerimaanNama = dataKasBank.getPenerimaanEmployeename();
+							} else if (dataKasBank.getPenerimaanIdReceiveType().equals("CUSTOMER")) {
+								penerimaanNama = dataKasBank.getPenerimaannamaCustomer();
+							} else if (dataKasBank.getPenerimaanIdReceiveType().equals("VENDOR")) {
+								penerimaanNama = dataKasBank.getPenerimaanVendorname();
+							}
+							createCell(rowData, columnCount++, penerimaanNama, style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaanketerangan(), style, sheet);
+							Double saldoUangMasuk = dataKasBank.getPenerimaannilaireimbursement();//dataKasBank.getPenerimaanAmount();
+							saldoUangMasuk = saldoUangMasuk != null ? saldoUangMasuk : 0.0;
+							styleAmount = workbook.createCellStyle();
+							styleAmount.setFont(font);
+							if(GlobalFunc.checkIsDecimal(saldoUangMasuk)) {
+								styleAmount.setDataFormat(format.getFormat("#,###"));
+							}else {
+								styleAmount.setDataFormat(format.getFormat("#,###.##"));
+							}
+							createCell(rowData, columnCount++, saldoUangMasuk, styleAmount, sheet, 7000);
+							createCell(rowData, columnCount++, "", style, sheet);
+							totalSaldoAwal = totalSaldoAwal + saldoUangMasuk.doubleValue();
+							saldo = totalSaldoAwal;
+							styleAmount = workbook.createCellStyle();
+							styleAmount.setFont(font);
+							if(GlobalFunc.checkIsDecimal(saldo)) {
+								styleAmount.setDataFormat(format.getFormat("#,###"));
+							}else {
+								styleAmount.setDataFormat(format.getFormat("#,###.##"));
+							}
+							createCell(rowData, columnCount++, saldo, styleAmount, sheet, 7000);
+							//*** End Tagihan Pihak Ke-3 ****
+
+							//*** PPN ****
+							rowData = sheet.createRow(rowcount++);
+							columnCount = 0;
+							createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(), ""), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
+							createCell(rowData, columnCount++, "PPN", style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
+							createCell(rowData, columnCount++, "Reimbursement", style, sheet);
+							createCell(rowData, columnCount++, (dataKasBank.getPenerimaannoAju() != null && !dataKasBank.getPenerimaannoAju().equals("") ? new Integer(dataKasBank.getPenerimaannoAju()) : ""), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoInvoice(), style, sheet);
+							penerimaanNama = "";
+							if (dataKasBank.getPenerimaanIdReceiveType().equals("EMPLOYEE")) {
+								penerimaanNama = dataKasBank.getPenerimaanEmployeename();
+							} else if (dataKasBank.getPenerimaanIdReceiveType().equals("CUSTOMER")) {
+								penerimaanNama = dataKasBank.getPenerimaannamaCustomer();
+							} else if (dataKasBank.getPenerimaanIdReceiveType().equals("VENDOR")) {
+								penerimaanNama = dataKasBank.getPenerimaanVendorname();
+							}
+							createCell(rowData, columnCount++, penerimaanNama, style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaanketerangan(), style, sheet);
+							saldoUangMasuk = dataKasBank.getPenerimaannilaippn();//dataKasBank.getPenerimaanAmount();
+							saldoUangMasuk = saldoUangMasuk != null ? saldoUangMasuk : 0.0;
+							styleAmount = workbook.createCellStyle();
+							styleAmount.setFont(font);
+							if(GlobalFunc.checkIsDecimal(saldoUangMasuk)) {
+								styleAmount.setDataFormat(format.getFormat("#,###"));
+							}else {
+								styleAmount.setDataFormat(format.getFormat("#,###.##"));
+							}
+							createCell(rowData, columnCount++, saldoUangMasuk, styleAmount, sheet, 7000);
+							createCell(rowData, columnCount++, "", style, sheet);
+							totalSaldoAwal = totalSaldoAwal + saldoUangMasuk.doubleValue();
+							saldo = totalSaldoAwal;
+							styleAmount = workbook.createCellStyle();
+							styleAmount.setFont(font);
+							if(GlobalFunc.checkIsDecimal(saldo)) {
+								styleAmount.setDataFormat(format.getFormat("#,###"));
+							}else {
+								styleAmount.setDataFormat(format.getFormat("#,###.##"));
+							}
+							createCell(rowData, columnCount++, saldo, styleAmount, sheet, 7000);
+							//*** End PPN ****
+
+							//*** JASA ****
+							rowData = sheet.createRow(rowcount++);
+							columnCount = 0;
+							createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(), ""), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
+							createCell(rowData, columnCount++, "Jasa", style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
+							createCell(rowData, columnCount++, "Non Reimbursement", style, sheet);
+							createCell(rowData, columnCount++, (dataKasBank.getPenerimaannoAju() != null && !dataKasBank.getPenerimaannoAju().equals("") ? new Integer(dataKasBank.getPenerimaannoAju()) : ""), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoInvoice(), style, sheet);
+							penerimaanNama = "";
+							if (dataKasBank.getPenerimaanIdReceiveType().equals("EMPLOYEE")) {
+								penerimaanNama = dataKasBank.getPenerimaanEmployeename();
+							} else if (dataKasBank.getPenerimaanIdReceiveType().equals("CUSTOMER")) {
+								penerimaanNama = dataKasBank.getPenerimaannamaCustomer();
+							} else if (dataKasBank.getPenerimaanIdReceiveType().equals("VENDOR")) {
+								penerimaanNama = dataKasBank.getPenerimaanVendorname();
+							}
+							createCell(rowData, columnCount++, penerimaanNama, style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaanketerangan(), style, sheet);
+							saldoUangMasuk = dataKasBank.getPenerimaannilaijasa();//dataKasBank.getPenerimaanAmount();
+							saldoUangMasuk = saldoUangMasuk != null ? saldoUangMasuk : 0.0;
+							styleAmount = workbook.createCellStyle();
+							styleAmount.setFont(font);
+							if(GlobalFunc.checkIsDecimal(saldoUangMasuk)) {
+								styleAmount.setDataFormat(format.getFormat("#,###"));
+							}else {
+								styleAmount.setDataFormat(format.getFormat("#,###.##"));
+							}
+							createCell(rowData, columnCount++, saldoUangMasuk, styleAmount, sheet, 7000);
+							createCell(rowData, columnCount++, "", style, sheet);
+							totalSaldoAwal = totalSaldoAwal + saldoUangMasuk.doubleValue();
+							saldo = totalSaldoAwal;
+							styleAmount = workbook.createCellStyle();
+							styleAmount.setFont(font);
+							if(GlobalFunc.checkIsDecimal(saldo)) {
+								styleAmount.setDataFormat(format.getFormat("#,###"));
+							}else {
+								styleAmount.setDataFormat(format.getFormat("#,###.##"));
+							}
+							createCell(rowData, columnCount++, saldo, styleAmount, sheet, 7000);
+							//*** End JASA ****
+
 						}else {
-							styleAmount.setDataFormat(format.getFormat(formatAmount));
+							createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(), ""), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
+							createCell(rowData, columnCount++, "", style, sheet);
+							createCell(rowData, columnCount++, (dataKasBank.getPenerimaannoAju() != null && !dataKasBank.getPenerimaannoAju().equals("") ? new Integer(dataKasBank.getPenerimaannoAju()) : ""), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoInvoice(), style, sheet);
+							String penerimaanNama = "";
+							if (dataKasBank.getPenerimaanIdReceiveType().equals("EMPLOYEE")) {
+								penerimaanNama = dataKasBank.getPenerimaanEmployeename();
+							} else if (dataKasBank.getPenerimaanIdReceiveType().equals("CUSTOMER")) {
+								penerimaanNama = dataKasBank.getPenerimaannamaCustomer();
+							} else if (dataKasBank.getPenerimaanIdReceiveType().equals("VENDOR")) {
+								penerimaanNama = dataKasBank.getPenerimaanVendorname();
+							}
+							createCell(rowData, columnCount++, penerimaanNama, style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaanketerangan(), style, sheet);
+							Double saldoUangMasuk = dataKasBank.getPenerimaanPenyesuain();//dataKasBank.getPenerimaanAmount();
+							saldoUangMasuk = saldoUangMasuk != null ? saldoUangMasuk : 0.0;
+
+							compare = new BigDecimal(saldoUangMasuk).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(saldoUangMasuk));
+							styleAmount = workbook.createCellStyle();
+							styleAmount.setFont(font);
+							if (compare == 0) {
+								styleAmount.setDataFormat(format.getFormat(formatAmount));
+							} else {
+								styleAmount.setDataFormat(format.getFormat(formatAmount));
+							}
+							createCell(rowData, columnCount++, saldoUangMasuk, styleAmount, sheet, 7000);
+							createCell(rowData, columnCount++, "", style, sheet);
+
+							totalSaldoAwal = totalSaldoAwal + saldoUangMasuk.doubleValue();
+							saldo = totalSaldoAwal;
+							compare = new BigDecimal(saldo).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(saldo));
+							styleAmount = workbook.createCellStyle();
+							styleAmount.setFont(font);
+							if (compare == 0) {
+								styleAmount.setDataFormat(format.getFormat(formatAmount));
+							} else {
+								styleAmount.setDataFormat(format.getFormat(formatAmount));
+							}
+							createCell(rowData, columnCount++, saldo, styleAmount, sheet, 7000);
 						}
-						createCell(rowData, columnCount++, saldoUangMasuk, styleAmount,sheet,7000);
-						createCell(rowData, columnCount++, "", style,sheet);
-						
-						totalSaldoAwal = totalSaldoAwal + saldoUangMasuk.doubleValue();
-						double saldo = totalSaldoAwal;
-						compare = new BigDecimal(saldo).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(saldo));
-						styleAmount = workbook.createCellStyle();
-				        styleAmount.setFont(font);
-						if(compare == 0) {
-							styleAmount.setDataFormat(format.getFormat(formatAmount));
-						}else {
-							styleAmount.setDataFormat(format.getFormat(formatAmount));
-						}
-						createCell(rowData, columnCount++, saldo, styleAmount,sheet,7000);
-						
 						// ========== Pengeluaran ===============
 						rowData = sheet.createRow(rowcount++);
 						columnCount = 0;
@@ -943,49 +1083,183 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						createCell(rowData, columnCount++, saldo, styleAmount,sheet,7000);
 						
 					}else if(dataKasBank.getPenerimaanid() != null && dataKasBank.getPenerimaanid() != 0) {
-						createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(),""), style,sheet);
-						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style,sheet);
-						createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style,sheet);
-						createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style,sheet);
-						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style,sheet);
-						createCell(rowData, columnCount++, "", style,sheet);
-						createCell(rowData, columnCount++, (dataKasBank.getPenerimaannoAju() != null && !dataKasBank.getPenerimaannoAju().equals("") ? new Integer(dataKasBank.getPenerimaannoAju()):""), style,sheet);
-						createCell(rowData, columnCount++, dataKasBank.getPenerimaannoInvoice(), style,sheet);
-						String penerimaanNama = "";
-						if(dataKasBank.getPenerimaanIdReceiveType().equals("EMPLOYEE")) {
-							penerimaanNama = dataKasBank.getPenerimaanEmployeename();
-						}else if(dataKasBank.getPenerimaanIdReceiveType().equals("CUSTOMER")) {
-							penerimaanNama = dataKasBank.getPenerimaannamaCustomer();
-						}else if(dataKasBank.getPenerimaanIdReceiveType().equals("VENDOR")) {
-							penerimaanNama = dataKasBank.getPenerimaanVendorname();
-						}
-						createCell(rowData, columnCount++, penerimaanNama, style,sheet);
-						createCell(rowData, columnCount++, dataKasBank.getPenerimaanketerangan(), style,sheet);
-						Double saldoUangMasuk = dataKasBank.getPenerimaanPenyesuain();//dataKasBank.getPenerimaanAmount();
-						saldoUangMasuk = saldoUangMasuk != null?saldoUangMasuk:0.0;
-						
-						compare = new BigDecimal(saldoUangMasuk).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(saldoUangMasuk));
-						styleAmount = workbook.createCellStyle();
-				        styleAmount.setFont(font);
-						if(compare == 0) {
-							styleAmount.setDataFormat(format.getFormat(formatAmount));
+						double saldo = 0.0;
+						if(dataKasBank.getPenerimaancoaCode().equals("9995")){
+							//*** Tagihan Pihak Ke-3 ****
+							createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(), ""), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
+							createCell(rowData, columnCount++, "Tagihan Pihak Ke-3", style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
+							createCell(rowData, columnCount++, "Reimbursement", style, sheet);
+							createCell(rowData, columnCount++, (dataKasBank.getPenerimaannoAju() != null && !dataKasBank.getPenerimaannoAju().equals("") ? new Integer(dataKasBank.getPenerimaannoAju()) : ""), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoInvoice(), style, sheet);
+							String penerimaanNama = "";
+							if (dataKasBank.getPenerimaanIdReceiveType().equals("EMPLOYEE")) {
+								penerimaanNama = dataKasBank.getPenerimaanEmployeename();
+							} else if (dataKasBank.getPenerimaanIdReceiveType().equals("CUSTOMER")) {
+								penerimaanNama = dataKasBank.getPenerimaannamaCustomer();
+							} else if (dataKasBank.getPenerimaanIdReceiveType().equals("VENDOR")) {
+								penerimaanNama = dataKasBank.getPenerimaanVendorname();
+							}
+							createCell(rowData, columnCount++, penerimaanNama, style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaanketerangan(), style, sheet);
+							Double saldoUangMasuk = dataKasBank.getPenerimaannilaireimbursement();//dataKasBank.getPenerimaanAmount();
+							saldoUangMasuk = saldoUangMasuk != null ? saldoUangMasuk : 0.0;
+							styleAmount = workbook.createCellStyle();
+							styleAmount.setFont(font);
+							if(GlobalFunc.checkIsDecimal(saldoUangMasuk)) {
+								styleAmount.setDataFormat(format.getFormat("#,###"));
+							}else {
+								styleAmount.setDataFormat(format.getFormat("#,###.##"));
+							}
+							createCell(rowData, columnCount++, saldoUangMasuk, styleAmount, sheet, 7000);
+							createCell(rowData, columnCount++, "", style, sheet);
+							totalSaldoAwal = totalSaldoAwal + saldoUangMasuk.doubleValue();
+							saldo = totalSaldoAwal;
+							styleAmount = workbook.createCellStyle();
+							styleAmount.setFont(font);
+							if(GlobalFunc.checkIsDecimal(saldo)) {
+								styleAmount.setDataFormat(format.getFormat("#,###"));
+							}else {
+								styleAmount.setDataFormat(format.getFormat("#,###.##"));
+							}
+							createCell(rowData, columnCount++, saldo, styleAmount, sheet, 7000);
+							//*** End Tagihan Pihak Ke-3 ****
+
+							//*** PPN ****
+							rowData = sheet.createRow(rowcount++);
+							columnCount = 0;
+							createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(), ""), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
+							createCell(rowData, columnCount++, "PPN", style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
+							createCell(rowData, columnCount++, "Reimbursement", style, sheet);
+							createCell(rowData, columnCount++, (dataKasBank.getPenerimaannoAju() != null && !dataKasBank.getPenerimaannoAju().equals("") ? new Integer(dataKasBank.getPenerimaannoAju()) : ""), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoInvoice(), style, sheet);
+							penerimaanNama = "";
+							if (dataKasBank.getPenerimaanIdReceiveType().equals("EMPLOYEE")) {
+								penerimaanNama = dataKasBank.getPenerimaanEmployeename();
+							} else if (dataKasBank.getPenerimaanIdReceiveType().equals("CUSTOMER")) {
+								penerimaanNama = dataKasBank.getPenerimaannamaCustomer();
+							} else if (dataKasBank.getPenerimaanIdReceiveType().equals("VENDOR")) {
+								penerimaanNama = dataKasBank.getPenerimaanVendorname();
+							}
+							createCell(rowData, columnCount++, penerimaanNama, style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaanketerangan(), style, sheet);
+							saldoUangMasuk = dataKasBank.getPenerimaannilaippn();//dataKasBank.getPenerimaanAmount();
+							saldoUangMasuk = saldoUangMasuk != null ? saldoUangMasuk : 0.0;
+							styleAmount = workbook.createCellStyle();
+							styleAmount.setFont(font);
+							if(GlobalFunc.checkIsDecimal(saldoUangMasuk)) {
+								styleAmount.setDataFormat(format.getFormat("#,###"));
+							}else {
+								styleAmount.setDataFormat(format.getFormat("#,###.##"));
+							}
+							createCell(rowData, columnCount++, saldoUangMasuk, styleAmount, sheet, 7000);
+							createCell(rowData, columnCount++, "", style, sheet);
+							totalSaldoAwal = totalSaldoAwal + saldoUangMasuk.doubleValue();
+							saldo = totalSaldoAwal;
+							styleAmount = workbook.createCellStyle();
+							styleAmount.setFont(font);
+							if(GlobalFunc.checkIsDecimal(saldo)) {
+								styleAmount.setDataFormat(format.getFormat("#,###"));
+							}else {
+								styleAmount.setDataFormat(format.getFormat("#,###.##"));
+							}
+							createCell(rowData, columnCount++, saldo, styleAmount, sheet, 7000);
+							//*** End PPN ****
+
+							//*** JASA ****
+							rowData = sheet.createRow(rowcount++);
+							columnCount = 0;
+							createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(), ""), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
+							createCell(rowData, columnCount++, "Jasa", style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
+							createCell(rowData, columnCount++, "Non Reimbursement", style, sheet);
+							createCell(rowData, columnCount++, (dataKasBank.getPenerimaannoAju() != null && !dataKasBank.getPenerimaannoAju().equals("") ? new Integer(dataKasBank.getPenerimaannoAju()) : ""), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoInvoice(), style, sheet);
+							penerimaanNama = "";
+							if (dataKasBank.getPenerimaanIdReceiveType().equals("EMPLOYEE")) {
+								penerimaanNama = dataKasBank.getPenerimaanEmployeename();
+							} else if (dataKasBank.getPenerimaanIdReceiveType().equals("CUSTOMER")) {
+								penerimaanNama = dataKasBank.getPenerimaannamaCustomer();
+							} else if (dataKasBank.getPenerimaanIdReceiveType().equals("VENDOR")) {
+								penerimaanNama = dataKasBank.getPenerimaanVendorname();
+							}
+							createCell(rowData, columnCount++, penerimaanNama, style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaanketerangan(), style, sheet);
+							saldoUangMasuk = dataKasBank.getPenerimaannilaijasa();//dataKasBank.getPenerimaanAmount();
+							saldoUangMasuk = saldoUangMasuk != null ? saldoUangMasuk : 0.0;
+							styleAmount = workbook.createCellStyle();
+							styleAmount.setFont(font);
+							if(GlobalFunc.checkIsDecimal(saldoUangMasuk)) {
+								styleAmount.setDataFormat(format.getFormat("#,###"));
+							}else {
+								styleAmount.setDataFormat(format.getFormat("#,###.##"));
+							}
+							createCell(rowData, columnCount++, saldoUangMasuk, styleAmount, sheet, 7000);
+							createCell(rowData, columnCount++, "", style, sheet);
+							totalSaldoAwal = totalSaldoAwal + saldoUangMasuk.doubleValue();
+							saldo = totalSaldoAwal;
+							styleAmount = workbook.createCellStyle();
+							styleAmount.setFont(font);
+							if(GlobalFunc.checkIsDecimal(saldo)) {
+								styleAmount.setDataFormat(format.getFormat("#,###"));
+							}else {
+								styleAmount.setDataFormat(format.getFormat("#,###.##"));
+							}
+							createCell(rowData, columnCount++, saldo, styleAmount, sheet, 7000);
+							//*** End JASA ****
+
 						}else {
-							styleAmount.setDataFormat(format.getFormat(formatAmount));
+							createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(), ""), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
+							createCell(rowData, columnCount++, "", style, sheet);
+							createCell(rowData, columnCount++, (dataKasBank.getPenerimaannoAju() != null && !dataKasBank.getPenerimaannoAju().equals("") ? new Integer(dataKasBank.getPenerimaannoAju()) : ""), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoInvoice(), style, sheet);
+							String penerimaanNama = "";
+							if (dataKasBank.getPenerimaanIdReceiveType().equals("EMPLOYEE")) {
+								penerimaanNama = dataKasBank.getPenerimaanEmployeename();
+							} else if (dataKasBank.getPenerimaanIdReceiveType().equals("CUSTOMER")) {
+								penerimaanNama = dataKasBank.getPenerimaannamaCustomer();
+							} else if (dataKasBank.getPenerimaanIdReceiveType().equals("VENDOR")) {
+								penerimaanNama = dataKasBank.getPenerimaanVendorname();
+							}
+							createCell(rowData, columnCount++, penerimaanNama, style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaanketerangan(), style, sheet);
+							Double saldoUangMasuk = dataKasBank.getPenerimaanPenyesuain();//dataKasBank.getPenerimaanAmount();
+							saldoUangMasuk = saldoUangMasuk != null ? saldoUangMasuk : 0.0;
+
+							compare = new BigDecimal(saldoUangMasuk).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(saldoUangMasuk));
+							styleAmount = workbook.createCellStyle();
+							styleAmount.setFont(font);
+							if (compare == 0) {
+								styleAmount.setDataFormat(format.getFormat(formatAmount));
+							} else {
+								styleAmount.setDataFormat(format.getFormat(formatAmount));
+							}
+							createCell(rowData, columnCount++, saldoUangMasuk, styleAmount, sheet, 7000);
+							createCell(rowData, columnCount++, "", style, sheet);
+
+							totalSaldoAwal = totalSaldoAwal + saldoUangMasuk.doubleValue();
+							saldo = totalSaldoAwal;
+							compare = new BigDecimal(saldo).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(saldo));
+							styleAmount = workbook.createCellStyle();
+							styleAmount.setFont(font);
+							if (compare == 0) {
+								styleAmount.setDataFormat(format.getFormat(formatAmount));
+							} else {
+								styleAmount.setDataFormat(format.getFormat(formatAmount));
+							}
+							createCell(rowData, columnCount++, saldo, styleAmount, sheet, 7000);
 						}
-						createCell(rowData, columnCount++, saldoUangMasuk, styleAmount,sheet,7000);
-						createCell(rowData, columnCount++, "", style,sheet);
-						
-						totalSaldoAwal = totalSaldoAwal + saldoUangMasuk.doubleValue();
-						double saldo = totalSaldoAwal;
-						compare = new BigDecimal(saldo).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal(saldo));
-						styleAmount = workbook.createCellStyle();
-				        styleAmount.setFont(font);
-						if(compare == 0) {
-							styleAmount.setDataFormat(format.getFormat(formatAmount));
-						}else {
-							styleAmount.setDataFormat(format.getFormat(formatAmount));
-						}
-						createCell(rowData, columnCount++, saldo, styleAmount,sheet,7000);
 					}else if(dataKasBank.getPengeluaranid() != null && dataKasBank.getPengeluaranid() != 0) {
 						String pengeluaranNamaPaymentTo = "";
 						if(dataKasBank.getPengeluaran_paymentto().equals("EMPLOYEE")) {
