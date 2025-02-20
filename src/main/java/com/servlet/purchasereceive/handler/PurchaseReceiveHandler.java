@@ -930,6 +930,48 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPurchaseReceiveKomisi(param.getIdbox()), queryParameters);
     }
 
+    @Override
+    public List<PurchaseReceiveGetPrice> getListPurchaseReceiveGetPrice(Long idcompany, Long idbranch, ParamGetPrice param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPurchaseReceiveGetPrice().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false and item.type = 'H' ");
+        sqlBuilder.append(" and item.idproduct = "+param.getIdproduct()+" and (item.idcategoryproduct = "+param.getIdproductcategory() +" or item.idcategoryproduct in (select ms.categoryproductid from mapping_stock as ms where ms.categoryproductidmapping = "+param.getIdproductcategory()+" ) )");
+        sqlBuilder.append(" order by data.id desc ");
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        List<PurchaseReceiveGetPrice> templist = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPurchaseReceiveGetPrice(), queryParameters);
+        List<PurchaseReceiveGetPrice> list = new ArrayList<>();
+        if(templist != null && templist.size() > 0){
+            int limitdoc = 3;
+            if(param.getLimitdoc() != null){
+                if(param.getLimitdoc().intValue() > 0){
+                    limitdoc = param.getLimitdoc().intValue();
+                }
+            }
+            HashMap<Long,List<PurchaseReceiveGetPrice>> grupByIDPR = new HashMap<>();
+            for(PurchaseReceiveGetPrice data : templist){
+                List<PurchaseReceiveGetPrice> temp = grupByIDPR.get(data.getId());
+                if(temp == null){
+                    temp = new ArrayList<>();
+                    temp.add(data);
+                    grupByIDPR.put(data.getId(),temp);
+                }else{
+                    List<PurchaseReceiveGetPrice> temp1 = new ArrayList<>();
+                    temp1 = temp;
+                    temp1.add(data);
+                    grupByIDPR.put(data.getId(),temp1);
+                }
+                if(grupByIDPR.size() == limitdoc){
+                    break;
+                }
+            }
+
+            for (HashMap.Entry<Long, List<PurchaseReceiveGetPrice>> entry : grupByIDPR.entrySet()) {
+                list.addAll(entry.getValue());
+            }
+            return list;
+        }
+        return templist;
+    }
+
     private List<Long> getListIdDeposit(Long idpurchasereceive){
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataPurchaseReceiveDeposit().schema());
         sqlBuilder.append(" where data.idpurchasereceive = ?  ");

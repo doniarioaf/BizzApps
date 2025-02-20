@@ -50,6 +50,7 @@ import com.servlet.pricelist.service.PriceService;
 import com.servlet.product.entity.BodyProduct;
 import com.servlet.product.service.ProductService;
 import com.servlet.purchasereceive.entity.BodyPurchaseReceive;
+import com.servlet.purchasereceive.entity.ParamGetPrice;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
 import com.servlet.report.entity.*;
 import com.servlet.report.service.ReportService;
@@ -1343,7 +1344,12 @@ public class ProcessHandler implements ProcessService{
 				else if(type.equals("GETITEMS")) {
 					long idproduct = (long) param.get("idproduct");
 					long idcategoryproduct = (long) param.get("idcategoryproduct");
-					val.setData(purchaseReceiveService.getItemInLastDocumentPR(auth.getIdcompany(), auth.getIdbranch(),idproduct,idcategoryproduct));
+					ParamGetPrice paramPrice = new ParamGetPrice();
+					paramPrice.setIdproduct(idproduct);
+					paramPrice.setIdproductcategory(idcategoryproduct);
+					paramPrice.setLimitdoc(3);
+
+					val.setData(purchaseReceiveService.getListPurchaseReceiveGetPrice(auth.getIdcompany(), auth.getIdbranch(),paramPrice));
 				}else if(type.equals("PRINT")) {
 					long id = (long) param.get("id");
 					val.setData(stockAdjusmentService.getPrintData(auth.getIdcompany(), auth.getIdbranch(), auth.getId(), id));
