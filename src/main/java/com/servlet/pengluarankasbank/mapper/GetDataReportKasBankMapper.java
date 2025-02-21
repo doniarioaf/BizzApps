@@ -26,8 +26,8 @@ private String schemaSql;
 		sqlBuilder.append("cust.customername as pengeluarancustomername, emp.nama as pengeluaranempname, vendor.nama as pengeluaranvendorname, ");
 		sqlBuilder.append("mpengeluaran.keterangan as pengeluaranketerangan, ");
 		sqlBuilder.append("dpengeluaran.amount as pengeluaranamount, ");
-		sqlBuilder.append("parameterpaymenttype.codename as parameterpaymenttypename ");
-		
+		sqlBuilder.append("parameterpaymenttype.codename as parameterpaymenttypename, ");
+		sqlBuilder.append("mbank.namabank as namabank, mbank.norekening as banknorekening ");
 		sqlBuilder.append("from detail_pengeluaran_kas_bank as dpengeluaran ");
 		sqlBuilder.append("left join m_pengeluaran_kas_bank as mpengeluaran on mpengeluaran.id = dpengeluaran.idpengeluarankasbank ");
 //		sqlBuilder.append("left join m_coa as coapengeluaran on coapengeluaran.id = dpengeluaran.idcoa ");
@@ -39,6 +39,7 @@ private String schemaSql;
 		sqlBuilder.append("left join m_employee_manggala as emp on emp.id = mpengeluaran.idemployee ");
 		sqlBuilder.append("left join m_vendor as vendor on vendor.id = mpengeluaran.idvendor ");
 		sqlBuilder.append("left join m_parameter as parameterpaymenttype on parameterpaymenttype.code = mpengeluaran.idpaymenttype ");
+		sqlBuilder.append("left join m_bank_account as mbank on mpengeluaran.idbank = mbank.id ");
 
 		
 //		sqlBuilder.append("mpenerimaan.id as penerimaanid, mpengeluaran.id as pengeluaranid, ");
@@ -116,6 +117,8 @@ private String schemaSql;
 		final String invitemnama = rs.getString("invitemnama");
 		final String payitemnama = rs.getString("payitemnama");
 		final String parameterpaymenttypename = rs.getString("parameterpaymenttypename");
+		final String namabank = rs.getString("namabank");
+		final String banknorekening = rs.getString("banknorekening");
 
 		
 		EntityHelperKasBank data = new EntityHelperKasBank();
@@ -137,6 +140,8 @@ private String schemaSql;
 		data.setPenerimaannobuktipotong(null);
 		data.setPenerimaantanggalbuktipotong(null);
 		data.setPenerimaannilaippn(0.0);
+		data.setPenerimaannamabank("");
+		data.setPenerimaanbanknorek("");
 		
 		data.setPengeluaranid(pengeluaranid);
 		data.setPengeluarantanggalTransaksi(pengeluarantanggaltransaksi);
@@ -154,6 +159,8 @@ private String schemaSql;
 		data.setPengeluaran_invItemName(invitemnama);
 		data.setPengeluaran_payItemName(payitemnama);
 		data.setPengeluaran_KategoriName(parameterpaymenttypename);
+		data.setPengeluarannamabank(namabank);
+		data.setPengeluaranbanknorek(banknorekening);
 		return data;
 	}
 }

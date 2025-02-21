@@ -25,7 +25,8 @@ public class GetDataReportKasBankMapper implements RowMapper<EntityHelperKasBank
 		sqlBuilder.append("dpenerimaan.amount as penerimaanamount, dpenerimaan.penyesuaian as penyesuaianamount,  ");
 		sqlBuilder.append("dpenerimaan.nilaijasa as penerimaannilaijasa, dpenerimaan.nilaireimbursement as penerimaannilaireimbursement, dpenerimaan.nilaibuktipotong as penerimaannilaibuktipotong,  ");
 		sqlBuilder.append("dpenerimaan.nobuktipotong as penerimaannobuktipotong, dpenerimaan.tanggalbuktipotong as penerimaantanggalbuktipotong, dpenerimaan.nilaippn as penerimaannilaippn,  ");
-		sqlBuilder.append("mpenerimaan.idreceivetype as idreceivetype, cust.customername as customername , emp.nama as employeeName, vendor.nama as vendorname ");
+		sqlBuilder.append("mpenerimaan.idreceivetype as idreceivetype, cust.customername as customername , emp.nama as employeeName, vendor.nama as vendorname, ");
+		sqlBuilder.append("mbank.namabank as namabank, mbank.norekening as banknorekening ");
 		sqlBuilder.append("from detail_penerimaan_kas_bank as dpenerimaan ");
 		sqlBuilder.append("left join m_penerimaan_kas_bank as mpenerimaan on mpenerimaan.id = dpenerimaan.idpenerimaankasbank ");
 		sqlBuilder.append("left join m_coa as coapenerimaan on coapenerimaan.id = dpenerimaan.idcoa ");
@@ -35,6 +36,7 @@ public class GetDataReportKasBankMapper implements RowMapper<EntityHelperKasBank
 		sqlBuilder.append("left join m_customer_manggala as cust on cust.id = mpenerimaan.idcustomer ");
 		sqlBuilder.append("left join m_employee_manggala as emp on emp.id = mpenerimaan.idemployee ");
 		sqlBuilder.append("left join m_vendor as vendor on vendor.id = mpenerimaan.idvendor ");
+		sqlBuilder.append("left join m_bank_account as mbank on mpenerimaan.idbank = mbank.id ");
 
 //		sqlBuilder.append("mpenerimaan.id as penerimaanid, mpengeluaran.id as pengeluaranid, ");
 //		sqlBuilder.append("mpenerimaan.receivedate as penerimaantanggaltransaksi, mpengeluaran.paymentdate as pengeluarantanggaltransaksi, ");
@@ -122,6 +124,9 @@ public class GetDataReportKasBankMapper implements RowMapper<EntityHelperKasBank
 		final String penerimaannobuktipotong = rs.getString("penerimaannobuktipotong");
 		final Date penerimaantanggalbuktipotong = rs.getDate("penerimaantanggalbuktipotong");
 		final Double penerimaannilaippn = rs.getDouble("penerimaannilaippn");
+		final String namabank = rs.getString("namabank");
+		final String banknorekening = rs.getString("banknorekening");
+
 //		final Double pengeluaranamount = rs.getDouble("pengeluaranamount");
 
 		
@@ -147,6 +152,8 @@ public class GetDataReportKasBankMapper implements RowMapper<EntityHelperKasBank
 		data.setPenerimaannobuktipotong(penerimaannobuktipotong);
 		data.setPenerimaantanggalbuktipotong(penerimaantanggalbuktipotong);
 		data.setPenerimaannilaippn(penerimaannilaippn);
+		data.setPenerimaannamabank(namabank);
+		data.setPenerimaanbanknorek(banknorekening);
 		
 		data.setPengeluaranid(0L);
 		data.setPengeluarantanggalTransaksi(null);
@@ -160,6 +167,8 @@ public class GetDataReportKasBankMapper implements RowMapper<EntityHelperKasBank
 		data.setPengeluaran_vendorname(null);
 		data.setPengeluaran_employeename(null);
 		data.setPengeluaranAmount(0.0);
+		data.setPengeluarannamabank("");
+		data.setPengeluaranbanknorek("");
 		
 		return data;
 	}

@@ -646,6 +646,9 @@ public class InvoiceHandler implements InvoiceService{
 			}
 			String liststr = listidinv.toString().replaceAll("\\[", "");
 			liststr = liststr.replaceAll("\\]", "");
+			if(liststr.equals("")){
+				liststr = "0";
+			}
 			List<PenerimaanKasBankInvoice> listpenerimaan = penerimaanKasBankService.getListPenerimaanKasBankInvoice(idcompany,idbranch,liststr);
 			if(listpenerimaan != null && listpenerimaan.size() > 0){
 				HashMap<Long,List<PenerimaanKasBankInvoice>> grupByIdInvoice = new HashMap<>();

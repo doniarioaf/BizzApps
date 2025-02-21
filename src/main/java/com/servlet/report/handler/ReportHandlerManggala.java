@@ -722,17 +722,18 @@ public class ReportHandlerManggala implements ReportServiceManggala{
         
         createCell(row, 0, "Tanggal Transaksi", style,sheet);
         createCell(row, 1, "No. Voucher", style,sheet);
-        createCell(row, 2, "Transaksi", style,sheet);
-		createCell(row, 3, "Kategori", style,sheet);
-        createCell(row, 4, "No. WO", style,sheet);
-		createCell(row, 5, "Jenis", style,sheet);
-        createCell(row, 6, "Nomor AJU", style,sheet);
-        createCell(row, 7, "No. Invoice", style,sheet);
-        createCell(row, 8, "Nama Customer", style,sheet);
-        createCell(row, 9, "Keterangan", style,sheet);
-        createCell(row, 10, "Uang Masuk", style,sheet);
-        createCell(row, 11, "Uang Keluar", style,sheet);
-        createCell(row, 12, "Saldo", style,sheet);
+		createCell(row, 2, "Sumber", style,sheet);
+        createCell(row, 3, "Transaksi", style,sheet);
+		createCell(row, 4, "Kategori", style,sheet);
+        createCell(row, 5, "No. WO", style,sheet);
+		createCell(row, 6, "Jenis", style,sheet);
+        createCell(row, 7, "Nomor AJU", style,sheet);
+        createCell(row, 8, "No. Invoice", style,sheet);
+        createCell(row, 9, "Nama Customer", style,sheet);
+        createCell(row, 10, "Keterangan", style,sheet);
+        createCell(row, 11, "Uang Masuk", style,sheet);
+        createCell(row, 12, "Uang Keluar", style,sheet);
+        createCell(row, 13, "Saldo", style,sheet);
         
 //        List<PenerimaanPengeluaranData> list = penerimaanKasBankService.getPenerimaanPengeluaranData(idcompany, idbranch, new Date(body.getFromDate()), new Date(body.getToDate()), body.getIdbank());
 //        if(list != null && list.size() > 0) {
@@ -748,7 +749,8 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 			createCell(rowDataSaldoAwal, columnCount++, "", style,sheet);
 			createCell(rowDataSaldoAwal, columnCount++, "", style,sheet);
 			createCell(rowDataSaldoAwal, columnCount++, "", style,sheet);
-		createCell(rowDataSaldoAwal, columnCount++, "", style,sheet);
+			createCell(rowDataSaldoAwal, columnCount++, "", style,sheet);
+			createCell(rowDataSaldoAwal, columnCount++, "", style,sheet);
 			createCell(rowDataSaldoAwal, columnCount++, "", style,sheet);
 			createCell(rowDataSaldoAwal, columnCount++, "Saldo Awal", style,sheet);
 			createCell(rowDataSaldoAwal, columnCount++, "", style,sheet);
@@ -799,6 +801,8 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						dataKasBankSort.setPenerimaannobuktipotong(dataKasBank.getPenerimaannobuktipotong());
 						dataKasBankSort.setPenerimaantanggalbuktipotong(dataKasBank.getPenerimaantanggalbuktipotong());
 						dataKasBankSort.setPenerimaannilaippn(dataKasBank.getPenerimaannilaippn());
+						dataKasBankSort.setPenerimaannamabank(dataKasBank.getPenerimaannamabank());
+						dataKasBankSort.setPenerimaanbanknorek(dataKasBank.getPenerimaanbanknorek());
 						
 						listKasBankSort.add(dataKasBankSort);
 					}
@@ -827,6 +831,8 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						dataKasBankSort.setPengeluaran_invItemName(dataKasBank.getPengeluaran_invItemName());
 						dataKasBankSort.setPengeluaran_payItemName(dataKasBank.getPengeluaran_payItemName());
 						dataKasBankSort.setPengeluaran_KategoriName(dataKasBank.getPengeluaran_KategoriName());
+						dataKasBankSort.setPengeluarannamabank(dataKasBank.getPengeluarannamabank());
+						dataKasBankSort.setPengeluaranbanknorek(dataKasBank.getPengeluaranbanknorek());
 						listKasBankSort.add(dataKasBankSort);
 
 					}
@@ -851,6 +857,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 							//*** Tagihan Pihak Ke-3 ****
 							createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(), ""), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannamabank(), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
 							createCell(rowData, columnCount++, "Tagihan Pihak Ke-3", style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
@@ -895,6 +902,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 							columnCount = 0;
 							createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(), ""), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannamabank(), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
 							createCell(rowData, columnCount++, "PPN", style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
@@ -939,10 +947,11 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 							columnCount = 0;
 							createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(), ""), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannamabank(), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
 							createCell(rowData, columnCount++, "Jasa", style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
-							createCell(rowData, columnCount++, "Non Reimbursement", style, sheet);
+							createCell(rowData, columnCount++, "Non - Reim", style, sheet);
 							createCell(rowData, columnCount++, (dataKasBank.getPenerimaannoAju() != null && !dataKasBank.getPenerimaannoAju().equals("") ? new Integer(dataKasBank.getPenerimaannoAju()) : ""), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoInvoice(), style, sheet);
 							penerimaanNama = "";
@@ -981,6 +990,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						}else {
 							createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(), ""), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannamabank(), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
@@ -1039,11 +1049,12 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						if(dataKasBank.getPengeluaran_invItemName() != null && !dataKasBank.getPengeluaran_invItemName().equals("")) {
 							typeKBKTypeReimbursementOrNon = "Reimbursement";
 						}else if(dataKasBank.getPengeluaran_payItemName() != null && !dataKasBank.getPengeluaran_payItemName().equals("")) {
-							typeKBKTypeReimbursementOrNon = "Non-Reimbursement";
+							typeKBKTypeReimbursementOrNon = "Non - Reim";
 						}
 
 						createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPengeluarantanggalTransaksi(),""), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPengeluarannoVoucher(), style,sheet);
+						createCell(rowData, columnCount++, dataKasBank.getPengeluarannamabank(), style, sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPengeluarancoa(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPengeluaran_KategoriName(), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPengeluarannoWO(), style,sheet);
@@ -1088,6 +1099,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 							//*** Tagihan Pihak Ke-3 ****
 							createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(), ""), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannamabank(), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
 							createCell(rowData, columnCount++, "Tagihan Pihak Ke-3", style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
@@ -1132,6 +1144,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 							columnCount = 0;
 							createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(), ""), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannamabank(), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
 							createCell(rowData, columnCount++, "PPN", style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
@@ -1176,10 +1189,11 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 							columnCount = 0;
 							createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(), ""), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannamabank(), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
 							createCell(rowData, columnCount++, "Jasa", style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
-							createCell(rowData, columnCount++, "Non Reimbursement", style, sheet);
+							createCell(rowData, columnCount++, "Non - Reim", style, sheet);
 							createCell(rowData, columnCount++, (dataKasBank.getPenerimaannoAju() != null && !dataKasBank.getPenerimaannoAju().equals("") ? new Integer(dataKasBank.getPenerimaannoAju()) : ""), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoInvoice(), style, sheet);
 							penerimaanNama = "";
@@ -1218,6 +1232,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						}else {
 							createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(), ""), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style, sheet);
+							createCell(rowData, columnCount++, dataKasBank.getPenerimaannamabank(), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
@@ -1272,6 +1287,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						
 						createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPengeluarantanggalTransaksi(),""), style,sheet);
 						createCell(rowData, columnCount++, dataKasBank.getPengeluarannoVoucher(), style,sheet);
+						createCell(rowData, columnCount++, dataKasBank.getPengeluarannamabank(), style, sheet);
 						
 						String transaksiName = "";
 						String typeKBKTypeReimbursementOrNon = "";
@@ -1280,7 +1296,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 							typeKBKTypeReimbursementOrNon = "Reimbursement";
 						}else if(dataKasBank.getPengeluaran_payItemName() != null && !dataKasBank.getPengeluaran_payItemName().equals("")) {
 							transaksiName = dataKasBank.getPengeluaran_payItemName();
-							typeKBKTypeReimbursementOrNon = "Non-Reimbursement";
+							typeKBKTypeReimbursementOrNon = "Non - Reim";
 						}
 
 
@@ -1955,7 +1971,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						if (dataPengeluaran.getIdinvoiceitem() != null && dataPengeluaran.getIdinvoiceitem().longValue() > 0) {
 							jenisKeluar = "Reimbursement";
 						} else {
-							jenisKeluar = "Non Reimbursement";
+							jenisKeluar = "Non - Reim";
 						}
 						createCell(rowData, columnCount++, jenisKeluar, style, sheet);
 						createCell(rowData, columnCount++, checkNullDate(dataPengeluaran.getPaymentdate(), ""), style, sheet);
