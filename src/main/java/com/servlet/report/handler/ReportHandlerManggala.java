@@ -994,7 +994,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
-							createCell(rowData, columnCount++, "", style, sheet);
+							createCell(rowData, columnCount++, "Non - Reim", style, sheet);
 							createCell(rowData, columnCount++, (dataKasBank.getPenerimaannoAju() != null && !dataKasBank.getPenerimaannoAju().equals("") ? new Integer(dataKasBank.getPenerimaannoAju()) : ""), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoInvoice(), style, sheet);
 							String penerimaanNama = "";
@@ -1236,7 +1236,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
-							createCell(rowData, columnCount++, "", style, sheet);
+							createCell(rowData, columnCount++, "Non - Reim", style, sheet);
 							createCell(rowData, columnCount++, (dataKasBank.getPenerimaannoAju() != null && !dataKasBank.getPenerimaannoAju().equals("") ? new Integer(dataKasBank.getPenerimaannoAju()) : ""), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoInvoice(), style, sheet);
 							String penerimaanNama = "";
