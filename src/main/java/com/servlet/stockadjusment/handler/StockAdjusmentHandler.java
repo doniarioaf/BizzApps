@@ -284,7 +284,7 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
     }
 
     @Override
-    public PrintDataStockUdangMati getPrintData(Long idcompany, Long idbranch, Long iduser, Long id) {
+    public PrintDataStockUdangMati getPrintData(Long idcompany, Long idbranch, Long iduser, Long id,String typefile) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPrintDataStockUdangMati().schema());
         sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
         sqlBuilder.append(" and data.type = 'M' ");
@@ -294,8 +294,10 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
         if(list != null && list.size() > 0){
             PrintDataStockUdangMati print = list.get(0);
             print.setItems(getItems(id));
-            print.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADPDF",namaMenu));
-            print.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
+            if(typefile.equals("PDF")) {
+                print.setCountPrint(historyAppsService.countByActionAndMenu(idcompany, idbranch, "DOWNLOADPDF", namaMenu));
+                print.setCountEdit(historyAppsService.countByActionAndMenu(idcompany, idbranch, "EDIT", namaMenu));
+            }
             if(iduser != null) {
                 UserListData user = userAppsService.getUserByID(iduser);
                 String namaUser = "";
@@ -308,7 +310,10 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
             paramcp.setShowOnlyCpMapping(true);
             print.setListcp(categoryProductService.getDataForTemplate(idcompany,idbranch,paramcp));
             print.setMappingstock(mappingStockService.getListAll(idcompany,idbranch));
-            catatDownload(id,idcompany,idbranch,iduser);
+            if(typefile.equals("PDF")){
+                catatDownload(id,idcompany,idbranch,iduser);
+            }
+
             return print;
         }
         return null;

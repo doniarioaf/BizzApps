@@ -53,6 +53,7 @@ import com.servlet.report.entity.*;
 import com.servlet.report.service.ReportService;
 import com.servlet.shared.GlobalFunc;
 import com.servlet.stockadjusment.entity.ParamCalculateQtySA;
+import com.servlet.stockadjusment.entity.PrintDataStockUdangMati;
 import com.servlet.stockadjusment.service.StockAdjusmentService;
 import com.servlet.stockitems.entity.ParamCalculateQty;
 import com.servlet.stockitems.entity.ReportKartuStock;
@@ -4460,6 +4461,138 @@ public class ReportHandler implements ReportService {
         ReportTemplate data = new ReportTemplate();
         data.setVendorOpt(getListVendor);
         return data;
+    }
+
+    @Override
+    public ReportWorkBookExcel reportUdangMati(long idcompany, long idbranch, long idstockadjusment) {
+        ReportWorkBookExcel data = new ReportWorkBookExcel();
+        XSSFWorkbook workbook = new XSSFWorkbook();
+
+        XSSFDataFormat format = workbook.createDataFormat();
+
+        XSSFSheet sheet = workbook.createSheet("Laporan Udang Mati");
+        sheet.setDefaultColumnWidth(1000);
+        List<Integer> columns = getWidthColumns(30);
+
+        String namaCabang = "";
+        Branch branch = branchService.getBranchByID(idbranch);
+        if(branch != null){
+            namaCabang = branch.getNama();
+        }
+
+        int fontHeight = 12;
+        CellStyle style = workbook.createCellStyle();
+        CellStyle styleBold = workbook.createCellStyle();
+        CellStyle styleAmount = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setBold(false);
+        font.setFontHeight(fontHeight);
+        style.setFont(font);
+        styleAmount.setFont(font);
+
+        XSSFFont fontBold = workbook.createFont();
+        fontBold.setBold(true);
+        fontBold.setFontHeight(fontHeight);
+        styleBold.setFont(fontBold);
+
+        int rowcount = 2;
+        Row row = sheet.createRow(rowcount);
+        createCell(row, 0, "PT Sumber Berlian Samudra", style, sheet,columns);
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Laporan Udang Mati", style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Cabang", style, sheet,columns);
+        createCell(row, 1, namaCabang, style, sheet,columns);
+
+        int colomcount = 0;
+        rowcount++;
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, colomcount, "Waktu", style, sheet,columns);
+
+        PrintDataStockUdangMati dataStock = stockAdjusmentService.getPrintData(idcompany,idbranch,0L,idstockadjusment,"EXCEL");
+
+        ParamTemplate paramCP = new ParamTemplate();
+        paramCP.setShowOnlyCpMapping(true);
+        List<CategoryProductList> listCP = dataStock.getListcp();
+        HashMap<Long,Integer> placeColumnCP = new HashMap<>();
+        if(listCP != null && listCP.size() > 0){
+            for(CategoryProductList cp:listCP){
+                colomcount++;
+                createCell(row, colomcount, cp.getSize(), style, sheet,columns);
+                placeColumnCP.put(cp.getId(),colomcount);
+            }
+        }
+
+        HashMap<String,Integer> placeRowTime = new HashMap<>();
+        colomcount = 0;
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, colomcount, "00:00-02:00", style, sheet,columns);
+        placeRowTime.put("00:00-02:00",rowcount);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, colomcount, "02:00-04:00", style, sheet,columns);
+        placeRowTime.put("02:00-04:00",rowcount);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, colomcount, "04:00-06:00", style, sheet,columns);
+        placeRowTime.put("04:00-06:00",rowcount);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, colomcount, "06:00-08:00", style, sheet,columns);
+        placeRowTime.put("06:00-08:00",rowcount);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, colomcount, "08:00-10:00", style, sheet,columns);
+        placeRowTime.put("08:00-10:00",rowcount);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, colomcount, "10:00-12:00", style, sheet,columns);
+        placeRowTime.put("10:00-12:00",rowcount);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, colomcount, "12:00-14:00", style, sheet,columns);
+        placeRowTime.put("12:00-14:00",rowcount);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, colomcount, "14:00-16:00", style, sheet,columns);
+        placeRowTime.put("14:00-16:00",rowcount);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, colomcount, "16:00-18:00", style, sheet,columns);
+        placeRowTime.put("16:00-18:00",rowcount);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, colomcount, "18:00-20:00", style, sheet,columns);
+        placeRowTime.put("18:00-20:00",rowcount);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, colomcount, "20:00-22:00", style, sheet,columns);
+        placeRowTime.put("20:00-22:00",rowcount);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, colomcount, "22:00-24:00", style, sheet,columns);
+        placeRowTime.put("22:00-24:00",rowcount);
+
+
+
+        return null;
     }
 
     private HashMap<String,Object> createCellReportHutang(ParamReportHutang param, Long idcompany, Long idbranch,VendorDataForTemplate ven,List<ReportPelunasanHutangDocumentHutang> listHutang, int rowcount,XSSFWorkbook workbook,XSSFDataFormat format ,Row row, XSSFSheet sheet, CellStyle style, CellStyle styleAmount,List<Integer> columns){
