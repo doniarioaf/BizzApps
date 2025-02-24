@@ -3,11 +3,38 @@ package com.servlet.pengluarankasbank.entity;
 import java.sql.Date;
 
 public class PengeluaranReportLabaRugi {
+    private Long idwo;
     private String noDocument;
     private String keterangan;
     private Double amount;
     private String namabank;
     private Date paymentdate;
+    private Long idinvoiceitem;
+    private Long idpaymentitem;
+
+    public Long getIdwo() {
+        return idwo;
+    }
+
+    public void setIdwo(Long idwo) {
+        this.idwo = idwo;
+    }
+
+    public Long getIdinvoiceitem() {
+        return idinvoiceitem;
+    }
+
+    public void setIdinvoiceitem(Long idinvoiceitem) {
+        this.idinvoiceitem = idinvoiceitem;
+    }
+
+    public Long getIdpaymentitem() {
+        return idpaymentitem;
+    }
+
+    public void setIdpaymentitem(Long idpaymentitem) {
+        this.idpaymentitem = idpaymentitem;
+    }
 
     public Date getPaymentdate() {
         return paymentdate;

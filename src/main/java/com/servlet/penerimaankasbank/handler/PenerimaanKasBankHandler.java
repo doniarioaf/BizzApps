@@ -179,6 +179,7 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 					table.setIdwo(null);
 				}
 				table.setIdreceivetype(body.getIdreceivetype());
+				table.setPph(body.getPph());
 				
 				table.setIsdelete(false);
 				table.setCreatedby(iduser.toString());
@@ -267,7 +268,7 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 						table.setIdwo(null);
 					}
 					table.setIdreceivetype(body.getIdreceivetype());
-					
+					table.setPph(body.getPph());
 					table.setUpdateby(iduser.toString());
 					table.setUpdatedate(ts);
 					
@@ -410,6 +411,16 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 					detailPenerimaanKasBank.setIsdownpayment(detail.getIsdownpayment());
 					detailPenerimaanKasBank.setPenyesuaian(detail.getPenyesuaian());
 					detailPenerimaanKasBank.setKeterangan_penyesuaian(detail.getKeterangan_penyesuaian());
+					detailPenerimaanKasBank.setNilaijasa(detail.getNilaijasa());
+					detailPenerimaanKasBank.setNilaireimbursement(detail.getNilaireimbursement());
+					detailPenerimaanKasBank.setNilaibuktipotong(detail.getNilaibuktipotong());
+					detailPenerimaanKasBank.setNobuktipotong(detail.getNobuktipotong());
+					if(detail.getTanggalbuktipotong() != null){
+						detailPenerimaanKasBank.setTanggalbuktipotong(new java.sql.Date(detail.getTanggalbuktipotong()));
+					}else{
+						detailPenerimaanKasBank.setTanggalbuktipotong(null);
+					}
+					detailPenerimaanKasBank.setNilaippn(detail.getNilaippn());
 					
 					detailPenerimaanKasBankRepo.saveAndFlush(detailPenerimaanKasBank);
 					count++;
@@ -457,9 +468,14 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 	
 	private PenerimaanKasBankTemplate setTemplate(Long idcompany, Long idbranch, Long id, Long iduser) {
 		boolean checkFinanceJunior = checkFinanceJunior(iduser);
+
 		PenerimaanKasBankTemplate template = new PenerimaanKasBankTemplate();
 		template.setBankOptions(bankAccountService.getListActiveBankAccountCheckFinanceJunior(idcompany, idbranch, checkFinanceJunior));
 		template.setCoaOptions(coaService.getListActiveCOA(idcompany, idbranch));
+		Double pph = parameterManggalaService.getValueByParamName(idcompany,idbranch,"PPH","NUMBER").getDoubleValue();
+		if(pph != null){
+			template.setPPH(pph);
+		}
 		if(id != null) {
 			HashMap<String, Object> mapParam = new HashMap<String, Object>();
 			mapParam.put("type", "PENERIMAANKASBANK");
@@ -725,16 +741,28 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 	}
 
 	@Override
-	public List<DetailPenerimaanKasBankDataLabaRugi> getListDetailReportLabaRugi(Long idcompany, Long idbranch, Long idInvoice, Long idbank) {
+	public List<DetailPenerimaanKasBankDataLabaRugi> getListDetailReportLabaRugi(Long idcompany, Long idbranch, Long idbank,String listidinvoice) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataDetailPenerimaanReportLabaRugi().schema());
-		sqlBuilder.append(" where data.idinvoice = ? and data.idcompany = ? and data.idbranch = ? and penerimaan.isdelete = false ");
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and penerimaan.isdelete = false ");
 		if(idbank != null){
 			sqlBuilder.append(" and penerimaan.idbank = "+idbank+" ");
 		}
+		if(listidinvoice != null && !listidinvoice.equals("")){
+			sqlBuilder.append(" and data.idinvoice in ("+listidinvoice+") ");
+		}
 		sqlBuilder.append(" order by penerimaan.receivedate ");
-		final Object[] queryParameters = new Object[] {idInvoice,idcompany,idbranch};
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataDetailPenerimaanReportLabaRugi(), queryParameters);
+	}
+
+	@Override
+	public List<PenerimaanKasBankInvoice> getListPenerimaanKasBankInvoice(Long idcompany, Long idbranch, String listidinvoice) {
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataPenerimaanKasBankInvoice().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+		sqlBuilder.append(" and det.idinvoice in ("+listidinvoice+") ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataPenerimaanKasBankInvoice(), queryParameters);
 	}
 
 }

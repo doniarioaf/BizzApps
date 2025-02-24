@@ -7,15 +7,27 @@ public class EntityHelperKasBank implements Comparable<EntityHelperKasBank> {
 	private Date penerimaantanggalTransaksi;
 	private String penerimaannoVoucher;
 	private String penerimaancoa;
+	private String penerimaancoaCode;
 	private String penerimaannoWO;
 	private String penerimaannoAju;
 	private String penerimaannoInvoice;
 	private String penerimaannamaCustomer;
+	private String penerimaanVendorname;
+	private String penerimaanEmployeename;
+	private String penerimaanIdReceiveType;
 	private String penerimaanketerangan;
 	private double penerimaanAmount;
 	private String penerimaanKategoriName;
 	private Double penerimaanPenyesuain;
-	
+	private Double penerimaannilaijasa;
+	private Double penerimaannilaireimbursement;
+	private Double penerimaannilaibuktipotong;
+	private String penerimaannobuktipotong;
+	private Date penerimaantanggalbuktipotong;
+	private Double penerimaannilaippn;
+	private String penerimaannamabank;
+	private String penerimaanbanknorek;
+
 	private Long pengeluaranid;
 	private Date pengeluarantanggalTransaksi;
 	private String pengeluarannoVoucher;
@@ -35,6 +47,120 @@ public class EntityHelperKasBank implements Comparable<EntityHelperKasBank> {
 	private String pengeluaran_KategoriName;
 	
 	private Date tanggalTransaksi;
+	private String pengeluarannamabank;
+	private String pengeluaranbanknorek;
+
+	public String getPenerimaannamabank() {
+		return penerimaannamabank;
+	}
+
+	public void setPenerimaannamabank(String penerimaannamabank) {
+		this.penerimaannamabank = penerimaannamabank;
+	}
+
+	public String getPenerimaanbanknorek() {
+		return penerimaanbanknorek;
+	}
+
+	public void setPenerimaanbanknorek(String penerimaanbanknorek) {
+		this.penerimaanbanknorek = penerimaanbanknorek;
+	}
+
+	public String getPengeluarannamabank() {
+		return pengeluarannamabank;
+	}
+
+	public void setPengeluarannamabank(String pengeluarannamabank) {
+		this.pengeluarannamabank = pengeluarannamabank;
+	}
+
+	public String getPengeluaranbanknorek() {
+		return pengeluaranbanknorek;
+	}
+
+	public void setPengeluaranbanknorek(String pengeluaranbanknorek) {
+		this.pengeluaranbanknorek = pengeluaranbanknorek;
+	}
+
+	public String getPenerimaancoaCode() {
+		return penerimaancoaCode;
+	}
+
+	public void setPenerimaancoaCode(String penerimaancoaCode) {
+		this.penerimaancoaCode = penerimaancoaCode;
+	}
+
+	public Double getPenerimaannilaijasa() {
+		return penerimaannilaijasa;
+	}
+
+	public void setPenerimaannilaijasa(Double penerimaannilaijasa) {
+		this.penerimaannilaijasa = penerimaannilaijasa;
+	}
+
+	public Double getPenerimaannilaireimbursement() {
+		return penerimaannilaireimbursement;
+	}
+
+	public void setPenerimaannilaireimbursement(Double penerimaannilaireimbursement) {
+		this.penerimaannilaireimbursement = penerimaannilaireimbursement;
+	}
+
+	public Double getPenerimaannilaibuktipotong() {
+		return penerimaannilaibuktipotong;
+	}
+
+	public void setPenerimaannilaibuktipotong(Double penerimaannilaibuktipotong) {
+		this.penerimaannilaibuktipotong = penerimaannilaibuktipotong;
+	}
+
+	public String getPenerimaannobuktipotong() {
+		return penerimaannobuktipotong;
+	}
+
+	public void setPenerimaannobuktipotong(String penerimaannobuktipotong) {
+		this.penerimaannobuktipotong = penerimaannobuktipotong;
+	}
+
+	public Date getPenerimaantanggalbuktipotong() {
+		return penerimaantanggalbuktipotong;
+	}
+
+	public void setPenerimaantanggalbuktipotong(Date penerimaantanggalbuktipotong) {
+		this.penerimaantanggalbuktipotong = penerimaantanggalbuktipotong;
+	}
+
+	public Double getPenerimaannilaippn() {
+		return penerimaannilaippn;
+	}
+
+	public void setPenerimaannilaippn(Double penerimaannilaippn) {
+		this.penerimaannilaippn = penerimaannilaippn;
+	}
+
+	public String getPenerimaanVendorname() {
+		return penerimaanVendorname;
+	}
+
+	public void setPenerimaanVendorname(String penerimaanVendorname) {
+		this.penerimaanVendorname = penerimaanVendorname;
+	}
+
+	public String getPenerimaanEmployeename() {
+		return penerimaanEmployeename;
+	}
+
+	public void setPenerimaanEmployeename(String penerimaanEmployeename) {
+		this.penerimaanEmployeename = penerimaanEmployeename;
+	}
+
+	public String getPenerimaanIdReceiveType() {
+		return penerimaanIdReceiveType;
+	}
+
+	public void setPenerimaanIdReceiveType(String penerimaanIdReceiveType) {
+		this.penerimaanIdReceiveType = penerimaanIdReceiveType;
+	}
 
 	public Double getPenerimaanPenyesuain() {
 		return penerimaanPenyesuain;

@@ -101,4 +101,20 @@ public class GlobalFunc {
 		}
 		return 0;
 	}
+
+	public static boolean checkIsDecimal(double nilai) {
+		//jika true, berati bukan decimal
+		//jika false , decimal. Ex, 3.1,2.3 dst
+		double nilaiComma = round(nilai,2);
+		return nilaiComma % 1 == 0;
+	}
+
+	private static double round(double value, int places) {
+		if (places < 0) throw new IllegalArgumentException();
+
+		long factor = (long) Math.pow(10, places);
+		value = value * factor;
+		long tmp = Math.round(value);
+		return (double) tmp / factor;
+	}
 }

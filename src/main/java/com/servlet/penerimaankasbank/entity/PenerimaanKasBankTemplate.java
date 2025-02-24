@@ -7,9 +7,19 @@ import com.servlet.coa.entity.CoaData;
 import com.servlet.workorder.entity.WorkOrderDropDownData;
 
 public class PenerimaanKasBankTemplate {
+	private Double pph;
 	private List<CoaData> coaOptions;
 	private List<BankAccountData> bankOptions;
 	private List<WorkOrderDropDownData> woOptions;
+
+	public Double getPPH() {
+		return pph;
+	}
+
+	public void setPPH(Double PPH) {
+		this.pph = PPH;
+	}
+
 	public List<CoaData> getCoaOptions() {
 		return coaOptions;
 	}

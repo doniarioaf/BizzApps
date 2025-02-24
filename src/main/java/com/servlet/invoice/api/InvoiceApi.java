@@ -2,6 +2,7 @@ package com.servlet.invoice.api;
 
 import java.util.HashMap;
 
+import com.servlet.invoice.entity.BodyInvoiceV2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +53,15 @@ public class InvoiceApi {
 	ResponseEntity<Response> getById(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("type", "DETAIL");
+		param.put("id", id);
+		Response response = securityService.response(ConstansPermission.READ_INVOICE,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+
+	@GetMapping("/v2/{id}")
+	ResponseEntity<Response> getByIdV2(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "DETAIL_V2");
 		param.put("id", id);
 		Response response = securityService.response(ConstansPermission.READ_INVOICE,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
@@ -169,9 +179,18 @@ public class InvoiceApi {
 	@PostMapping
 	ResponseEntity<Response> createObject(@RequestBody @Validated BodyInvoice body, @RequestHeader(ConstansKey.AUTH) String authorization) {
 		HashMap<String, Object> param = new HashMap<String, Object>();
-//		param.put("type", "CREATE");
-//		param.put("body", body);
-		Response response = securityService.response(ConstansPermission.CREATE_INVOICE,body,authorization);
+		param.put("type", "CREATE");
+		param.put("body", body);
+		Response response = securityService.response(ConstansPermission.CREATE_INVOICE,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+
+	@PostMapping("/v2")
+	ResponseEntity<Response> createObjectV2(@RequestBody @Validated BodyInvoiceV2 body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "CREATE_V2");
+		param.put("body", body);
+		Response response = securityService.response(ConstansPermission.CREATE_INVOICE,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
@@ -179,6 +198,17 @@ public class InvoiceApi {
 	@PutMapping("{id}")
 	ResponseEntity<Response> updateObject(@PathVariable long id,@RequestBody @Validated BodyInvoice body, @RequestHeader(ConstansKey.AUTH) String authorization) {
 		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "UPDATE");
+		param.put("id", id);
+		param.put("body", body);
+		Response response = securityService.response(ConstansPermission.EDIT_INVOICE,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+
+	@PutMapping("/v2/{id}")
+	ResponseEntity<Response> updateObjectV2(@PathVariable long id,@RequestBody @Validated BodyInvoiceV2 body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "UPDATEV2");
 		param.put("id", id);
 		param.put("body", body);
 		Response response = securityService.response(ConstansPermission.EDIT_INVOICE,param,authorization);

@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.servlet.penerimaankasbank.entity.DetailPenerimaanKasBankData;
 import com.servlet.penerimaankasbank.entity.PenerimaanKasBankData;
+import com.servlet.penerimaankasbank.entity.PenerimaanKasBankInvoice;
 
 public class InvoiceData {
 	private Long id;
@@ -37,6 +38,61 @@ public class InvoiceData {
 	private List<InvoiceDPData> listDP;
 	private String notes1;
 	private String notes2;
+
+	private String nodocumentreimbursement;
+	private String nodocumentjasa;
+	private Double nilaijasa;
+	private Double nilaireimbursement;
+	private String nofakturpajak;
+	private List<PenerimaanKasBankInvoice> listpenerimaaninvoice;
+
+	public List<PenerimaanKasBankInvoice> getListpenerimaaninvoice() {
+		return listpenerimaaninvoice;
+	}
+
+	public void setListpenerimaaninvoice(List<PenerimaanKasBankInvoice> listpenerimaaninvoice) {
+		this.listpenerimaaninvoice = listpenerimaaninvoice;
+	}
+
+	public String getNodocumentreimbursement() {
+		return nodocumentreimbursement;
+	}
+
+	public void setNodocumentreimbursement(String nodocumentreimbursement) {
+		this.nodocumentreimbursement = nodocumentreimbursement;
+	}
+
+	public String getNodocumentjasa() {
+		return nodocumentjasa;
+	}
+
+	public void setNodocumentjasa(String nodocumentjasa) {
+		this.nodocumentjasa = nodocumentjasa;
+	}
+
+	public Double getNilaijasa() {
+		return nilaijasa;
+	}
+
+	public void setNilaijasa(Double nilaijasa) {
+		this.nilaijasa = nilaijasa;
+	}
+
+	public Double getNilaireimbursement() {
+		return nilaireimbursement;
+	}
+
+	public void setNilaireimbursement(Double nilaireimbursement) {
+		this.nilaireimbursement = nilaireimbursement;
+	}
+
+	public String getNofakturpajak() {
+		return nofakturpajak;
+	}
+
+	public void setNofakturpajak(String nofakturpajak) {
+		this.nofakturpajak = nofakturpajak;
+	}
 
 	public String getNotes1() {
 		return notes1;
