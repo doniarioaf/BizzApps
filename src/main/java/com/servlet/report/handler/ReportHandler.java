@@ -54,6 +54,7 @@ import com.servlet.report.service.ReportService;
 import com.servlet.shared.GlobalFunc;
 import com.servlet.stockadjusment.entity.ParamCalculateQtySA;
 import com.servlet.stockadjusment.entity.PrintDataStockUdangMati;
+import com.servlet.stockadjusment.entity.StockAdjsumentDataItem;
 import com.servlet.stockadjusment.service.StockAdjusmentService;
 import com.servlet.stockitems.entity.ParamCalculateQty;
 import com.servlet.stockitems.entity.ReportKartuStock;
@@ -4525,6 +4526,10 @@ public class ReportHandler implements ReportService {
                 createCell(row, colomcount, cp.getSize(), style, sheet,columns);
                 placeColumnCP.put(cp.getId(),colomcount);
             }
+            //9999 = TOTAL
+            colomcount++;
+            createCell(row, colomcount, "TOTAL", style, sheet,columns);
+            placeColumnCP.put(9999L,colomcount);
         }
 
         HashMap<String,Integer> placeRowTime = new HashMap<>();
@@ -4590,9 +4595,28 @@ public class ReportHandler implements ReportService {
         createCell(row, colomcount, "22:00-24:00", style, sheet,columns);
         placeRowTime.put("22:00-24:00",rowcount);
 
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, colomcount, "TOTAL", style, sheet,columns);
+        placeRowTime.put("TOTAL",rowcount);
 
+        if(dataStock.getItems() != null && dataStock.getItems().size() > 0){
+            for(StockAdjsumentDataItem item : dataStock.getItems()){
+                Integer rowIdx = placeRowTime.get(item.getStocktime());
+                Integer colIdx = placeColumnCP.get(item.getIdcategoryproduct());
+                if(rowIdx != null && colIdx != null){
+                    row = sheet.getRow(rowIdx.intValue());
+                    colomcount = colIdx.intValue();
 
-        return null;
+                    styleAmount = workbook.createCellStyle();
+                    styleAmount.setDataFormat(format.getFormat("#,###"));
+                    createCell(row, colomcount, item.getQty(), styleAmount, sheet,columns);
+                }
+            }
+        }
+
+        data.setWorkbook(workbook);
+        return data;
     }
 
     private HashMap<String,Object> createCellReportHutang(ParamReportHutang param, Long idcompany, Long idbranch,VendorDataForTemplate ven,List<ReportPelunasanHutangDocumentHutang> listHutang, int rowcount,XSSFWorkbook workbook,XSSFDataFormat format ,Row row, XSSFSheet sheet, CellStyle style, CellStyle styleAmount,List<Integer> columns){

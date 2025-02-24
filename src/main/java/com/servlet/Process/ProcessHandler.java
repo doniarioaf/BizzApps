@@ -1353,6 +1353,9 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("PRINT")) {
 					long id = (long) param.get("id");
 					val.setData(stockAdjusmentService.getPrintData(auth.getIdcompany(), auth.getIdbranch(), auth.getId(), id,"PDF"));
+				}else if(type.equals("REPORT_STOCK")) {
+					long id = (long) param.get("id");
+					val.setData(reportService.reportUdangMati(auth.getIdcompany(), auth.getIdbranch(), id).getWorkbook());
 				}
 			}
 

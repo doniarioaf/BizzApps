@@ -1,17 +1,23 @@
 package com.servlet.stockadjusment.api;
 
 import com.servlet.purchasereceive.entity.BodyPurchaseReceive;
+import com.servlet.report.entity.ParamReportPembelian;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConstansPermission;
 import com.servlet.shared.Response;
 import com.servlet.stockadjusment.entity.BodyStockAdjusment;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.HashMap;
 
 @RestController
@@ -47,6 +53,22 @@ public class StockAdjusmentAPI {
         param.put("id", id);
         Response response = securityService.response(ConstansPermission.READ_STOCKADJUSMENT,param,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @GetMapping("/printexcel/{id}")
+    ResponseEntity<Response> getReportPembelian(HttpServletResponse response,@PathVariable long id, @RequestHeader(ConstansKey.AUTH) String authorization) throws IOException {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "REPORT_STOCK");
+        param.put("id", id);
+        Response response1 = securityService.response(ConstansPermission.READ_STOCKADJUSMENT,param,authorization);
+        if(response1.getHttpcode() == HttpStatus.OK.value()) {
+            XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+            export(response, workbook);
+
+            return ResponseEntity.ok().build();
+        }else{
+            return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
+        }
     }
 
 //    @GetMapping("/pricelist")
@@ -95,5 +117,14 @@ public class StockAdjusmentAPI {
     ResponseEntity<Response> deleteObject(@PathVariable long id, @RequestHeader(ConstansKey.AUTH) String authorization) {
         Response response = securityService.response(ConstansPermission.DELETE_STOCKADJUSMENT,id,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    private void export(HttpServletResponse response, XSSFWorkbook workbook) throws IOException {
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+
+        outputStream.close();
+
     }
 }
