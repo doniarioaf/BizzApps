@@ -977,6 +977,8 @@ public class ReportHandler implements ReportService {
         ReportWorkBookExcel data = new ReportWorkBookExcel();
         XSSFWorkbook workbook = new XSSFWorkbook();
 
+        //kalau ada perubahan perhitungan atau tambah kolom, sesuaikan pdf nya di service printStockUdangHidupMati di StockAdjusmentHandler
+
         XSSFDataFormat format = workbook.createDataFormat();
 
         XSSFSheet sheet = workbook.createSheet("Laporan Stock Udang Hidup & Mati");

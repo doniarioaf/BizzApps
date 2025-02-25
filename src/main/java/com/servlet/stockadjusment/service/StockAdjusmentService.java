@@ -1,5 +1,6 @@
 package com.servlet.stockadjusment.service;
 
+import com.servlet.report.entity.ParamReportStockUdangHidupMati;
 import com.servlet.shared.ReturnData;
 import com.servlet.stockadjusment.entity.*;
 import com.servlet.stockitems.entity.ReportKartuStock;
@@ -16,4 +17,5 @@ public interface StockAdjusmentService {
     Long calculateQtySA(Long idcompany, Long idbranch,String type, ParamCalculateQtySA param);
     List<ReportKartuStock> getListReportKartuStock(Long idcompany, Long idbranch, ParamCalculateQtySA param);
     PrintDataStockUdangMati getPrintData(Long idcompany, Long idbranch,Long iduser,Long id,String typefile);
+    List<PrintDataStockAdjusmentHidupDanMati> printStockUdangHidupMati(Long idcompany, Long idbranch, ParamReportStockUdangHidupMati param);
 }

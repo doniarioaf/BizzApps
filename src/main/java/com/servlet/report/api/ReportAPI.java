@@ -43,6 +43,17 @@ public class ReportAPI {
 
     }
 
+    @GetMapping("/reportstockudanghidupmati/pdf")
+    ResponseEntity<Response> getReportStockUdangHidupMatiPDF(@RequestParam("from") Long date,@RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        ParamReportStockUdangHidupMati body = new ParamReportStockUdangHidupMati();
+        body.setDate(date);
+        param.put("type", "REPORTUDANGHIDUPMATI_PDF");
+        param.put("body", body);
+        Response response = securityService.response(ConstansPermission.READ_REPORT_STOCKUDANGHIDUPMATI,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
     @GetMapping("/reportrekapbarangmasuk")
     ResponseEntity<Response> getReportRekapanBarangMasuk(@RequestParam("from") Long date,@RequestParam("shownol") String shownol, HttpServletResponse response, @RequestHeader(ConstansKey.AUTH) String authorization) throws IOException{
         ParamReportRekapStock body = new ParamReportRekapStock();

@@ -1421,6 +1421,9 @@ public class ProcessHandler implements ProcessService{
 				if(type.equals("REPORTUDANGHIDUPMATI")) {
 					ParamReportStockUdangHidupMati body = (ParamReportStockUdangHidupMati) param.get("body");
 					val.setData(reportService.reportStockUdangHidupMati(auth.getIdcompany(), auth.getIdbranch(),body).getWorkbook());
+				}else if(type.equals("REPORTUDANGHIDUPMATI_PDF")) {
+					ParamReportStockUdangHidupMati body = (ParamReportStockUdangHidupMati) param.get("body");
+					val.setData(stockAdjusmentService.printStockUdangHidupMati(auth.getIdcompany(), auth.getIdbranch(),body));
 				}
 			}
 
