@@ -615,6 +615,11 @@ public class ReportHandler implements ReportService {
     }
 
     @Override
+    public ReportWorkBookExcel getExcelInvoiceByID2(long id, long idcompany, long idbranch, long iduser) {
+        return null;
+    }
+
+    @Override
     public ReportWorkBookExcel reportPembelian(long idcompany, long idbranch, ParamReportPembelian param) {
         ReportWorkBookExcel data = new ReportWorkBookExcel();
         XSSFWorkbook workbook = new XSSFWorkbook();
