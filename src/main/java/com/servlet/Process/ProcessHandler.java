@@ -1412,7 +1412,7 @@ public class ProcessHandler implements ProcessService{
 					val.setData(invoiceService.catatDownload(id,auth.getIdcompany(), auth.getIdbranch(), auth.getId()));
 				}else if(type.equals("PRINTEXCEL")) {
 					long id = (long) param.get("id");
-					val.setData(reportService.getExcelInvoiceByID(id,auth.getIdcompany(), auth.getIdbranch(), auth.getId()).getWorkbook());
+					val.setData(reportService.getExcelInvoiceByID2(id,auth.getIdcompany(), auth.getIdbranch(), auth.getId()).getWorkbook());
 				}
 			}
 			else if(codepermission.equals(ConstansPermission.READ_REPORT_STOCKUDANGHIDUPMATI)) {
