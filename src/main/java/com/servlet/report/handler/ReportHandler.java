@@ -20,10 +20,7 @@ import com.servlet.draftpurchasereceive.entity.ParamCalculateQtyDPR;
 import com.servlet.draftpurchasereceive.entity.ParamSearchDraftPurchaseReceive;
 import com.servlet.draftpurchasereceive.service.DraftPurchaseReceiveService;
 import com.servlet.historyapps.service.HistoryAppsService;
-import com.servlet.invoice.entity.InvoiceDataReportPelunasanPiutang;
-import com.servlet.invoice.entity.InvoiceDataReportPiutang;
-import com.servlet.invoice.entity.ParamSearchInvoice;
-import com.servlet.invoice.entity.PrintInvoice;
+import com.servlet.invoice.entity.*;
 import com.servlet.invoice.service.InvoiceService;
 import com.servlet.komisi.entity.KomisiDataReportKomisi;
 import com.servlet.komisi.entity.ParamKomisiReportKomisi;
@@ -692,6 +689,21 @@ public class ReportHandler implements ReportService {
 
     }
 
+    private HashMap<String,String> getCodeAndCountryDest(String value){
+        HashMap<String,String> maps = new HashMap<String,String>();
+        String code = "";
+        String destination = "";
+        String customerAlias = value != null?value:"";
+        String[] arrAlias = customerAlias.split("-");
+        if(arrAlias.length > 0){
+            code = arrAlias[0];
+            destination = arrAlias[1];
+        }
+        maps.put("code",code);
+        maps.put("destination",destination);
+        return maps;
+    }
+
     @Override
     public ReportWorkBookExcel getExcelInvoiceByID2(long id, long idcompany, long idbranch, long iduser) {
         ReportWorkBookExcel data = new ReportWorkBookExcel();
@@ -700,9 +712,13 @@ public class ReportHandler implements ReportService {
 
         XSSFDataFormat format = workbook.createDataFormat();
 
-        XSSFSheet sheet = workbook.createSheet("Laporan Komisi");
+        XSSFSheet sheet = workbook.createSheet("Invoice");
         sheet.setDefaultColumnWidth(1000);
         List<Integer> columns = getWidthColumns(15);
+
+        ParamPrintInvoice paramPrint = new ParamPrintInvoice();
+        paramPrint.setNamaMenu("PRINT");
+        PrintInvoice invoice = invoiceService.getPrintDataByID(id,idcompany,idbranch,iduser,paramPrint);
 
         int fontHeight = 12;
         CellStyle styleTextPrinted = workbook.createCellStyle();
@@ -730,6 +746,7 @@ public class ReportHandler implements ReportService {
         CellStyle styleBoldItalicNoBorder = workbook.createCellStyle();
         CellStyle styleItalicNoBorder = workbook.createCellStyle();
         CellStyle styleAmount = workbook.createCellStyle();
+        CellStyle styleAmountBorder = workbook.createCellStyle();
         CellStyle styleAmountColourBg = workbook.createCellStyle();
         CellStyle styleBoldItalicColourBg = workbook.createCellStyle();
         CellStyle styleBoldColourBg = workbook.createCellStyle();
@@ -740,6 +757,7 @@ public class ReportHandler implements ReportService {
         font.setFontHeight(fontHeight);
         style.setFont(font);
         styleAmount.setFont(font);
+        styleAmountBorder.setFont(font);
         styleAmountColourBg.setFont(font);
 
 
@@ -771,6 +789,11 @@ public class ReportHandler implements ReportService {
         style.setBorderBottom(BorderStyle.MEDIUM);
         style.setBorderLeft(BorderStyle.MEDIUM);
         style.setBorderRight(BorderStyle.MEDIUM);
+
+        styleAmountBorder.setBorderTop(BorderStyle.MEDIUM);
+        styleAmountBorder.setBorderBottom(BorderStyle.MEDIUM);
+        styleAmountBorder.setBorderLeft(BorderStyle.MEDIUM);
+        styleAmountBorder.setBorderRight(BorderStyle.MEDIUM);
 
         styleBoldColourBg.setBorderTop(BorderStyle.MEDIUM);
         styleBoldColourBg.setBorderBottom(BorderStyle.MEDIUM);
@@ -837,27 +860,27 @@ public class ReportHandler implements ReportService {
         createCell(row3, 5, "To", styleBoldItalicNoBorder, sheet,columns);
 
         Row row4 = sheet.createRow(4);
-        createCell(row4, 5, "Nama Customer", styleNoBorder, sheet,columns);
+        createCell(row4, 5, invoice.getPackinglist().getCustomerName(), styleNoBorder, sheet,columns);
 
         Row row5 = sheet.createRow(5);
-        createCell(row5, 5, "Negara Customer", styleNoBorder, sheet,columns);
+        createCell(row5, 5, invoice.getPackinglist().getCity(), styleNoBorder, sheet,columns);
 
 
         CellRangeAddress companyNameCellRangeAddress = new CellRangeAddress(2, 2, 2, 4);
         sheet.addMergedRegion(companyNameCellRangeAddress);
-        createCell(rowSalesInv, 2, "Nama Company", styleBoldNoBorder, sheet,columns);
+        createCell(rowSalesInv, 2, invoice.getCompanyName(), styleBoldNoBorder, sheet,columns);
 
         CellRangeAddress address1CellRangeAddress = new CellRangeAddress(3, 3, 2, 4);
         sheet.addMergedRegion(address1CellRangeAddress);
-        createCell(row3, 2, "address1", styleNoBorder, sheet,columns);
+        createCell(row3, 2, invoice.getAddress1(), styleNoBorder, sheet,columns);
 
         CellRangeAddress address2CellRangeAddress = new CellRangeAddress(4, 4, 2, 4);
         sheet.addMergedRegion(address2CellRangeAddress);
-        createCell(row4, 2, "address2", styleNoBorder, sheet,columns);
+        createCell(row4, 2, invoice.getAddress2(), styleNoBorder, sheet,columns);
 
         CellRangeAddress address3CellRangeAddress = new CellRangeAddress(5, 5, 2, 4);
         sheet.addMergedRegion(address3CellRangeAddress);
-        createCell(row5, 2, "address3", styleNoBorder, sheet,columns);
+        createCell(row5, 2, invoice.getAddress3(), styleNoBorder, sheet,columns);
 
         RegionUtil.setBorderTop(BorderStyle.MEDIUM, toCellRangeAddress, sheet);
         RegionUtil.setBorderBottom(BorderStyle.MEDIUM, toCellRangeAddress, sheet);
@@ -912,7 +935,7 @@ public class ReportHandler implements ReportService {
         columncount = 0;
         CellRangeAddress valueattnCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 1);
         sheet.addMergedRegion(valueattnCellRangeAddress);
-        Cell valueattn = createCell(row, 0, "Value Attn", style, sheet,columns);
+        Cell valueattn = createCell(row, 0, invoice.getPackinglist().getAttention(), style, sheet,columns);
         CellUtil.setVerticalAlignment(valueattn, VerticalAlignment.CENTER);
         CellUtil.setAlignment(valueattn, HorizontalAlignment.CENTER);
         RegionUtil.setBorderTop(BorderStyle.MEDIUM, valueattnCellRangeAddress, sheet);
@@ -923,7 +946,7 @@ public class ReportHandler implements ReportService {
 
         CellRangeAddress valuecodeCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 2, 3);
         sheet.addMergedRegion(valuecodeCellRangeAddress);
-        Cell valuecode = createCell(row, 2, "Value Code", style, sheet,columns);
+        Cell valuecode = createCell(row, 2, getCodeAndCountryDest(invoice.getPackinglist().getCustomerAlias()).get("code"), style, sheet,columns);
         CellUtil.setVerticalAlignment(valuecode, VerticalAlignment.CENTER);
         CellUtil.setAlignment(valuecode, HorizontalAlignment.CENTER);
         RegionUtil.setBorderTop(BorderStyle.MEDIUM, valuecodeCellRangeAddress, sheet);
@@ -932,11 +955,13 @@ public class ReportHandler implements ReportService {
         RegionUtil.setBorderRight(BorderStyle.MEDIUM, valuecodeCellRangeAddress, sheet);
 
         columncount = 4;
-        createCell(row, columncount, "Value Flight No.", style, sheet,columns);
+        Cell valueflight = createCell(row, columncount, invoice.getPackinglist().getFlightnumber(), style, sheet,columns);
+        CellUtil.setVerticalAlignment(valueflight, VerticalAlignment.CENTER);
+        CellUtil.setAlignment(valueflight, HorizontalAlignment.CENTER);
 
         CellRangeAddress valueabwCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 5, 6);
         sheet.addMergedRegion(valueabwCellRangeAddress);
-        Cell valueabw = createCell(row, 5, "value ABW", style, sheet,columns);
+        Cell valueabw = createCell(row, 5, invoice.getPackinglist().getAwbnumber(), style, sheet,columns);
         CellUtil.setVerticalAlignment(valueabw, VerticalAlignment.CENTER);
         CellUtil.setAlignment(valueabw, HorizontalAlignment.CENTER);
         RegionUtil.setBorderTop(BorderStyle.MEDIUM, valueabwCellRangeAddress, sheet);
@@ -946,7 +971,7 @@ public class ReportHandler implements ReportService {
 
         CellRangeAddress valuepackinglistnoCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 7, 8);
         sheet.addMergedRegion(valuepackinglistnoCellRangeAddress);
-        Cell valueplno = createCell(row, 7, "Value Packing List No.", style, sheet,columns);
+        Cell valueplno = createCell(row, 7, invoice.getPackinglist().getNodocument(), style, sheet,columns);
         CellUtil.setVerticalAlignment(valueplno, VerticalAlignment.CENTER);
         CellUtil.setAlignment(valueplno, HorizontalAlignment.CENTER);
         RegionUtil.setBorderTop(BorderStyle.MEDIUM, valuepackinglistnoCellRangeAddress, sheet);
@@ -1006,7 +1031,7 @@ public class ReportHandler implements ReportService {
         columncount = 0;
         CellRangeAddress valuecountryOfOriginCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 1);
         sheet.addMergedRegion(valuecountryOfOriginCellRangeAddress);
-        Cell valuecountryOfOrigin = createCell(row, 0, "Value Country Of Origin", style, sheet,columns);
+        Cell valuecountryOfOrigin = createCell(row, 0, "CENGKARENG", style, sheet,columns);
         CellUtil.setVerticalAlignment(valuecountryOfOrigin, VerticalAlignment.CENTER);
         CellUtil.setAlignment(valuecountryOfOrigin, HorizontalAlignment.CENTER);
 
@@ -1018,7 +1043,7 @@ public class ReportHandler implements ReportService {
 
         CellRangeAddress valuecountryOfFinalDestCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 2, 3);
         sheet.addMergedRegion(valuecountryOfFinalDestCellRangeAddress);
-        Cell valuecountryOfFinalDest = createCell(row, 2, "Value Country Of Final Dest.", style, sheet,columns);
+        Cell valuecountryOfFinalDest = createCell(row, 2, getCodeAndCountryDest(invoice.getPackinglist().getCustomerAlias()).get("destination"), style, sheet,columns);
         CellUtil.setVerticalAlignment(valuecountryOfFinalDest, VerticalAlignment.CENTER);
         CellUtil.setAlignment(valuecountryOfFinalDest, HorizontalAlignment.CENTER);
         RegionUtil.setBorderTop(BorderStyle.MEDIUM, valuecountryOfFinalDestCellRangeAddress, sheet);
@@ -1027,13 +1052,27 @@ public class ReportHandler implements ReportService {
         RegionUtil.setBorderRight(BorderStyle.MEDIUM, valuecountryOfFinalDestCellRangeAddress, sheet);
 
         columncount = 4;
-        createCell(row, columncount, "Value Collie", style, sheet,columns);
+        Cell valuekoli = createCell(row, columncount, invoice.getPackinglist().getKoli(), style, sheet,columns);
+        CellUtil.setVerticalAlignment(valuekoli, VerticalAlignment.CENTER);
+        CellUtil.setAlignment(valuekoli, HorizontalAlignment.CENTER);
 
         CellRangeAddress valuenettoCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 5, 6);
         sheet.addMergedRegion(valuenettoCellRangeAddress);
-        Cell valuenetto = createCell(row, 5, "Value Netto Kg", style, sheet,columns);
+
+        styleAmount = workbook.createCellStyle();
+        styleAmount.setBorderTop(BorderStyle.MEDIUM);
+        styleAmount.setBorderBottom(BorderStyle.MEDIUM);
+        styleAmount.setBorderLeft(BorderStyle.MEDIUM);
+        styleAmount.setBorderRight(BorderStyle.MEDIUM);
+        if(GlobalFunc.checkIsDecimal(invoice.getPackinglist().getNetto())) {
+            styleAmount.setDataFormat(format.getFormat("#,###"));
+        }else {
+            styleAmount.setDataFormat(format.getFormat("#,###.000"));
+        }
+        Cell valuenetto = createCell(row, 5, invoice.getPackinglist().getNetto(), styleAmount, sheet,columns);
         CellUtil.setVerticalAlignment(valuenetto, VerticalAlignment.CENTER);
         CellUtil.setAlignment(valuenetto, HorizontalAlignment.CENTER);
+
         RegionUtil.setBorderTop(BorderStyle.MEDIUM, valuenettoCellRangeAddress, sheet);
         RegionUtil.setBorderBottom(BorderStyle.MEDIUM, valuenettoCellRangeAddress, sheet);
         RegionUtil.setBorderLeft(BorderStyle.MEDIUM, valuenettoCellRangeAddress, sheet);
@@ -1041,7 +1080,15 @@ public class ReportHandler implements ReportService {
 
         CellRangeAddress valuepackinglistdateCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 7, 8);
         sheet.addMergedRegion(valuepackinglistdateCellRangeAddress);
-        Cell valuepldate = createCell(row, 7, "Value Packing List Date", style, sheet,columns);
+
+        String transDate = "";
+        try {
+            transDate = GlobalFunc.getDateLongToString(invoice.getPackinglist().getDate().getTime(), "dd MMMM yyyy");
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        Cell valuepldate = createCell(row, 7, transDate, style, sheet,columns);
         CellUtil.setVerticalAlignment(valuepldate, VerticalAlignment.CENTER);
         CellUtil.setAlignment(valuepldate, HorizontalAlignment.CENTER);
         RegionUtil.setBorderTop(BorderStyle.MEDIUM, valuepackinglistdateCellRangeAddress, sheet);
@@ -1081,7 +1128,91 @@ public class ReportHandler implements ReportService {
         columncount++;
         createCell(row, columncount, "Total", styleBoldColourBg, sheet,columns);
 
+        int no = 1;
+        long totalQty = 0;
+        double totalWeightKg = 0.0;
+        double totalPrice = 0.0;
+        for(PackingListDataItemDetail item : invoice.getPackinglist().getItems()){
+            totalQty += item.getQty();
+            totalWeightKg += item.getNettoweight();
+            totalPrice += item.getTotalprice();
 
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            columncount = 0;
+            Cell cellno = createCell(row, columncount, no, style, sheet,columns);
+            CellUtil.setVerticalAlignment(cellno, VerticalAlignment.CENTER);
+            CellUtil.setAlignment(cellno, HorizontalAlignment.CENTER);
+
+            columncount++;
+            Cell cellprodname = createCell(row, columncount, item.getProductName(), style, sheet,columns);
+            CellUtil.setVerticalAlignment(cellprodname, VerticalAlignment.CENTER);
+            CellUtil.setAlignment(cellprodname, HorizontalAlignment.CENTER);
+
+            columncount++;
+            Cell cellprodsize = createCell(row, columncount, item.getCategoryProductSize(), style, sheet,columns);
+            CellUtil.setVerticalAlignment(cellprodsize, VerticalAlignment.CENTER);
+            CellUtil.setAlignment(cellprodsize, HorizontalAlignment.CENTER);
+
+            columncount++;
+            Cell cellgr = createCell(row, columncount, item.getCategoryProductFromGr()+" - "+item.getCategoryProductThruGr(), style, sheet,columns);
+            CellUtil.setVerticalAlignment(cellgr, VerticalAlignment.CENTER);
+            CellUtil.setAlignment(cellgr, HorizontalAlignment.CENTER);
+
+            columncount++;
+            Cell cellqty = createCell(row, columncount, item.getQty(), style, sheet,columns);
+            CellUtil.setVerticalAlignment(cellqty, VerticalAlignment.CENTER);
+            CellUtil.setAlignment(cellqty, HorizontalAlignment.CENTER);
+
+            styleAmount = workbook.createCellStyle();
+            styleAmount.setBorderTop(BorderStyle.MEDIUM);
+            styleAmount.setBorderBottom(BorderStyle.MEDIUM);
+            styleAmount.setBorderLeft(BorderStyle.MEDIUM);
+            styleAmount.setBorderRight(BorderStyle.MEDIUM);
+            if(GlobalFunc.checkIsDecimal(item.getNettoweight())) {
+                styleAmount.setDataFormat(format.getFormat("#,###"));
+            }else {
+                styleAmount.setDataFormat(format.getFormat("#,###.000"));
+            }
+            columncount++;
+            Cell cellnettowieght  = createCell(row, columncount, item.getNettoweight(), styleAmount, sheet,columns);
+            CellUtil.setVerticalAlignment(cellnettowieght, VerticalAlignment.CENTER);
+            CellUtil.setAlignment(cellnettowieght, HorizontalAlignment.CENTER);
+
+            columncount++;
+            Cell cellbox = createCell(row, columncount, item.getBox(), style, sheet,columns);
+            CellUtil.setVerticalAlignment(cellbox, VerticalAlignment.CENTER);
+            CellUtil.setAlignment(cellbox, HorizontalAlignment.CENTER);
+
+            styleAmount = workbook.createCellStyle();
+            styleAmount.setBorderTop(BorderStyle.MEDIUM);
+            styleAmount.setBorderBottom(BorderStyle.MEDIUM);
+            styleAmount.setBorderLeft(BorderStyle.MEDIUM);
+            styleAmount.setBorderRight(BorderStyle.MEDIUM);
+            if(GlobalFunc.checkIsDecimal(item.getPrice())) {
+                styleAmount.setDataFormat(format.getFormat("#,###.00"));
+            }else {
+                styleAmount.setDataFormat(format.getFormat("#,###.00"));
+            }
+            columncount++;
+            Cell cellprice = createCell(row, columncount, item.getPrice(), styleAmount, sheet,columns);
+
+
+            styleAmount = workbook.createCellStyle();
+            styleAmount.setBorderTop(BorderStyle.MEDIUM);
+            styleAmount.setBorderBottom(BorderStyle.MEDIUM);
+            styleAmount.setBorderLeft(BorderStyle.MEDIUM);
+            styleAmount.setBorderRight(BorderStyle.MEDIUM);
+            if(GlobalFunc.checkIsDecimal(item.getTotalprice())) {
+                styleAmount.setDataFormat(format.getFormat("#,###.00"));
+            }else {
+                styleAmount.setDataFormat(format.getFormat("#,###.00"));
+            }
+            columncount++;
+            createCell(row, columncount, item.getTotalprice(), styleAmount, sheet,columns);
+
+            no++;
+        }
 
         rowcount++;
         row = sheet.createRow(rowcount);
@@ -1095,9 +1226,27 @@ public class ReportHandler implements ReportService {
         RegionUtil.setBorderLeft(BorderStyle.MEDIUM, grandTotalCellRangeAddress, sheet);
         RegionUtil.setBorderRight(BorderStyle.MEDIUM, grandTotalCellRangeAddress, sheet);
 
-        createCell(row, 4, "Total Qty", style, sheet,columns);
-        createCell(row, 5, "Total Weight", style, sheet,columns);
-        createCell(row, 6, "Total Boxes", style, sheet,columns);
+        Cell celltotalQty = createCell(row, 4, totalQty, style, sheet,columns);
+        CellUtil.setVerticalAlignment(celltotalQty, VerticalAlignment.CENTER);
+        CellUtil.setAlignment(celltotalQty, HorizontalAlignment.CENTER);
+
+        styleAmount = workbook.createCellStyle();
+        styleAmount.setBorderTop(BorderStyle.MEDIUM);
+        styleAmount.setBorderBottom(BorderStyle.MEDIUM);
+        styleAmount.setBorderLeft(BorderStyle.MEDIUM);
+        styleAmount.setBorderRight(BorderStyle.MEDIUM);
+        if(GlobalFunc.checkIsDecimal(totalWeightKg)) {
+            styleAmount.setDataFormat(format.getFormat("#,###"));
+        }else {
+            styleAmount.setDataFormat(format.getFormat("#,###.000"));
+        }
+        Cell totalWeight = createCell(row, 5, totalWeightKg, styleAmount, sheet,columns);
+        CellUtil.setVerticalAlignment(totalWeight, VerticalAlignment.CENTER);
+        CellUtil.setAlignment(totalWeight, HorizontalAlignment.CENTER);
+
+        Cell totalNoOfBox = createCell(row, 6, invoice.getPackinglist().getItems().size(), style, sheet,columns);
+        CellUtil.setVerticalAlignment(totalNoOfBox, VerticalAlignment.CENTER);
+        CellUtil.setAlignment(totalNoOfBox, HorizontalAlignment.CENTER);
 
         CellStyle customStyle = style;
         customStyle.setRightBorderColor(IndexedColors.WHITE.getIndex());
@@ -1109,12 +1258,12 @@ public class ReportHandler implements ReportService {
         styleAmount.setBorderLeft(BorderStyle.MEDIUM);
         styleAmount.setBorderRight(BorderStyle.MEDIUM);
         styleAmount.setLeftBorderColor(IndexedColors.WHITE.getIndex());
-        if(GlobalFunc.checkIsDecimal(123456)) {
-            styleAmount.setDataFormat(format.getFormat("#,###"));
+        if(GlobalFunc.checkIsDecimal(totalPrice)) {
+            styleAmount.setDataFormat(format.getFormat("#,###.00"));
         }else {
-            styleAmount.setDataFormat(format.getFormat("#,###.##"));
+            styleAmount.setDataFormat(format.getFormat("#,###.00"));
         }
-        createCell(row, 8, 123456, styleAmount, sheet,columns);
+        createCell(row, 8, totalPrice, styleAmount, sheet,columns);
 
         rowcount++;
         row = sheet.createRow(rowcount);
@@ -1144,12 +1293,12 @@ public class ReportHandler implements ReportService {
         styleAmount.setBorderLeft(BorderStyle.MEDIUM);
         styleAmount.setBorderRight(BorderStyle.MEDIUM);
         styleAmount.setLeftBorderColor(IndexedColors.WHITE.getIndex());
-        if(GlobalFunc.checkIsDecimal(123456)) {
-            styleAmount.setDataFormat(format.getFormat("#,###"));
+        if(GlobalFunc.checkIsDecimal(invoice.getKurs())) {
+            styleAmount.setDataFormat(format.getFormat("#,###.00"));
         }else {
-            styleAmount.setDataFormat(format.getFormat("#,###.##"));
+            styleAmount.setDataFormat(format.getFormat("#,###.00"));
         }
-        createCell(row, 8, 123456, styleAmount, sheet,columns);
+        createCell(row, 8, invoice.getKurs(), styleAmount, sheet,columns);
 
         rowcount++;
         row = sheet.createRow(rowcount);
@@ -1179,12 +1328,15 @@ public class ReportHandler implements ReportService {
         styleAmount.setBorderLeft(BorderStyle.MEDIUM);
         styleAmount.setBorderRight(BorderStyle.MEDIUM);
         styleAmount.setLeftBorderColor(IndexedColors.WHITE.getIndex());
-        if(GlobalFunc.checkIsDecimal(123456)) {
-            styleAmount.setDataFormat(format.getFormat("#,###"));
+        Double totalPriceInIDR = totalPrice * invoice.getKurs();
+        totalPriceInIDR = GlobalFunc.jumlahDesimal(totalPriceInIDR.doubleValue(),2);
+
+        if(GlobalFunc.checkIsDecimal(totalPriceInIDR)) {
+            styleAmount.setDataFormat(format.getFormat("#,###.00"));
         }else {
-            styleAmount.setDataFormat(format.getFormat("#,###.##"));
+            styleAmount.setDataFormat(format.getFormat("#,###.00"));
         }
-        createCell(row, 8, 12345678, styleAmount, sheet,columns);
+        createCell(row, 8, totalPriceInIDR, styleAmount, sheet,columns);
 
         rowcount++;
         int lastrow = rowcount + 4;
@@ -1201,25 +1353,27 @@ public class ReportHandler implements ReportService {
 
         rowcount++;
         row = sheet.createRow(rowcount);
-        createCell(row, 0, "Bank Central Asia", styleItalicNoBorder, sheet,columns);
+        createCell(row, 0, invoice.getBankCompany(), styleItalicNoBorder, sheet,columns);
 
         rowcount++;
         row = sheet.createRow(rowcount);
-        createCell(row, 0, "a/c 123 23213 3123", styleItalicNoBorder, sheet,columns);
+        createCell(row, 0, "a/c "+invoice.getBankAccNoCompany(), styleItalicNoBorder, sheet,columns);
 
         rowcount++;
         row = sheet.createRow(rowcount);
-        createCell(row, 0, "Sumber berlian Samudra", styleItalicNoBorder, sheet,columns);
-
-
-
-        row = sheet.createRow(rowcount);
-        createCell(row, 0, "Sumber berlian Samudra", styleItalicNoBorder, sheet,columns);
+        createCell(row, 0, invoice.getBankAccNameCompany(), styleItalicNoBorder, sheet,columns);
 
 
         CellRangeAddress printedTextCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 6, 8);
         sheet.addMergedRegion(printedTextCellRangeAddress);
-        Cell printed = createCell(row, 6, "Printed By Erwin alskdmalk alskmdalmd alskmdalm", styleTextPrinted, sheet,columns);
+        String currdate = "";
+        try {
+            currdate = GlobalFunc.getDateLongToString(new Date().getTime(), "dd MMMM yyyy HH:mm:ss");
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        Cell printed = createCell(row, 6, "Printed By : "+invoice.getNamaUser()+", "+currdate, styleTextPrinted, sheet,columns);
         CellUtil.setVerticalAlignment(printed, VerticalAlignment.CENTER);
         CellUtil.setAlignment(printed, HorizontalAlignment.RIGHT);
 
@@ -1230,6 +1384,12 @@ public class ReportHandler implements ReportService {
         Cell declaration = createCell(row, 0, "Declaration : We declare that this invoice shows actual price of goods described and that all particulars are true and correct", styleTextDeclaration, sheet,columns);
         CellUtil.setVerticalAlignment(declaration, VerticalAlignment.CENTER);
         CellUtil.setAlignment(declaration, HorizontalAlignment.LEFT);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        Cell editprinted = createCell(row, 8, "Edit:"+invoice.getCountEdit()+" Print:"+(invoice.getCountPrint()+1), styleTextPrinted, sheet,columns);
+        CellUtil.setVerticalAlignment(editprinted, VerticalAlignment.TOP);
+        CellUtil.setAlignment(editprinted, HorizontalAlignment.RIGHT);
 
         RegionUtil.setBorderTop(BorderStyle.MEDIUM, declarationTextCellRangeAddress, sheet);
         RegionUtil.setBorderBottom(BorderStyle.MEDIUM, declarationTextCellRangeAddress, sheet);

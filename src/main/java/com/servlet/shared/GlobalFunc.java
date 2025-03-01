@@ -110,4 +110,20 @@ public class GlobalFunc {
 		long tmp = Math.round(value);
 		return (double) tmp / factor;
 	}
+
+	public static double jumlahDesimal(double value, int places) {
+		String strvalue  = String.valueOf(value);
+		if(strvalue.contains(".")){
+			String[] arrSplit = strvalue.split("\\.");
+			String number = arrSplit[0];
+			String desimal = arrSplit[1];
+			if(desimal.length() > places){
+				desimal = desimal.substring(0, places);
+			}
+			double finalValue = Double.valueOf(number+"."+desimal);
+			return finalValue;
+		}
+		return value;
+
+	}
 }
