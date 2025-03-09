@@ -3130,12 +3130,15 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						colomcount++;
 						createCell(row, colomcount, inv.getNobuktipotong(), style, sheet,columns);
 
+
 						transDate = "";
-						try {
-							transDate = GlobalFunc.getDateLongToString(inv.getTanggalbuktipotong().getTime(), "dd-MMM-yyyy");
-						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+						if(inv.getTanggalbuktipotong() != null) {
+							try {
+								transDate = GlobalFunc.getDateLongToString(inv.getTanggalbuktipotong().getTime(), "dd-MMM-yyyy");
+							} catch (ParseException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
 						colomcount++;
 						createCell(row, colomcount, transDate, style, sheet,columns);
