@@ -3023,6 +3023,16 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 					if (inv.getIdpenerimaan() != null && inv.getIdpenerimaan().longValue() > 0) {
 						continue;
 					}
+				}else if(param.getShowALL().equals("LUNAS")) {
+					boolean flag = false;
+					if(inv.getIdpenerimaan() == null){
+						flag = true;
+					}else if (inv.getIdpenerimaan().longValue() == 0){
+						flag = true;
+					}
+					if(flag){
+						continue;
+					}
 				}
 
 				colomcount = 0;
@@ -3094,7 +3104,9 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 				createCell(row, colomcount, inv.getNofakturpajak(), style, sheet,columns);
 
 				if(param.getShowALL().equals("LUNAS") || param.getShowALL().equals("ALL")){
+					System.out.println("inv.getIdpenerimaan() "+inv.getIdpenerimaan());
 					if(inv.getIdpenerimaan() != null && inv.getIdpenerimaan().longValue() > 0){
+						System.out.println("inv.getIdpenerimaan() Masuk ");
 						transDate = "";
 						try {
 							transDate = GlobalFunc.getDateLongToString(inv.getTanggalPelunasan().getTime(), "dd-MMM-yyyy");

@@ -959,7 +959,7 @@ public class InvoiceHandler implements InvoiceService{
 
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryReportInvoice().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isactive = true  and data.isdelete = false ");
-		sqlBuilder.append(" and penerimaan.idcompany = "+idcompany+" and penerimaan.idbranch = "+idbranch+" and penerimaan.isactive = true  and penerimaan.isdelete = false ");
+		sqlBuilder.append(" and (penerimaan.idcompany = "+idcompany+" or penerimaan.idcompany isnull) and (penerimaan.idbranch = "+idbranch+" or penerimaan.idbranch isnull) and (penerimaan.isactive = true or penerimaan.isactive isnull)  and (penerimaan.isdelete = false or penerimaan.isdelete isnull) ");
 		if(param.getFrom() != null){
 			Date dt = new Date(param.getFrom());
 			sqlBuilder.append(" and data.tanggal >= '"+dt.toString()+"'");
