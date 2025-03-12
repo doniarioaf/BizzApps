@@ -599,15 +599,44 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 			}else {
 				sqlBuilder.append(" and data.idpenerimaankasbank in (select pkb.id from m_penerimaan_kas_bank as pkb where pkb.receivedate >= '"+fromdate+"'  and pkb.receivedate <= '"+todate+"' and pkb.isactive = true and pkb.isdelete = false ) ");
 			}
-			
 		}
 		if(idpenerimaan != null) {
 			sqlBuilder.append(" and data.idpenerimaankasbank = "+idpenerimaan+"  ");
 		}
-		
-		
+		//kenapa di tambah query ini, karena ini untuk non jenis transaksi pembayaran customer baru / coa code 9995
+		//karena nilai penyesuain di jenis transaksi pembayaran customer baru / coa code 9995 dan yang bukan berbeda arti
+		sqlBuilder.append(" and data.idcoa not in (select id from m_coa as coa where coa.code = '9995')  ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmount(), queryParameters);
+		if(list != null && list.size() > 0) {
+			double nilaiCustomerBaru = summaryAmountPenerimaanByDateCustomerBaru(idcompany,idbranch,fromdate,todate,idpenerimaan,idbank);
+			return list.get(0) + nilaiCustomerBaru;
+		}
+		return 0.0;
+	}
+
+	private Double summaryAmountPenerimaanByDateCustomerBaru(Long idcompany, Long idbranch, java.sql.Date fromdate,
+												java.sql.Date todate,Long idpenerimaan,Long idbank) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetTotalAmountCustomerBaru9995().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? ");
+		if(fromdate != null && todate != null) {
+			if(idbank != null && idbank.longValue() > 0) {
+				sqlBuilder.append(" and data.idpenerimaankasbank in (select pkb.id from m_penerimaan_kas_bank as pkb where pkb.receivedate >= '"+fromdate+"'  and pkb.receivedate <= '"+todate+"' and pkb.isactive = true and pkb.isdelete = false and pkb.idbank = "+idbank+" ) ");
+			}else {
+				sqlBuilder.append(" and data.idpenerimaankasbank in (select pkb.id from m_penerimaan_kas_bank as pkb where pkb.receivedate >= '"+fromdate+"'  and pkb.receivedate <= '"+todate+"' and pkb.isactive = true and pkb.isdelete = false ) ");
+			}
+
+		}
+		if(idpenerimaan != null) {
+			sqlBuilder.append(" and data.idpenerimaankasbank = "+idpenerimaan+"  ");
+		}
+
+		//kenapa di tambah query ini, karena ini untuk non jenis transaksi pembayaran customer baru / coa code 9995
+		//karena nilai penyesuain di jenis transaksi pembayaran customer baru / coa code 9995 dan yang bukan berbeda arti
+		sqlBuilder.append(" and data.idcoa in (select id from m_coa as coa where coa.code = '9995')  ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmountCustomerBaru9995(), queryParameters);
 		if(list != null && list.size() > 0) {
 			return list.get(0);
 		}
@@ -673,9 +702,45 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 		if(!invoiceType.equals("")) {
 			sqlBuilder.append(" and data.idinvoice in (select id from m_invoice as inv where inv.isactive = true and inv.isdelete = false and inv.idinvoicetype = '"+invoiceType+"' )  ");
 		}
+
+		//kenapa di tambah query ini, karena ini untuk non jenis transaksi pembayaran customer baru / coa code 9995
+		//karena nilai penyesuain di jenis transaksi pembayaran customer baru / coa code 9995 dan yang bukan berbeda arti
+		sqlBuilder.append(" and data.idcoa not in (select id from m_coa as coa where coa.code = '9995')  ");
 		
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmount(), queryParameters);
+		if(list != null && list.size() > 0) {
+			double nilaiCustBaru = summaryAmountPenerimaanByIdWOCustomerBaru(idcompany,idbranch,fromdate,todate,idwo,idbank,invoiceType);
+			return list.get(0) + nilaiCustBaru;
+		}
+		return 0.0;
+	}
+
+	private Double summaryAmountPenerimaanByIdWOCustomerBaru(Long idcompany, Long idbranch, java.sql.Date fromdate,
+												java.sql.Date todate, Long idwo, Long idbank,String invoiceType) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetTotalAmountCustomerBaru9995().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? ");
+		if(fromdate != null && todate != null) {
+			if(idbank.longValue() > 0) {
+				sqlBuilder.append(" and data.idpenerimaankasbank in (select pkb.id from m_penerimaan_kas_bank as pkb where pkb.receivedate >= '"+fromdate+"'  and pkb.receivedate <= '"+todate+"' and pkb.isactive = true and pkb.isdelete = false and pkb.idbank = "+idbank+" ) ");
+			}else {
+				sqlBuilder.append(" and data.idpenerimaankasbank in (select pkb.id from m_penerimaan_kas_bank as pkb where pkb.receivedate >= '"+fromdate+"'  and pkb.receivedate <= '"+todate+"' and pkb.isactive = true and pkb.isdelete = false ) ");
+			}
+
+		}
+
+		sqlBuilder.append(" and data.idworkorder = "+idwo+"  ");
+		if(!invoiceType.equals("")) {
+			sqlBuilder.append(" and data.idinvoice in (select id from m_invoice as inv where inv.isactive = true and inv.isdelete = false and inv.idinvoicetype = '"+invoiceType+"' )  ");
+		}
+
+		//kenapa di tambah query ini, karena ini untuk non jenis transaksi pembayaran customer baru / coa code 9995
+		//karena nilai penyesuain di jenis transaksi pembayaran customer baru / coa code 9995 dan yang bukan berbeda arti
+		sqlBuilder.append(" and data.idcoa in (select id from m_coa as coa where coa.code = '9995')  ");
+
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmountCustomerBaru9995(), queryParameters);
 		if(list != null && list.size() > 0) {
 			return list.get(0);
 		}
@@ -687,8 +752,31 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetTotalAmount().schema());
 		sqlBuilder.append(" where data.idworkorder = ? and data.idcompany = ? and data.idbranch = ? and data.isdownpayment = 'Y' and data.idinvoice notnull and data.idinvoice > 0 ");
+
+		//kenapa di tambah query ini, karena ini untuk non jenis transaksi pembayaran customer baru / coa code 9995
+		//karena nilai penyesuain di jenis transaksi pembayaran customer baru / coa code 9995 dan yang bukan berbeda arti
+		sqlBuilder.append(" and data.idcoa not in (select id from m_coa as coa where coa.code = '9995')  ");
+
 		final Object[] queryParameters = new Object[] {idWO,idcompany,idbranch};
 		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmount(), queryParameters);
+		if(list != null && list.size() > 0) {
+			double nilaiCustBaru = getSummaryDetailDPByIdWOCustomerBaru(idcompany,idbranch,idWO);
+			return list.get(0) + nilaiCustBaru;
+		}
+		return 0.0;
+	}
+
+	private Double getSummaryDetailDPByIdWOCustomerBaru(Long idcompany, Long idbranch, Long idWO) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetTotalAmountCustomerBaru9995().schema());
+		sqlBuilder.append(" where data.idworkorder = ? and data.idcompany = ? and data.idbranch = ? and data.isdownpayment = 'Y' and data.idinvoice notnull and data.idinvoice > 0 ");
+
+		//kenapa di tambah query ini, karena ini untuk non jenis transaksi pembayaran customer baru / coa code 9995
+		//karena nilai penyesuain di jenis transaksi pembayaran customer baru / coa code 9995 dan yang bukan berbeda arti
+		sqlBuilder.append(" and data.idcoa in (select id from m_coa as coa where coa.code = '9995')  ");
+
+		final Object[] queryParameters = new Object[] {idWO,idcompany,idbranch};
+		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmountCustomerBaru9995(), queryParameters);
 		if(list != null && list.size() > 0) {
 			return list.get(0);
 		}
@@ -714,8 +802,30 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 	public Double getSummaryDetailDPByIdInvoice(Long idcompany, Long idbranch, Long idInv) {
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetTotalAmount().schema());
 		sqlBuilder.append(" where data.idinvoice = ? and data.idcompany = ? and data.idbranch = ? and penerimaan.isdelete = false ");
+
+		//kenapa di tambah query ini, karena ini untuk non jenis transaksi pembayaran customer baru / coa code 9995
+		//karena nilai penyesuain di jenis transaksi pembayaran customer baru / coa code 9995 dan yang bukan berbeda arti
+		sqlBuilder.append(" and data.idcoa not in (select id from m_coa as coa where coa.code = '9995')  ");
+
 		final Object[] queryParameters = new Object[] {idInv,idcompany,idbranch};
 		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmount(), queryParameters);
+		if(list != null && list.size() > 0) {
+			double nilaiCustBaru = getSummaryDetailDPByIdInvoiceCustomerBaru(idcompany,idbranch,idInv);
+			return list.get(0)+nilaiCustBaru;
+		}
+		return 0.0;
+	}
+
+	private Double getSummaryDetailDPByIdInvoiceCustomerBaru(Long idcompany, Long idbranch, Long idInv) {
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetTotalAmountCustomerBaru9995().schema());
+		sqlBuilder.append(" where data.idinvoice = ? and data.idcompany = ? and data.idbranch = ? and penerimaan.isdelete = false ");
+
+		//kenapa di tambah query ini, karena ini untuk non jenis transaksi pembayaran customer baru / coa code 9995
+		//karena nilai penyesuain di jenis transaksi pembayaran customer baru / coa code 9995 dan yang bukan berbeda arti
+		sqlBuilder.append(" and data.idcoa in (select id from m_coa as coa where coa.code = '9995')  ");
+
+		final Object[] queryParameters = new Object[] {idInv,idcompany,idbranch};
+		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmountCustomerBaru9995(), queryParameters);
 		if(list != null && list.size() > 0) {
 			return list.get(0);
 		}
