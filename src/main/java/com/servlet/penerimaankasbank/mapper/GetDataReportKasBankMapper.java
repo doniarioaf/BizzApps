@@ -145,7 +145,7 @@ public class GetDataReportKasBankMapper implements RowMapper<EntityHelperKasBank
 		data.setPenerimaanketerangan(penerimaanketerangan);
 		data.setPenerimaanAmount(penerimaanamount);
 		data.setPenerimaanPenyesuain(penyesuaianamount);
-		data.setPenerimaancoaCode(penerimaancoacode);
+		data.setPenerimaancoaCode(penerimaancoacode != null?penerimaancoacode:"");
 		data.setPenerimaannilaijasa(penerimaannilaijasa);
 		data.setPenerimaannilaireimbursement(penerimaannilaireimbursement);
 		data.setPenerimaannilaibuktipotong(penerimaannilaibuktipotong);

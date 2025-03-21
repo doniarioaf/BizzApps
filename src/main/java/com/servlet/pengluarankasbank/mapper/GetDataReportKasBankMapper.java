@@ -125,7 +125,7 @@ private String schemaSql;
 		data.setPenerimaanid(0L);
 		data.setPenerimaantanggalTransaksi(null);
 		data.setPenerimaannoVoucher(null);
-		data.setPenerimaancoa(null);
+		data.setPenerimaancoa("");
 		data.setPenerimaannoWO(null);
 		data.setPenerimaannoAju(null);
 		data.setPenerimaannoInvoice(null);

@@ -605,7 +605,7 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 		}
 		//kenapa di tambah query ini, karena ini untuk non jenis transaksi pembayaran customer baru / coa code 9995
 		//karena nilai penyesuain di jenis transaksi pembayaran customer baru / coa code 9995 dan yang bukan berbeda arti
-		sqlBuilder.append(" and data.idcoa not in (select id from m_coa as coa where coa.code = '9995')  ");
+		sqlBuilder.append(" and (data.idcoa not in (select id from m_coa as coa where coa.code = '9995') or data.idcoa isnull or data.idcoa = 0) ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmount(), queryParameters);
 		if(list != null && list.size() > 0) {
