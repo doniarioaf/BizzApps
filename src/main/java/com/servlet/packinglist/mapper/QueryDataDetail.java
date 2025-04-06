@@ -16,7 +16,7 @@ public class QueryDataDetail implements RowMapper<PackingListDataDetail> {
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.date as date, data.idcustomer as idcustomer, ");
         sqlBuilder.append("data.city as city, data.attention as attention, data.flightnumber as flightnumber, data.awbnumber as awbnumber,  ");
-        sqlBuilder.append("data.netto as netto, data.koli as koli, data.idpricelist as idpricelist,  ");
+        sqlBuilder.append("data.netto as netto, data.koli as koli, data.idpricelist as idpricelist, data.isalreadyupdateprice as isalreadyupdateprice, ");
         sqlBuilder.append("data.createddate as createddate, data.modifieddate as modifieddate, ");
         sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama, ");
         sqlBuilder.append("cus.nama as cusNama, cus.alias as cusAlias, cus.address as cusAddress ");
@@ -49,6 +49,7 @@ public class QueryDataDetail implements RowMapper<PackingListDataDetail> {
         final Double netto = rs.getDouble("netto");
         final Long koli = rs.getLong("koli");
         final Long idpricelist = rs.getLong("idpricelist");
+        final Boolean isalreadyupdateprice = rs.getBoolean("isalreadyupdateprice");
         final Timestamp createddate = rs.getTimestamp("createddate");
         final Timestamp modifieddate = rs.getTimestamp("modifieddate");
         final String createdname = rs.getString("createdname");
@@ -65,6 +66,7 @@ public class QueryDataDetail implements RowMapper<PackingListDataDetail> {
         data.setNetto(netto);
         data.setKoli(koli);
         data.setIdpricelist(idpricelist);
+        data.setIsalreadyupdateprice(isalreadyupdateprice);
         data.setCustomerName(cusNama);
         data.setCustomerAlias(cusAlias);
         data.setCustomerAddress(cusAddress);

@@ -16,6 +16,9 @@ import com.servlet.packinglist.repo.PakcingListRepo;
 import com.servlet.packinglist.service.PackingListService;
 import com.servlet.parameterclient.entity.ValueParameter;
 import com.servlet.parameterclient.service.ParameterClientService;
+import com.servlet.pricelist.entity.PriceListDetail;
+import com.servlet.pricelist.entity.PriceListItemData;
+import com.servlet.pricelist.service.PriceService;
 import com.servlet.product.service.ProductService;
 import com.servlet.purchasereceive.entity.PurchaseReceiveItems;
 import com.servlet.purchasereceive.entity.PurchaseReceiveItemsNotJoin;
@@ -77,6 +80,9 @@ public class PackingListHandler implements PackingListService {
     private InvoiceService invoiceService;
 
     @Autowired
+    private PriceService priceService;
+
+    @Autowired
     private UserAppsService userAppsService;
 
     protected final String namaMenu = "PackingList";
@@ -132,6 +138,7 @@ public class PackingListHandler implements PackingListService {
                 table.setKoli(body.getKoli());
                 table.setIdpricelist(body.getIdpricelist());
                 table.setIsdelete(false);
+                table.setIsalreadyupdateprice(true);
                 table.setCreatedby(iduser);
                 table.setCreateddate(ts);
                 idsave = repo.saveAndFlush(table).getId();
@@ -407,6 +414,146 @@ public class PackingListHandler implements PackingListService {
         }
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPackingListReportKartuStock(), queryParameters);
+    }
+
+    @Override
+    public ReturnData updateColumsIsAlreadyUpdatePriceToFalse(Long idcompany, Long idbranch, Long idcustomer, Long idpricelist) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        try {
+            repo.updateColumsIsAlreadyUpdatePriceToFalse(idcompany,idbranch,idcustomer, idpricelist);
+        }catch (Exception e) {
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+            validations.add(msg);
+        }
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public ReturnData updatePrice(Long id, Long idcompany, Long idbranch, Long iduser) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        if(validations.size() == 0) {
+            try{
+                PackingList table = repo.getById(id);
+                if(table.getIsalreadyupdateprice()){
+                    ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_UPDATE_PRICE,"packinglist ini sudah menggunakan Price List terbaru");
+                    validations.add(msg);
+                }
+                PriceListDetail priceDet = priceService.getDetail(table.getIdpricelist(), idcompany,idbranch);
+                if(validations.size() == 0 && priceDet != null) {
+                    List<PackingListItemData> listItemsDB = getListItemsNotJoin(id);
+                    if (table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue() && !table.isIsdelete()) {
+                        String mixDataBef =  "Header = "+table.toString() +" | Items = " + listItemsDB.toString();
+
+                        if(priceDet.getItems() != null && priceDet.getItems().size() > 0) {
+                            HashMap<String, PriceListItemData> mappingPrice = new HashMap<>();
+                            for(PriceListItemData itemPrice : priceDet.getItems()){
+                                String keyPrice = itemPrice.getIdproduct()+"-"+itemPrice.getCategoryproductid();
+                                mappingPrice.put(keyPrice,itemPrice);
+                            }
+
+                            Double netto = 0.0;
+                            List<PackingListItem> packingListItem = new ArrayList<>();
+                            for(PackingListItemData item : listItemsDB){
+                                String key = item.getIdproduct()+"-"+item.getIdcategoryproduct();
+                                PriceListItemData itemPrice = mappingPrice.get(key);
+                                if(itemPrice != null){
+
+                                    PackingListItemPK packingListItemPK = new PackingListItemPK();
+                                    packingListItemPK.setIdpackinglist(id);
+                                    packingListItemPK.setIdproduct(item.getIdproduct());
+                                    packingListItemPK.setIdcategoryproduct(item.getIdcategoryproduct());
+                                    packingListItemPK.setBox(item.getBox());
+                                    packingListItemPK.setNoseq(item.getNoseq());
+                                    PackingListItem tableitem = itemRepo.getById(packingListItemPK);
+                                    Double price = itemPrice.getAmount();
+                                    Double totalPrice = item.getQty() * price;
+
+                                    tableitem.setPrice(price);
+                                    tableitem.setTotalprice(totalPrice);
+
+                                    //allowance
+                                    int places = 2;
+
+                                    Double allowance = itemPrice.getAllowance();
+                                    String[] arrSplit = allowance.toString().split("\\.");
+                                    String number = arrSplit[0];
+                                    String desimal = arrSplit[1];
+                                    if(desimal.length() > places){
+                                        desimal = desimal.substring(0, places);
+                                        allowance = Double.parseDouble(number+"."+desimal);
+                                    }
+
+                                    Double allowancePer100 = allowance / 100.00;
+                                    String[] arrSplitPer100 = allowancePer100.toString().split("\\.");
+                                    String numberPer100 = arrSplitPer100[0];
+                                    String desimalPer100 = arrSplitPer100[1];
+                                    if(desimalPer100.length() > places){
+                                        desimalPer100 = desimalPer100.substring(0, places);
+                                        allowancePer100 = Double.parseDouble(numberPer100+"."+desimalPer100);
+                                    }
+
+                                    Double brutoweight = item.getBrutoweight();
+                                    String[] arrSplitBW = brutoweight.toString().split("\\.");
+                                    String numberBW = arrSplitBW[0];
+                                    String desimalBW = arrSplitBW[1];
+                                    if(desimalBW.length() > places){
+                                        desimalBW = desimalBW.substring(0, places);
+
+                                        brutoweight = Double.parseDouble(numberBW+"."+desimalBW);
+                                    }
+
+                                    Double nettoItem = brutoweight - (brutoweight * allowancePer100);
+                                    netto = netto + nettoItem;
+
+                                    tableitem.setAllowance(allowance);
+                                    tableitem.setNettoweight(nettoItem);
+
+                                    itemRepo.saveAndFlush(tableitem);
+
+                                    packingListItem.add(tableitem);
+                                }
+                            }
+
+                            String[] arrSplitNetto = netto.toString().split("\\.");
+                            String numberNetto = arrSplitNetto[0];
+                            String desimalNetto = arrSplitNetto[1];
+                            if(desimalNetto.length() > 1){
+                                desimalNetto = desimalNetto.substring(0, 1);
+                                netto = Double.parseDouble(numberNetto+"."+desimalNetto);
+                            }
+                            table.setNetto(netto);
+                            table.setIsalreadyupdateprice(true);
+                            table.setUpdatepricedate(ts);
+                            table.setUpdatepriceby(iduser);
+                            repo.saveAndFlush(table);
+
+                            String mixData = "Header = "+table.toString()+" | Items = "+packingListItem.toString();
+                            historyAppsService.saveHistory(idcompany, idbranch, iduser, "EDIT_PRICELIST", namaMenu, "", mixData, mixDataBef, ts);
+                        }
+                    }
+                }
+
+            }catch (Exception e) {
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
+        }
+
+        if(validations.size() > 0){
+            historyAppsService.saveHistory(idcompany,idbranch,iduser,"EDIT_ERROR",namaMenu,validations.get(0).getMessage(),"","",ts);
+        }
+        ReturnData data = new ReturnData();
+        data.setId(id);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
     }
 
     private HashMap<Object,Object> tambahStockItems(Long idcompany, Long idbranch, Long idpackinglist){

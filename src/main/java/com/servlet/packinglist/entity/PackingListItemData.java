@@ -10,6 +10,7 @@ public class PackingListItemData {
     private Double price;
     private Double totalprice;
     private String box;
+    private Integer noseq;
 
     @Override
     public String toString() {
@@ -24,6 +25,14 @@ public class PackingListItemData {
                 ", totalprice=" + totalprice +
                 ", box=" + box +
                 '}';
+    }
+
+    public Integer getNoseq() {
+        return noseq;
+    }
+
+    public void setNoseq(Integer noseq) {
+        this.noseq = noseq;
     }
 
     public Long getIdproduct() {

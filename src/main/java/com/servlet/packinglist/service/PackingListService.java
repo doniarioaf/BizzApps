@@ -18,4 +18,6 @@ public interface PackingListService {
     Long calculateQtyPL(Long idcompany, Long idbranch, ParamCalculateQtyPL param);
     ReturnData catatDownload(Long id,Long idcompany, Long idbranch, Long iduser);
     List<ReportKartuStock> getListReportKartuStock(Long idcompany, Long idbranch, ParamSearchPackingList param);
+    ReturnData updateColumsIsAlreadyUpdatePriceToFalse(Long idcompany, Long idbranch, Long idcustomer, Long idpricelist);
+    ReturnData updatePrice(Long id, Long idcompany, Long idbranch, Long iduser);
 }

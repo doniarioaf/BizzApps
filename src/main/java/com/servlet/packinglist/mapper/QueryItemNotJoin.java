@@ -15,7 +15,7 @@ public class QueryItemNotJoin implements RowMapper<PackingListItemData> {
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.idproduct as idproduct, data.idcategoryproduct as idcategoryproduct, ");
         sqlBuilder.append("data.qty as qty,data.price as price, data.brutoweight as brutoweight ,data.totalprice as totalprice, ");
-        sqlBuilder.append("data.allowance as allowance,data.nettoweight as nettoweight, data.box as box ");
+        sqlBuilder.append("data.allowance as allowance,data.nettoweight as nettoweight, data.box as box , data.noseq as noseq ");
         sqlBuilder.append("from packinglist_item as data ");
         this.schemaSql = sqlBuilder.toString();
     }
@@ -34,6 +34,8 @@ public class QueryItemNotJoin implements RowMapper<PackingListItemData> {
         final Double allowance = rs.getDouble("allowance");
         final Double nettoweight = rs.getDouble("nettoweight");
         final String box = rs.getString("box");
+        final Integer noseq = rs.getInt("noseq");
+
         PackingListItemData data = new PackingListItemData();
         data.setIdproduct(idproduct);
         data.setIdcategoryproduct(idcategoryproduct);
@@ -44,6 +46,7 @@ public class QueryItemNotJoin implements RowMapper<PackingListItemData> {
         data.setBox(box);
         data.setQty(qty);
         data.setPrice(price);
+        data.setNoseq(noseq);
         return data;
     }
 }

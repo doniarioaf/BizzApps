@@ -20,6 +20,17 @@ public class PackingListItem implements Serializable {
     private Double price;
     private Double totalprice;
 
+    @Override
+    public String toString() {
+        return "PackingListItem{" +
+                "brutoweight=" + brutoweight +
+                ", allowance=" + allowance +
+                ", nettoweight=" + nettoweight +
+                ", price=" + price +
+                ", totalprice=" + totalprice +
+                '}';
+    }
+
     public PackingListItemPK getPackingListItemPK() {
         return packingListItemPK;
     }

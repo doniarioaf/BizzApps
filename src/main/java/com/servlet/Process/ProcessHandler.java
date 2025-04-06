@@ -795,16 +795,30 @@ public class ProcessHandler implements ProcessService{
 				}
 			}else if(codepermission.equals(ConstansPermission.EDIT_PACKINGLIST)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
-				long id  = (long) param.get("id");
-				BodyPackingList body  = (BodyPackingList) param.get("body");
-				ReturnData valReturn = packingListService.update(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId(),body);
-				if(valReturn.isSuccess()) {
-					val.setData(valReturn.getId());
-				}else {
-					val.setSuccess(valReturn.isSuccess());
-					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
-					val.setValidations(valReturn.getValidations());
-					val.setData(null);
+				String type  = (String) param.get("type");
+				if(type.equals("UPDATE")) {
+					long id = (long) param.get("id");
+					BodyPackingList body = (BodyPackingList) param.get("body");
+					ReturnData valReturn = packingListService.update(id, auth.getIdcompany(), auth.getIdbranch(), auth.getId(), body);
+					if (valReturn.isSuccess()) {
+						val.setData(valReturn.getId());
+					} else {
+						val.setSuccess(valReturn.isSuccess());
+						val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+						val.setValidations(valReturn.getValidations());
+						val.setData(null);
+					}
+				}else if(type.equals("UPDATEPRICE")) {
+					long id = (long) param.get("id");
+					ReturnData valReturn = packingListService.updatePrice(id, auth.getIdcompany(), auth.getIdbranch(), auth.getId());
+					if (valReturn.isSuccess()) {
+						val.setData(valReturn.getId());
+					} else {
+						val.setSuccess(valReturn.isSuccess());
+						val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+						val.setValidations(valReturn.getValidations());
+						val.setData(null);
+					}
 				}
 			}else if(codepermission.equals(ConstansPermission.DELETE_PACKINGLIST)) {
 				long id = (long) data;

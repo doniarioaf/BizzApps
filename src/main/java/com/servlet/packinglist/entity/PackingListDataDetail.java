@@ -23,7 +23,16 @@ public class PackingListDataDetail {
     private String modifiedbyName;
     private Timestamp modifieddate;
     private Long idpricelist;
+    private Boolean isalreadyupdateprice;
     private List<PackingListDataItemDetail> items;
+
+    public Boolean getIsalreadyupdateprice() {
+        return isalreadyupdateprice;
+    }
+
+    public void setIsalreadyupdateprice(Boolean isalreadyupdateprice) {
+        this.isalreadyupdateprice = isalreadyupdateprice;
+    }
 
     public String getCustomerAddress() {
         return customerAddress;

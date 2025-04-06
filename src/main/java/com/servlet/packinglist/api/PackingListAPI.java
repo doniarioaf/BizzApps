@@ -90,8 +90,18 @@ public class PackingListAPI {
     @PutMapping("{id}")
     ResponseEntity<Response> updateObject(@PathVariable long id, @RequestBody @Validated BodyPackingList body, @RequestHeader(ConstansKey.AUTH) String authorization) {
         HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "UPDATE");
         param.put("id", id);
         param.put("body", body);
+        Response response = securityService.response(ConstansPermission.EDIT_PACKINGLIST,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @GetMapping("/updateprice/{id}")
+    ResponseEntity<Response> updatePrice(@PathVariable long id, @RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "UPDATEPRICE");
+        param.put("id", id);
         Response response = securityService.response(ConstansPermission.EDIT_PACKINGLIST,param,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
