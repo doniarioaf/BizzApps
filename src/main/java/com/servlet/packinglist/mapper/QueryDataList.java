@@ -13,7 +13,7 @@ public class QueryDataList implements RowMapper<PackingListDataList> {
     public QueryDataList() {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
-        sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.date as date, data.idcustomer as idcustomer, ");
+        sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.date as date, data.idcustomer as idcustomer, data.isalreadyupdateprice as isalreadyupdateprice, ");
         sqlBuilder.append("data.city as city, cus.nama as cusNama, cus.alias as cusAlias ");
         sqlBuilder.append("from packinglist as data ");
         sqlBuilder.append("left join m_customer as cus on cus.id = data.idcustomer ");
@@ -35,6 +35,8 @@ public class QueryDataList implements RowMapper<PackingListDataList> {
         final String cusNama = rs.getString("cusNama");
         final String cusAlias = rs.getString("cusAlias");
         final String city = rs.getString("city");
+        final Boolean isalreadyupdateprice = rs.getBoolean("isalreadyupdateprice");
+
         PackingListDataList data = new PackingListDataList();
         data.setId(id);
         data.setNodocument(nodocument);
@@ -43,6 +45,7 @@ public class QueryDataList implements RowMapper<PackingListDataList> {
         data.setCustomerNama(cusNama);
         data.setCustomerAlias(cusAlias);
         data.setCity(city);
+        data.setIsalreadyupdateprice(isalreadyupdateprice);
         return data;
     }
 }
