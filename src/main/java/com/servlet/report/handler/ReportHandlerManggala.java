@@ -858,7 +858,8 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 							createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(), ""), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannamabank(), style, sheet);
-							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
+//							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
+							createCell(rowData, columnCount++, "Pembayaran Customer", style, sheet);
 							createCell(rowData, columnCount++, "Tagihan Pihak Ke-3", style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
 							createCell(rowData, columnCount++, "Reimbursement", style, sheet);
@@ -903,7 +904,8 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 							createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(), ""), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannamabank(), style, sheet);
-							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
+//							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
+							createCell(rowData, columnCount++, "Pembayaran Customer", style, sheet);
 							createCell(rowData, columnCount++, "PPN", style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
 							createCell(rowData, columnCount++, "Reimbursement", style, sheet);
@@ -948,7 +950,8 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 							createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(), ""), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannamabank(), style, sheet);
-							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
+//							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
+							createCell(rowData, columnCount++, "Pembayaran Customer", style, sheet);
 							createCell(rowData, columnCount++, "Jasa", style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
 							createCell(rowData, columnCount++, "Non - Reim", style, sheet);
@@ -1100,7 +1103,8 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 							createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(), ""), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannamabank(), style, sheet);
-							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
+//							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
+							createCell(rowData, columnCount++, "Pembayaran Customer", style, sheet);
 							createCell(rowData, columnCount++, "Tagihan Pihak Ke-3", style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
 							createCell(rowData, columnCount++, "Reimbursement", style, sheet);
@@ -1145,7 +1149,8 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 							createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(), ""), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannamabank(), style, sheet);
-							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
+//							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
+							createCell(rowData, columnCount++, "Pembayaran Customer", style, sheet);
 							createCell(rowData, columnCount++, "PPN", style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
 							createCell(rowData, columnCount++, "Reimbursement", style, sheet);
@@ -1190,7 +1195,8 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 							createCell(rowData, columnCount++, checkNullDate(dataKasBank.getPenerimaantanggalTransaksi(), ""), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoVoucher(), style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannamabank(), style, sheet);
-							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
+//							createCell(rowData, columnCount++, dataKasBank.getPenerimaancoa(), style, sheet);
+							createCell(rowData, columnCount++, "Pembayaran Customer", style, sheet);
 							createCell(rowData, columnCount++, "Jasa", style, sheet);
 							createCell(rowData, columnCount++, dataKasBank.getPenerimaannoWO(), style, sheet);
 							createCell(rowData, columnCount++, "Non - Reim", style, sheet);
@@ -1568,7 +1574,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 		Row row = sheet.createRow(rowcount);
 
 		createCell(row, 0, "No. WO", styleBold,sheet);
-		createCell(row, 1, "Tanggal WO", styleBold,sheet);
+		createCell(row, 1, "Tanggal SPPB/NPE", styleBold,sheet);
 		createCell(row, 2, "No. AJU", styleBold,sheet);
 		createCell(row, 3, "Penjaluran", styleBold,sheet);
 		createCell(row, 4, "Nama Customer", styleBold,sheet);
@@ -1667,8 +1673,9 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 			font.setFontHeight(9);
 
 			Double totalAkhir = 0.0;
-			Double kalkulasiNilaiLR = 0.0;
+//			Double kalkulasiNilaiLR = 0.0;
 			for(WorkOrderData datawo : listWO) {
+				Double kalkulasiNilaiLR = 0.0;
 				Double NilaiLabaRugi = 0.00;
 				Double SubtotalNilaiPajak = 0.00;
 				Double SubtotalNilaiInvoice = 0.00;
@@ -1676,7 +1683,6 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 				List<InvoiceDataReportLabaRugi> listInv = grupingByIDWO.get(datawo.getId());
 				boolean adapenerimaan = false;
 				boolean adapengeluaran = false;
-
 				if (listInv != null && listInv.size() > 0) {
 					for (InvoiceDataReportLabaRugi dataInv : listInv) {
 						List<DetailPenerimaanKasBankDataLabaRugi> listPenerimaanMapping = grupingByIDInv.get(dataInv.getId());//penerimaanKasBankService.getListDetailReportLabaRugi(idcompany, idbranch, dataInv.getId(), (bankData != null ? bankData.getId() : null));
@@ -1690,7 +1696,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 								Row rowData = sheet.createRow(rowcount++);
 								int columnCount = 0;
 								createCell(rowData, columnCount++, datawo.getNodocument(), style, sheet);
-								createCell(rowData, columnCount++, checkNullDate(datawo.getTanggal(), ""), style, sheet);
+								createCell(rowData, columnCount++, checkNullDate(datawo.getTanggalsppb_npe(), ""), style, sheet);
 								createCell(rowData, columnCount++, datawo.getNoaju(), style, sheet);
 								createCell(rowData, columnCount++, datawo.getJalurCodeName(), style, sheet);
 								createCell(rowData, columnCount++, datawo.getNamaCustomer(), style, sheet);
@@ -1746,7 +1752,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 								rowData = sheet.createRow(rowcount++);
 								columnCount = 0;
 								createCell(rowData, columnCount++, datawo.getNodocument(), style, sheet);
-								createCell(rowData, columnCount++, checkNullDate(datawo.getTanggal(), ""), style, sheet);
+								createCell(rowData, columnCount++, checkNullDate(datawo.getTanggalsppb_npe(), ""), style, sheet);
 								createCell(rowData, columnCount++, datawo.getNoaju(), style, sheet);
 								createCell(rowData, columnCount++, datawo.getJalurCodeName(), style, sheet);
 								createCell(rowData, columnCount++, datawo.getNamaCustomer(), style, sheet);
@@ -1939,7 +1945,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 
 				NilaiLabaRugi = SubtotalNilaiPembayaran;
 				List<PengeluaranReportLabaRugi> listPengeluaranMapping = grupingPengluaranByIDWo.get(datawo.getId());
-				if (listPengeluaranMapping != null && listPengeluaranMapping.size() > 0) {
+				if (listPengeluaranMapping != null && listPengeluaranMapping.size() > 0 && adapenerimaan) {
 					adapengeluaran = true;
 					Double subTotalAmountPengeluaran = 0.0;
 					for (PengeluaranReportLabaRugi dataPengeluaran : listPengeluaranMapping) {
@@ -1947,7 +1953,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						int columnCount = 0;
 
 						createCell(rowData, columnCount++, datawo.getNodocument(), style, sheet);
-						createCell(rowData, columnCount++, checkNullDate(datawo.getTanggal(), ""), style, sheet);
+						createCell(rowData, columnCount++, checkNullDate(datawo.getTanggalsppb_npe(), ""), style, sheet);
 						createCell(rowData, columnCount++, datawo.getNoaju(), style, sheet);
 						createCell(rowData, columnCount++, datawo.getJalurCodeName(), style, sheet);
 						createCell(rowData, columnCount++, datawo.getNamaCustomer(), style, sheet);
@@ -2034,13 +2040,13 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 					createCell(rowData, columnCount++, "", styleBold, sheet);
 					//
 				}
-				if(adapenerimaan || adapengeluaran){
+				if(adapenerimaan && adapengeluaran){
 				//Total , Nilai L/R
 				Row rowData = sheet.createRow(rowcount++);
 				int columnCount = 0;
 
 				createCell(rowData, columnCount++, datawo.getNodocument(), style, sheet);
-				createCell(rowData, columnCount++, checkNullDate(datawo.getTanggal(), ""), style, sheet);
+				createCell(rowData, columnCount++, checkNullDate(datawo.getTanggalsppb_npe(), ""), style, sheet);
 				createCell(rowData, columnCount++, datawo.getNoaju(), style, sheet);
 				createCell(rowData, columnCount++, datawo.getJalurCodeName(), style, sheet);
 				createCell(rowData, columnCount++, datawo.getNamaCustomer(), style, sheet);
