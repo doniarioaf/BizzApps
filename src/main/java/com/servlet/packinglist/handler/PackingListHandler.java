@@ -577,7 +577,7 @@ public class PackingListHandler implements PackingListService {
     private List<PackingListDataItemDetail> getListItems(Long idpackinglist){
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryItemDataDetail().schema());
         sqlBuilder.append(" where data.idpackinglist = ? ");
-        sqlBuilder.append(" order by data.box ");
+//        sqlBuilder.append(" order by data.box ");
 
         final Object[] queryParameters = new Object[] {idpackinglist};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryItemDataDetail(), queryParameters);
