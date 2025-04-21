@@ -1883,6 +1883,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 
 					}
 
+					if(adapenerimaan){
 					//Subtotal Penerimaan
 					Row rowData = sheet.createRow(rowcount++);
 					int columnCount = 0;
@@ -1941,6 +1942,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 					//
 
 					kalkulasiNilaiLR += SubtotalNilaiPembayaran;
+				}
 				}
 
 				NilaiLabaRugi = SubtotalNilaiPembayaran;
