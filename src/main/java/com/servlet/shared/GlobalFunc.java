@@ -126,4 +126,36 @@ public class GlobalFunc {
 		return value;
 
 	}
+
+	public static Double pembulatanNilai(Double nilai, boolean isdown, int numberdesimal){
+		double pembagian = 10;
+		if(numberdesimal == 2){
+			pembagian = 100;
+		}else if(numberdesimal == 3){
+			pembagian = 1000;
+		}
+
+		String[] splitComma = String.valueOf(nilai).split("\\.");
+		String valNilai = String.valueOf(nilai);
+		if(splitComma.length > numberdesimal){
+			int start = 0;
+			int end = numberdesimal+1;
+			String desimal = splitComma[1] != null?new String(splitComma[1]).substring(start,end):"0";
+			valNilai = splitComma[0]+"."+desimal;
+		}
+//        if(isdown){
+//            return Math.floor(Double.valueOf(valNilai) * pembagian) / pembagian;
+//        }
+//        return Math.ceil(Double.valueOf(valNilai) * pembagian) / pembagian;
+
+		return Math.round(Double.valueOf(valNilai) * pembagian) / pembagian;
+
+	}
+
+	public static Double convertGramToKG(Double nilaigr){
+		if(nilaigr != null){
+			return nilaigr / 1000;
+		}
+		return 0.0;
+	}
 }

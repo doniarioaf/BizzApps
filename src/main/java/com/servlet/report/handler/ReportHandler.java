@@ -261,8 +261,13 @@ public class ReportHandler implements ReportService {
             createCell(row, 0, "ATTN", style, sheet,columns);
             createCell(row, 1, print.getAttention(), style, sheet,columns);
 
+            Double totalNettoHeader = 0.0;
+            for(PackingListDataItemDetail item : print.getItems()){
+                totalNettoHeader += convertkg(item.getNettoweight());
+            }
+
             createCell(row, 5, "Netto", style, sheet,columns);
-            createCell(row, 6, print.getNetto(), style, sheet,columns);
+            createCell(row, 6, totalNettoHeader , style, sheet,columns);
 
             rowcount++;
             row = sheet.createRow(rowcount);
@@ -343,7 +348,7 @@ public class ReportHandler implements ReportService {
                 createCell(row, colomcount, item.getQty(), style, sheet,columns);
 
                 colomcount++;
-                createCell(row, colomcount, item.getNettoweight(), style, sheet,columns);
+                createCell(row, colomcount, convertkg(item.getNettoweight()), style, sheet,columns);
 
                 colomcount++;
                 createCell(row, colomcount, item.getPrice(), style, sheet,columns);
@@ -361,7 +366,9 @@ public class ReportHandler implements ReportService {
             createCell(row, colomcount, totalqty, style, sheet,columns);
 
             colomcount++;
-            createCell(row, colomcount, totalweight, style, sheet,columns);
+//            createCell(row, colomcount, totalweight, style, sheet,columns);
+            createCell(row, colomcount, totalNettoHeader, style, sheet,columns);
+
 
             colomcount++;
             colomcount++;
@@ -372,6 +379,13 @@ public class ReportHandler implements ReportService {
         return data;
     }
 
+    private Double convertkg(Double value){
+        Double totalnetto = value;
+        totalnetto = GlobalFunc.convertGramToKG(totalnetto);
+        totalnetto = GlobalFunc.pembulatanNilai(totalnetto,false,1);
+
+        return totalnetto;
+    }
     @Override
     public ReportWorkBookExcel getExcelInvoiceByID(long id, long idcompany, long idbranch, long iduser) {
         ReportWorkBookExcel data = new ReportWorkBookExcel();
@@ -695,9 +709,11 @@ public class ReportHandler implements ReportService {
         String destination = "";
         String customerAlias = value != null?value:"";
         String[] arrAlias = customerAlias.split("-");
-        if(arrAlias.length > 0){
+        if(arrAlias.length > 1){
             code = arrAlias[0];
             destination = arrAlias[1];
+        }else{
+            code = customerAlias;
         }
         maps.put("code",code);
         maps.put("destination",destination);
@@ -1064,12 +1080,17 @@ public class ReportHandler implements ReportService {
         styleAmount.setBorderBottom(BorderStyle.MEDIUM);
         styleAmount.setBorderLeft(BorderStyle.MEDIUM);
         styleAmount.setBorderRight(BorderStyle.MEDIUM);
-        if(GlobalFunc.checkIsDecimal(invoice.getPackinglist().getNetto())) {
-            styleAmount.setDataFormat(format.getFormat("#,###"));
-        }else {
-            styleAmount.setDataFormat(format.getFormat("#,###.000"));
+        Double valnetto = 0.0;//convertkg(invoice.getPackinglist().getNetto());
+        for(PackingListDataItemDetail item : invoice.getPackinglist().getItems()){
+            valnetto += convertkg(item.getNettoweight());
         }
-        Cell valuenetto = createCell(row, 5, invoice.getPackinglist().getNetto(), styleAmount, sheet,columns);
+        if(GlobalFunc.checkIsDecimal(valnetto)) {
+            styleAmount.setDataFormat(format.getFormat("#,###"));
+        }
+//        else {
+//            styleAmount.setDataFormat(format.getFormat("#,###.000"));
+//        }
+        Cell valuenetto = createCell(row, 5, valnetto, styleAmount, sheet,columns);
         CellUtil.setVerticalAlignment(valuenetto, VerticalAlignment.CENTER);
         CellUtil.setAlignment(valuenetto, HorizontalAlignment.CENTER);
 
@@ -1169,13 +1190,14 @@ public class ReportHandler implements ReportService {
             styleAmount.setBorderBottom(BorderStyle.MEDIUM);
             styleAmount.setBorderLeft(BorderStyle.MEDIUM);
             styleAmount.setBorderRight(BorderStyle.MEDIUM);
-            if(GlobalFunc.checkIsDecimal(item.getNettoweight())) {
+            Double valnettowight = convertkg(item.getNettoweight());
+            if(GlobalFunc.checkIsDecimal(valnettowight)) {
                 styleAmount.setDataFormat(format.getFormat("#,###"));
             }else {
-                styleAmount.setDataFormat(format.getFormat("#,###.000"));
+                styleAmount.setDataFormat(format.getFormat("#,###.0"));
             }
             columncount++;
-            Cell cellnettowieght  = createCell(row, columncount, item.getNettoweight(), styleAmount, sheet,columns);
+            Cell cellnettowieght  = createCell(row, columncount, valnettowight, styleAmount, sheet,columns);
             CellUtil.setVerticalAlignment(cellnettowieght, VerticalAlignment.CENTER);
             CellUtil.setAlignment(cellnettowieght, HorizontalAlignment.CENTER);
 
@@ -1204,9 +1226,9 @@ public class ReportHandler implements ReportService {
             styleAmount.setBorderLeft(BorderStyle.MEDIUM);
             styleAmount.setBorderRight(BorderStyle.MEDIUM);
             if(GlobalFunc.checkIsDecimal(item.getTotalprice())) {
-                styleAmount.setDataFormat(format.getFormat("#,###.00"));
+                styleAmount.setDataFormat(format.getFormat("#,###.0"));
             }else {
-                styleAmount.setDataFormat(format.getFormat("#,###.00"));
+                styleAmount.setDataFormat(format.getFormat("#,###.0"));
             }
             columncount++;
             createCell(row, columncount, item.getTotalprice(), styleAmount, sheet,columns);
@@ -1235,12 +1257,14 @@ public class ReportHandler implements ReportService {
         styleAmount.setBorderBottom(BorderStyle.MEDIUM);
         styleAmount.setBorderLeft(BorderStyle.MEDIUM);
         styleAmount.setBorderRight(BorderStyle.MEDIUM);
-        if(GlobalFunc.checkIsDecimal(totalWeightKg)) {
+
+//        Double valtotalWeightKg = convertGramToKG(invoice.getPackinglist().getNetto());
+        if(GlobalFunc.checkIsDecimal(valnetto)) {
             styleAmount.setDataFormat(format.getFormat("#,###"));
         }else {
-            styleAmount.setDataFormat(format.getFormat("#,###.000"));
+            styleAmount.setDataFormat(format.getFormat("#,###.0"));
         }
-        Cell totalWeight = createCell(row, 5, totalWeightKg, styleAmount, sheet,columns);
+        Cell totalWeight = createCell(row, 5, valnetto, styleAmount, sheet,columns);
         CellUtil.setVerticalAlignment(totalWeight, VerticalAlignment.CENTER);
         CellUtil.setAlignment(totalWeight, HorizontalAlignment.CENTER);
 
@@ -1259,9 +1283,9 @@ public class ReportHandler implements ReportService {
         styleAmount.setBorderRight(BorderStyle.MEDIUM);
         styleAmount.setLeftBorderColor(IndexedColors.WHITE.getIndex());
         if(GlobalFunc.checkIsDecimal(totalPrice)) {
-            styleAmount.setDataFormat(format.getFormat("#,###.00"));
+            styleAmount.setDataFormat(format.getFormat("#,###.0"));
         }else {
-            styleAmount.setDataFormat(format.getFormat("#,###.00"));
+            styleAmount.setDataFormat(format.getFormat("#,###.0"));
         }
         createCell(row, 8, totalPrice, styleAmount, sheet,columns);
 
@@ -1294,9 +1318,9 @@ public class ReportHandler implements ReportService {
         styleAmount.setBorderRight(BorderStyle.MEDIUM);
         styleAmount.setLeftBorderColor(IndexedColors.WHITE.getIndex());
         if(GlobalFunc.checkIsDecimal(invoice.getKurs())) {
-            styleAmount.setDataFormat(format.getFormat("#,###.00"));
+            styleAmount.setDataFormat(format.getFormat("#,###.0"));
         }else {
-            styleAmount.setDataFormat(format.getFormat("#,###.00"));
+            styleAmount.setDataFormat(format.getFormat("#,###.0"));
         }
         createCell(row, 8, invoice.getKurs(), styleAmount, sheet,columns);
 
@@ -1332,9 +1356,9 @@ public class ReportHandler implements ReportService {
         totalPriceInIDR = GlobalFunc.jumlahDesimal(totalPriceInIDR.doubleValue(),2);
 
         if(GlobalFunc.checkIsDecimal(totalPriceInIDR)) {
-            styleAmount.setDataFormat(format.getFormat("#,###.00"));
+            styleAmount.setDataFormat(format.getFormat("#,###.0"));
         }else {
-            styleAmount.setDataFormat(format.getFormat("#,###.00"));
+            styleAmount.setDataFormat(format.getFormat("#,###.0"));
         }
         createCell(row, 8, totalPriceInIDR, styleAmount, sheet,columns);
 

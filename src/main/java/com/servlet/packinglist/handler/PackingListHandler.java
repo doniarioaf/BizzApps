@@ -24,10 +24,7 @@ import com.servlet.purchasereceive.entity.PurchaseReceiveItems;
 import com.servlet.purchasereceive.entity.PurchaseReceiveItemsNotJoin;
 import com.servlet.purchasereceive.mapper.QueryCalculateQty;
 import com.servlet.runningnumber.service.RunningNumberService;
-import com.servlet.shared.ConstansCodeMessage;
-import com.servlet.shared.ConstantCodeDocument;
-import com.servlet.shared.ReturnData;
-import com.servlet.shared.ValidationDataMessage;
+import com.servlet.shared.*;
 import com.servlet.stockitems.entity.ReportKartuStock;
 import com.servlet.stockitems.service.StockItemService;
 import com.servlet.user.entity.UserListData;
@@ -473,10 +470,10 @@ public class PackingListHandler implements PackingListService {
                                     packingListItemPK.setNoseq(item.getNoseq());
                                     PackingListItem tableitem = itemRepo.getById(packingListItemPK);
                                     Double price = itemPrice.getAmount();
-                                    Double totalPrice = item.getQty() * price;
+//                                    Double totalPrice = item.getQty() * price;
 
                                     tableitem.setPrice(price);
-                                    tableitem.setTotalprice(totalPrice);
+//                                    tableitem.setTotalprice(totalPrice);
 
                                     //allowance
                                     int places = 2;
@@ -510,10 +507,19 @@ public class PackingListHandler implements PackingListService {
                                     }
 
                                     Double nettoItem = brutoweight - (brutoweight * allowancePer100);
+                                    nettoItem = GlobalFunc.pembulatanNilai(nettoItem,false,1);
+
+                                    Double valKg = GlobalFunc.convertGramToKG(nettoItem);
+                                    valKg = GlobalFunc.pembulatanNilai(valKg,false,1);
+
+                                    Double subtotalPrice = valKg * price;
+
+
                                     netto = netto + nettoItem;
 
+                                    tableitem.setTotalprice(GlobalFunc.jumlahDesimal(subtotalPrice,1));
                                     tableitem.setAllowance(allowance);
-                                    tableitem.setNettoweight(nettoItem);
+                                    tableitem.setNettoweight(GlobalFunc.jumlahDesimal(nettoItem,1));
 
                                     itemRepo.saveAndFlush(tableitem);
 
