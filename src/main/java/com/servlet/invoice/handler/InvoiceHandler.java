@@ -971,6 +971,7 @@ public class InvoiceHandler implements InvoiceService{
 		if(param.getListCustomerID() != null && !param.getListCustomerID().equals("")){
 			sqlBuilder.append(" and data.idcustomer in ("+param.getListCustomerID()+") ");
 		}
+		sqlBuilder.append(" order by data.nodocument ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryReportInvoice(), queryParameters);
 	}
