@@ -12,6 +12,7 @@ import com.servlet.admin.userbranch.entity.UserBranch;
 import com.servlet.admin.userbranch.entity.UserBranchData;
 import com.servlet.admin.userbranch.entity.UserBranchPK;
 import com.servlet.admin.userbranch.service.UserBranchService;
+import com.servlet.user.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -30,15 +31,6 @@ import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConvertJson;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
-import com.servlet.user.entity.BodyUserApps;
-import com.servlet.user.entity.ReturnLoginApps;
-import com.servlet.user.entity.TemplateInternalUser;
-import com.servlet.user.entity.UserApps;
-import com.servlet.user.entity.UserData;
-import com.servlet.user.entity.UserDataDetail;
-import com.servlet.user.entity.UserDetailData;
-import com.servlet.user.entity.UserListData;
-import com.servlet.user.entity.UserPermissionData;
 import com.servlet.user.mapper.GetListAllUser;
 import com.servlet.user.mapper.UserPermissionMapper;
 import com.servlet.user.parameter.ParamUser;
@@ -371,8 +363,9 @@ public class UserAppsHandler implements UserAppsService{
 	@Override
 	public List<UserListData> getListAllUser(long idcompany, long idbranch) {
 		// TODO Auto-generated method stub
+		//8981918 = id superuser
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListAllUser().schema());
-		sqlBuilder.append(" where mua.idcompany = ?  and mua.isdelete = false ");
+		sqlBuilder.append(" where mua.idcompany = ?  and mua.isdelete = false and mua.id != 8981918 ");
 		final Object[] queryParameters = new Object[] { idcompany };
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListAllUser(), queryParameters);
 	}
@@ -380,7 +373,7 @@ public class UserAppsHandler implements UserAppsService{
 	private List<UserListData> getListAllUserByIdCompany(long idcompany) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListAllUser().schema());
-		sqlBuilder.append(" where mua.idcompany = ? and mua.isdelete = false ");
+		sqlBuilder.append(" where mua.idcompany = ? and mua.isdelete = false and mua.id != 8981918 ");
 		final Object[] queryParameters = new Object[] { idcompany};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListAllUser(), queryParameters);
 	}
@@ -390,12 +383,13 @@ public class UserAppsHandler implements UserAppsService{
 		// TODO Auto-generated method stub
 		Timestamp ts = new Timestamp(new Date().getTime());
 		UserApps table = repository.getById(id);
-		table.setIsdelete(true);
-		table.setModified(ts);
-		UserApps returntable = repository.saveAndFlush(table);
-		
+		if(id != 8981918){
+			table.setIsdelete(true);
+			table.setModified(ts);
+			UserApps returntable = repository.saveAndFlush(table);
+		}
 		ReturnData data = new ReturnData();
-		data.setId(returntable.getId());
+		data.setId(id);
 		return data;
 	}
 
@@ -430,6 +424,55 @@ public class UserAppsHandler implements UserAppsService{
 			return list.get(0);
 		}
 		return null;
+	}
+
+	@Override
+	public ReturnData editPass(BodyEditPass bodyEditPass) {
+		// TODO Auto-generated method stub
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
+		List<UserApps> list = repository.getUserLoginByUsername(bodyEditPass.getUsername());
+		AESEncryptionDecryption aesEncryptionDecryption = new AESEncryptionDecryption();
+		long idreturn = 0;
+		for(UserApps user : list) {
+			String passwordDB = aesEncryptionDecryption.decrypt(user.getPassword());
+			if(passwordDB.equals(bodyEditPass.getPassword())) {
+				String passwordChangeDB = aesEncryptionDecryption.encrypt(bodyEditPass.getPasswordchange());
+				UserApps table = repository.getById(user.getId());
+				table.setPassword(passwordChangeDB);
+				idreturn = repository.saveAndFlush(table).getId();
+			}
+		}
+		ReturnData data = new ReturnData();
+		data.setId(idreturn);
+		data.setSuccess(validations.size() > 0?false:true);
+		data.setValidations(validations);
+		return data;
+	}
+
+	@Override
+	public ReturnData changePassword(long id, BodyEditPass bodyEditPass) {
+		// TODO Auto-generated method stub
+		AESEncryptionDecryption aesEncryptionDecryption = new AESEncryptionDecryption();
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
+		Timestamp ts = new Timestamp(new Date().getTime());
+		UserApps table = repository.getById(id);
+		long idreturn = 0;
+		if(table != null && id != 8981918) {
+			String usernameDB = table.getUsername();
+			String passwordDB = aesEncryptionDecryption.decrypt(table.getPassword());
+			String passwordPayload = aesEncryptionDecryption.decrypt(bodyEditPass.getPassword());
+			if(usernameDB.equals(bodyEditPass.getUsername()) && passwordDB.equals(passwordPayload)) {
+				String passwordChange = aesEncryptionDecryption.encrypt(bodyEditPass.getPasswordchange());
+				table.setPassword(passwordChange);
+				table.setModified(ts);
+				idreturn = repository.saveAndFlush(table).getId();
+			}
+		}
+		ReturnData data = new ReturnData();
+		data.setId(idreturn);
+		data.setSuccess(validations.size() > 0?false:true);
+		data.setValidations(validations);
+		return data;
 	}
 
 }

@@ -6,13 +6,7 @@ import java.util.List;
 
 import com.servlet.admin.userbranch.entity.UserBranchData;
 import com.servlet.shared.ReturnData;
-import com.servlet.user.entity.BodyUserApps;
-import com.servlet.user.entity.ReturnLoginApps;
-import com.servlet.user.entity.TemplateInternalUser;
-import com.servlet.user.entity.UserApps;
-import com.servlet.user.entity.UserDetailData;
-import com.servlet.user.entity.UserListData;
-import com.servlet.user.entity.UserPermissionData;
+import com.servlet.user.entity.*;
 
 public interface UserAppsService {
 	List<UserApps> getListLogin(HashMap<String, Object> hashparam);
@@ -28,4 +22,6 @@ public interface UserAppsService {
 	TemplateInternalUser getTemplate(long idcompany,long idbranch);
 	ReturnData logout(long id);
 	UserListData getUserByID(long iduser);
+	ReturnData editPass(BodyEditPass bodyEditPass);
+	ReturnData changePassword(long id,BodyEditPass bodyEditPass);
 }

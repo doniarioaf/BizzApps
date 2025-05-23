@@ -2,6 +2,7 @@ package com.servlet.user.api;
 
 import java.util.HashMap;
 
+import com.servlet.user.entity.BodyEditPass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -62,6 +63,15 @@ public class UserApi {
 		param.put("id", id);
 		param.put("BodyUserApps", body);
 		Response response = securityService.response(ConstansPermission.EDIT_USER,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+
+	@PutMapping("/changepassword/{id}")
+	ResponseEntity<Response> changePassword(@PathVariable long id, @RequestBody @Validated BodyEditPass body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("id", id);
+		param.put("BodyUserApps", body);
+		Response response = securityService.response(ConstansPermission.EDIT_CHANGE_PASSWORD_USER,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}
 	
