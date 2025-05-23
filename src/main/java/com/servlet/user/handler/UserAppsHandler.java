@@ -110,6 +110,7 @@ public class UserAppsHandler implements UserAppsService{
 					String encryptedString = aesEncryptionDecryption.encrypt(new ConvertJson().toJsonString(dataauth));
 					
 					userdata = new UserData();
+					userdata.setId(user.getId());
 					userdata.setPermissions(setPermissions(user.getId()));
 					userdata.setToken(encryptedString);
 					
@@ -466,6 +467,37 @@ public class UserAppsHandler implements UserAppsService{
 				table.setPassword(passwordChange);
 				table.setModified(ts);
 				idreturn = repository.saveAndFlush(table).getId();
+			}
+		}
+		ReturnData data = new ReturnData();
+		data.setId(idreturn);
+		data.setSuccess(validations.size() > 0?false:true);
+		data.setValidations(validations);
+		return data;
+	}
+
+	@Override
+	public ReturnData changePasswordUser(long id, BodyEditPass bodyEditPass) {
+		// TODO Auto-generated method stub
+		AESEncryptionDecryption aesEncryptionDecryption = new AESEncryptionDecryption();
+		List<ValidationDataMessage> validations = new ArrayList<ValidationDataMessage>();
+		Timestamp ts = new Timestamp(new Date().getTime());
+		UserApps table = repository.getById(id);
+		long idreturn = 0;
+		if(table != null && id != 8981918) {
+			String usernameDB = table.getUsername();
+			String passwordDB = aesEncryptionDecryption.decrypt(table.getPassword());
+			String passwordPayload = bodyEditPass.getPassword();//aesEncryptionDecryption.decrypt(bodyEditPass.getPassword());
+			if(usernameDB.equals(bodyEditPass.getUsername()) && passwordDB.equals(passwordPayload)) {
+				String passwordChange = aesEncryptionDecryption.encrypt(bodyEditPass.getPasswordchange());
+				table.setPassword(passwordChange);
+				table.setModified(ts);
+				idreturn = repository.saveAndFlush(table).getId();
+			}
+
+			if(!passwordDB.equals(passwordPayload)){
+				ValidationDataMessage msg = new ValidationDataMessage("oldpassword.failed","Password lama tidak sesuai");
+				validations.add(msg);
 			}
 		}
 		ReturnData data = new ReturnData();

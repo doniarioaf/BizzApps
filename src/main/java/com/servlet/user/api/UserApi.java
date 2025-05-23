@@ -71,6 +71,17 @@ public class UserApi {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("id", id);
 		param.put("BodyUserApps", body);
+		param.put("type", "ALL");
+		Response response = securityService.response(ConstansPermission.EDIT_CHANGE_PASSWORD_USER,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+
+	@PutMapping("/changepassworduser/{id}")
+	ResponseEntity<Response> changePasswordUser(@PathVariable long id, @RequestBody @Validated BodyEditPass body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("id", id);
+		param.put("BodyUserApps", body);
+		param.put("type", "USER");
 		Response response = securityService.response(ConstansPermission.EDIT_CHANGE_PASSWORD_USER,param,authorization);
 		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
 	}

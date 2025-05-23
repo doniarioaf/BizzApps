@@ -266,16 +266,29 @@ public class ProcessHandler implements ProcessService{
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				BodyEditPass body = (BodyEditPass) param.get("BodyUserApps");
 				long id = (long) param.get("id");
-
-				ReturnData valReturn = userAppsService.changePassword(id, body);
-				if(valReturn.isSuccess()) {
-					val.setData(valReturn.getId());
-				}else {
-					val.setSuccess(valReturn.isSuccess());
-					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
-					val.setValidations(valReturn.getValidations());
-					val.setData(null);
+				String type = (String) param.get("type");
+				if(type.equals("ALL")){
+					ReturnData valReturn = userAppsService.changePassword(id, body);
+					if(valReturn.isSuccess()) {
+						val.setData(valReturn.getId());
+					}else {
+						val.setSuccess(valReturn.isSuccess());
+						val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+						val.setValidations(valReturn.getValidations());
+						val.setData(null);
+					}
+				}else if(type.equals("USER")){
+					ReturnData valReturn = userAppsService.changePasswordUser(id, body);
+					if(valReturn.isSuccess()) {
+						val.setData(valReturn.getId());
+					}else {
+						val.setSuccess(valReturn.isSuccess());
+						val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+						val.setValidations(valReturn.getValidations());
+						val.setData(null);
+					}
 				}
+
 //				val.setData(customerService.updateCustomer(id, body, auth.getIdcompany(),auth.getIdbranch()));
 			}else if(codepermission.equals(ConstansPermission.CREATE_USER_MOBILE)) {
 				BodyUserMobile body = (BodyUserMobile) data;

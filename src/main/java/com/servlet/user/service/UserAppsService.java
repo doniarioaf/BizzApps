@@ -24,4 +24,5 @@ public interface UserAppsService {
 	UserListData getUserByID(long iduser);
 	ReturnData editPass(BodyEditPass bodyEditPass);
 	ReturnData changePassword(long id,BodyEditPass bodyEditPass);
+	ReturnData changePasswordUser(long id,BodyEditPass bodyEditPass);
 }
