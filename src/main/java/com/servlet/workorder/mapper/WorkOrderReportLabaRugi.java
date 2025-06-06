@@ -35,6 +35,11 @@ public class WorkOrderReportLabaRugi implements RowMapper<WorkOrderData> {
         sqlBuilder.append("left join m_vendor as vendorqq on vendorqq.id = data.qq ");
         sqlBuilder.append("left join m_vendor as vendordepo on vendordepo.id = data.idvendordepo ");
 
+        //ditambahakn 6 juni 2025, ini dipake getListDataWoForReportLabaRugi2
+        sqlBuilder.append("left join m_invoice as inv on inv.idwo = data.id ");
+        sqlBuilder.append("left join detail_penerimaan_kas_bank as detpenerimaan on detpenerimaan.idinvoice = inv.id ");
+        sqlBuilder.append("left join m_penerimaan_kas_bank as penerimaan on penerimaan.id = detpenerimaan.idpenerimaankasbank ");
+
 
         this.schemaSql = sqlBuilder.toString();
     }

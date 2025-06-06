@@ -851,7 +851,7 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 	}
 
 	@Override
-	public List<DetailPenerimaanKasBankDataLabaRugi> getListDetailReportLabaRugi(Long idcompany, Long idbranch, Long idbank,String listidinvoice) {
+	public List<DetailPenerimaanKasBankDataLabaRugi> getListDetailReportLabaRugi(Long idcompany, Long idbranch, Long idbank,String listidinvoice,Long fromDate, Long toDate) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataDetailPenerimaanReportLabaRugi().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and penerimaan.isdelete = false ");
@@ -861,9 +861,36 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 		if(listidinvoice != null && !listidinvoice.equals("")){
 			sqlBuilder.append(" and data.idinvoice in ("+listidinvoice+") ");
 		}
+		if(fromDate != null && toDate != null){
+			sqlBuilder.append(" and penerimaan.receivedate >= '"+new java.sql.Date(fromDate)+"' and penerimaan.receivedate <= '"+new java.sql.Date(toDate)+"' ");
+		}
+
 		sqlBuilder.append(" order by penerimaan.receivedate ");
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataDetailPenerimaanReportLabaRugi(), queryParameters);
+	}
+
+	@Override
+	public List<Long> getListDetailReportLabaRugi_listwo(Long idcompany, Long idbranch, Long idbank,String listidinvoice,Long fromDate, Long toDate) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetListWO().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and penerimaan.isdelete = false ");
+		if(idbank != null){
+			sqlBuilder.append(" and penerimaan.idbank = "+idbank+" ");
+		}
+		if(listidinvoice != null && !listidinvoice.equals("")){
+			sqlBuilder.append(" and data.idinvoice in ("+listidinvoice+") ");
+		}
+		if(fromDate != null && toDate != null){
+			sqlBuilder.append(" and penerimaan.receivedate >= '"+new java.sql.Date(fromDate)+"' and penerimaan.receivedate <= '"+new java.sql.Date(toDate)+"' ");
+		}
+
+		sqlBuilder.append(" and inv.isdelete = false ");
+		sqlBuilder.append(" and penerimaan.isdelete = false ");
+
+		sqlBuilder.append(" order by penerimaan.receivedate ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetListWO(), queryParameters);
 	}
 
 	@Override
