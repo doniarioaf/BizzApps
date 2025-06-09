@@ -31,6 +31,24 @@ public class VendorData {
     private Long idvendorbroker;
     private String vendorBrokerName;
     private String vendorBrokerAlias;
+    private Long idarea;
+    private String areaName;
+
+    public Long getIdarea() {
+        return idarea;
+    }
+
+    public void setIdarea(Long idarea) {
+        this.idarea = idarea;
+    }
+
+    public String getAreaName() {
+        return areaName;
+    }
+
+    public void setAreaName(String areaName) {
+        this.areaName = areaName;
+    }
 
     public Long getIdvendorbroker() {
         return idvendorbroker;

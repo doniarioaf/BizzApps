@@ -1,5 +1,6 @@
 package com.servlet.vendor.handler;
 
+import com.servlet.area.service.AreaService;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.pricelist.entity.PriceListItemData;
@@ -36,6 +37,9 @@ public class VendorHandler implements VendorService {
 
     @Autowired
     private CategoryProductService categoryProductService;
+
+    @Autowired
+    private AreaService areaService;
 
     @Autowired
     private HistoryAppsService historyAppsService;
@@ -106,6 +110,7 @@ public class VendorHandler implements VendorService {
                 if(body.getType().equals("UDANG")){
                     vendor.setIdvendorbroker(body.getIdvendorbroker());
                 }
+                vendor.setIdarea(body.getIdarea());
                 vendor.setIsdelete(false);
                 vendor.setCreateddate(ts);
                 vendor.setCreatedby(iduser);
@@ -177,6 +182,7 @@ public class VendorHandler implements VendorService {
                 }else{
                     vendor.setIdvendorbroker(null);
                 }
+                vendor.setIdarea(body.getIdarea());
                 vendor.setModifieddate(ts);
                 vendor.setModifiedby(iduser);
                 idsave = repo.saveAndFlush(vendor).getId();
@@ -250,6 +256,8 @@ public class VendorHandler implements VendorService {
         ParamVendor pvbroker = new ParamVendor();
         pvbroker.setVendorTypes("'BROKER'");
         template.setVendorBrokerOpt(getListDropdown(idcompany,idbranch,pvbroker));
+
+        template.setAreaOpt(areaService.getList(idcompany,idbranch));
         return template;
     }
 

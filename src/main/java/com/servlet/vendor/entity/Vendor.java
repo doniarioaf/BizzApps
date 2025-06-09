@@ -37,7 +37,7 @@ public class Vendor implements Serializable {
     private Boolean isparent;
     private Long idvendorparent;
     private Long idvendorbroker;
-
+    private Long idarea;
     @Override
     public String toString() {
         return "Vendor{" +
@@ -58,7 +58,16 @@ public class Vendor implements Serializable {
                 ", isparent='" + isparent + '\'' +
                 ", idvendorparent='" + idvendorparent + '\'' +
                 ", idvendorbroker='" + idvendorbroker + '\'' +
+                ", idarea='" + idarea + '\'' +
                 '}';
+    }
+
+    public Long getIdarea() {
+        return idarea;
+    }
+
+    public void setIdarea(Long idarea) {
+        this.idarea = idarea;
     }
 
     public Long getIdvendorbroker() {

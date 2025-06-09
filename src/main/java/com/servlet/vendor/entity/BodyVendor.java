@@ -18,6 +18,15 @@ public class BodyVendor {
     private Boolean isparent;
     private Long idvendorparent;
     private Long idvendorbroker;
+    private Long idarea;
+
+    public Long getIdarea() {
+        return idarea;
+    }
+
+    public void setIdarea(Long idarea) {
+        this.idarea = idarea;
+    }
 
     public Long getIdvendorbroker() {
         return idvendorbroker;

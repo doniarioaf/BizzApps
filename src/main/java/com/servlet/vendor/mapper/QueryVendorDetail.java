@@ -19,6 +19,7 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         sqlBuilder.append("data.packing as packing, data.kurir as kurir, ");
         sqlBuilder.append("data.komisi as komisi, data.profit as profit,data.value1 as value1, ");
         sqlBuilder.append("ven.nama as vennama, ven.alias as venalias, ");
+        sqlBuilder.append("area.id as idarea, area.nama as areaname, ");
         sqlBuilder.append("data.idvendorbroker as idvendorbroker, venbroker.nama as venbrokernama, venbroker.alias as venbrokeralias, ");
         sqlBuilder.append("data.createddate as createddate, data.modifieddate as modifieddate, data.deletedate as deletedate, ");
         sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama, userdelete.nama as deletenama ");
@@ -28,6 +29,7 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         sqlBuilder.append("left join m_user_apps as userdelete on userdelete.id = data.deleteby ");
         sqlBuilder.append("left join m_vendor as ven on ven.id = data.idvendorparent ");
         sqlBuilder.append("left join m_vendor as venbroker on venbroker.id = data.idvendorbroker ");
+        sqlBuilder.append("left join m_area as area on area.id = data.idarea ");
 
         this.schemaSql = sqlBuilder.toString();
     }
@@ -65,6 +67,8 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         final Long idvendorbroker = rs.getLong("idvendorbroker");
         final String venbrokernama = rs.getString("venbrokernama");
         final String venbrokeralias = rs.getString("venbrokeralias");
+        final Long idarea = rs.getLong("idarea");
+        final String areaname = rs.getString("areaname");
 
         VendorData data = new VendorData();
         data.setId(id);
@@ -94,6 +98,8 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         data.setIdvendorbroker(idvendorbroker);
         data.setVendorBrokerName(venbrokernama);
         data.setVendorBrokerAlias(venbrokeralias);
+        data.setIdarea(idarea);
+        data.setAreaName(areaname);
         return data;
     }
 }
