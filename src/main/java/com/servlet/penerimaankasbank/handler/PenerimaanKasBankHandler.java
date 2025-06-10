@@ -851,21 +851,25 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 	}
 
 	@Override
-	public List<DetailPenerimaanKasBankDataLabaRugi> getListDetailReportLabaRugi(Long idcompany, Long idbranch, Long idbank,String listidinvoice,Long fromDate, Long toDate) {
+	public List<DetailPenerimaanKasBankDataLabaRugi> getListDetailReportLabaRugi(Long idcompany, Long idbranch, Long idbank,String listidinvoice,Long fromDate, Long toDate, String listidworkorder) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetDataDetailPenerimaanReportLabaRugi().schema());
 		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and penerimaan.isdelete = false ");
 		if(idbank != null){
 			sqlBuilder.append(" and penerimaan.idbank = "+idbank+" ");
 		}
-		if(listidinvoice != null && !listidinvoice.equals("")){
+		if(listidinvoice != null && !listidinvoice.equals("") && listidworkorder != null && !listidworkorder.equals("")){
+			sqlBuilder.append(" and ( data.idinvoice in ("+listidinvoice+") or data.idworkorder in ("+listidworkorder+") )");
+		}else{
 			sqlBuilder.append(" and data.idinvoice in ("+listidinvoice+") ");
 		}
+
 		if(fromDate != null && toDate != null){
 			sqlBuilder.append(" and penerimaan.receivedate >= '"+new java.sql.Date(fromDate)+"' and penerimaan.receivedate <= '"+new java.sql.Date(toDate)+"' ");
 		}
 
 		sqlBuilder.append(" order by penerimaan.receivedate ");
+
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetDataDetailPenerimaanReportLabaRugi(), queryParameters);
 	}
@@ -885,7 +889,7 @@ public class PenerimaanKasBankHandler implements PenerimaanKasBankService{
 			sqlBuilder.append(" and penerimaan.receivedate >= '"+new java.sql.Date(fromDate)+"' and penerimaan.receivedate <= '"+new java.sql.Date(toDate)+"' ");
 		}
 
-		sqlBuilder.append(" and inv.isdelete = false ");
+		sqlBuilder.append(" and (inv.isdelete = false or inv.isdelete isnull) ");
 		sqlBuilder.append(" and penerimaan.isdelete = false ");
 
 		sqlBuilder.append(" order by penerimaan.receivedate ");
