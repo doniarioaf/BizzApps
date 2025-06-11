@@ -1,0 +1,340 @@
+package com.servlet.pinjaman.handler;
+
+import com.servlet.deposit.entity.Deposit;
+import com.servlet.deposit.entity.DepositDetail;
+import com.servlet.deposit.entity.DepositList;
+import com.servlet.deposit.mapper.QueryDetailData;
+import com.servlet.deposit.mapper.QueryListData;
+import com.servlet.filedocument.entity.BodyFileDocument;
+import com.servlet.filedocument.entity.FileDocumentData;
+import com.servlet.filedocument.service.FileDocumentService;
+import com.servlet.historyapps.service.HistoryAppsService;
+import com.servlet.pinjaman.entity.*;
+import com.servlet.pinjaman.mapper.PinjamanQueryDetail;
+import com.servlet.pinjaman.mapper.PinjamanQueryListData;
+import com.servlet.pinjaman.repo.PinjamanRepo;
+import com.servlet.pinjaman.service.PinjamanService;
+import com.servlet.purchasereceive.entity.PurchaseReceiveDataList;
+import com.servlet.purchasereceive.service.PurchaseReceiveService;
+import com.servlet.runningnumber.service.RunningNumberService;
+import com.servlet.shared.ConstansCodeMessage;
+import com.servlet.shared.ConstantCodeDocument;
+import com.servlet.shared.ReturnData;
+import com.servlet.shared.ValidationDataMessage;
+import com.servlet.upload.image.FileStorageService;
+import com.servlet.upload.image.InfoFile;
+import com.servlet.vendor.entity.ListVendorData;
+import com.servlet.vendor.entity.ParamVendor;
+import com.servlet.vendor.service.VendorService;
+import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class PinjamanHandler implements PinjamanService {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private PinjamanRepo repo;
+
+    @Autowired
+    private FileDocumentService fileDocumentService;
+    @Autowired
+    private FileStorageService fileStorageService;
+    @Autowired
+    private VendorService vendorService;
+
+    @Autowired
+    private HistoryAppsService historyAppsService;
+
+    @Autowired
+    private PurchaseReceiveService purchaseReceiveService;
+
+    @Autowired
+    private RunningNumberService runningNumberService;
+
+    protected final String namaMenu = "Pinjaman";
+
+    @Override
+    public List<PinjamanList> getList(ParameterPinjaman param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new PinjamanQueryListData().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.isdelete = false  ");
+        if(param.getParameterList().getFrom() != null){
+            Date dt = new Date(param.getParameterList().getFrom());
+            sqlBuilder.append(" and data.date >= '"+dt.toString()+"'");
+        }
+        if(param.getParameterList().getTo() != null){
+            Date dt = new Date(param.getParameterList().getTo());
+            sqlBuilder.append(" and data.date <= '"+dt.toString()+"'");
+        }
+
+        if(param.getParameterList().getIdvendor() != null){
+            sqlBuilder.append(" and data.idvendor = "+param.getParameterList().getIdvendor().longValue()+" ");
+        }
+//        if(param.getIsactive() != null && !param.getIsactive().equals("")){
+//            if(param.getIsactive().equals("Y")){
+//                sqlBuilder.append(" and data.isactive = true ");
+//            }else{
+//                sqlBuilder.append(" and data.isactive = false ");
+//            }
+//
+//        }
+        sqlBuilder.append(" order by  data.date desc ");
+        final Object[] queryParameters = new Object[] {param.getIdcompany()};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new PinjamanQueryListData(), queryParameters);
+    }
+
+    @Override
+    public PinjamanDetail getDetail(ParameterPinjaman param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new PinjamanQueryDetail().schema());
+        sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.isdelete = false  ");
+        final Object[] queryParameters = new Object[] {param.getId(),param.getIdcompany()};
+        List<PinjamanDetail> list = this.jdbcTemplate.query(sqlBuilder.toString(), new PinjamanQueryDetail(), queryParameters);
+        if(list != null && list.size() > 0){
+            PinjamanDetail data = list.get(0);
+            FileDocumentData file  =fileDocumentService.getDetail(data.getId(),namaMenu,param.getIdcompany(),param.getIdbranch());
+            if(file != null){
+                data.setFileId(file.getId());
+                data.setFileName(file.getFilename());
+            }
+            return data;
+        }
+        return null;
+    }
+
+    @Override
+    public ReturnData save(ParameterPinjaman param) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+
+        if(validations.size() == 0) {
+            ListVendorData ven = vendorService.checkVendorIsParent(param.getIdcompany(),param.getIdbranch(), param.getBody().getIdvendor());
+            if(ven == null){
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_PARENT, "Vendor Bukan Parent");
+                validations.add(msg);
+            }
+        }
+
+        String docNumber = "";
+        if(validations.size() == 0) {
+            docNumber = runningNumberService.getDocNumber(param.getIdcompany(), param.getIdbranch(), ConstantCodeDocument.DOC_PINJAMAN, ts);
+            if(docNumber.equals("")) {
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_GENERATE_DOC_NUMBER,"Gagal Generate Document Number");
+                validations.add(msg);
+            }
+        }
+        if(validations.size() == 0) {
+            try {
+                Pinjaman table = new Pinjaman();
+                table.setIdcompany(param.getIdcompany());
+                table.setIdbranch(param.getIdbranch());
+                table.setNodocument(docNumber);
+                table.setIdvendor(param.getBody().getIdvendor());
+                table.setAmount(param.getBody().getAmount());
+                table.setDate(new Date(param.getBody().getDate()));
+                table.setIsactive(true);
+                table.setCreateddate(ts);
+                table.setCreatedby(param.getIduser());
+                idsave = repo.saveAndFlush(table).getId();
+            }catch (Exception e) {
+                runningNumberService.rollBackDocNumber(param.getIdcompany(), param.getIdbranch(), ConstantCodeDocument.DOC_PINJAMAN);
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
+        }
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public ReturnData update(ParameterPinjaman param) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        Pinjaman table = repo.getById(param.getId());
+        if(!table.getIsactive()){
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.STATUS_DEPOSIT_NON_ACTIVE,"Status Deposit Non Active");
+            validations.add(msg);
+        }
+        if(validations.size() == 0) {
+            try {
+//                double summaryDeposit = calculateAmountByIdVendorNotInIDDeposit(id, idcompany, idbranch, table.getIdvendor()).doubleValue() + body.getAmount().doubleValue();
+//                List<Long> listidven = vendorService.getListSubIdParent(idcompany, idbranch, table.getIdvendor());
+//                //kenapa di add, karena di anggap ini idparent, jika query diatas ga dapet, hanya sub nya saja
+//                listidven.add(table.getIdvendor());
+//                String listidvendor = "";
+//                if (listidven != null && listidven.size() > 0) {
+//                    listidvendor = listidven.toString().replaceAll("\\[", "");
+//                    listidvendor = listidvendor.replaceAll("\\]", "");
+//                }
+
+//                double summarySetorPurchaseReceive = purchaseReceiveService.calculateSetorByIdVendor(idcompany, idbranch, null, listidvendor).doubleValue();
+//                if (summarySetorPurchaseReceive > summaryDeposit) {
+//                    ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.TOTAL_SETOR_GREATER_THAN, "Total Setor Lebih besar dari total deposit");
+//                    validations.add(msg);
+//                }
+//                if (validations.size() == 0) {
+//                    PurchaseReceiveDataList check = purchaseReceiveService.checkIdDeposit(id);
+//                    if (check != null) {
+//                        ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_PURCHASERECEIVE, "deposit ini terpasang pada purchase receive (" + check.getNodocument() + ") ");
+//                        validations.add(msg);
+//                    }
+//                }
+                if (validations.size() == 0) {
+                    ListVendorData ven = vendorService.checkVendorIsParent(param.getIdcompany(), param.getIdbranch(), param.getBody().getIdvendor());
+                    if (ven == null) {
+                        ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_PARENT, "Vendor Bukan Parent");
+                        validations.add(msg);
+                    }
+                }
+                if (validations.size() == 0 && !table.isIsdelete()) {
+                    String dataBefore = table.toString();
+                    table.setDate(new Date(param.getBody().getDate()));
+                    table.setAmount(param.getBody().getAmount());
+                    table.setModifieddate(ts);
+                    table.setModifiedby(param.getIduser());
+                    idsave = repo.saveAndFlush(table).getId();
+
+                    String data = table.toString();
+                    historyAppsService.saveHistory(param.getIdcompany(), param.getIdbranch(), param.getIduser(), "EDIT", namaMenu, "", data, dataBefore, ts);
+                }
+            }catch (Exception e) {
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
+        }
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public ReturnData delete(ParameterPinjaman param) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        Pinjaman table = repo.getById(param.getId());
+        if(!table.getIsactive()){
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.STATUS_DEPOSIT_NON_ACTIVE,"Status Deposit Non Active");
+            validations.add(msg);
+        }
+
+        if(validations.size() == 0) {
+            try {
+//                double summaryDeposit = calculateAmountByIdVendorNotInIDDeposit(id, idcompany, idbranch, table.getIdvendor()).doubleValue();
+//                List<Long> listidven = vendorService.getListSubIdParent(idcompany, idbranch, table.getIdvendor());
+//                //kenapa di add, karena di anggap ini idparent, jika query diatas ga dapet, hanya sub nya saja
+//                listidven.add(table.getIdvendor());
+//                String listidvendor = "";
+//                if (listidven != null && listidven.size() > 0) {
+//                    listidvendor = listidven.toString().replaceAll("\\[", "");
+//                    listidvendor = listidvendor.replaceAll("\\]", "");
+//                }
+//
+//                double summarySetorPurchaseReceive = purchaseReceiveService.calculateSetorByIdVendor(idcompany, idbranch, null, listidvendor).doubleValue();
+//                if (summarySetorPurchaseReceive > summaryDeposit) {
+//                    ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.TOTAL_SETOR_GREATER_THAN, "Total Setor Lebih besar dari total deposit");
+//                    validations.add(msg);
+//                }
+//
+//                if (validations.size() == 0) {
+//                    PurchaseReceiveDataList check = purchaseReceiveService.checkIdDeposit(id);
+//                    if (check != null) {
+//                        ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_PURCHASERECEIVE, "deposit ini terpasang pada purchase receive (" + check.getNodocument() + ") ");
+//                        validations.add(msg);
+//                    }
+//                }
+                if (validations.size() == 0) {
+                    table.setIsdelete(true);
+                    table.setDeletedate(ts);
+                    table.setDeleteby(param.getIduser());
+                    idsave = repo.saveAndFlush(table).getId();
+
+                    String data = table.toString();
+                    historyAppsService.saveHistory(param.getIdcompany(), param.getIdbranch(), param.getIduser(), "DELETE", namaMenu, data, "", "", ts);
+                }
+            }catch (Exception e) {
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
+        }
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public PinjamanTemplate getTemplate(ParameterPinjaman param) {
+        PinjamanTemplate template = new PinjamanTemplate();
+        ParamVendor paramVendor = new ParamVendor();
+        paramVendor.setOnlyParent("Y");
+        template.setVendorOpt(vendorService.getListDropdown(param.getIdcompany(), param.getIdbranch(),paramVendor));
+        return template;
+    }
+
+    @Override
+    public ReturnData uploadFileDoc(ParameterPinjaman param) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        if(validations.size() == 0) {
+            try{
+                byte[] fileencode = Base64.encodeBase64(param.getFile().getBytes());
+                String result = new String(fileencode);
+                InfoFile infofile = fileStorageService.getInfoFile(param.getFile());
+                String fileName = infofile.getNamaFile();//fileStorageService.storeFile(file);
+                String contentType = infofile.getContectType();//fileStorageService.getContentType(file);
+
+                if(contentType.equals("application/pdf") || contentType.equals("image/jpeg") || contentType.equals("image/jpg") || contentType.equals("image/png")) {
+
+                }else {
+                    ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_DOCUMENT_INCORRECT_FORMAT,"Hanya format PDF,JPG,PNG yang bisa di upload");
+                    validations.add(msg);
+                }
+                if(validations.size() == 0) {
+                    BodyFileDocument bodyFileDocument = new BodyFileDocument();
+                    bodyFileDocument.setIddata(param.getId());
+                    bodyFileDocument.setMenu(namaMenu);
+                    bodyFileDocument.setFilename(fileName);
+                    bodyFileDocument.setFiledocument(result);
+                    bodyFileDocument.setFilecontenttype(contentType);
+                    ReturnData data = fileDocumentService.uploadDoc(param.getIdcompany(), param.getIdbranch(), param.getIduser(), ts,bodyFileDocument);
+                    idsave = data.getId();
+                    if(data.getValidations().size() > 0){
+                        validations.add(data.getValidations().get(0));
+                    }
+                }
+            }catch (Exception e) {
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
+        }
+
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public FileDocumentData downloadFile(ParameterPinjaman param) {
+        return fileDocumentService.getDetail(param.getId(), namaMenu, param.getIdcompany(), param.getIdbranch());
+    }
+}

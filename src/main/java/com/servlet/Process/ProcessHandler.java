@@ -45,6 +45,11 @@ import com.servlet.pelunasanhutang.service.PelunasanHutangService;
 import com.servlet.pelunasanpiutang.entity.BodyPelunasanPiutang;
 import com.servlet.pelunasanpiutang.entity.FilterParamPelunasanPiutang;
 import com.servlet.pelunasanpiutang.service.PelunasanPiutangService;
+import com.servlet.pinjaman.entity.BodyPinjaman;
+import com.servlet.pinjaman.entity.ParameterPinjaman;
+import com.servlet.pinjaman.entity.PinjamanList;
+import com.servlet.pinjaman.entity.PinjamanParameterList;
+import com.servlet.pinjaman.service.PinjamanService;
 import com.servlet.pricelist.entity.BodyPriceList;
 import com.servlet.pricelist.service.PriceService;
 import com.servlet.product.entity.BodyProduct;
@@ -167,6 +172,9 @@ public class ProcessHandler implements ProcessService{
 
 	@Autowired
 	KomisiService komisiService;
+
+	@Autowired
+	PinjamanService pinjamanService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -1076,6 +1084,84 @@ public class ProcessHandler implements ProcessService{
 				}
 			}
 
+			else if(codepermission.equals(ConstansPermission.CREATE_PINJAMAN)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				ReturnData valReturn = new ReturnData();
+
+				if(type.equals("CREATE")) {
+					BodyPinjaman body = (BodyPinjaman) param.get("body");
+					ParameterPinjaman paramHandler = new ParameterPinjaman();
+					paramHandler.setIdcompany(auth.getIdcompany());
+					paramHandler.setIdbranch(auth.getIdbranch());
+					paramHandler.setIduser(auth.getId());
+					paramHandler.setBody(body);
+					valReturn = pinjamanService.save(paramHandler);
+				}else if(type.equals("UPLOADFILE")) {
+					long id = (long) param.get("id");
+					MultipartFile file = (MultipartFile) param.get("body");
+
+					ParameterPinjaman paramHandler = new ParameterPinjaman();
+					paramHandler.setId(id);
+					paramHandler.setIdcompany(auth.getIdcompany());
+					paramHandler.setIdbranch(auth.getIdbranch());
+					paramHandler.setIduser(auth.getId());
+					paramHandler.setFile(file);
+
+					valReturn = pinjamanService.uploadFileDoc(paramHandler);
+				}
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}
+
+			else if(codepermission.equals(ConstansPermission.EDIT_PINJAMAN)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyPinjaman body  = (BodyPinjaman) param.get("body");
+
+				ParameterPinjaman paramHandler = new ParameterPinjaman();
+				paramHandler.setId(id);
+				paramHandler.setIdcompany(auth.getIdcompany());
+				paramHandler.setIdbranch(auth.getIdbranch());
+				paramHandler.setIduser(auth.getId());
+				paramHandler.setBody(body);
+
+				ReturnData valReturn = pinjamanService.update(paramHandler);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.DELETE_PINJAMAN)) {
+				long id = (long) data;
+				ParameterPinjaman paramHandler = new ParameterPinjaman();
+				paramHandler.setId(id);
+				paramHandler.setIdcompany(auth.getIdcompany());
+				paramHandler.setIdbranch(auth.getIdbranch());
+				paramHandler.setIduser(auth.getId());
+
+				ReturnData valReturn = pinjamanService.delete(paramHandler);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}
+
+
+
 			else if(codepermission.equals(ConstansPermission.LOGOUT)) {
 				ReturnData valReturn = userAppsService.logout(auth.getId());
 				val.setSuccess(valReturn.isSuccess());
@@ -1656,6 +1742,40 @@ public class ProcessHandler implements ProcessService{
 				}
 				else if(type.equals("TEMPLATE")) {
 					val.setData(cargoService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
+				}
+			}
+
+			else if(codepermission.equals(ConstansPermission.READ_PINJAMAN)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("ALL")) {
+					PinjamanParameterList paramList = (PinjamanParameterList) param.get("param");
+					ParameterPinjaman paramHandler = new ParameterPinjaman();
+					paramHandler.setIdcompany(auth.getIdcompany());
+					paramHandler.setIdbranch(auth.getIdbranch());
+					paramHandler.setIduser(auth.getId());
+					paramHandler.setParameterList(paramList);
+					val.setData(pinjamanService.getList(paramHandler));
+				}else if(type.equals("TEMPLATE")) {
+					ParameterPinjaman paramHandler = new ParameterPinjaman();
+					paramHandler.setIdcompany(auth.getIdcompany());
+					paramHandler.setIdbranch(auth.getIdbranch());
+					val.setData(pinjamanService.getTemplate(paramHandler));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					ParameterPinjaman paramHandler = new ParameterPinjaman();
+					paramHandler.setId(id);
+					paramHandler.setIdcompany(auth.getIdcompany());
+					paramHandler.setIdbranch(auth.getIdbranch());
+					val.setData(pinjamanService.getDetail(paramHandler));
+				}else if(type.equals("DOWNLOADFILE")) {
+					long id = (long) param.get("id");
+
+					ParameterPinjaman paramHandler = new ParameterPinjaman();
+					paramHandler.setId(id);
+					paramHandler.setIdcompany(auth.getIdcompany());
+					paramHandler.setIdbranch(auth.getIdbranch());
+					val.setData(pinjamanService.downloadFile(paramHandler));
 				}
 			}
 

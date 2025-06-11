@@ -98,6 +98,7 @@ public class FileDocumentHandler implements FileDocumentService {
             }catch (Exception e) {
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
                 validations.add(msg);
+                e.printStackTrace();
             }
 
         }

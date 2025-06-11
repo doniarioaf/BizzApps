@@ -1,0 +1,133 @@
+package com.servlet.pinjaman.entity;
+
+import java.sql.Date;
+import java.sql.Timestamp;
+
+public class PinjamanDetail {
+    private Long id;
+    private String nodocument;
+    private Long idvendor;
+    private String vendorName;
+    private String vendorAlias;
+    private Double amount;
+    private Long fileId;
+    private String fileName;
+    private Date date;
+    private String createdbyName;
+    private Timestamp createddate;
+    private String modifiedbyName;
+    private Timestamp modifieddate;
+    private Boolean isactive;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getNodocument() {
+        return nodocument;
+    }
+
+    public void setNodocument(String nodocument) {
+        this.nodocument = nodocument;
+    }
+
+    public Long getIdvendor() {
+        return idvendor;
+    }
+
+    public void setIdvendor(Long idvendor) {
+        this.idvendor = idvendor;
+    }
+
+    public String getVendorName() {
+        return vendorName;
+    }
+
+    public void setVendorName(String vendorName) {
+        this.vendorName = vendorName;
+    }
+
+    public String getVendorAlias() {
+        return vendorAlias;
+    }
+
+    public void setVendorAlias(String vendorAlias) {
+        this.vendorAlias = vendorAlias;
+    }
+
+    public Double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+
+    public Long getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(Long fileId) {
+        this.fileId = fileId;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public String getCreatedbyName() {
+        return createdbyName;
+    }
+
+    public void setCreatedbyName(String createdbyName) {
+        this.createdbyName = createdbyName;
+    }
+
+    public Timestamp getCreateddate() {
+        return createddate;
+    }
+
+    public void setCreateddate(Timestamp createddate) {
+        this.createddate = createddate;
+    }
+
+    public String getModifiedbyName() {
+        return modifiedbyName;
+    }
+
+    public void setModifiedbyName(String modifiedbyName) {
+        this.modifiedbyName = modifiedbyName;
+    }
+
+    public Timestamp getModifieddate() {
+        return modifieddate;
+    }
+
+    public void setModifieddate(Timestamp modifieddate) {
+        this.modifieddate = modifieddate;
+    }
+
+    public Boolean getIsactive() {
+        return isactive;
+    }
+
+    public void setIsactive(Boolean isactive) {
+        this.isactive = isactive;
+    }
+}

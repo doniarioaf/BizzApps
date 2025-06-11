@@ -126,5 +126,10 @@ public class ConstansPermission {
 	public static final String EDIT_KOMISI = "EDIT_KOMISI";
 	public static final String DELETE_KOMISI = "DELETE_KOMISI";
 	public static final String READ_REPORT_KOMISI = "READ_REPORT_KOMISI";
+
+	public static final String READ_PINJAMAN = "READ_PINJAMAN";
+	public static final String CREATE_PINJAMAN = "CREATE_PINJAMAN";
+	public static final String EDIT_PINJAMAN = "EDIT_PINJAMAN";
+	public static final String DELETE_PINJAMAN = "DELETE_PINJAMAN";
 	
 }
