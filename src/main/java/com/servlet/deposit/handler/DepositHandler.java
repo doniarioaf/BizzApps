@@ -138,7 +138,7 @@ public class DepositHandler implements DepositService {
             idven = idvendor;
         }
         List<Long> listidven = vendorService.getListSubIdParent(idcompany,idbranch,idven);
-        //kenapa di add, karena di anggap ini idparent, jika query diatas ga dapet, hanya sub nya saja
+        //kenapa di add, karena di anggap ini idparent, jika query diatas ga dapet hanya sub nya saja
         listidven.add(idven);
         String listidvendor = "";
         if(listidven != null && listidven.size() > 0){

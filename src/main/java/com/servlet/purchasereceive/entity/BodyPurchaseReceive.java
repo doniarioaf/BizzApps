@@ -52,9 +52,18 @@ public class BodyPurchaseReceive {
 
     private boolean isdefaultvaluesetor;
     private Double setor;
+    private Double setor_pinjaman;
     private Double tambahdeposit;
     private Long iddraftpurchasereceive;
     private Long idarea;
+
+    public Double getSetor_pinjaman() {
+        return setor_pinjaman;
+    }
+
+    public void setSetor_pinjaman(Double setor_pinjaman) {
+        this.setor_pinjaman = setor_pinjaman;
+    }
 
     public Long getIdarea() {
         return idarea;

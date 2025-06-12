@@ -22,6 +22,7 @@ import com.servlet.pelunasanhutang.entity.FilterParamPelunasanHutang;
 import com.servlet.pelunasanhutang.entity.PelunasanHutangDataNotJoin;
 import com.servlet.pelunasanhutang.entity.ReportPelunasanHutangDocumentHutang;
 import com.servlet.pelunasanhutang.service.PelunasanHutangService;
+import com.servlet.pinjaman.service.PinjamanService;
 import com.servlet.pricelist.service.PriceService;
 import com.servlet.product.service.ProductService;
 import com.servlet.purchasereceive.entity.*;
@@ -106,6 +107,10 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     private AreaService areaService;
     @Autowired
     private KomisiService komisiService;
+
+    @Autowired
+    private PinjamanService pinjamanService;
+
     protected final String namaMenu = "PURCHASE_RECEIVE";
 
     @Override
@@ -151,6 +156,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             data.setCharges(getPrintDataCharge(id));
             data.setInventori(getPrintDataItemsInventori(id));
             data.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch,data.getIdvendor()));
+            data.setSisaPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch, data.getIdvendor()));
             return data;
         }
         return null;
@@ -219,7 +225,8 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                 table.setAccountnamebank(body.getAccountnamebank());
                 table.setTotalprice(body.getTotalprice());
                 table.setSetor(body.getSetor());
-                table.setOutstanding(body.getTotalprice().doubleValue() - body.getSetor().doubleValue());
+                table.setSetor_pinjaman(body.getSetor_pinjaman());
+                table.setOutstanding(body.getTotalprice().doubleValue() - body.getSetor().doubleValue() - body.getSetor_pinjaman().doubleValue());
                 table.setIsdefaultvaluesetor(body.isIsdefaultvaluesetor());
                 table.setIddeposit(iddeposit);
                 table.setIddraftpurchasereceive(body.getIddraftpurchasereceive());
@@ -309,9 +316,10 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                     table.setAccountnamebank(body.getAccountnamebank());
                     table.setTotalprice(body.getTotalprice());
                     table.setSetor(body.getSetor());
+                    table.setSetor_pinjaman(body.getSetor_pinjaman());
                     table.setIsdefaultvaluesetor(body.isIsdefaultvaluesetor());
                     table.setIdarea(body.getIdarea());
-                    table.setOutstanding(body.getTotalprice().doubleValue() - body.getSetor().doubleValue());
+                    table.setOutstanding(body.getTotalprice().doubleValue() - body.getSetor().doubleValue() - body.getSetor_pinjaman().doubleValue());
                     table.setFlightno(body.getFlightno());
                     table.setSmu(body.getSmu());
                     table.setNotes2(body.getNotes2());
@@ -441,6 +449,24 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         }
         final Object[] queryParameters = new Object[] {idcompany};
         List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateAmountSetor(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return 0.0;
+    }
+
+    @Override
+    public Double calculateSetorPinjamanByIdVendor(Long idcompany, Long idbranch, Long idvendor,String listidvendor) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountSetorPinjaman().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.isdelete = false ");
+        if(idvendor != null){
+            sqlBuilder.append(" and data.idvendor = "+idvendor+" ");
+        }
+        if(listidvendor != null && !listidvendor.equals("")){
+            sqlBuilder.append(" and data.idvendor in ("+listidvendor+") ");
+        }
+        final Object[] queryParameters = new Object[] {idcompany};
+        List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateAmountSetorPinjaman(), queryParameters);
         if(list != null && list.size() > 0){
             return list.get(0);
         }

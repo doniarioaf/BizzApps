@@ -3,6 +3,7 @@ package com.servlet.pinjaman.handler;
 import com.servlet.deposit.entity.Deposit;
 import com.servlet.deposit.entity.DepositDetail;
 import com.servlet.deposit.entity.DepositList;
+import com.servlet.deposit.mapper.QueryCalculateAmountDeposit;
 import com.servlet.deposit.mapper.QueryDetailData;
 import com.servlet.deposit.mapper.QueryListData;
 import com.servlet.filedocument.entity.BodyFileDocument;
@@ -12,6 +13,7 @@ import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.pinjaman.entity.*;
 import com.servlet.pinjaman.mapper.PinjamanQueryDetail;
 import com.servlet.pinjaman.mapper.PinjamanQueryListData;
+import com.servlet.pinjaman.mapper.QueryCalculateAmountPinjaman;
 import com.servlet.pinjaman.repo.PinjamanRepo;
 import com.servlet.pinjaman.service.PinjamanService;
 import com.servlet.purchasereceive.entity.PurchaseReceiveDataList;
@@ -336,5 +338,52 @@ public class PinjamanHandler implements PinjamanService {
     @Override
     public FileDocumentData downloadFile(ParameterPinjaman param) {
         return fileDocumentService.getDetail(param.getId(), namaMenu, param.getIdcompany(), param.getIdbranch());
+    }
+
+    @Override
+    public Double calculateAmountByIdVendor(Long idcompany, Long idbranch, Long idvendor) {
+        Long idven = vendorService.getIdParent(idcompany,idbranch,idvendor);
+        if(idven == null){
+            idven = idvendor;
+        }else if(idven == 0){
+            idven = idvendor;
+        }
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountPinjaman().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idvendor = ?  and data.isdelete = false ");
+        final Object[] queryParameters = new Object[] {idcompany,idven};
+        List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateAmountPinjaman(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return 0.0;
+    }
+
+    @Override
+    public Double calculateSisaPinjamanByIdVendor(Long idcompany, Long idbranch, Long idvendor) {
+        double summaryAmount = calculateAmountByIdVendor(idcompany,idbranch,idvendor).doubleValue();
+        Long idven = vendorService.getIdParent(idcompany,idbranch,idvendor);
+        if(idven == null){
+            idven = idvendor;
+        }else if(idven == 0){
+            idven = idvendor;
+        }
+        List<Long> listidven = vendorService.getListSubIdParent(idcompany,idbranch,idven);
+        //kenapa di add, karena di anggap ini idparent, jika query diatas ga dapet hanya sub nya saja
+        listidven.add(idven);
+        String listidvendor = "";
+        if(listidven != null && listidven.size() > 0){
+            listidvendor = listidven.toString().replaceAll("\\[","");
+            listidvendor = listidvendor.replaceAll("\\]","");
+        }
+
+        double summarySetorPinjamanPurchaseReceive =  0;//purchaseReceiveService.calculateSetorByIdVendor(idcompany,idbranch,idvendor).doubleValue();
+        if(!listidvendor.equals("")){
+            summarySetorPinjamanPurchaseReceive =  purchaseReceiveService.calculateSetorPinjamanByIdVendor(idcompany,idbranch,null,listidvendor).doubleValue();
+        }else{
+            summarySetorPinjamanPurchaseReceive =  purchaseReceiveService.calculateSetorPinjamanByIdVendor(idcompany,idbranch,idvendor,"").doubleValue();
+        }
+        double hasil = summaryAmount - summarySetorPinjamanPurchaseReceive;
+        return hasil;
+
     }
 }

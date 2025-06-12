@@ -18,4 +18,6 @@ public interface PinjamanService {
     PinjamanTemplate getTemplate(ParameterPinjaman param);
     ReturnData uploadFileDoc(ParameterPinjaman param);
     FileDocumentData downloadFile(ParameterPinjaman param);
+    Double calculateAmountByIdVendor(Long idcompany, Long idbranch, Long idvendor);
+    Double calculateSisaPinjamanByIdVendor(Long idcompany, Long idbranch, Long idvendor);
 }

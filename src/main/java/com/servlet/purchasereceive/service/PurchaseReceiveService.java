@@ -24,6 +24,7 @@ public interface PurchaseReceiveService {
     ReturnData catatDownload(Long id,Long idcompany, Long idbranch, Long iduser);
     SearchDataTemplateByVendor searchDataByVendor(Long idcompany, Long idbranch,Long idvendor);
     Double calculateSetorByIdVendor(Long idcompany, Long idbranch, Long idvendor,String listidvendor);
+    Double calculateSetorPinjamanByIdVendor(Long idcompany, Long idbranch, Long idvendor,String listidvendor);
     PrintDataPurchaseReceive printNotaPurchaseReceive(Long idcompany, Long idbranch,Long iduser, Long id,String printtype);
     Double calculateSetorByIdVendorAndCreatedDate(Long idcompany, Long idbranch, Long idvendor, Long date, String listidvendor);
     PurchaseReceiveDataList checkIdDeposit(Long iddeposit);

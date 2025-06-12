@@ -38,12 +38,19 @@ public class PurchaseReceive implements Serializable {
      * jika false, nilai tergantung inputan
      */
     private boolean isdefaultvaluesetor;
+
+
+    /**
+     * setor a/ setoran atau memotong uang dari deposit. nilai setor a/ nilai deposit yang digunakan. akan mengurangi total jumlah deposit
+     * setor_pinjaman a/ setoran atau memotong uang dari pinjaman. nilai setor_pinjaman a/ nilai pinjaman yang digunakan. akan mengurangi total jumlah pinjaman
+     */
     private Double setor;
+    private Double setor_pinjaman;
 
     /**
      * iddeposit
      * jika penambahan dilakukan ketika submit pada menu purchasereceive
-     * jika tidak value null
+     * jika tidak value null / 0
      */
     private Long iddeposit;
     private Long iddraftpurchasereceive;
@@ -58,6 +65,14 @@ public class PurchaseReceive implements Serializable {
     private String flightno;
     private String smu;
     private String notes2;
+
+    public Double getSetor_pinjaman() {
+        return setor_pinjaman;
+    }
+
+    public void setSetor_pinjaman(Double setor_pinjaman) {
+        this.setor_pinjaman = setor_pinjaman;
+    }
 
     public String getFlightno() {
         return flightno;

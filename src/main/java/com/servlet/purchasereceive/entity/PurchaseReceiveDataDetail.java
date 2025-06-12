@@ -25,6 +25,7 @@ public class PurchaseReceiveDataDetail {
     private Double setor;
     private Long iddeposit;
     private Double sisaDeposit;
+    private Double sisaPinjaman;
     private Long iddraftpurchasereceive;
     private String nodocumentDraft;
     private String noSmuDraft;
@@ -35,6 +36,14 @@ public class PurchaseReceiveDataDetail {
     private String flightno;
     private String smu;
     private String notes2;
+
+    public Double getSisaPinjaman() {
+        return sisaPinjaman;
+    }
+
+    public void setSisaPinjaman(Double sisaPinjaman) {
+        this.sisaPinjaman = sisaPinjaman;
+    }
 
     public String getFlightno() {
         return flightno;
