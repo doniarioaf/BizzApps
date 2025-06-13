@@ -8,7 +8,16 @@ import java.util.List;
 public class SearchDataTemplateByVendor {
     private List<CategoryProductList> categoryproductOpt;
     private Double sisaDeposit;
+    private Double sisaPinjaman;
     private List<DraftPurchaseReceiveDropDownList> draftPurchaseReceiveOpt;
+
+    public Double getSisaPinjaman() {
+        return sisaPinjaman;
+    }
+
+    public void setSisaPinjaman(Double sisaPinjaman) {
+        this.sisaPinjaman = sisaPinjaman;
+    }
 
     public List<DraftPurchaseReceiveDropDownList> getDraftPurchaseReceiveOpt() {
         return draftPurchaseReceiveOpt;

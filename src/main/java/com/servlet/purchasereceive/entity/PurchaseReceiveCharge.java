@@ -16,6 +16,15 @@ public class PurchaseReceiveCharge implements Serializable {
     private Long qty;
     private Double price;
     private Double subtotalprice;
+    private String chargenamecustom;
+
+    public String getChargenamecustom() {
+        return chargenamecustom;
+    }
+
+    public void setChargenamecustom(String chargenamecustom) {
+        this.chargenamecustom = chargenamecustom;
+    }
 
     public PurchaseReceiveChargePK getPurchaseReceiveChargePK() {
         return purchaseReceiveChargePK;

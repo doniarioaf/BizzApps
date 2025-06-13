@@ -429,6 +429,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         paramCategoryProduct.setIdvendor(idvendor);
         data.setCategoryproductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,paramCategoryProduct));
         data.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch,idvendor));
+        data.setSisaPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch,idvendor));
 
         ParamGetDataDraftPR paramDraftPR = new ParamGetDataDraftPR();
         paramDraftPR.setIdvendor(idvendor);
@@ -1165,6 +1166,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                     table.setQty(val.getQty());
                     table.setPrice(val.getPrice());
                     table.setSubtotalprice(val.getSubtotalprice());
+                    table.setChargenamecustom(val.getChargenamecustom());
                     purchaseReceiveChargeRepo.saveAndFlush(table);
                     listCharge.add(val);
 

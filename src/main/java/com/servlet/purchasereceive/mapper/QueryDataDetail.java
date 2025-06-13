@@ -17,7 +17,7 @@ public class QueryDataDetail implements RowMapper<PurchaseReceiveDataDetail> {
         sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.idvendor as idvendor, ");
         sqlBuilder.append("data.transactiondate as transactiondate, data.koli as koli, data.notes as notes, ");
         sqlBuilder.append("data.bank as bank, data.accountnobank as accountnobank, data.accountnamebank as accountnamebank, ");
-        sqlBuilder.append("data.totalprice as totalprice, data.setor as setor, data.iddeposit as iddeposit,data.isdefaultvaluesetor as isdefaultvaluesetor, data.outstanding as outstanding, ");
+        sqlBuilder.append("data.totalprice as totalprice, data.setor as setor, data.setor_pinjaman as setor_pinjaman, data.iddeposit as iddeposit,data.isdefaultvaluesetor as isdefaultvaluesetor, data.outstanding as outstanding, ");
         sqlBuilder.append("data.flightno as flightno, data.smu as smu, data.notes2 as notes2, ");
         sqlBuilder.append("ven.nama as vennama, ven.alias as venalias, ");
         sqlBuilder.append("data.idarea as idarea, area.nama as areanama, area.alias as areaalias, ");
@@ -52,6 +52,7 @@ public class QueryDataDetail implements RowMapper<PurchaseReceiveDataDetail> {
         final String accountnamebank = rs.getString("accountnamebank");
         final Double totalprice = rs.getDouble("totalprice");
         final Double setor = rs.getDouble("setor");
+        final Double setor_pinjaman = rs.getDouble("setor_pinjaman");
         final Long iddeposit = rs.getLong("iddeposit");
         final String vennama = rs.getString("vennama");
         final String venalias = rs.getString("venalias");
@@ -86,6 +87,7 @@ public class QueryDataDetail implements RowMapper<PurchaseReceiveDataDetail> {
         data.setAccountnamebank(accountnamebank);
         data.setTotalprice(totalprice);
         data.setSetor(setor);
+        data.setSetor_pinjaman(setor_pinjaman);
         data.setIddeposit(iddeposit);
         data.setIsdefaultvaluesetor(isdefaultvaluesetor);
         data.setIddraftpurchasereceive(iddraftpurchasereceive);

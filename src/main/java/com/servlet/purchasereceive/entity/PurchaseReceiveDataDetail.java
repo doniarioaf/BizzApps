@@ -23,6 +23,7 @@ public class PurchaseReceiveDataDetail {
     private Double totalprice;
     private boolean isdefaultvaluesetor;
     private Double setor;
+    private Double setor_pinjaman;
     private Long iddeposit;
     private Double sisaDeposit;
     private Double sisaPinjaman;
@@ -36,6 +37,14 @@ public class PurchaseReceiveDataDetail {
     private String flightno;
     private String smu;
     private String notes2;
+
+    public Double getSetor_pinjaman() {
+        return setor_pinjaman;
+    }
+
+    public void setSetor_pinjaman(Double setor_pinjaman) {
+        this.setor_pinjaman = setor_pinjaman;
+    }
 
     public Double getSisaPinjaman() {
         return sisaPinjaman;
