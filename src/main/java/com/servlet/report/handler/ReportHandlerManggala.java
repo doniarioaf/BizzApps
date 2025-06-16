@@ -3632,6 +3632,9 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 		createCell(row, colomcount, "Nama Customer", style, sheet,columns);
 
 		colomcount++;
+		createCell(row, colomcount, "WO", style, sheet,columns);
+
+		colomcount++;
 		createCell(row, colomcount, "AJU", style, sheet,columns);
 
 		colomcount++;
@@ -3663,7 +3666,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 
 		ParamReportInvoice paraminv = new ParamReportInvoice();
 		paraminv.setFrom(param.getFrom());
-		paraminv.setTo(paraminv.getTo());
+		paraminv.setTo(param.getTo());
 		paraminv.setListCustomerID(listIdCustomer);
 		List<ReportInvoice> listinv = invoiceService.getListReportInvoice(idcompany,idbranch,paraminv);
 		if(listinv != null && listinv.size() > 0){
@@ -3714,6 +3717,9 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 
 				colomcount++;
 				createCell(row, colomcount, inv.getCustomerName(), style, sheet,columns);
+
+				colomcount++;
+				createCell(row, colomcount, inv.getNoWO(), style, sheet,columns);
 
 				colomcount++;
 				createCell(row, colomcount, inv.getAju(), style, sheet,columns);
@@ -3864,6 +3870,9 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 
 			colomcount++;
 			createCell(row, colomcount, "Total", style, sheet,columns);
+
+			colomcount++;
+			createCell(row, colomcount, "", style, sheet,columns);
 
 			colomcount++;
 			createCell(row, colomcount, "", style, sheet,columns);

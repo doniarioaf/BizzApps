@@ -8,6 +8,7 @@ public class ReportInvoice {
     private String noInvoice;
     private String customerName;
     private String aju;
+    private String noWO;
     private Double nilaireimbursement;
     private Double nilaippn;
     private Double nilaijasa;
@@ -24,6 +25,14 @@ public class ReportInvoice {
     private Date tanggalbuktipotong;
     private Double penyesuaian;
     private String ketpenyesuaian;
+
+    public String getNoWO() {
+        return noWO;
+    }
+
+    public void setNoWO(String noWO) {
+        this.noWO = noWO;
+    }
 
     public String getNofakturpajak() {
         return nofakturpajak;

@@ -13,7 +13,7 @@ public class QueryReportInvoice implements RowMapper<ReportInvoice> {
     public QueryReportInvoice() {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(400);
-        sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.tanggal as tanggal, wo.noaju as noaju, data.nilaireimbursement as nilaireimbursement, data.nilaippn as nilaippn, ");
+        sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.tanggal as tanggal, wo.noaju as noaju, wo.nodocument as wonodocument, data.nilaireimbursement as nilaireimbursement, data.nilaippn as nilaippn, ");
         sqlBuilder.append("data.nilaijasa as nilaijasa, data.totalinvoice as totalinvoice, data.nofakturpajak as nofakturpajak, cust.customername as customername, ");
         sqlBuilder.append("penerimaan.id as idpenerimaan, penerimaan.receivedate as penerimaanreceivedate, bank.namabank as namabank, detpenerimaan.nilaijasa as detpenerimaannilaijasa, ");
         sqlBuilder.append("detpenerimaan.nilaibuktipotong as detpenerimaannilaibuktipotong, detpenerimaan.nobuktipotong as detpenerimaannobuktipotong, detpenerimaan.tanggalbuktipotong as detpenerimaantanggalbuktipotong, detpenerimaan.penyesuaian as detpenerimaanpenyesuaian, detpenerimaan.keterangan_penyesuaian as detpenerimaanketerangan_penyesuaian ");
@@ -37,6 +37,7 @@ public class QueryReportInvoice implements RowMapper<ReportInvoice> {
         final String nodocument = rs.getString("nodocument");
         final Date tanggal = rs.getDate("tanggal");
         final String noaju = rs.getString("noaju");
+        final String wonodocument = rs.getString("wonodocument");
         final Double nilaireimbursement = rs.getDouble("nilaireimbursement");
         final Double nilaippn = rs.getDouble("nilaippn");
         final Double nilaijasa = rs.getDouble("nilaijasa");
@@ -59,6 +60,7 @@ public class QueryReportInvoice implements RowMapper<ReportInvoice> {
         data.setTanggalInvoice(tanggal);
         data.setNoInvoice(nodocument);
         data.setAju(noaju);
+        data.setNoWO(wonodocument);
         data.setNilaireimbursement(nilaireimbursement);
         data.setNilaippn(nilaippn);
         data.setNilaijasa(nilaijasa);

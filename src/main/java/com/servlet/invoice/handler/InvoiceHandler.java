@@ -962,11 +962,11 @@ public class InvoiceHandler implements InvoiceService{
 		sqlBuilder.append(" and (penerimaan.idcompany = "+idcompany+" or penerimaan.idcompany isnull) and (penerimaan.idbranch = "+idbranch+" or penerimaan.idbranch isnull) and (penerimaan.isactive = true or penerimaan.isactive isnull)  and (penerimaan.isdelete = false or penerimaan.isdelete isnull) ");
 		if(param.getFrom() != null){
 			Date dt = new Date(param.getFrom());
-			sqlBuilder.append(" and data.tanggal >= '"+dt.toString()+"'");
+			sqlBuilder.append(" and data.tanggal >= '"+dt.toString()+"' ");
 		}
 		if(param.getTo() != null){
 			Date dt = new Date(param.getTo());
-			sqlBuilder.append(" and data.tanggal <= '"+dt.toString()+"'");
+			sqlBuilder.append(" and data.tanggal <= '"+dt.toString()+"' ");
 		}
 		if(param.getListCustomerID() != null && !param.getListCustomerID().equals("")){
 			sqlBuilder.append(" and data.idcustomer in ("+param.getListCustomerID()+") ");
