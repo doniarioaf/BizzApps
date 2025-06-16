@@ -10,6 +10,15 @@ public class BodyCustomer {
     private String grup;
     private String phonenumber;
     private String attention;
+    private String city;
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
 
     public String getGrup() {
         return grup;

@@ -20,6 +20,15 @@ public class CustomerData {
     private Timestamp modifieddate;
     private String deletebyName;
     private Timestamp deletedate;
+    private String city;
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
 
     public String getGrupcode() {
         return grupcode;
