@@ -27,6 +27,7 @@ import com.servlet.report.entity.*;
 import com.servlet.suratjalan.entity.HistorySuratJalanData;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFDataFormat;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -3543,6 +3544,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 
 		int fontHeight = 12;
 		CellStyle style = workbook.createCellStyle();
+		CellStyle styleCenter = workbook.createCellStyle();
 		CellStyle styleBold = workbook.createCellStyle();
 		CellStyle styleAmount = workbook.createCellStyle();
 		XSSFFont font = workbook.createFont();
@@ -3550,6 +3552,10 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 		font.setFontHeight(fontHeight);
 		style.setFont(font);
 		styleAmount.setFont(font);
+
+		styleCenter.setFont(font);
+		styleCenter.setAlignment(HorizontalAlignment.CENTER);
+
 
 		XSSFFont fontBold = workbook.createFont();
 		fontBold.setBold(true);
@@ -3620,49 +3626,49 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 		rowcount++;
 		rowcount++;
 		row = sheet.createRow(rowcount);
-		createCell(row, colomcount, "No", style, sheet,columns);
+		createCell(row, colomcount, "No", styleCenter, sheet,columns);
 
 		colomcount++;
-		createCell(row, colomcount, "Tanggal Invoice", style, sheet,columns);
+		createCell(row, colomcount, "Tanggal Invoice", styleCenter, sheet,columns);
 
 		colomcount++;
-		createCell(row, colomcount, "No. Invoice", style, sheet,columns);
+		createCell(row, colomcount, "No. Invoice", styleCenter, sheet,columns);
 
 		colomcount++;
-		createCell(row, colomcount, "Nama Customer", style, sheet,columns);
+		createCell(row, colomcount, "Nama Customer", styleCenter, sheet,columns);
 
 		colomcount++;
-		createCell(row, colomcount, "WO", style, sheet,columns);
+		createCell(row, colomcount, "WO", styleCenter, sheet,columns);
 
 		colomcount++;
-		createCell(row, colomcount, "AJU", style, sheet,columns);
+		createCell(row, colomcount, "AJU", styleCenter, sheet,columns);
 
 		colomcount++;
-		createCell(row, colomcount, "Tagihan Pihak Ke-3", style, sheet,columns);
+		createCell(row, colomcount, "Tagihan Pihak Ke-3", styleCenter, sheet,columns);
 		colomcount++;
-		createCell(row, colomcount, "PPN", style, sheet,columns);
+		createCell(row, colomcount, "PPN", styleCenter, sheet,columns);
 		colomcount++;
-		createCell(row, colomcount, "Jasa", style, sheet,columns);
+		createCell(row, colomcount, "Jasa", styleCenter, sheet,columns);
 		colomcount++;
-		createCell(row, colomcount, "Total", style, sheet,columns);
+		createCell(row, colomcount, "Total", styleCenter, sheet,columns);
 		colomcount++;
-		createCell(row, colomcount, "No.Seri Faktur Pajak", style, sheet,columns);
+		createCell(row, colomcount, "No.Seri Faktur Pajak", styleCenter, sheet,columns);
 		colomcount++;
-		createCell(row, colomcount, "Tanggal Pelunasan", style, sheet,columns);
+		createCell(row, colomcount, "Tanggal Pelunasan", styleCenter, sheet,columns);
 		colomcount++;
-		createCell(row, colomcount, "Bank", style, sheet,columns);
+		createCell(row, colomcount, "Bank", styleCenter, sheet,columns);
 		colomcount++;
-		createCell(row, colomcount, "Pelunasan Jasa dari customer", style, sheet,columns);
+		createCell(row, colomcount, "Pelunasan Jasa dari customer", styleCenter, sheet,columns);
 		colomcount++;
-		createCell(row, colomcount, "PPH yang dipotong customer", style, sheet,columns);
+		createCell(row, colomcount, "PPH yang dipotong customer", styleCenter, sheet,columns);
 		colomcount++;
-		createCell(row, colomcount, "Nomor Bukti Potong", style, sheet,columns);
+		createCell(row, colomcount, "Nomor Bukti Potong", styleCenter, sheet,columns);
 		colomcount++;
-		createCell(row, colomcount, "Tanggal Bukti Potong", style, sheet,columns);
+		createCell(row, colomcount, "Tanggal Bukti Potong", styleCenter, sheet,columns);
 		colomcount++;
-		createCell(row, colomcount, "Penyesuaian", style, sheet,columns);
+		createCell(row, colomcount, "Penyesuaian", styleCenter, sheet,columns);
 		colomcount++;
-		createCell(row, colomcount, "Ket.Penyesuaian", style, sheet,columns);
+		createCell(row, colomcount, "Ket.Penyesuaian", styleCenter, sheet,columns);
 
 		ParamReportInvoice paraminv = new ParamReportInvoice();
 		paraminv.setFrom(param.getFrom());
@@ -3699,7 +3705,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 				colomcount = 0;
 				rowcount++;
 				row = sheet.createRow(rowcount);
-				createCell(row, colomcount, no, style, sheet,columns);
+				createCell(row, colomcount, no, styleCenter, sheet,columns);
 
 				String transDate = "";
 				try {
@@ -3710,19 +3716,19 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 				}
 
 				colomcount++;
-				createCell(row, colomcount, transDate, style, sheet,columns);
+				createCell(row, colomcount, transDate, styleCenter, sheet,columns);
 
 				colomcount++;
-				createCell(row, colomcount, inv.getNoInvoice(), style, sheet,columns);
+				createCell(row, colomcount, inv.getNoInvoice(), styleCenter, sheet,columns);
 
 				colomcount++;
 				createCell(row, colomcount, inv.getCustomerName(), style, sheet,columns);
 
 				colomcount++;
-				createCell(row, colomcount, inv.getNoWO(), style, sheet,columns);
+				createCell(row, colomcount, inv.getNoWO(), styleCenter, sheet,columns);
 
 				colomcount++;
-				createCell(row, colomcount, inv.getAju(), style, sheet,columns);
+				createCell(row, colomcount, inv.getAju(), styleCenter, sheet,columns);
 
 				styleAmount = workbook.createCellStyle();
 				if(GlobalFunc.checkIsDecimal(inv.getNilaireimbursement())) {
@@ -3778,9 +3784,9 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						}
 
 						colomcount++;
-						createCell(row, colomcount, transDate, style, sheet,columns);
+						createCell(row, colomcount, transDate, styleCenter, sheet,columns);
 						colomcount++;
-						createCell(row, colomcount, inv.getBankName(), style, sheet,columns);
+						createCell(row, colomcount, inv.getBankName(), styleCenter, sheet,columns);
 
 						styleAmount = workbook.createCellStyle();
 						if(GlobalFunc.checkIsDecimal(inv.getPelunasanjasa())) {
@@ -3815,7 +3821,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 							}
 						}
 						colomcount++;
-						createCell(row, colomcount, transDate, style, sheet,columns);
+						createCell(row, colomcount, transDate, styleCenter, sheet,columns);
 
 						styleAmount = workbook.createCellStyle();
 						if(GlobalFunc.checkIsDecimal(inv.getPenyesuaian())) {
@@ -3827,7 +3833,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 						colomcount++;
 						createCell(row, colomcount, inv.getPenyesuaian(), styleAmount, sheet,columns);
 						colomcount++;
-						createCell(row, colomcount, inv.getKetpenyesuaian(), style, sheet,columns);
+						createCell(row, colomcount, inv.getKetpenyesuaian(), styleCenter, sheet,columns);
 
 						no++;
 					}
