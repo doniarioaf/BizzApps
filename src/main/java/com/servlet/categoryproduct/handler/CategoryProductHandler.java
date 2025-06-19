@@ -79,6 +79,7 @@ public class CategoryProductHandler implements CategoryProductService {
             table.setWeightfromingram(body.getWeightfromingram());
             table.setWeighttoingram(body.getWeighttoingram());
             table.setJumlahitemsperkoli(body.getJumlahitemsperkoli());
+            table.setForcategory(body.getForcategory());
             table.setIsdelete(false);
             table.setCreateddate(ts);
             table.setCreatedby(iduser);
@@ -111,6 +112,7 @@ public class CategoryProductHandler implements CategoryProductService {
             table.setWeightfromingram(body.getWeightfromingram());
             table.setWeighttoingram(body.getWeighttoingram());
             table.setJumlahitemsperkoli(body.getJumlahitemsperkoli());
+            table.setForcategory(body.getForcategory());
             table.setModifieddate(ts);
             table.setModifiedby(iduser);
             idsave = repo.saveAndFlush(table).getId();
@@ -175,6 +177,13 @@ public class CategoryProductHandler implements CategoryProductService {
             }
             if(param.getListidcategoryproduct() != null && !param.getListidcategoryproduct().equals("")){
                 sqlBuilder.append(" and data.id in ("+param.getListidcategoryproduct()+")");
+            }
+
+            if(param.getForcategory() != null && !param.getForcategory().equals("")){
+                sqlBuilder.append(" and data.forcategory = '"+param.getForcategory()+"' ");
+            }else{
+                //jika forcategory tidak diisi maka akan tidak tampil
+                sqlBuilder.append(" and data.forcategory = 'none' ");
             }
         }
         sqlBuilder.append(" order by data.weightfromingram desc ");

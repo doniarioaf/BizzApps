@@ -84,6 +84,7 @@ public class PriceHandler implements PriceService {
     public PriceListTemplate getTemplateData(Long idcompany, Long idbranch) {
         ParamTemplate paramCP = new ParamTemplate();
         paramCP.setShowOnlyCpMapping(true);
+        paramCP.setForcategory("CUSTOMER");
 
         PriceListTemplate data = new PriceListTemplate();
         data.setProductOpt(productService.getListAll(idcompany,idbranch));

@@ -216,6 +216,7 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
         data.setProductOpt(productService.getListAll(idcompany,idbranch));
         ParamTemplate paramcp = new ParamTemplate();
         paramcp.setShowOnlyCpMapping(true);
+        paramcp.setForcategory("CUSTOMER");
         data.setCategoryProductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,paramcp));
         return data;
     }

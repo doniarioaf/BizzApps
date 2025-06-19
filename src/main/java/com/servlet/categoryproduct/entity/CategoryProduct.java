@@ -31,6 +31,7 @@ public class CategoryProduct implements Serializable {
     private Timestamp modifieddate;
     private Long deleteby;
     private Timestamp deletedate;
+    private String forcategory;//CUSTOMER / VENDOR
 
     /**
      * jika ada penambahan, tambahkan pada toString. wajib!!
@@ -48,7 +49,16 @@ public class CategoryProduct implements Serializable {
                 ", weightfromingram='" + weightfromingram + '\'' +
                 ", weighttoingram='" + weighttoingram + '\'' +
                 ", jumlahitemsperkoli='" + jumlahitemsperkoli + '\'' +
+                ", forcategory='" + forcategory + '\'' +
                 '}';
+    }
+
+    public String getForcategory() {
+        return forcategory;
+    }
+
+    public void setForcategory(String forcategory) {
+        this.forcategory = forcategory;
     }
 
     public Long getId() {

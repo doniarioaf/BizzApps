@@ -8,6 +8,15 @@ public class CategoryProductList {
     private Integer weightfromingram;
     private Integer weighttoingram;
     private Integer jumlahitemsperkoli;
+    private String forcategory;
+
+    public String getForcategory() {
+        return forcategory;
+    }
+
+    public void setForcategory(String forcategory) {
+        this.forcategory = forcategory;
+    }
 
     public Integer getJumlahitemsperkoli() {
         return jumlahitemsperkoli;

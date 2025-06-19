@@ -311,6 +311,7 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
     public SearchDataTemplateByVendor getTemplateByIdVendor(Long idcompany, Long idbranch, Long idvendor) {
         ParamTemplate paramCategoryProduct = new ParamTemplate();
         paramCategoryProduct.setMenu("DRAFTPURCHASE_RECEIVE");
+        paramCategoryProduct.setForcategory("VENDOR");
         paramCategoryProduct.setIdvendor(idvendor);
 
         SearchDataTemplateByVendor data = new SearchDataTemplateByVendor();

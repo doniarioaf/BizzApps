@@ -13,6 +13,15 @@ public class CategoryProductDetail {
     private Timestamp createddate;
     private String modifiedbyName;
     private Timestamp modifieddate;
+    private String forcategory;
+
+    public String getForcategory() {
+        return forcategory;
+    }
+
+    public void setForcategory(String forcategory) {
+        this.forcategory = forcategory;
+    }
 
     public Integer getWeightfromingram() {
         return weightfromingram;
