@@ -426,6 +426,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         SearchDataTemplateByVendor data = new SearchDataTemplateByVendor();
         ParamTemplate paramCategoryProduct = new ParamTemplate();
         paramCategoryProduct.setMenu("PURCHASE_RECEIVE");
+        paramCategoryProduct.setForcategory("VENDOR");
         paramCategoryProduct.setIdvendor(idvendor);
         data.setCategoryproductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,paramCategoryProduct));
         data.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch,idvendor));
@@ -952,6 +953,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             sqlBuilder.append(" and ven.idvendorbroker notnull ");
         }
 
+        sqlBuilder.append(" order by data.transactiondate ");
 
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPurchaseReceiveKomisi(param.getIdbox()), queryParameters);

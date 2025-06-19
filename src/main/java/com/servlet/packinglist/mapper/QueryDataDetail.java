@@ -19,7 +19,7 @@ public class QueryDataDetail implements RowMapper<PackingListDataDetail> {
         sqlBuilder.append("data.netto as netto, data.koli as koli, data.idpricelist as idpricelist, data.isalreadyupdateprice as isalreadyupdateprice, ");
         sqlBuilder.append("data.createddate as createddate, data.modifieddate as modifieddate, ");
         sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama, ");
-        sqlBuilder.append("cus.nama as cusNama, cus.alias as cusAlias, cus.address as cusAddress ");
+        sqlBuilder.append("cus.nama as cusNama, cus.alias as cusAlias, cus.address as cusAddress, cus.phonenumber as cusphonenumber ");
         sqlBuilder.append("from packinglist as data ");
         sqlBuilder.append("left join m_customer as cus on cus.id = data.idcustomer ");
         sqlBuilder.append("left join m_user_apps as usercreate on usercreate.id = data.createdby ");
@@ -42,6 +42,7 @@ public class QueryDataDetail implements RowMapper<PackingListDataDetail> {
         final String cusNama = rs.getString("cusNama");
         final String cusAlias = rs.getString("cusAlias");
         final String cusAddress = rs.getString("cusAddress");
+        final String cusphonenumber = rs.getString("cusphonenumber");
         final String city = rs.getString("city");
         final String attention = rs.getString("attention");
         final String flightnumber = rs.getString("flightnumber");
@@ -54,6 +55,7 @@ public class QueryDataDetail implements RowMapper<PackingListDataDetail> {
         final Timestamp modifieddate = rs.getTimestamp("modifieddate");
         final String createdname = rs.getString("createdname");
         final String modifiednama = rs.getString("modifiednama");
+
         PackingListDataDetail data = new PackingListDataDetail();
         data.setId(id);
         data.setNodocument(nodocument);
@@ -70,6 +72,7 @@ public class QueryDataDetail implements RowMapper<PackingListDataDetail> {
         data.setCustomerName(cusNama);
         data.setCustomerAlias(cusAlias);
         data.setCustomerAddress(cusAddress);
+        data.setCustomerPhone(cusphonenumber);
         data.setCreateddate(createddate);
         data.setModifieddate(modifieddate);
         data.setCreatedbyName(createdname);

@@ -234,9 +234,11 @@ public class InvoiceHandler implements InvoiceService {
             ValueParameter parambankComp = parameterClientService.getValueByParamName(idcompany,idbranch,"BANK","TEXT");
             ValueParameter parambankAccnoComp = parameterClientService.getValueByParamName(idcompany,idbranch,"BANKACCNO","TEXT");
             ValueParameter parambankAccnameComp = parameterClientService.getValueByParamName(idcompany,idbranch,"BANKACCNAME","TEXT");
+            ValueParameter paramCountryOfOrigin = parameterClientService.getValueByParamName(idcompany,idbranch,"COUNTRYOFORIGIN","TEXT");
 
             PrintInvoice det = list.get(0);
             det.setPackinglist(packingListService.getDetail(det.getIdpackinglist(), idcompany,idbranch));
+            det.setCountryOfOrigin(paramCountryOfOrigin.getStrValue());
             det.setCompanyName(param.getStrValue());
             det.setAddress1(paramAddress1.getStrValue());
             det.setAddress2(paramAddress2.getStrValue());

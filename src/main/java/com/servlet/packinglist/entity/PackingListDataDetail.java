@@ -9,6 +9,7 @@ public class PackingListDataDetail {
     private String nodocument;
     private Date date;
     private Long idcustomer;
+    private String customerPhone;
     private String customerName;
     private String customerAlias;
     private String customerAddress;
@@ -25,6 +26,14 @@ public class PackingListDataDetail {
     private Long idpricelist;
     private Boolean isalreadyupdateprice;
     private List<PackingListDataItemDetail> items;
+
+    public String getCustomerPhone() {
+        return customerPhone;
+    }
+
+    public void setCustomerPhone(String customerPhone) {
+        this.customerPhone = customerPhone;
+    }
 
     public Boolean getIsalreadyupdateprice() {
         return isalreadyupdateprice;

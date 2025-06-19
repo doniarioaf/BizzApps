@@ -16,6 +16,15 @@ public class PackingListDropDown {
     private String awbnumber;
     private Double netto;
     private Long koli;
+    private String customerPhone;
+
+    public String getCustomerPhone() {
+        return customerPhone;
+    }
+
+    public void setCustomerPhone(String customerPhone) {
+        this.customerPhone = customerPhone;
+    }
 
     public Long getId() {
         return id;

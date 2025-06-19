@@ -16,7 +16,7 @@ public class QueryDropDown implements RowMapper<PackingListDropDown> {
         sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.date as date, data.idcustomer as idcustomer, ");
         sqlBuilder.append("data.city as city, data.attention as attention, data.flightnumber as flightnumber, data.awbnumber as awbnumber,  ");
         sqlBuilder.append("data.netto as netto, data.koli as koli, data.idpricelist as idpricelist,  ");
-        sqlBuilder.append("cus.nama as cusNama, cus.alias as cusAlias, cus.address as cusAddress ");
+        sqlBuilder.append("cus.nama as cusNama, cus.alias as cusAlias, cus.address as cusAddress, cus.phonenumber as cusphonenumber ");
         sqlBuilder.append("from packinglist as data ");
         sqlBuilder.append("left join m_customer as cus on cus.id = data.idcustomer ");
 
@@ -43,6 +43,8 @@ public class QueryDropDown implements RowMapper<PackingListDropDown> {
         final String awbnumber = rs.getString("awbnumber");
         final Double netto = rs.getDouble("netto");
         final Long koli = rs.getLong("koli");
+        final String cusphonenumber = rs.getString("cusphonenumber");
+
         PackingListDropDown data = new PackingListDropDown();
         data.setId(id);
         data.setNodocument(nodocument);
@@ -51,6 +53,7 @@ public class QueryDropDown implements RowMapper<PackingListDropDown> {
         data.setCustomerName(cusNama);
         data.setCustomerALias(cusAlias);
         data.setCustomerAddress(cusAddress);
+        data.setCustomerPhone(cusphonenumber);
         data.setCity(city);
         data.setAttention(attention);
         data.setFlightnumber(flightnumber);
