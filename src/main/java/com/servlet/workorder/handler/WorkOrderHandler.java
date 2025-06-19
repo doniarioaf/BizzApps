@@ -753,6 +753,24 @@ public class WorkOrderHandler implements WorkOrderService{
 	}
 
 	@Override
+	public List<WorkOrderData> getListDataWoForReportLabaRugi2(Long idcompany,Long idbranch,String listidwo,Long fromDate, Long toDate) {
+		// TODO Auto-generated method stub
+		final StringBuilder sqlBuilder = new StringBuilder("select " + new WorkOrderReportLabaRugi().schema());
+		sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+
+		sqlBuilder.append(" and data.id in ("+listidwo+") ");
+		if(fromDate != null && toDate != null){
+			sqlBuilder.append(" and penerimaan.receivedate >= '"+new java.sql.Date(fromDate)+"' and penerimaan.receivedate <= '"+new java.sql.Date(toDate)+"' ");
+		}
+
+		sqlBuilder.append(" and (inv.isdelete = false or inv.isdelete isnull) ");
+		sqlBuilder.append(" and penerimaan.isdelete = false ");
+		sqlBuilder.append(" order by penerimaan.receivedate ");
+		final Object[] queryParameters = new Object[] {idcompany,idbranch};
+		return this.jdbcTemplate.query(sqlBuilder.toString(), new WorkOrderReportLabaRugi(), queryParameters);
+	}
+
+	@Override
 	public List<WorkOrderDropDownData> getListDropDownByParam(Long idcompany, Long idbranch, ParamDropDownWO param) {
 		// TODO Auto-generated method stub
 		final StringBuilder sqlBuilder = new StringBuilder("select " + new GetWorkOrderDropdownData().schema());

@@ -9,6 +9,7 @@ public interface ReportServiceManggala {
 	ReportWorkBookExcel getReportKasBank(ParamReportManggala body,long idcompany,long idbranch, long iduser);
 	ReportWorkBookExcel getReportLabaRugi(ParamReportManggala body,long idcompany,long idbranch);
 	ReportWorkBookExcel getReportLabaRugi2(ParamReportManggala body,long idcompany,long idbranch);
+	ReportWorkBookExcel getReportLabaRugi3(ParamReportManggala body,long idcompany,long idbranch);
 	ReportWorkBookExcel getReportSummaryKegiatanTruck(ParamReportManggala body,long idcompany,long idbranch);
 	ReportSummaryKegiatanTructTemplate getSummaryKegiatanTructTemplate(long idcompany,long idbranch);
 	HistoryTruckTemplate getHistoryTrucktTemplate(long idcompany,long idbranch);

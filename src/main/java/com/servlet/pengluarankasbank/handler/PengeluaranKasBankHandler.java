@@ -609,8 +609,6 @@ public class PengeluaranKasBankHandler implements PengeluaranKasBankService{
 			sqlBuilder.append(" and data.idpengeluarankasbank = "+idpengeluaran+" ");
 		}
 		
-		
-		
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new GetTotalAmount(), queryParameters);
 		if(list != null && list.size() > 0) {

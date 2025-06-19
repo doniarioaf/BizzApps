@@ -40,6 +40,7 @@ public interface WorkOrderService {
 	ReturnData changeStatusWO(Long idcompany,Long idbranch,Long id,String Status);
 	List<DetailWorkOrderData> getListContainerByIdWorkOrderForReportStatusInvoice(Long idcompany,Long idbranch,Long idworkorder);
 	List<WorkOrderData> getListDataWoForReportLabaRugi(Long idcompany,Long idbranch,ParamReportManggala param);
+	List<WorkOrderData> getListDataWoForReportLabaRugi2(Long idcompany,Long idbranch,String listidwo,Long fromDate, Long toDate);
 	List<WorkOrderDropDownData> getListDropDownByParam(Long idcompany,Long idbranch,ParamDropDownWO param);
 	List<DetailWorkOrderData> getListContainerByIdWorkOrderForSuratJalan(Long idcompany,Long idbranch,Long idworkorder);
 	ReturnData updateWorkOrderStatus(Long idcompany,Long idbranch,Long iduser,Long id,BodyWorkOrder body);
