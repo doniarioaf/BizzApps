@@ -2618,7 +2618,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 
 				NilaiLabaRugi = SubtotalNilaiPembayaran;
 				List<PengeluaranReportLabaRugi> listPengeluaranMapping = grupingPengluaranByIDWo.get(datawo.getId());
-				
+
 				if (listPengeluaranMapping != null && listPengeluaranMapping.size() > 0 && adapenerimaan && countingDoneWO.get(datawo.getId()).doubleValue() == countingWO.get(datawo.getId()).doubleValue()) {
 					adapengeluaran = true;
 					Double subTotalAmountPengeluaran = 0.0;
