@@ -788,6 +788,7 @@ public class InvoiceHandler implements InvoiceService{
 		if(listIDWO != null && !listIDWO.equals("")){
 			sqlBuilder.append(" and data.idwo in ("+listIDWO+") ");
 		}
+		System.out.println("sqlBuilder "+sqlBuilder.toString());
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new GetInvoiceDataReportLabaRugi(), queryParameters);
 	}

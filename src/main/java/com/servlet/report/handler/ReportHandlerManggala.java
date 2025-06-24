@@ -2225,11 +2225,18 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 
 //		List<String> arridwo = new ArrayList<>();
 		List<String> arridinv = new ArrayList<>();
-//		if(listWO != null && listWO.size() > 0) {
-//			for(WorkOrderData datawo : listWO) {
-//				arridwo.add(datawo.getId().toString());
-//			}
-//		}
+		HashMap<Long,Double> countingWO = new HashMap<>();
+		if(listWO != null && listWO.size() > 0) {
+			for(WorkOrderData datawo : listWO) {
+				if(countingWO.get(datawo.getId()) == null){
+					countingWO.put(datawo.getId(),1.0);
+				}else{
+					Double temp = countingWO.get(datawo.getId());
+					temp = temp.doubleValue() + 1;
+					countingWO.put(datawo.getId(),temp);
+				}
+			}
+		}
 //		String listIdWO = arridwo.toString().replaceAll("\\[","");
 //		listIdWO = listIdWO.replaceAll("\\]","");
 
@@ -2238,7 +2245,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 		if(listInvoice != null && listInvoice.size() > 0){
 			for (InvoiceDataReportLabaRugi dataInv : listInvoice) {
 				arridinv.add(dataInv.getId().toString());
-
+//				String key = dataInv.getIdwo()+"-"+dataInv.getId();
 				List<InvoiceDataReportLabaRugi> check = grupingByIDWO.get(dataInv.getIdwo());
 				if(check == null){
 					List<InvoiceDataReportLabaRugi> temp = new ArrayList<>();
@@ -2316,7 +2323,17 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 
 			Double totalAkhir = 0.0;
 //			Double kalkulasiNilaiLR = 0.0;
+			HashMap<String,String> doneDataWO = new HashMap<>();
+			HashMap<Long,Double> countingDoneWO = new HashMap<>();
 			for(WorkOrderData datawo : listWO) {
+				if(countingDoneWO.get(datawo.getId()) == null){
+					countingDoneWO.put(datawo.getId(),1.0);
+				}else{
+					Double temp = countingDoneWO.get(datawo.getId());
+					temp = temp.doubleValue() + 1;
+					countingDoneWO.put(datawo.getId(),temp);
+				}
+
 				Double kalkulasiNilaiLR = 0.0;
 				Double NilaiLabaRugi = 0.00;
 				Double SubtotalNilaiPajak = 0.00;
@@ -2325,7 +2342,9 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 				List<InvoiceDataReportLabaRugi> listInv = grupingByIDWO.get(datawo.getId());
 				boolean adapenerimaan = false;
 				boolean adapengeluaran = false;
-				if (listInv != null && listInv.size() > 0) {
+
+				if (listInv != null && listInv.size() > 0 && doneDataWO.get("INV-WITH-WO"+datawo.getId()) == null) {
+					doneDataWO.put("INV-WITH-WO"+datawo.getId(),datawo.getId()+"");
 					for (InvoiceDataReportLabaRugi dataInv : listInv) {
 						List<DetailPenerimaanKasBankDataLabaRugi> listPenerimaanMapping = grupingByIDInv.get("INV-"+dataInv.getId());//penerimaanKasBankService.getListDetailReportLabaRugi(idcompany, idbranch, dataInv.getId(), (bankData != null ? bankData.getId() : null));
 
@@ -2469,6 +2488,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 					}
 
 					}else{
+						doneDataWO.put("ONLY-WO"+datawo.getId(),datawo.getId()+"");
 						List<DetailPenerimaanKasBankDataLabaRugi> listPenerimaanMapping = grupingPenerimaanByIDWo.get("WO-"+datawo.getId());
 						if (listPenerimaanMapping != null && listPenerimaanMapping.size() > 0) {
 							adapenerimaan = true;
@@ -2508,8 +2528,8 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 //								}
 								createCell(rowData, columnCount++, "", styleAmount, sheet, 7000);
 
-								SubtotalNilaiPembayaran = SubtotalNilaiPembayaran + dataPenerimaan.getNilaireimbursement();
-								int compare = GlobalFunc.checkCompare(dataPenerimaan.getNilaireimbursement());//new BigDecimal((dataPenerimaan.getPenyesuaian() != null?dataPenerimaan.getPenyesuaian():0.00)).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal((dataPenerimaan.getPenyesuaian() != null?dataPenerimaan.getPenyesuaian():0.00)));
+								SubtotalNilaiPembayaran = SubtotalNilaiPembayaran + dataPenerimaan.getPenyesuaian();
+								int compare = GlobalFunc.checkCompare(dataPenerimaan.getPenyesuaian());//new BigDecimal((dataPenerimaan.getPenyesuaian() != null?dataPenerimaan.getPenyesuaian():0.00)).round(new MathContext(3, RoundingMode.UP)).compareTo(new BigDecimal((dataPenerimaan.getPenyesuaian() != null?dataPenerimaan.getPenyesuaian():0.00)));
 								styleAmount = workbook.createCellStyle();
 								styleAmount.setFont(font);
 								if (compare == 0) {
@@ -2517,7 +2537,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 								} else {
 									styleAmount.setDataFormat(format.getFormat("#,###.##"));
 								}
-								createCell(rowData, columnCount++, dataPenerimaan.getNilaireimbursement(), styleAmount, sheet, 7000);
+								createCell(rowData, columnCount++, dataPenerimaan.getPenyesuaian(), styleAmount, sheet, 7000);
 
 								createCell(rowData, columnCount++, checkNullDate(dataPenerimaan.getTanggalpenerimaan(), ""), style, sheet);
 								createCell(rowData, columnCount++, dataPenerimaan.getNodocpenerimaan(), style, sheet);
@@ -2598,7 +2618,8 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 
 				NilaiLabaRugi = SubtotalNilaiPembayaran;
 				List<PengeluaranReportLabaRugi> listPengeluaranMapping = grupingPengluaranByIDWo.get(datawo.getId());
-				if (listPengeluaranMapping != null && listPengeluaranMapping.size() > 0 && adapenerimaan) {
+				
+				if (listPengeluaranMapping != null && listPengeluaranMapping.size() > 0 && adapenerimaan && countingDoneWO.get(datawo.getId()).doubleValue() == countingWO.get(datawo.getId()).doubleValue()) {
 					adapengeluaran = true;
 					Double subTotalAmountPengeluaran = 0.0;
 					for (PengeluaranReportLabaRugi dataPengeluaran : listPengeluaranMapping) {

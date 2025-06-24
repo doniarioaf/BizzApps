@@ -766,6 +766,7 @@ public class WorkOrderHandler implements WorkOrderService{
 		sqlBuilder.append(" and (inv.isdelete = false or inv.isdelete isnull) ");
 		sqlBuilder.append(" and penerimaan.isdelete = false ");
 		sqlBuilder.append(" order by penerimaan.receivedate ");
+
 		final Object[] queryParameters = new Object[] {idcompany,idbranch};
 		return this.jdbcTemplate.query(sqlBuilder.toString(), new WorkOrderReportLabaRugi(), queryParameters);
 	}
