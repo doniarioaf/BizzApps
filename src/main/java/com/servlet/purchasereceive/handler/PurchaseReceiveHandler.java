@@ -155,8 +155,8 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             data.setItems(getPrintDataItems(id));
             data.setCharges(getPrintDataCharge(id));
             data.setInventori(getPrintDataItemsInventori(id));
-            data.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch,data.getIdvendor()));
-            data.setSisaPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch, data.getIdvendor()));
+            data.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch,data.getIdvendor(),data.getTransactiondate()));
+            data.setSisaPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch, data.getIdvendor(),data.getTransactiondate()));
             return data;
         }
         return null;
@@ -422,15 +422,15 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     }
 
     @Override
-    public SearchDataTemplateByVendor searchDataByVendor(Long idcompany, Long idbranch, Long idvendor) {
+    public SearchDataTemplateByVendor searchDataByVendor(Long idcompany, Long idbranch, Long idvendor,Long date) {
         SearchDataTemplateByVendor data = new SearchDataTemplateByVendor();
         ParamTemplate paramCategoryProduct = new ParamTemplate();
         paramCategoryProduct.setMenu("PURCHASE_RECEIVE");
         paramCategoryProduct.setForcategory("VENDOR");
         paramCategoryProduct.setIdvendor(idvendor);
         data.setCategoryproductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,paramCategoryProduct));
-        data.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch,idvendor));
-        data.setSisaPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch,idvendor));
+        data.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch,idvendor,(date != null?new Date(date):null)));
+        data.setSisaPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch,idvendor,(date != null?new Date(date):null)));
 
         ParamGetDataDraftPR paramDraftPR = new ParamGetDataDraftPR();
         paramDraftPR.setIdvendor(idvendor);
@@ -440,7 +440,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     }
 
     @Override
-    public Double calculateSetorByIdVendor(Long idcompany, Long idbranch, Long idvendor,String listidvendor) {
+    public Double calculateSetorByIdVendor(Long idcompany, Long idbranch, Long idvendor,String listidvendor,Date date) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountSetor().schema());
         sqlBuilder.append(" where data.idcompany = ? and data.isdelete = false ");
         if(idvendor != null){
@@ -449,6 +449,11 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         if(listidvendor != null && !listidvendor.equals("")){
             sqlBuilder.append(" and data.idvendor in ("+listidvendor+") ");
         }
+        if(date != null){
+            sqlBuilder.append(" and data.transactiondate <= '"+date.toString()+"'");
+            }else{
+                return 0.0;
+            }
         final Object[] queryParameters = new Object[] {idcompany};
         List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateAmountSetor(), queryParameters);
         if(list != null && list.size() > 0){
@@ -458,7 +463,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     }
 
     @Override
-    public Double calculateSetorPinjamanByIdVendor(Long idcompany, Long idbranch, Long idvendor,String listidvendor) {
+    public Double calculateSetorPinjamanByIdVendor(Long idcompany, Long idbranch, Long idvendor,String listidvendor,Date date) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountSetorPinjaman().schema());
         sqlBuilder.append(" where data.idcompany = ? and data.isdelete = false ");
         if(idvendor != null){
@@ -466,6 +471,11 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         }
         if(listidvendor != null && !listidvendor.equals("")){
             sqlBuilder.append(" and data.idvendor in ("+listidvendor+") ");
+        }
+        if(date != null){
+            sqlBuilder.append(" and data.transactiondate <= '"+date.toString()+"'");
+        }else{
+            return 0.0;
         }
         final Object[] queryParameters = new Object[] {idcompany};
         List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateAmountSetorPinjaman(), queryParameters);
@@ -584,7 +594,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         print.setCompanyName(param.getStrValue());
         print.setInventori(getPrintDataItemsInventori(id));
         ParamCalculateDeposit paramCalcDeposit = new ParamCalculateDeposit();
-        paramCalcDeposit.setDate(print.getCreateddate().getTime());
+        paramCalcDeposit.setDate(print.getTransactiondate().getTime());
         paramCalcDeposit.setIdvendor(print.getIdvendor());
         paramCalcDeposit.setListNotSUMIdDeposit(iddeposits);
 

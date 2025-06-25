@@ -9,6 +9,7 @@ import com.servlet.report.entity.ParamReportPembelian;
 import com.servlet.shared.ReturnData;
 import com.servlet.stockitems.entity.ReportKartuStock;
 
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -22,9 +23,9 @@ public interface PurchaseReceiveService {
     ReturnData update(Long id,Long idcompany, Long idbranch, Long iduser, BodyPurchaseReceive body);
     ReturnData delete(Long id,Long idcompany, Long idbranch, Long iduser);
     ReturnData catatDownload(Long id,Long idcompany, Long idbranch, Long iduser);
-    SearchDataTemplateByVendor searchDataByVendor(Long idcompany, Long idbranch,Long idvendor);
-    Double calculateSetorByIdVendor(Long idcompany, Long idbranch, Long idvendor,String listidvendor);
-    Double calculateSetorPinjamanByIdVendor(Long idcompany, Long idbranch, Long idvendor,String listidvendor);
+    SearchDataTemplateByVendor searchDataByVendor(Long idcompany, Long idbranch,Long idvendor,Long date);
+    Double calculateSetorByIdVendor(Long idcompany, Long idbranch, Long idvendor,String listidvendor,Date date);
+    Double calculateSetorPinjamanByIdVendor(Long idcompany, Long idbranch, Long idvendor, String listidvendor,Date date);
     PrintDataPurchaseReceive printNotaPurchaseReceive(Long idcompany, Long idbranch,Long iduser, Long id,String printtype);
     Double calculateSetorByIdVendorAndCreatedDate(Long idcompany, Long idbranch, Long idvendor, Long date, String listidvendor);
     PurchaseReceiveDataList checkIdDeposit(Long iddeposit);

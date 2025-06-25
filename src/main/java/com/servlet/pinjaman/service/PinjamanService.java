@@ -7,6 +7,7 @@ import com.servlet.pinjaman.entity.PinjamanList;
 import com.servlet.pinjaman.entity.PinjamanTemplate;
 import com.servlet.shared.ReturnData;
 
+import java.sql.Date;
 import java.util.List;
 
 public interface PinjamanService {
@@ -18,6 +19,6 @@ public interface PinjamanService {
     PinjamanTemplate getTemplate(ParameterPinjaman param);
     ReturnData uploadFileDoc(ParameterPinjaman param);
     FileDocumentData downloadFile(ParameterPinjaman param);
-    Double calculateAmountByIdVendor(Long idcompany, Long idbranch, Long idvendor);
-    Double calculateSisaPinjamanByIdVendor(Long idcompany, Long idbranch, Long idvendor);
+    Double calculateAmountByIdVendor(Long idcompany, Long idbranch, Long idvendor,Date date);
+    Double calculateSisaPinjamanByIdVendor(Long idcompany, Long idbranch, Long idvendor,Date date);
 }

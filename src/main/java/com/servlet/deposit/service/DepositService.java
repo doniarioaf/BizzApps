@@ -5,14 +5,15 @@ import com.servlet.filedocument.entity.FileDocumentData;
 import com.servlet.shared.ReturnData;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.Date;
 import java.util.List;
 
 public interface DepositService {
     List<DepositDataNotJoin> getDepositNotJoinByIdVendor(Long idcompany, Long idbranch, Long idvendor);
     List<DepositList> getList(Long idcompany, Long idbranch, ParamList param);
     DepositDetail getDetail(Long id,Long idcompany, Long idbranch);
-    Double calculateAmountByIdVendor(Long idcompany, Long idbranch, Long idvendor);
-    Double calculateSisaDepositByIdVendor(Long idcompany, Long idbranch, Long idvendor);
+    Double calculateAmountByIdVendor(Long idcompany, Long idbranch, Long idvendor,Date date);
+    Double calculateSisaDepositByIdVendor(Long idcompany, Long idbranch, Long idvendor, Date date);
     ReturnData save(Long idcompany, Long idbranch, Long iduser, BodyDeposit body);
     ReturnData update(Long id,Long idcompany, Long idbranch, Long iduser, BodyDeposit body);
     ReturnData delete(Long id,Long idcompany, Long idbranch, Long iduser);
