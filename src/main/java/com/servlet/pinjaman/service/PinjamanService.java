@@ -1,10 +1,7 @@
 package com.servlet.pinjaman.service;
 
 import com.servlet.filedocument.entity.FileDocumentData;
-import com.servlet.pinjaman.entity.ParameterPinjaman;
-import com.servlet.pinjaman.entity.PinjamanDetail;
-import com.servlet.pinjaman.entity.PinjamanList;
-import com.servlet.pinjaman.entity.PinjamanTemplate;
+import com.servlet.pinjaman.entity.*;
 import com.servlet.shared.ReturnData;
 
 import java.sql.Date;
@@ -19,6 +16,7 @@ public interface PinjamanService {
     PinjamanTemplate getTemplate(ParameterPinjaman param);
     ReturnData uploadFileDoc(ParameterPinjaman param);
     FileDocumentData downloadFile(ParameterPinjaman param);
-    Double calculateAmountByIdVendor(Long idcompany, Long idbranch, Long idvendor,Date date);
+    Double calculateAmountByIdVendor(Long idcompany, Long idbranch, ParameterPinjaman param);
     Double calculateSisaPinjamanByIdVendor(Long idcompany, Long idbranch, Long idvendor,Date date);
+    List<ReportKartuPinjaman> getListReportKartuPinjaman(Long idcompany, Long idbranch, ParamReportKartuPinjamanList param);
 }

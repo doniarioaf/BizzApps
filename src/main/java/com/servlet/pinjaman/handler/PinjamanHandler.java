@@ -3,9 +3,11 @@ package com.servlet.pinjaman.handler;
 import com.servlet.deposit.entity.Deposit;
 import com.servlet.deposit.entity.DepositDetail;
 import com.servlet.deposit.entity.DepositList;
+import com.servlet.deposit.entity.ReportKartuDeposit;
 import com.servlet.deposit.mapper.QueryCalculateAmountDeposit;
 import com.servlet.deposit.mapper.QueryDetailData;
 import com.servlet.deposit.mapper.QueryListData;
+import com.servlet.deposit.mapper.QueryReportKartuDeposit;
 import com.servlet.filedocument.entity.BodyFileDocument;
 import com.servlet.filedocument.entity.FileDocumentData;
 import com.servlet.filedocument.service.FileDocumentService;
@@ -14,6 +16,7 @@ import com.servlet.pinjaman.entity.*;
 import com.servlet.pinjaman.mapper.PinjamanQueryDetail;
 import com.servlet.pinjaman.mapper.PinjamanQueryListData;
 import com.servlet.pinjaman.mapper.QueryCalculateAmountPinjaman;
+import com.servlet.pinjaman.mapper.QueryReportKartuPinjaman;
 import com.servlet.pinjaman.repo.PinjamanRepo;
 import com.servlet.pinjaman.service.PinjamanService;
 import com.servlet.purchasereceive.entity.PurchaseReceiveDataList;
@@ -341,7 +344,8 @@ public class PinjamanHandler implements PinjamanService {
     }
 
     @Override
-    public Double calculateAmountByIdVendor(Long idcompany, Long idbranch, Long idvendor,Date date) {
+    public Double calculateAmountByIdVendor(Long idcompany, Long idbranch, ParameterPinjaman param) {
+        Long idvendor = param.getIdvendor();
         Long idven = vendorService.getIdParent(idcompany,idbranch,idvendor);
         if(idven == null){
             idven = idvendor;
@@ -350,8 +354,13 @@ public class PinjamanHandler implements PinjamanService {
         }
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountPinjaman().schema());
         sqlBuilder.append(" where data.idcompany = ? and data.idvendor = ?  and data.isdelete = false ");
-        if(date != null){
-            sqlBuilder.append(" and data.depositdate <= '"+date.toString()+"'");
+        if(param.getDate() != null){
+            if(param.getOperatorPerbandingan() != null && !param.getOperatorPerbandingan().equals("")){
+                sqlBuilder.append(" and data.date "+param.getOperatorPerbandingan()+" '"+param.getDate().toString()+"'");
+            }else{
+                sqlBuilder.append(" and data.date <= '"+param.getDate().toString()+"'");
+            }
+
         }else{
             return 0.0;
         }
@@ -365,7 +374,10 @@ public class PinjamanHandler implements PinjamanService {
 
     @Override
     public Double calculateSisaPinjamanByIdVendor(Long idcompany, Long idbranch, Long idvendor,Date date) {
-        double summaryAmount = calculateAmountByIdVendor(idcompany,idbranch,idvendor,date).doubleValue();
+        ParameterPinjaman parameterPinjaman = new ParameterPinjaman();
+        parameterPinjaman.setIdvendor(idvendor);
+        parameterPinjaman.setDate(date);
+        double summaryAmount = calculateAmountByIdVendor(idcompany,idbranch,parameterPinjaman).doubleValue();
         Long idven = vendorService.getIdParent(idcompany,idbranch,idvendor);
         if(idven == null){
             idven = idvendor;
@@ -390,5 +402,25 @@ public class PinjamanHandler implements PinjamanService {
         double hasil = summaryAmount - summarySetorPinjamanPurchaseReceive;
         return hasil;
 
+    }
+
+    @Override
+    public List<ReportKartuPinjaman> getListReportKartuPinjaman(Long idcompany, Long idbranch, ParamReportKartuPinjamanList param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryReportKartuPinjaman().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.isdelete = false  ");
+        if(param.getFrom() != null){
+            Date dt = new Date(param.getFrom());
+            sqlBuilder.append(" and data.date >= '"+dt.toString()+"'");
+        }
+        if(param.getTo() != null){
+            Date dt = new Date(param.getTo());
+            sqlBuilder.append(" and data.date <= '"+dt.toString()+"'");
+        }
+
+        if(param.getListIdVendor() != null && !param.getListIdVendor().equals("")){
+            sqlBuilder.append(" and data.idvendor in ("+param.getListIdVendor()+") ");
+        }
+        final Object[] queryParameters = new Object[] {idcompany};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryReportKartuPinjaman(), queryParameters);
     }
 }

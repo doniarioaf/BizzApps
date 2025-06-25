@@ -41,6 +41,11 @@ import com.servlet.pelunasanhutang.service.PelunasanHutangService;
 import com.servlet.pelunasanpiutang.entity.FilterParamPelunasanPiutang;
 import com.servlet.pelunasanpiutang.entity.ReportPelunasanPiutang;
 import com.servlet.pelunasanpiutang.service.PelunasanPiutangService;
+import com.servlet.pinjaman.entity.ParamReportKartuPinjaman;
+import com.servlet.pinjaman.entity.ParamReportKartuPinjamanList;
+import com.servlet.pinjaman.entity.ParameterPinjaman;
+import com.servlet.pinjaman.entity.ReportKartuPinjaman;
+import com.servlet.pinjaman.service.PinjamanService;
 import com.servlet.product.entity.ListProductData;
 import com.servlet.product.entity.ParamProduct;
 import com.servlet.product.service.ProductService;
@@ -85,6 +90,9 @@ import java.util.List;
 
 @Service
 public class ReportHandler implements ReportService {
+
+    @Autowired
+    PinjamanService pinjamanService;
 
     @Autowired
     PackingListService packingListService;
@@ -4496,7 +4504,363 @@ public class ReportHandler implements ReportService {
     }
 
     @Override
+    public ReportWorkBookExcel reportKartuPinjaman(long idcompany, long idbranch, ParamReportKartuPinjaman param) {
+        ReportWorkBookExcel data = new ReportWorkBookExcel();
+        XSSFWorkbook workbook = new XSSFWorkbook();
+
+        XSSFDataFormat format = workbook.createDataFormat();
+
+        XSSFSheet sheet = workbook.createSheet("Laporan Kartu Pinjaman");
+        sheet.setDefaultColumnWidth(1000);
+        List<Integer> columns = getWidthColumns(15);
+
+        String namaCabang = "";
+        Branch branch = branchService.getBranchByID(idbranch);
+        if(branch != null){
+            namaCabang = branch.getNama();
+        }
+
+        int fontHeight = 12;
+        CellStyle style = workbook.createCellStyle();
+        CellStyle styleBold = workbook.createCellStyle();
+        CellStyle styleAmount = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setBold(false);
+        font.setFontHeight(fontHeight);
+        style.setFont(font);
+        styleAmount.setFont(font);
+
+        XSSFFont fontBold = workbook.createFont();
+        fontBold.setBold(true);
+        fontBold.setFontHeight(fontHeight);
+        styleBold.setFont(fontBold);
+
+        String namaVendor = "";
+        ParamVendor paramvendor =  new ParamVendor();
+        if(param.getIdvendors().equals("ALL")){
+            paramvendor.setVendorTypes("'UDANG'");
+        }else{
+            paramvendor.setListIdVendor(param.getIdvendors());
+        }
+        List<String> list = new ArrayList<>();
+        //ini list vendorparent
+        List<VendorDataForTemplate> getListVendor = vendorService.getListDropdown(idcompany,idbranch,paramvendor);
+        List<String> idvendors = new ArrayList<>();
+        for(VendorDataForTemplate ven : getListVendor){
+            list.add(ven.getNama()+" ("+ven.getAlias()+")");
+            idvendors.add(ven.getId().toString());
+        }
+        String listIdVendor = idvendors.toString().replaceAll("\\[","");
+        listIdVendor = listIdVendor.replaceAll("\\]","");
+
+        List<Long> listIdParentAndSubIdParent = vendorService.getListSubIdParentByListIdParent(idcompany,idbranch,listIdVendor);
+        for(VendorDataForTemplate ven : getListVendor){
+            listIdParentAndSubIdParent.add(ven.getId());
+        }
+        String listIdVendorSubParent = listIdParentAndSubIdParent.toString().replaceAll("\\[","");
+        listIdVendorSubParent = listIdVendorSubParent.replaceAll("\\]","");
+
+        if(!param.getIdvendors().equals("ALL")){
+            for(String nama :list){
+                if(namaVendor == ""){
+                    namaVendor = nama;
+                } else{
+                    namaVendor= namaVendor+","+nama;
+                }
+            }
+        }else{
+            namaVendor = "ALL";
+        }
+
+        int rowcount = 2;
+        Row row = sheet.createRow(rowcount);
+        createCell(row, 0, "PT Sumber Berlian Samudra", style, sheet,columns);
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Laporan Kartu Pinjaman", style, sheet,columns);
+
+        String dateFrom = "";
+        try {
+            dateFrom = GlobalFunc.getDateLongToString(param.getFrom(), "dd-MMMM-yyyy");
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String dateThru = "";
+        try {
+            dateThru = GlobalFunc.getDateLongToString(param.getTo(), "dd-MMMM-yyyy");
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Periode", style, sheet,columns);
+        createCell(row, 1, dateFrom+" s/d "+dateThru, style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Vendor", style, sheet,columns);
+        createCell(row, 1, namaVendor, style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Show 0?", style, sheet,columns);
+        createCell(row, 1, param.getShowNol(), style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Cabang", style, sheet,columns);
+        createCell(row, 1, namaCabang, style, sheet,columns);
+
+        int colomcount = 0;
+        rowcount++;
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, colomcount, "Vendor", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Tanggal", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Saldo Awal", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Pinjaman Keluar", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Pinjaman Masuk", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Saldo Akhir", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Document Number", style, sheet,columns);
+
+        if(getListVendor != null && getListVendor.size() > 0) {
+            List<ReportKartuPinjaman> listKartuPinjaman = new ArrayList<>();
+            ParamReportKartuPinjamanList paramPinjaman = new ParamReportKartuPinjamanList();
+            paramPinjaman.setFrom(param.getFrom());
+            paramPinjaman.setTo(param.getTo());
+            paramPinjaman.setListIdVendor(listIdVendorSubParent);
+            List<ReportKartuPinjaman> listpinjaman = pinjamanService.getListReportKartuPinjaman(idcompany, idbranch, paramPinjaman);
+
+            FilterParamPurchaseReceive paramPR = new FilterParamPurchaseReceive();
+            paramPR.setFrom(param.getFrom());
+            paramPR.setTo(param.getTo());
+            paramPR.setListIdVendor(listIdVendorSubParent);
+            List<ReportKartuPinjaman> listSetorPinjamanPR = purchaseReceiveService.getListPrReportKartuPinjaman(idcompany, idbranch, paramPR);
+
+            if(listpinjaman != null && listpinjaman.size() > 0){
+                listKartuPinjaman.addAll(listpinjaman);
+            }
+
+            if(listSetorPinjamanPR != null && listSetorPinjamanPR.size() > 0){
+                listKartuPinjaman.addAll(listSetorPinjamanPR);
+            }
+            if(listKartuPinjaman != null && listKartuPinjaman.size() > 0){
+                Collections.sort(listKartuPinjaman);
+            }
+
+            HashMap<Long, List<ReportKartuPinjaman>> grupByVendorParent = new HashMap<>();
+            HashMap<Long, Double> grupByVendorMasuk = new HashMap<>();
+            HashMap<Long, Double> grupByVendorKeluar = new HashMap<>();
+            if(listKartuPinjaman != null && listKartuPinjaman.size() > 0) {
+                for (VendorDataForTemplate ven : getListVendor) {
+                    List<ReportKartuPinjaman> listKDTemp = new ArrayList<>();
+                    for (ReportKartuPinjaman kd : listKartuPinjaman) {
+                        if (ven.getId().longValue() == kd.getIdvendor().longValue() || ven.getId().longValue() == kd.getIdvendorParent().longValue()) {
+                            listKDTemp.add(kd);
+                        }
+                        if(param.getShowNol().equals("NO")){
+                            if(kd.getType().equals("DEPOSIT")){
+                                if(grupByVendorMasuk.get(ven.getId()) == null){
+                                    grupByVendorMasuk.put(ven.getId(),kd.getAmount());
+                                }else {
+                                    Double amt = kd.getAmount().doubleValue() + grupByVendorMasuk.get(kd.getIdvendor()).doubleValue();
+                                    grupByVendorMasuk.put(ven.getId(),amt);
+                                }
+                            }else{
+                                if(grupByVendorKeluar.get(ven.getId()) == null){
+                                    grupByVendorKeluar.put(ven.getId(),kd.getAmount());
+                                }else {
+                                    Double amt = kd.getAmount().doubleValue() + grupByVendorKeluar.get(kd.getIdvendor()).doubleValue();
+                                    grupByVendorKeluar.put(ven.getId(),amt);
+                                }
+                            }
+                        }
+                    }
+                    grupByVendorParent.put(ven.getId(), listKDTemp);
+                }
+            }
+
+            for(VendorDataForTemplate ven : getListVendor){
+                ParameterPinjaman paramPinjamanCalc = new ParameterPinjaman();
+                paramPinjamanCalc.setDate(new java.sql.Date(param.getFrom()));
+                paramPinjamanCalc.setIdvendor(ven.getId());
+                paramPinjamanCalc.setOperatorPerbandingan("<");
+                Double saldoAwal = pinjamanService.calculateAmountByIdVendor(idcompany,idbranch,paramPinjamanCalc);
+                Double saldo = saldoAwal;
+                if(param.getShowNol().equals("NO")){
+                    Double tempSaldo = saldoAwal;
+                    Double saldomasuk = grupByVendorMasuk.get(ven.getId());
+                    Double saldokeluar = grupByVendorKeluar.get(ven.getId());
+                    if(saldomasuk != null){
+                        tempSaldo = tempSaldo.doubleValue() + saldomasuk.doubleValue();
+                    }
+                    if(saldokeluar != null){
+                        tempSaldo = tempSaldo.doubleValue() - saldokeluar.doubleValue();
+                    }
+                    if(tempSaldo.doubleValue() < 1){
+                        continue;
+                    }
+                }
+
+                colomcount = 0;
+                rowcount++;
+                row = sheet.createRow(rowcount);
+                createCell(row, colomcount, ven.getNama()+" ("+ven.getAlias()+")", style, sheet,columns);
+
+                String transDate = "";
+                try {
+                    transDate = GlobalFunc.getDateLongToString(param.getFrom(), "dd-MMMM-yyyy");
+                } catch (ParseException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                colomcount++;
+                createCell(row, colomcount, transDate, style, sheet,columns);
+
+                if(saldoAwal.doubleValue() > 1){
+                    styleAmount = workbook.createCellStyle();
+                    if(GlobalFunc.checkIsDecimal(saldoAwal)) {
+                        styleAmount.setDataFormat(format.getFormat("#,###"));
+                    }else {
+                        styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                    }
+                    colomcount++;
+                    createCell(row, colomcount, saldoAwal, styleAmount, sheet,columns);
+                }else{
+                    colomcount++;
+                    createCell(row, colomcount, 0, style, sheet,columns);
+                }
+
+
+                colomcount++;
+                createCell(row, colomcount, "", style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, "", style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, "", style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, "", style, sheet,columns);
+
+                List<ReportKartuPinjaman> listKD = grupByVendorParent.get(ven.getId());
+                if(listKD != null && listKD.size() > 0){
+                    for(ReportKartuPinjaman kd : listKD){
+                        colomcount = 0;
+                        rowcount++;
+                        row = sheet.createRow(rowcount);
+                        createCell(row, colomcount, kd.getVendorAlias(), style, sheet,columns);
+
+                        transDate = "";
+                        try {
+                            transDate = GlobalFunc.getDateLongToString(kd.getDate().getTime(), "dd-MMMM-yyyy");
+                        } catch (ParseException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        colomcount++;
+                        createCell(row, colomcount, transDate, style, sheet,columns);
+
+                        colomcount++;
+                        createCell(row, colomcount, "", style, sheet,columns);
+
+                        styleAmount = workbook.createCellStyle();
+                        if(GlobalFunc.checkIsDecimal(kd.getAmount())) {
+                            styleAmount.setDataFormat(format.getFormat("#,###"));
+                        }else {
+                            styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                        }
+                        if(kd.getType().equals("PINJAMAN")){
+                            colomcount++;
+                            createCell(row, colomcount, "", style, sheet,columns);
+
+                            colomcount++;
+                            createCell(row, colomcount, kd.getAmount(), styleAmount, sheet,columns);
+
+                            saldo = saldo + kd.getAmount();
+                        }else{
+                            colomcount++;
+                            createCell(row, colomcount, kd.getAmount(), styleAmount, sheet,columns);
+
+                            colomcount++;
+                            createCell(row, colomcount, "", style, sheet,columns);
+                            saldo = saldo - kd.getAmount();
+                        }
+
+
+                        colomcount++;
+                        createCell(row, colomcount, "", style, sheet,columns);
+
+                        colomcount++;
+                        createCell(row, colomcount, kd.getDocumentNumber(), style, sheet,columns);
+                    }
+
+                    colomcount = 0;
+                    rowcount++;
+                    row = sheet.createRow(rowcount);
+                    createCell(row, colomcount, "", style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, "", style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, "", style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, "", style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, "", style, sheet,columns);
+
+                    styleAmount = workbook.createCellStyle();
+                    if(GlobalFunc.checkIsDecimal(saldo)) {
+                        styleAmount.setDataFormat(format.getFormat("#,###"));
+                    }else {
+                        styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                    }
+                    colomcount++;
+                    createCell(row, colomcount, saldo, styleAmount, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, "", style, sheet,columns);
+                }
+                rowcount++;
+            }
+
+        }
+
+        data.setWorkbook(workbook);
+        return data;
+    }
+
+    @Override
     public ReportTemplate reportTemplateReportKartuDeposit(long idcompany, long idbranch) {
+        ParamVendor paramVendor = new ParamVendor();
+        paramVendor.setVendorTypes("'UDANG'");
+        paramVendor.setOnlyParent("Y");
+        ReportTemplate data = new ReportTemplate();
+        data.setVendorOpt(vendorService.getListDropdown (idcompany,idbranch,paramVendor));
+        return data;
+    }
+
+    @Override
+    public ReportTemplate reportTemplateReportKartuPinjaman(long idcompany, long idbranch) {
         ParamVendor paramVendor = new ParamVendor();
         paramVendor.setVendorTypes("'UDANG'");
         paramVendor.setOnlyParent("Y");

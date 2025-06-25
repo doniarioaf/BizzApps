@@ -2,6 +2,8 @@ package com.servlet.pinjaman.entity;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.Date;
+
 public class ParameterPinjaman {
     private Long id;
     private Long idcompany;
@@ -10,6 +12,34 @@ public class ParameterPinjaman {
     private Long iduser;
     private MultipartFile file;
     private BodyPinjaman body;
+
+    private Long idvendor;
+    private Date date;
+    private String operatorPerbandingan;
+
+    public Long getIdvendor() {
+        return idvendor;
+    }
+
+    public void setIdvendor(Long idvendor) {
+        this.idvendor = idvendor;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public String getOperatorPerbandingan() {
+        return operatorPerbandingan;
+    }
+
+    public void setOperatorPerbandingan(String operatorPerbandingan) {
+        this.operatorPerbandingan = operatorPerbandingan;
+    }
 
     public MultipartFile getFile() {
         return file;

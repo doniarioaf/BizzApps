@@ -1,5 +1,6 @@
 package com.servlet.report.service;
 
+import com.servlet.pinjaman.entity.ParamReportKartuPinjaman;
 import com.servlet.report.entity.*;
 
 import java.text.ParseException;
@@ -20,7 +21,9 @@ public interface ReportService {
     ReportWorkBookExcel reportPenjualan(long idcompany, long idbranch, ParamReportPenjualan param);
     ReportWorkBookExcel reportPelunasanPiutang(long idcompany, long idbranch, ParamReportPelunasanPiutang param);
     ReportWorkBookExcel reportKartuDeposit(long idcompany, long idbranch, ParamReportKartuDeposit param);
+    ReportWorkBookExcel reportKartuPinjaman(long idcompany, long idbranch, ParamReportKartuPinjaman param);
     ReportTemplate reportTemplateReportKartuDeposit(long idcompany, long idbranch);
+    ReportTemplate reportTemplateReportKartuPinjaman(long idcompany, long idbranch);
     ReportWorkBookExcel reportReportKartuStock(long idcompany, long idbranch, ParamReportKartuStock param);
     ReportTemplate reportTemplateReportKartuStock(long idcompany, long idbranch);
     ReportWorkBookExcel reportReportKomisi(long idcompany, long idbranch, ParamReportKomisi param);

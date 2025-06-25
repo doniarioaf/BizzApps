@@ -22,6 +22,7 @@ import com.servlet.pelunasanhutang.entity.FilterParamPelunasanHutang;
 import com.servlet.pelunasanhutang.entity.PelunasanHutangDataNotJoin;
 import com.servlet.pelunasanhutang.entity.ReportPelunasanHutangDocumentHutang;
 import com.servlet.pelunasanhutang.service.PelunasanHutangService;
+import com.servlet.pinjaman.entity.ReportKartuPinjaman;
 import com.servlet.pinjaman.service.PinjamanService;
 import com.servlet.pricelist.service.PriceService;
 import com.servlet.product.service.ProductService;
@@ -886,6 +887,27 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
 
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPRReportKartuDeposit(), queryParameters);
+    }
+
+    @Override
+    public List<ReportKartuPinjaman> getListPrReportKartuPinjaman(Long idcompany, Long idbranch, FilterParamPurchaseReceive param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPRReportKartuPinjaman().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        if(param.getFrom() != null){
+            Date dt = new Date(param.getFrom());
+            sqlBuilder.append(" and data.transactiondate >= '"+dt.toString()+"'");
+        }
+        if(param.getTo() != null){
+            Date dt = new Date(param.getTo());
+            sqlBuilder.append(" and data.transactiondate <= '"+dt.toString()+"'");
+        }
+
+        if(param.getListIdVendor() != null && !param.getListIdVendor().equals("")){
+            sqlBuilder.append(" and data.idvendor in ("+param.getListIdVendor()+") ");
+        }
+
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPRReportKartuPinjaman(), queryParameters);
     }
 
     @Override

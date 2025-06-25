@@ -45,10 +45,7 @@ import com.servlet.pelunasanhutang.service.PelunasanHutangService;
 import com.servlet.pelunasanpiutang.entity.BodyPelunasanPiutang;
 import com.servlet.pelunasanpiutang.entity.FilterParamPelunasanPiutang;
 import com.servlet.pelunasanpiutang.service.PelunasanPiutangService;
-import com.servlet.pinjaman.entity.BodyPinjaman;
-import com.servlet.pinjaman.entity.ParameterPinjaman;
-import com.servlet.pinjaman.entity.PinjamanList;
-import com.servlet.pinjaman.entity.PinjamanParameterList;
+import com.servlet.pinjaman.entity.*;
 import com.servlet.pinjaman.service.PinjamanService;
 import com.servlet.pricelist.entity.BodyPriceList;
 import com.servlet.pricelist.service.PriceService;
@@ -1685,6 +1682,17 @@ public class ProcessHandler implements ProcessService{
 					val.setData(reportService.reportKartuDeposit(auth.getIdcompany(), auth.getIdbranch(),body).getWorkbook());
 				}else if(type.equals("REPORTKARTUDEPOSIT_TEMPLATE")) {
 					val.setData(reportService.reportTemplateReportKartuDeposit(auth.getIdcompany(), auth.getIdbranch()));
+				}
+			}
+
+			else if(codepermission.equals(ConstansPermission.READ_REPORT_KARTUPINJAMAN)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("REPORTKARTUPINJAMAN")) {
+					ParamReportKartuPinjaman body = (ParamReportKartuPinjaman) param.get("body");
+					val.setData(reportService.reportKartuPinjaman(auth.getIdcompany(), auth.getIdbranch(),body).getWorkbook());
+				}else if(type.equals("REPORTKARTUPINJAMAN_TEMPLATE")) {
+					val.setData(reportService.reportTemplateReportKartuPinjaman(auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}
 

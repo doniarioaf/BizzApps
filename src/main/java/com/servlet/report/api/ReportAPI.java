@@ -1,5 +1,6 @@
 package com.servlet.report.api;
 
+import com.servlet.pinjaman.entity.ParamReportKartuPinjaman;
 import com.servlet.report.entity.*;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
@@ -257,6 +258,36 @@ public class ReportAPI {
         Response response = securityService.response(ConstansPermission.READ_REPORT_KARTUDEPOSIT,param,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
+
+	@GetMapping("/reportkartupinjaman")
+	ResponseEntity<Response> getReportKartuPinjaman(@RequestParam("shownol") String shownol, @RequestParam("idvendors") String idvendors, @RequestParam("from") Long from,@RequestParam("to") Long to, HttpServletResponse response, @RequestHeader(ConstansKey.AUTH) String authorization) throws IOException{
+		ParamReportKartuPinjaman body = new ParamReportKartuPinjaman();
+		body.setFrom(from);
+		body.setTo(to);
+		body.setShowNol(shownol);
+		body.setIdvendors(idvendors);
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "REPORTKARTUPINJAMAN");
+		param.put("body", body);
+		Response response1 = securityService.response(ConstansPermission.READ_REPORT_KARTUPINJAMAN,param,authorization);
+		if(response1.getHttpcode() == HttpStatus.OK.value()) {
+			XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+			export(response, workbook);
+
+			return ResponseEntity.ok().build();
+		}else{
+			return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
+		}
+
+	}
+
+	@GetMapping("/reportkartupinjaman/template")
+	ResponseEntity<Response> getReportKartuPinjamanTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "REPORTKARTUPINJAMAN_TEMPLATE");
+		Response response = securityService.response(ConstansPermission.READ_REPORT_KARTUPINJAMAN,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
 
     @GetMapping("/reportkartustock")
     ResponseEntity<Response> getReportKartuStock( @RequestParam("idproducts") String idproducts,@RequestParam("idcategoryproducts") String idcategoryproducts, @RequestParam("from") Long from,@RequestParam("to") Long to, HttpServletResponse response, @RequestHeader(ConstansKey.AUTH) String authorization) throws IOException{
