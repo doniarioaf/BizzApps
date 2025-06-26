@@ -23,6 +23,7 @@ public class PrintDataPurchaseReceive {
     private String accountnamebank;
     private Double totalprice;
     private Double setor;
+    private Double setorPinjaman;
     private Long iddeposit;
     private Double depositAmount;
     private Double sisaDeposit;
@@ -317,5 +318,13 @@ public class PrintDataPurchaseReceive {
 
     public void setCharges(List<PrintDataPurchaseReceiveCharge> charges) {
         this.charges = charges;
+    }
+
+    public Double getSetorPinjaman() {
+        return setorPinjaman;
+    }
+
+    public void setSetorPinjaman(Double setorPinjaman) {
+        this.setorPinjaman = setorPinjaman;
     }
 }
