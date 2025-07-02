@@ -175,28 +175,27 @@ public class PinjamanHandler implements PinjamanService {
         }
         if(validations.size() == 0) {
             try {
-//                double summaryDeposit = calculateAmountByIdVendorNotInIDDeposit(id, idcompany, idbranch, table.getIdvendor()).doubleValue() + body.getAmount().doubleValue();
-//                List<Long> listidven = vendorService.getListSubIdParent(idcompany, idbranch, table.getIdvendor());
-//                //kenapa di add, karena di anggap ini idparent, jika query diatas ga dapet, hanya sub nya saja
-//                listidven.add(table.getIdvendor());
-//                String listidvendor = "";
-//                if (listidven != null && listidven.size() > 0) {
-//                    listidvendor = listidven.toString().replaceAll("\\[", "");
-//                    listidvendor = listidvendor.replaceAll("\\]", "");
-//                }
+                ParameterPinjaman paramPinjaman = new ParameterPinjaman();
+                paramPinjaman.setIdvendor(table.getIdvendor());
 
-//                double summarySetorPurchaseReceive = purchaseReceiveService.calculateSetorByIdVendor(idcompany, idbranch, null, listidvendor).doubleValue();
-//                if (summarySetorPurchaseReceive > summaryDeposit) {
-//                    ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.TOTAL_SETOR_GREATER_THAN, "Total Setor Lebih besar dari total deposit");
-//                    validations.add(msg);
-//                }
-//                if (validations.size() == 0) {
-//                    PurchaseReceiveDataList check = purchaseReceiveService.checkIdDeposit(id);
-//                    if (check != null) {
-//                        ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_PURCHASERECEIVE, "deposit ini terpasang pada purchase receive (" + check.getNodocument() + ") ");
-//                        validations.add(msg);
-//                    }
-//                }
+                double summaryPinjaman = calculateAmountByIdVendor(table.getIdcompany(), table.getIdbranch(), paramPinjaman).doubleValue();
+                summaryPinjaman = summaryPinjaman - table.getAmount();
+                summaryPinjaman = summaryPinjaman + param.getBody().getAmount();
+
+                List<Long> listidven = vendorService.getListSubIdParent(table.getIdcompany(), table.getIdbranch(), table.getIdvendor());
+//                //kenapa di add, karena di anggap ini idparent, jika query diatas ga dapet, hanya sub nya saja
+                listidven.add(table.getIdvendor());
+                String listidvendor = "";
+                if (listidven != null && listidven.size() > 0) {
+                    listidvendor = listidven.toString().replaceAll("\\[", "");
+                    listidvendor = listidvendor.replaceAll("\\]", "");
+                }
+
+                double summarySetorPurchaseReceive = purchaseReceiveService.calculateSetorPinjamanByIdVendor(table.getIdcompany(), table.getIdbranch(), null, listidvendor).doubleValue();
+                if (summarySetorPurchaseReceive > summaryPinjaman) {
+                    ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.TOTAL_SETOR_GREATER_THAN, "Total Setor Lebih besar dari total pinjaman");
+                    validations.add(msg);
+                }
                 if (validations.size() == 0) {
                     ListVendorData ven = vendorService.checkVendorIsParent(param.getIdcompany(), param.getIdbranch(), param.getBody().getIdvendor());
                     if (ven == null) {
@@ -240,29 +239,25 @@ public class PinjamanHandler implements PinjamanService {
 
         if(validations.size() == 0) {
             try {
-//                double summaryDeposit = calculateAmountByIdVendorNotInIDDeposit(id, idcompany, idbranch, table.getIdvendor()).doubleValue();
-//                List<Long> listidven = vendorService.getListSubIdParent(idcompany, idbranch, table.getIdvendor());
+                ParameterPinjaman paramPinjaman = new ParameterPinjaman();
+                paramPinjaman.setIdvendor(table.getIdvendor());
+                double summaryPinjaman = calculateAmountByIdVendor(table.getIdcompany(), table.getIdbranch(), paramPinjaman).doubleValue();
+                summaryPinjaman = summaryPinjaman - table.getAmount();
+
+                List<Long> listidven = vendorService.getListSubIdParent(table.getIdcompany(), table.getIdbranch(), table.getIdvendor());
 //                //kenapa di add, karena di anggap ini idparent, jika query diatas ga dapet, hanya sub nya saja
-//                listidven.add(table.getIdvendor());
-//                String listidvendor = "";
-//                if (listidven != null && listidven.size() > 0) {
-//                    listidvendor = listidven.toString().replaceAll("\\[", "");
-//                    listidvendor = listidvendor.replaceAll("\\]", "");
-//                }
+                listidven.add(table.getIdvendor());
+                String listidvendor = "";
+                if (listidven != null && listidven.size() > 0) {
+                    listidvendor = listidven.toString().replaceAll("\\[", "");
+                    listidvendor = listidvendor.replaceAll("\\]", "");
+                }
 //
-//                double summarySetorPurchaseReceive = purchaseReceiveService.calculateSetorByIdVendor(idcompany, idbranch, null, listidvendor).doubleValue();
-//                if (summarySetorPurchaseReceive > summaryDeposit) {
-//                    ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.TOTAL_SETOR_GREATER_THAN, "Total Setor Lebih besar dari total deposit");
-//                    validations.add(msg);
-//                }
-//
-//                if (validations.size() == 0) {
-//                    PurchaseReceiveDataList check = purchaseReceiveService.checkIdDeposit(id);
-//                    if (check != null) {
-//                        ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_PURCHASERECEIVE, "deposit ini terpasang pada purchase receive (" + check.getNodocument() + ") ");
-//                        validations.add(msg);
-//                    }
-//                }
+                double summarySetorPurchaseReceive = purchaseReceiveService.calculateSetorPinjamanByIdVendor(table.getIdcompany(), table.getIdbranch(), null, listidvendor).doubleValue();
+                if (summarySetorPurchaseReceive > summaryPinjaman) {
+                    ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.TOTAL_SETOR_GREATER_THAN, "Total Setor Lebih besar dari total pinjaman");
+                    validations.add(msg);
+                }
                 if (validations.size() == 0) {
                     table.setIsdelete(true);
                     table.setDeletedate(ts);
@@ -354,16 +349,6 @@ public class PinjamanHandler implements PinjamanService {
         }
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountPinjaman().schema());
         sqlBuilder.append(" where data.idcompany = ? and data.idvendor = ?  and data.isdelete = false ");
-        if(param.getDate() != null){
-            if(param.getOperatorPerbandingan() != null && !param.getOperatorPerbandingan().equals("")){
-                sqlBuilder.append(" and data.date "+param.getOperatorPerbandingan()+" '"+param.getDate().toString()+"'");
-            }else{
-                sqlBuilder.append(" and data.date <= '"+param.getDate().toString()+"'");
-            }
-
-        }else{
-            return 0.0;
-        }
         final Object[] queryParameters = new Object[] {idcompany,idven};
         List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateAmountPinjaman(), queryParameters);
         if(list != null && list.size() > 0){
@@ -373,10 +358,9 @@ public class PinjamanHandler implements PinjamanService {
     }
 
     @Override
-    public Double calculateSisaPinjamanByIdVendor(Long idcompany, Long idbranch, Long idvendor,Date date) {
+    public Double calculateSisaPinjamanByIdVendor(Long idcompany, Long idbranch, Long idvendor) {
         ParameterPinjaman parameterPinjaman = new ParameterPinjaman();
         parameterPinjaman.setIdvendor(idvendor);
-        parameterPinjaman.setDate(date);
         double summaryAmount = calculateAmountByIdVendor(idcompany,idbranch,parameterPinjaman).doubleValue();
         Long idven = vendorService.getIdParent(idcompany,idbranch,idvendor);
         if(idven == null){
@@ -395,9 +379,9 @@ public class PinjamanHandler implements PinjamanService {
 
         double summarySetorPinjamanPurchaseReceive =  0;//purchaseReceiveService.calculateSetorByIdVendor(idcompany,idbranch,idvendor).doubleValue();
         if(!listidvendor.equals("")){
-            summarySetorPinjamanPurchaseReceive =  purchaseReceiveService.calculateSetorPinjamanByIdVendor(idcompany,idbranch,null,listidvendor,date).doubleValue();
+            summarySetorPinjamanPurchaseReceive =  purchaseReceiveService.calculateSetorPinjamanByIdVendor(idcompany,idbranch,null,listidvendor).doubleValue();
         }else{
-            summarySetorPinjamanPurchaseReceive =  purchaseReceiveService.calculateSetorPinjamanByIdVendor(idcompany,idbranch,idvendor,"",date).doubleValue();
+            summarySetorPinjamanPurchaseReceive =  purchaseReceiveService.calculateSetorPinjamanByIdVendor(idcompany,idbranch,idvendor,"").doubleValue();
         }
         double hasil = summaryAmount - summarySetorPinjamanPurchaseReceive;
         return hasil;

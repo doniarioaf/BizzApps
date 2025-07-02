@@ -110,7 +110,7 @@ public class DepositHandler implements DepositService {
     }
 
     @Override
-    public Double calculateAmountByIdVendor(Long idcompany, Long idbranch, Long idvendor,Date date) {
+    public Double calculateAmountByIdVendor(Long idcompany, Long idbranch, Long idvendor) {
         Long idven = vendorService.getIdParent(idcompany,idbranch,idvendor);
         if(idven == null){
             idven = idvendor;
@@ -119,11 +119,6 @@ public class DepositHandler implements DepositService {
         }
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountDeposit().schema());
         sqlBuilder.append(" where data.idcompany = ? and data.idvendor = ?  and data.isdelete = false ");
-        if(date != null){
-            sqlBuilder.append(" and data.depositdate <= '"+date.toString()+"'");
-        }else{
-            return 0.0;
-        }
         final Object[] queryParameters = new Object[] {idcompany,idven};
         List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateAmountDeposit(), queryParameters);
         if(list != null && list.size() > 0){
@@ -133,9 +128,9 @@ public class DepositHandler implements DepositService {
     }
 
     @Override
-    public Double calculateSisaDepositByIdVendor(Long idcompany, Long idbranch, Long idvendor,Date date) {
+    public Double calculateSisaDepositByIdVendor(Long idcompany, Long idbranch, Long idvendor) {
 
-        double summaryDeposit = calculateAmountByIdVendor(idcompany,idbranch,idvendor,date).doubleValue();
+        double summaryDeposit = calculateAmountByIdVendor(idcompany,idbranch,idvendor).doubleValue();
         Long idven = vendorService.getIdParent(idcompany,idbranch,idvendor);
         if(idven == null){
             idven = idvendor;
@@ -154,15 +149,15 @@ public class DepositHandler implements DepositService {
 
         double summarySetorPurchaseReceive =  0;//purchaseReceiveService.calculateSetorByIdVendor(idcompany,idbranch,idvendor).doubleValue();
         if(!listidvendor.equals("")){
-            summarySetorPurchaseReceive =  purchaseReceiveService.calculateSetorByIdVendor(idcompany,idbranch,null,listidvendor,date).doubleValue();
+            summarySetorPurchaseReceive =  purchaseReceiveService.calculateSetorByIdVendor(idcompany,idbranch,null,listidvendor).doubleValue();
         }else{
-            summarySetorPurchaseReceive =  purchaseReceiveService.calculateSetorByIdVendor(idcompany,idbranch,idvendor,"",date).doubleValue();
+            summarySetorPurchaseReceive =  purchaseReceiveService.calculateSetorByIdVendor(idcompany,idbranch,idvendor,"").doubleValue();
         }
         double hasil = summaryDeposit - summarySetorPurchaseReceive;
         return hasil;
     }
 
-    private Double calculateAmountByIdVendorNotInIDDeposit(Long id,Long idcompany, Long idbranch, Long idvendor, Date date) {
+    private Double calculateAmountByIdVendorNotInIDDeposit(Long id,Long idcompany, Long idbranch, Long idvendor) {
         Long idven = vendorService.getIdParent(idcompany,idbranch,idvendor);
         if(idven == null){
             idven = idvendor;
@@ -171,11 +166,7 @@ public class DepositHandler implements DepositService {
         }
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountDeposit().schema());
         sqlBuilder.append(" where data.idcompany = ? and data.idvendor = ?  and data.isdelete = false and data.id not in ("+id+")");
-        if(date != null){
-            sqlBuilder.append(" and data.depositdate <= '"+date.toString()+"'");
-        }else{
-            return 0.0;
-        }
+
         final Object[] queryParameters = new Object[] {idcompany,idven};
         List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateAmountDeposit(), queryParameters);
         if(list != null && list.size() > 0){
@@ -250,7 +241,7 @@ public class DepositHandler implements DepositService {
         }
         if(validations.size() == 0) {
             try {
-                double summaryDeposit = calculateAmountByIdVendorNotInIDDeposit(id, idcompany, idbranch, table.getIdvendor(),new Date(timeNow)).doubleValue() + body.getAmount().doubleValue();
+                double summaryDeposit = calculateAmountByIdVendorNotInIDDeposit(id, idcompany, idbranch, table.getIdvendor()).doubleValue() + body.getAmount().doubleValue();
                 List<Long> listidven = vendorService.getListSubIdParent(idcompany, idbranch, table.getIdvendor());
                 //kenapa di add, karena di anggap ini idparent, jika query diatas ga dapet, hanya sub nya saja
                 listidven.add(table.getIdvendor());
@@ -260,7 +251,7 @@ public class DepositHandler implements DepositService {
                     listidvendor = listidvendor.replaceAll("\\]", "");
                 }
 
-                double summarySetorPurchaseReceive = purchaseReceiveService.calculateSetorByIdVendor(idcompany, idbranch, null, listidvendor,new Date(timeNow)).doubleValue();
+                double summarySetorPurchaseReceive = purchaseReceiveService.calculateSetorByIdVendor(idcompany, idbranch, null, listidvendor).doubleValue();
                 if (summarySetorPurchaseReceive > summaryDeposit) {
                     ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.TOTAL_SETOR_GREATER_THAN, "Total Setor Lebih besar dari total deposit");
                     validations.add(msg);
@@ -315,7 +306,7 @@ public class DepositHandler implements DepositService {
         }
         if(validations.size() == 0) {
             try {
-                double summaryDeposit = calculateAmountByIdVendorNotInIDDeposit(id, idcompany, idbranch, table.getIdvendor(),new Date(timeNow)).doubleValue();
+                double summaryDeposit = calculateAmountByIdVendorNotInIDDeposit(id, idcompany, idbranch, table.getIdvendor()).doubleValue();
                 List<Long> listidven = vendorService.getListSubIdParent(idcompany, idbranch, table.getIdvendor());
                 //kenapa di add, karena di anggap ini idparent, jika query diatas ga dapet, hanya sub nya saja
                 listidven.add(table.getIdvendor());
@@ -325,7 +316,7 @@ public class DepositHandler implements DepositService {
                     listidvendor = listidvendor.replaceAll("\\]", "");
                 }
 
-                double summarySetorPurchaseReceive = purchaseReceiveService.calculateSetorByIdVendor(idcompany, idbranch, null, listidvendor,new Date(timeNow)).doubleValue();
+                double summarySetorPurchaseReceive = purchaseReceiveService.calculateSetorByIdVendor(idcompany, idbranch, null, listidvendor).doubleValue();
                 if (summarySetorPurchaseReceive > summaryDeposit) {
                     ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.TOTAL_SETOR_GREATER_THAN, "Total Setor Lebih besar dari total deposit");
                     validations.add(msg);

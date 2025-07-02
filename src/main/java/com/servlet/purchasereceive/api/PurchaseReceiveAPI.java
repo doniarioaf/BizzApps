@@ -93,11 +93,10 @@ public class PurchaseReceiveAPI {
     }
 
     @GetMapping("/searchvendor")
-    ResponseEntity<Response> getPriceList(@RequestParam("idvendor") Long idvendor,@RequestParam("date") Long date,@RequestHeader(ConstansKey.AUTH) String authorization) {
+    ResponseEntity<Response> getPriceList(@RequestParam("idvendor") Long idvendor,@RequestHeader(ConstansKey.AUTH) String authorization) {
         HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("type", "SEARCHBYVENDOR");
         param.put("idvendor", idvendor);
-        param.put("date", date);
         Response response = securityService.response(ConstansPermission.READ_PURCHASERECEIVE,param,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
