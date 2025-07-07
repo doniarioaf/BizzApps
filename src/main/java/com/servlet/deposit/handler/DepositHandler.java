@@ -398,6 +398,27 @@ public class DepositHandler implements DepositService {
         double hasil = summaryDeposit - summarySetorPurchaseReceive;
         return hasil;
     }
+    @Override
+    public Double calculateSaldoDepositForPrinted(Long idcompany, Long idbranch, ParamCalculateDeposit param) {
+        double summaryDeposit = summaryCalculateSaldoDepositForPrinted(idcompany,idbranch,param).doubleValue();
+        Long idven = vendorService.getIdParent(idcompany,idbranch,param.getIdvendor());
+        if(idven == null){
+            idven = param.getIdvendor();
+        }else if(idven == 0){
+            idven = param.getIdvendor();
+        }
+        List<Long> listidven = vendorService.getListSubIdParent(idcompany,idbranch,idven);
+        listidven.add(idven);
+        String listidvendor = "";
+        if(listidven != null && listidven.size() > 0){
+            listidvendor = listidven.toString().replaceAll("\\[","");
+            listidvendor = listidvendor.replaceAll("\\]","");
+        }
+
+        double summarySetorPurchaseReceive =  purchaseReceiveService.calculateSetorByIdVendor(idcompany,idbranch,null, listidvendor).doubleValue();
+        double hasil = summaryDeposit - summarySetorPurchaseReceive;
+        return hasil;
+    }
 
     @Override
     public Double calculateSaldoDepositByIdVendorAndBeforeDate(Long idcompany, Long idbranch, Long idvendor, Long date) {
@@ -534,6 +555,26 @@ public class DepositHandler implements DepositService {
         data.setSuccess(validations.size() > 0?false:true);
         data.setValidations(validations);
         return data;
+    }
+
+    private Double summaryCalculateSaldoDepositForPrinted(Long idcompany, Long idbranch, ParamCalculateDeposit param){
+        Long idven = vendorService.getIdParent(idcompany,idbranch,param.getIdvendor());
+        if(idven == null){
+            idven = param.getIdvendor();
+        }else if(idven == 0){
+            idven = param.getIdvendor();
+        }
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountDeposit().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idvendor = ?  and data.isdelete = false ");
+        if(param.getListNotSUMIdDeposit() != null && !param.getListNotSUMIdDeposit().equals("")){
+            sqlBuilder.append(" and data.id not in ("+param.getListNotSUMIdDeposit()+") ");
+        }
+        final Object[] queryParameters = new Object[] {idcompany,idven};
+        List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateAmountDeposit(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return 0.0;
     }
 
     private Double summaryCalculateSaldoDepositByIdVendorAndBeforeDateCreated(Long idcompany, Long idbranch, ParamCalculateDeposit param){

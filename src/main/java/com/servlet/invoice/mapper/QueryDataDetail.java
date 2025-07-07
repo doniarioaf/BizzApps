@@ -15,10 +15,11 @@ public class QueryDataDetail implements RowMapper<InvoiceDataDetail> {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.date as date, data.kurs as kurs, ");
-        sqlBuilder.append("data.idpackinglist as idpackinglist, data.phone as phone, ");
+        sqlBuilder.append("data.idpackinglist as idpackinglist, data.phone as phone, pl.date as pldate, ");
         sqlBuilder.append("data.createddate as createddate, data.modifieddate as modifieddate, ");
         sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama ");
         sqlBuilder.append("from invoice as data ");
+        sqlBuilder.append("left join packinglist as pl on pl.id = data.idpackinglist ");
         sqlBuilder.append("left join m_user_apps as usercreate on usercreate.id = data.createdby ");
         sqlBuilder.append("left join m_user_apps as usermodified on usermodified.id = data.modifiedby ");
 
@@ -35,6 +36,8 @@ public class QueryDataDetail implements RowMapper<InvoiceDataDetail> {
         final Long id = rs.getLong("id");
         final String nodocument = rs.getString("nodocument");
         final Date date = rs.getDate("date");
+        final Date pldate = rs.getDate("pldate");
+
         final Double kurs = rs.getDouble("kurs");
         final Long idpackinglist = rs.getLong("idpackinglist");
         final String phone = rs.getString("phone");
@@ -47,6 +50,7 @@ public class QueryDataDetail implements RowMapper<InvoiceDataDetail> {
         data.setId(id);
         data.setNodocument(nodocument);
         data.setDate(date);
+        data.setPackinglistdate(pldate);
         data.setKurs(kurs);
         data.setIdpackinglist(idpackinglist);
         data.setPhone(phone);

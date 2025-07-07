@@ -590,7 +590,8 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         paramCalcDeposit.setIdvendor(print.getIdvendor());
         paramCalcDeposit.setListNotSUMIdDeposit(iddeposits);
 
-        print.setSaldoDepositBeforeNotaSubmit(depositService.calculateSaldoDepositByIdVendorAndBeforeDateCreated(idcompany,idbranch, paramCalcDeposit));
+        print.setSaldoDepositBeforeNotaSubmit(depositService.calculateSaldoDepositForPrinted(idcompany,idbranch, paramCalcDeposit));
+        print.setSaldoPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch,print.getIdvendor()));
         print.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADNOTA",namaMenu));
         print.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
         UserListData user = userAppsService.getUserByID(iduser);

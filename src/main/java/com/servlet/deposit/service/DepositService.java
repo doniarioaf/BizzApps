@@ -20,6 +20,7 @@ public interface DepositService {
     DepositTemplate getTemplate(Long idcompany, Long idbranch);
     ReturnData deleteRollBack(Long id);
     Double calculateSaldoDepositByIdVendorAndBeforeDateCreated(Long idcompany, Long idbranch, ParamCalculateDeposit param);
+    Double calculateSaldoDepositForPrinted(Long idcompany, Long idbranch, ParamCalculateDeposit param);
     Double calculateSaldoDepositByIdVendorAndBeforeDate(Long idcompany, Long idbranch, Long idvendor,Long date);
     List<ReportKartuDeposit> getListReportKartuDeposit(Long idcompany, Long idbranch, ParamList param);
     ReturnData uploadFileDoc(Long id, MultipartFile file, Long idcompany, Long idbranch, Long iduser);

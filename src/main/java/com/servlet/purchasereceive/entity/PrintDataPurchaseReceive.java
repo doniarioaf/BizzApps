@@ -30,13 +30,8 @@ public class PrintDataPurchaseReceive {
     private Long countPrint;
     private Long countEdit;
     private String namaUser;
-
-    /**
-     * saldoDepositBeforeNotaSubmit didapat sebelum nota ini dibuat,
-     * jadi di table deposit cari berdasarkan idvendor dan tanggalnya harus dibawah tanggal created nota ini.
-     * jika sudah dapat angka nya, baru dikurang dengan totalprice nota. caranya sama cari berdasarkan vendor dan tanggal nya harus dibawah tanggal created nota ini.
-     */
     private Double saldoDepositBeforeNotaSubmit;
+    private Double saldoPinjaman;
     private Timestamp createddate;
     private List<PrintDataPurchaseReceiveItems> items;
     private List<PrintDataPurchaseReceiveCharge> charges;
@@ -47,6 +42,14 @@ public class PrintDataPurchaseReceive {
     private String flightno;
     private String namaArea;
     private String aliasArea;
+
+    public Double getSaldoPinjaman() {
+        return saldoPinjaman;
+    }
+
+    public void setSaldoPinjaman(Double saldoPinjaman) {
+        this.saldoPinjaman = saldoPinjaman;
+    }
 
     public String getVendorBank() {
         return vendorBank;
