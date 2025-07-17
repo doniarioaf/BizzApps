@@ -15,7 +15,7 @@ public class QueryDataDetail implements RowMapper<InvoiceDataDetail> {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.date as date, data.kurs as kurs, ");
-        sqlBuilder.append("data.idpackinglist as idpackinglist, data.phone as phone, pl.date as pldate, ");
+        sqlBuilder.append("data.idpackinglist as idpackinglist, data.phone as phone, data.ispackinglistupdate as ispackinglistupdate, pl.date as pldate, ");
         sqlBuilder.append("data.createddate as createddate, data.modifieddate as modifieddate, ");
         sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama ");
         sqlBuilder.append("from invoice as data ");
@@ -41,6 +41,7 @@ public class QueryDataDetail implements RowMapper<InvoiceDataDetail> {
         final Double kurs = rs.getDouble("kurs");
         final Long idpackinglist = rs.getLong("idpackinglist");
         final String phone = rs.getString("phone");
+        final Boolean ispackinglistupdate = rs.getBoolean("ispackinglistupdate");
 
         final Timestamp createddate = rs.getTimestamp("createddate");
         final Timestamp modifieddate = rs.getTimestamp("modifieddate");
@@ -51,6 +52,8 @@ public class QueryDataDetail implements RowMapper<InvoiceDataDetail> {
         data.setNodocument(nodocument);
         data.setDate(date);
         data.setPackinglistdate(pldate);
+        data.setIspackinglistupdate(ispackinglistupdate);
+
         data.setKurs(kurs);
         data.setIdpackinglist(idpackinglist);
         data.setPhone(phone);

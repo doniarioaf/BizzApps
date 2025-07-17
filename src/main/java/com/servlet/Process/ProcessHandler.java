@@ -881,16 +881,30 @@ public class ProcessHandler implements ProcessService{
 			}else if(codepermission.equals(ConstansPermission.EDIT_INVOICE)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				long id  = (long) param.get("id");
+				String type  = (String) param.get("type");
 				BodyInvoice body  = (BodyInvoice) param.get("body");
-				ReturnData valReturn = invoiceService.update(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId(),body);
-				if(valReturn.isSuccess()) {
-					val.setData(valReturn.getId());
-				}else {
-					val.setSuccess(valReturn.isSuccess());
-					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
-					val.setValidations(valReturn.getValidations());
-					val.setData(null);
+				if(type.equals("EDIT")){
+					ReturnData valReturn = invoiceService.update(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId(),body);
+					if(valReturn.isSuccess()) {
+						val.setData(valReturn.getId());
+					}else {
+						val.setSuccess(valReturn.isSuccess());
+						val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+						val.setValidations(valReturn.getValidations());
+						val.setData(null);
+					}
+				}else if(type.equals("RECALCULTE")){
+					ReturnData valReturn = invoiceService.updateRecalculate(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId(),body);
+					if(valReturn.isSuccess()) {
+						val.setData(valReturn.getId());
+					}else {
+						val.setSuccess(valReturn.isSuccess());
+						val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+						val.setValidations(valReturn.getValidations());
+						val.setData(null);
+					}
 				}
+
 			}else if(codepermission.equals(ConstansPermission.DELETE_INVOICE)) {
 				long id = (long) data;
 				ReturnData valReturn = invoiceService.delete(id,auth.getIdcompany(),auth.getIdbranch(),auth.getId());

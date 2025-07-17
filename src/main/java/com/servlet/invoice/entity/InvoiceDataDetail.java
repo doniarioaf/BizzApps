@@ -18,6 +18,15 @@ public class InvoiceDataDetail {
     private Timestamp createddate;
     private String modifiedbyName;
     private Timestamp modifieddate;
+    private Boolean ispackinglistupdate;
+
+    public Boolean getIspackinglistupdate() {
+        return ispackinglistupdate;
+    }
+
+    public void setIspackinglistupdate(Boolean ispackinglistupdate) {
+        this.ispackinglistupdate = ispackinglistupdate;
+    }
 
     public Date getPackinglistdate() {
         return packinglistdate;

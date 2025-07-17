@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class GlobalFunc {
@@ -157,5 +158,19 @@ public class GlobalFunc {
 			return nilaigr / 1000;
 		}
 		return 0.0;
+	}
+
+	public static HashMap<String,Integer> getMonthYearDate(Long time){
+		HashMap<String,Integer> hash = new HashMap<>();
+		if(time != null){
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(time);
+			hash.put("year",cal.get(Calendar.YEAR));
+			//0 = januari, 1 = februari dst.., jadi jika ingin sesuai bulan kalender month di plus 1
+			hash.put("month",cal.get(Calendar.MONTH) + 1);
+			hash.put("date",cal.get(Calendar.DATE));
+			return hash;
+		}
+		return null;
 	}
 }

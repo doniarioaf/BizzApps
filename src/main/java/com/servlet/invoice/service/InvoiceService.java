@@ -13,6 +13,8 @@ public interface InvoiceService {
     InvoiceDataDetail getDetail(Long id, Long idcompany, Long idbranch);
     ReturnData save(Long idcompany, Long idbranch, Long iduser, BodyInvoice body);
     ReturnData update(Long id,Long idcompany, Long idbranch, Long iduser, BodyInvoice body);
+    ReturnData updateRecalculate(Long id,Long idcompany, Long idbranch, Long iduser, BodyInvoice body);
+    ReturnData updateChangeDataPackingList(Long id, Boolean flag);
     ReturnData delete(Long id,Long idcompany, Long idbranch, Long iduser);
     PrintInvoice getPrintDataByID(Long id, Long idcompany, Long idbranch,Long iduser,ParamPrintInvoice paramPrintInvoice);
     InvoiceDataList getDataByIdPackingList(Long idcompany, Long idbranch,Long idpackinglist);

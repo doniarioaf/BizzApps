@@ -14,10 +14,7 @@ import com.servlet.pelunasanpiutang.entity.PelunasanPiutangItemJoinHeader;
 import com.servlet.pelunasanpiutang.service.PelunasanPiutangService;
 import com.servlet.purchasereceive.entity.PurchaseReceive;
 import com.servlet.runningnumber.service.RunningNumberService;
-import com.servlet.shared.ConstansCodeMessage;
-import com.servlet.shared.ConstantCodeDocument;
-import com.servlet.shared.ReturnData;
-import com.servlet.shared.ValidationDataMessage;
+import com.servlet.shared.*;
 import com.servlet.stockitems.entity.ReportKartuStock;
 import com.servlet.user.entity.UserListData;
 import com.servlet.user.service.UserAppsService;
@@ -28,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -100,8 +98,11 @@ public class InvoiceHandler implements InvoiceService {
     public ReturnData save(Long idcompany, Long idbranch, Long iduser, BodyInvoice body) {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
+        HashMap<String,Integer> hash = GlobalFunc.getMonthYearDate(body.getDate());
+        int year = hash.get("year");
+        int month = hash.get("month");
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
-        String docNumber = runningNumberService.getDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_INVOICE, ts);
+        String docNumber = runningNumberService.getDocNumberWithYearMonth(idcompany, idbranch, ConstantCodeDocument.DOC_INVOICE, ts,year,month);
         if(docNumber.equals("")) {
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_GENERATE_DOC_NUMBER,"Gagal Generate Document Number");
             validations.add(msg);
@@ -124,7 +125,8 @@ public class InvoiceHandler implements InvoiceService {
                 idsave = repo.saveAndFlush(table).getId();
                 historyAppsService.saveHistory(idcompany,idbranch,iduser,"ADD",namaMenu,table.toString(),"","",ts);
             }catch (Exception e) {
-                runningNumberService.rollBackDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_INVOICE);
+                e.printStackTrace();
+                runningNumberService.rollBackDocNumberWithYearMonth(idcompany, idbranch, ConstantCodeDocument.DOC_INVOICE,year,month);
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
                 validations.add(msg);
             }
@@ -164,7 +166,7 @@ public class InvoiceHandler implements InvoiceService {
                     historyAppsService.saveHistory(idcompany,idbranch,iduser,"EDIT",namaMenu,"",after,before,ts);
                 }
             }catch (Exception e) {
-                runningNumberService.rollBackDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_INVOICE);
+                e.printStackTrace();
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
                 validations.add(msg);
             }
@@ -172,6 +174,70 @@ public class InvoiceHandler implements InvoiceService {
 
         if(validations.size() > 0){
             historyAppsService.saveHistory(idcompany,idbranch,iduser,"EDIT_ERROR",namaMenu,validations.get(0).getMessage(),"","",ts);
+        }
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public ReturnData updateRecalculate(Long id, Long idcompany, Long idbranch, Long iduser, BodyInvoice body) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        PelunasanPiutangItemJoinHeader pp = pelunasanPiutangService.getPelunasanPiutangItemByIdInvoice(idcompany,idbranch,id);
+        if(pp != null){
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_PELUNASANPIUTANG,"invoice ini terpasang pada Pelunasan Piutang ("+pp.getNodocument()+")");
+            validations.add(msg);
+        }
+        if(validations.size() == 0) {
+            try{
+                Invoice table = repo.getById(id);
+                if(table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue() && table.isIspackinglistupdate()){
+                    String before = table.toString();
+                    table.setAmount(body.getTotalamount());
+                    table.setOutstanding(body.getTotalamount());
+                    table.setIspackinglistupdate(false);
+                    table.setModifiedby(iduser);
+                    table.setModifieddate(ts);
+                    idsave = repo.saveAndFlush(table).getId();
+                    String after = table.toString();
+                    historyAppsService.saveHistory(idcompany,idbranch,iduser,"EDIT_RECALC",namaMenu,"",after,before,ts);
+                }
+            }catch (Exception e) {
+                e.printStackTrace();
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
+        }
+
+        if(validations.size() > 0){
+            historyAppsService.saveHistory(idcompany,idbranch,iduser,"EDIT_ERROR",namaMenu,validations.get(0).getMessage(),"","",ts);
+        }
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public ReturnData updateChangeDataPackingList(Long id, Boolean flag) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+
+        if(validations.size() == 0) {
+            try{
+                Invoice table = repo.getById(id);
+                table.setIspackinglistupdate(flag);
+                idsave = repo.saveAndFlush(table).getId();
+            }catch (Exception e) {
+                e.printStackTrace();
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
         }
         ReturnData data = new ReturnData();
         data.setId(idsave);
@@ -203,7 +269,7 @@ public class InvoiceHandler implements InvoiceService {
                     historyAppsService.saveHistory(idcompany,idbranch,iduser,"DELETE",namaMenu,table.toString(),"","",ts);
                 }
             }catch (Exception e) {
-                runningNumberService.rollBackDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_INVOICE);
+                e.printStackTrace();
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
                 validations.add(msg);
             }

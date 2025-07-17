@@ -28,6 +28,7 @@ public class Invoice implements Serializable {
     private Timestamp modifieddate;
     private Long deleteby;
     private Timestamp deletedate;
+    private boolean ispackinglistupdate;
 
     @Override
     public String toString() {
@@ -40,6 +41,14 @@ public class Invoice implements Serializable {
                 ", amount=" + amount +
                 ", outstanding=" + outstanding +
                 '}';
+    }
+
+    public boolean isIspackinglistupdate() {
+        return ispackinglistupdate;
+    }
+
+    public void setIspackinglistupdate(boolean ispackinglistupdate) {
+        this.ispackinglistupdate = ispackinglistupdate;
     }
 
     public Double getOutstanding() {

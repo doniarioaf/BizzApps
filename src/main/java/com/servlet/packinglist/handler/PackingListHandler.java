@@ -16,6 +16,8 @@ import com.servlet.packinglist.repo.PakcingListRepo;
 import com.servlet.packinglist.service.PackingListService;
 import com.servlet.parameterclient.entity.ValueParameter;
 import com.servlet.parameterclient.service.ParameterClientService;
+import com.servlet.pelunasanpiutang.entity.PelunasanPiutangItemJoinHeader;
+import com.servlet.pelunasanpiutang.service.PelunasanPiutangService;
 import com.servlet.pricelist.entity.PriceListDetail;
 import com.servlet.pricelist.entity.PriceListItemData;
 import com.servlet.pricelist.service.PriceService;
@@ -81,6 +83,9 @@ public class PackingListHandler implements PackingListService {
 
     @Autowired
     private UserAppsService userAppsService;
+
+    @Autowired
+    private PelunasanPiutangService pelunasanPiutangService;
 
     protected final String namaMenu = "PackingList";
     @Override
@@ -192,8 +197,13 @@ public class PackingListHandler implements PackingListService {
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
         InvoiceDataList inv = invoiceService.getDataByIdPackingList(idcompany,idbranch,id);
         if(inv != null){
-            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_INVOICE,"packinglist ini terpasang pada invoice ("+inv.getNodocument()+")");
-            validations.add(msg);
+            PelunasanPiutangItemJoinHeader pp = pelunasanPiutangService.getPelunasanPiutangItemByIdInvoice(idcompany,idbranch,inv.getId());
+            if(pp != null){
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_PELUNASANPIUTANG,"Packinglist ini terpasang pada Pelunasan Piutang ("+pp.getNodocument()+")");
+                validations.add(msg);
+            }
+//            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_INVOICE,"packinglist ini terpasang pada invoice ("+inv.getNodocument()+")");
+//            validations.add(msg);
         }
         if(validations.size() == 0) {
             try{
@@ -225,6 +235,9 @@ public class PackingListHandler implements PackingListService {
                         historyAppsService.saveHistory(idcompany, idbranch, iduser, "EDIT", namaMenu, "", mixData, mixDataBef, ts);
                     } else {
                         validations.add(validationsItems.get(0));
+                    }
+                    if(inv != null) {
+                        invoiceService.updateChangeDataPackingList(inv.getId(), true);
                     }
                 }
 
