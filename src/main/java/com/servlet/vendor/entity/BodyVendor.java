@@ -19,6 +19,42 @@ public class BodyVendor {
     private Long idvendorparent;
     private Long idvendorbroker;
     private Long idarea;
+    private String address1;
+    private String address2;
+    private String npwp;
+    private String phone;
+
+    public String getAddress1() {
+        return address1;
+    }
+
+    public void setAddress1(String address1) {
+        this.address1 = address1;
+    }
+
+    public String getAddress2() {
+        return address2;
+    }
+
+    public void setAddress2(String address2) {
+        this.address2 = address2;
+    }
+
+    public String getNpwp() {
+        return npwp;
+    }
+
+    public void setNpwp(String npwp) {
+        this.npwp = npwp;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
     public Long getIdarea() {
         return idarea;

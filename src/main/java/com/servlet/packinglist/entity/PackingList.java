@@ -34,6 +34,7 @@ public class PackingList implements Serializable {
     private Boolean isalreadyupdateprice;
     private Timestamp updatepricedate;
     private Long updatepriceby;
+    private Long idvendor;
 
     @Override
     public String toString() {
@@ -48,7 +49,16 @@ public class PackingList implements Serializable {
                 ", netto=" + netto +
                 ", koli=" + koli +
                 ", idpricelist=" + idpricelist +
+                ", idvendor=" + idvendor +
                 '}';
+    }
+
+    public Long getIdvendor() {
+        return idvendor;
+    }
+
+    public void setIdvendor(Long idvendor) {
+        this.idvendor = idvendor;
     }
 
     public Timestamp getUpdatepricedate() {

@@ -37,4 +37,16 @@ ALTER TABLE public.m_category_product ADD forcategory varchar NULL;
 update m_category_product set forcategory='VENDOR';
 INSERT INTO m_parameter_client VALUES (nextval('m_parameter_client_id_seq'::regclass),1, 'COUNTRYOFORIGIN', 'CENGKARENG',true,false,1,now(),null,null,null,null,'TEXT',null);
 
-INSERT INTO m_permissions VALUES (nextval('permissions_id_seq'::regclass), 'READ_REPORT_KARTUPINJAMAN', 'Read Report Kartu Pinjaman');
+INSERT INTO m_permissions VALUES (nextval('permissions_id_seq'::regclass), 'READ_REPORT_KARTUPINJAMAN', 'Read Report Pinjaman');
+
+ALTER TABLE public.m_running_number ADD "year" int4 NOT NULL DEFAULT 0;
+ALTER TABLE public.m_running_number ADD "month" int NOT NULL DEFAULT 0;
+ALTER TABLE public.m_running_number DROP CONSTRAINT m_running_number_pk;
+ALTER TABLE public.m_running_number ADD CONSTRAINT m_running_number_pk PRIMARY KEY (code,idcompany,idbranch,"year","month");
+ALTER TABLE public.invoice ADD ispackinglistupdate bool NOT NULL DEFAULT false;
+
+ALTER TABLE public.m_vendor ADD address1 varchar NULL;
+ALTER TABLE public.m_vendor ADD address2 varchar NULL;
+ALTER TABLE public.m_vendor ADD npwp varchar NULL;
+ALTER TABLE public.m_vendor ADD phone varchar NULL;
+ALTER TABLE public.packinglist ADD idvendor int8 NULL;

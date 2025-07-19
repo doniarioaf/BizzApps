@@ -3,6 +3,7 @@ package com.servlet.packinglist.entity;
 import com.servlet.categoryproduct.entity.CategoryProductList;
 import com.servlet.customer.entity.ListCustomerData;
 import com.servlet.product.entity.ListProductData;
+import com.servlet.vendor.entity.VendorDataForTemplate;
 
 import java.util.List;
 
@@ -10,6 +11,15 @@ public class PackingListTemplate {
     private List<ListProductData> productOpt;
     private List<CategoryProductList> categoryProductOpt;
     private List<ListCustomerData> customerOpt;
+    private List<VendorDataForTemplate> vendorOpt;
+
+    public List<VendorDataForTemplate> getVendorOpt() {
+        return vendorOpt;
+    }
+
+    public void setVendorOpt(List<VendorDataForTemplate> vendorOpt) {
+        this.vendorOpt = vendorOpt;
+    }
 
     public List<ListProductData> getProductOpt() {
         return productOpt;

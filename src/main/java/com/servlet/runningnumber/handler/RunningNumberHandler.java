@@ -108,7 +108,8 @@ public class RunningNumberHandler implements RunningNumberService{
 				}else{
 					bulan = "0"+month;
 				}
-				valNumber = code+"-"+bulan+"-"+year+"/"+idbranch+runningNumber;
+				String yearStr = String.valueOf(year).substring(2,4);
+				valNumber = code+"-"+bulan+"-"+yearStr+"/"+idbranch+runningNumber;
 			}
 		}
 

@@ -31,6 +31,8 @@ import com.servlet.stockitems.entity.ReportKartuStock;
 import com.servlet.stockitems.service.StockItemService;
 import com.servlet.user.entity.UserListData;
 import com.servlet.user.service.UserAppsService;
+import com.servlet.vendor.entity.ParamVendor;
+import com.servlet.vendor.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -80,6 +82,8 @@ public class PackingListHandler implements PackingListService {
 
     @Autowired
     private PriceService priceService;
+    @Autowired
+    private VendorService vendorService;
 
     @Autowired
     private UserAppsService userAppsService;
@@ -107,10 +111,13 @@ public class PackingListHandler implements PackingListService {
 
     @Override
     public PackingListTemplate getTemplate(Long idcompany, Long idbranch) {
+        ParamVendor paramVendor = new ParamVendor();
+        paramVendor.setVendorTypes("'UPI'");
         PackingListTemplate data = new PackingListTemplate();
         data.setProductOpt(productService.getListAll(idcompany,idbranch));
         data.setCategoryProductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,null));
         data.setCustomerOpt(customerService.getListAll(idcompany,idbranch));
+        data.setVendorOpt(vendorService.getListDropdown(idcompany,idbranch,paramVendor));
         return data;
     }
 
@@ -139,6 +146,7 @@ public class PackingListHandler implements PackingListService {
                 table.setNetto(body.getNetto());
                 table.setKoli(body.getKoli());
                 table.setIdpricelist(body.getIdpricelist());
+                table.setIdvendor(body.getIdvendor());
                 table.setIsdelete(false);
                 table.setIsalreadyupdateprice(true);
                 table.setCreatedby(iduser);
@@ -214,6 +222,7 @@ public class PackingListHandler implements PackingListService {
                     table.setDate(new Date(body.getDate()));
                     table.setIdcustomer(body.getIdcustomer());
                     table.setCity(body.getCity());
+                    table.setIdvendor(body.getIdvendor());
                     table.setAttention(body.getAttention());
                     table.setFlightnumber(body.getFlightnumber());
                     table.setAwbnumber(body.getAwbnumber());

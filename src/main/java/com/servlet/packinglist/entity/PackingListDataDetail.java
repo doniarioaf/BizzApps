@@ -13,6 +13,7 @@ public class PackingListDataDetail {
     private String customerName;
     private String customerAlias;
     private String customerAddress;
+    private String codeGrupcustomer;
     private String city;
     private String attention;
     private String flightnumber;
@@ -26,6 +27,77 @@ public class PackingListDataDetail {
     private Long idpricelist;
     private Boolean isalreadyupdateprice;
     private List<PackingListDataItemDetail> items;
+    private Long idvendor;
+    private String vendorName;
+    private String vendorAlias;
+    private String vendorAddress1;
+    private String vendorAddress2;
+    private String vendorPhone;
+    private String vendorNpwp;
+
+    public String getCodeGrupcustomer() {
+        return codeGrupcustomer;
+    }
+
+    public void setCodeGrupcustomer(String codeGrupcustomer) {
+        this.codeGrupcustomer = codeGrupcustomer;
+    }
+
+    public String getVendorAddress1() {
+        return vendorAddress1;
+    }
+
+    public void setVendorAddress1(String vendorAddress1) {
+        this.vendorAddress1 = vendorAddress1;
+    }
+
+    public String getVendorAddress2() {
+        return vendorAddress2;
+    }
+
+    public void setVendorAddress2(String vendorAddress2) {
+        this.vendorAddress2 = vendorAddress2;
+    }
+
+    public String getVendorPhone() {
+        return vendorPhone;
+    }
+
+    public void setVendorPhone(String vendorPhone) {
+        this.vendorPhone = vendorPhone;
+    }
+
+    public String getVendorNpwp() {
+        return vendorNpwp;
+    }
+
+    public void setVendorNpwp(String vendorNpwp) {
+        this.vendorNpwp = vendorNpwp;
+    }
+
+    public Long getIdvendor() {
+        return idvendor;
+    }
+
+    public void setIdvendor(Long idvendor) {
+        this.idvendor = idvendor;
+    }
+
+    public String getVendorName() {
+        return vendorName;
+    }
+
+    public void setVendorName(String vendorName) {
+        this.vendorName = vendorName;
+    }
+
+    public String getVendorAlias() {
+        return vendorAlias;
+    }
+
+    public void setVendorAlias(String vendorAlias) {
+        this.vendorAlias = vendorAlias;
+    }
 
     public String getCustomerPhone() {
         return customerPhone;

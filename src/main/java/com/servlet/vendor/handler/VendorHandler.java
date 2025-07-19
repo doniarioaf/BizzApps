@@ -111,6 +111,10 @@ public class VendorHandler implements VendorService {
                     vendor.setIdvendorbroker(body.getIdvendorbroker());
                 }
                 vendor.setIdarea(body.getIdarea());
+                vendor.setAddress1(body.getAddress1());
+                vendor.setAddress2(body.getAddress2());
+                vendor.setNpwp(body.getNpwp());
+                vendor.setPhone(body.getPhone());
                 vendor.setIsdelete(false);
                 vendor.setCreateddate(ts);
                 vendor.setCreatedby(iduser);
@@ -131,6 +135,7 @@ public class VendorHandler implements VendorService {
 
             } catch (Exception e) {
                 // TODO: handle exception
+                e.printStackTrace();
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
                 validations.add(msg);
             }
@@ -183,6 +188,10 @@ public class VendorHandler implements VendorService {
                     vendor.setIdvendorbroker(null);
                 }
                 vendor.setIdarea(body.getIdarea());
+                vendor.setAddress1(body.getAddress1());
+                vendor.setAddress2(body.getAddress2());
+                vendor.setNpwp(body.getNpwp());
+                vendor.setPhone(body.getPhone());
                 vendor.setModifieddate(ts);
                 vendor.setModifiedby(iduser);
                 idsave = repo.saveAndFlush(vendor).getId();
@@ -211,6 +220,7 @@ public class VendorHandler implements VendorService {
                 }
             } catch (Exception e) {
                 // TODO: handle exception
+                e.printStackTrace();
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
                 validations.add(msg);
             }
@@ -235,6 +245,7 @@ public class VendorHandler implements VendorService {
             idsave = repo.saveAndFlush(vendor).getId();
         }catch (Exception e){
             // TODO: handle exception
+            e.printStackTrace();
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
             validations.add(msg);
         }

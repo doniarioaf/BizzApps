@@ -17,10 +17,12 @@ public class QueryDataDetail implements RowMapper<PackingListDataDetail> {
         sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.date as date, data.idcustomer as idcustomer, ");
         sqlBuilder.append("data.city as city, data.attention as attention, data.flightnumber as flightnumber, data.awbnumber as awbnumber,  ");
         sqlBuilder.append("data.netto as netto, data.koli as koli, data.idpricelist as idpricelist, data.isalreadyupdateprice as isalreadyupdateprice, ");
+        sqlBuilder.append("data.idvendor as idvendor, ven.nama as venNama, ven.alias as venAlias, ven.address1 as venaddress1, ven.address2 as venaddress2, ven.npwp as vennpwp, ven.phone as venphone, ");
         sqlBuilder.append("data.createddate as createddate, data.modifieddate as modifieddate, ");
         sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama, ");
-        sqlBuilder.append("cus.nama as cusNama, cus.alias as cusAlias, cus.address as cusAddress, cus.phonenumber as cusphonenumber ");
+        sqlBuilder.append("cus.nama as cusNama, cus.alias as cusAlias, cus.address as cusAddress, cus.phonenumber as cusphonenumber,cus.grupcode as cusgrupcode ");
         sqlBuilder.append("from packinglist as data ");
+        sqlBuilder.append("left join m_vendor as ven on ven.id = data.idvendor ");
         sqlBuilder.append("left join m_customer as cus on cus.id = data.idcustomer ");
         sqlBuilder.append("left join m_user_apps as usercreate on usercreate.id = data.createdby ");
         sqlBuilder.append("left join m_user_apps as usermodified on usermodified.id = data.modifiedby ");
@@ -55,6 +57,14 @@ public class QueryDataDetail implements RowMapper<PackingListDataDetail> {
         final Timestamp modifieddate = rs.getTimestamp("modifieddate");
         final String createdname = rs.getString("createdname");
         final String modifiednama = rs.getString("modifiednama");
+        final Long idvendor = rs.getLong("idvendor");
+        final String venNama = rs.getString("venNama");
+        final String venAlias = rs.getString("venAlias");
+        final String venaddress1 = rs.getString("venaddress1");
+        final String venaddress2 = rs.getString("venaddress2");
+        final String vennpwp = rs.getString("vennpwp");
+        final String venphone = rs.getString("venphone");
+        final String cusgrupcode = rs.getString("cusgrupcode");
 
         PackingListDataDetail data = new PackingListDataDetail();
         data.setId(id);
@@ -73,6 +83,14 @@ public class QueryDataDetail implements RowMapper<PackingListDataDetail> {
         data.setCustomerAlias(cusAlias);
         data.setCustomerAddress(cusAddress);
         data.setCustomerPhone(cusphonenumber);
+        data.setCodeGrupcustomer(cusgrupcode);
+        data.setIdvendor(idvendor);
+        data.setVendorName(venNama);
+        data.setVendorAlias(venAlias);
+        data.setVendorAddress1(venaddress1);
+        data.setVendorAddress2(venaddress2);
+        data.setVendorNpwp(vennpwp);
+        data.setVendorPhone(venphone);
         data.setCreateddate(createddate);
         data.setModifieddate(modifieddate);
         data.setCreatedbyName(createdname);
