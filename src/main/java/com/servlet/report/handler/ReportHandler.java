@@ -867,7 +867,7 @@ public class ReportHandler implements ReportService {
             }
         }
 
-        int rowcount = 7;
+        int rowcount = 10;
         int columncount = 0;
         Row row = sheet.createRow(rowcount);
 
@@ -878,17 +878,24 @@ public class ReportHandler implements ReportService {
         CellUtil.setVerticalAlignment(salesinv, VerticalAlignment.CENTER);
         CellUtil.setAlignment(salesinv, HorizontalAlignment.CENTER);
 
-
-        CellRangeAddress toCellRangeAddress = new CellRangeAddress(3, 5, 5, 8);
+        CellRangeAddress toCellRangeAddress = new CellRangeAddress(3, 7, 5, 8);
         Row row3 = sheet.createRow(3);
         createCell(row3, 5, "To", styleBoldItalicNoBorder, sheet,columns);
+        createCell(row3, 6, invoice.getPackinglist().getVendorName(), styleBoldItalicNoBorder, sheet,columns);
 
         Row row4 = sheet.createRow(4);
-        createCell(row4, 5, invoice.getPackinglist().getCustomerName(), styleNoBorder, sheet,columns);
+        createCell(row4, 5, invoice.getPackinglist().getVendorAddress1(), styleNoBorder, sheet,columns);
 
         Row row5 = sheet.createRow(5);
-        createCell(row5, 5, invoice.getPackinglist().getCity(), styleNoBorder, sheet,columns);
+        createCell(row5, 5, invoice.getPackinglist().getVendorAddress2(), styleNoBorder, sheet,columns);
 
+        Row row6 = sheet.createRow(6);
+        createCell(row6, 5, "NPWP  :", styleNoBorder, sheet,columns);
+        createCell(row6, 6, invoice.getPackinglist().getVendorNpwp(), styleNoBorder, sheet,columns);
+
+        Row row7 = sheet.createRow(7);
+        createCell(row7, 5, "Phone  :", styleNoBorder, sheet,columns);
+        createCell(row7, 6, invoice.getPackinglist().getVendorPhone(), styleNoBorder, sheet,columns);
 
         CellRangeAddress companyNameCellRangeAddress = new CellRangeAddress(2, 2, 2, 4);
         sheet.addMergedRegion(companyNameCellRangeAddress);
@@ -938,7 +945,7 @@ public class ReportHandler implements ReportService {
 
         CellRangeAddress abwCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 5, 6);
         sheet.addMergedRegion(abwCellRangeAddress);
-        Cell abw = createCell(row, 5, "ABW", style, sheet,columns);
+        Cell abw = createCell(row, 5, "AWB", style, sheet,columns);
         abw.setCellStyle(styleBoldItalicColourBg);
         RegionUtil.setBorderTop(BorderStyle.MEDIUM, abwCellRangeAddress, sheet);
         RegionUtil.setBorderBottom(BorderStyle.MEDIUM, abwCellRangeAddress, sheet);
@@ -985,7 +992,7 @@ public class ReportHandler implements ReportService {
 
         CellRangeAddress valueabwCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 5, 6);
         sheet.addMergedRegion(valueabwCellRangeAddress);
-        Cell valueabw = createCell(row, 5, invoice.getPackinglist().getAwbnumber(), style, sheet,columns);
+        Cell valueabw = createCell(row, 5, invoice.getPackinglist().getAwbnumber()+" "+invoice.getPackinglist().getCodeGrupcustomer(), style, sheet,columns);
         CellUtil.setVerticalAlignment(valueabw, VerticalAlignment.CENTER);
         CellUtil.setAlignment(valueabw, HorizontalAlignment.CENTER);
         RegionUtil.setBorderTop(BorderStyle.MEDIUM, valueabwCellRangeAddress, sheet);
@@ -1012,7 +1019,7 @@ public class ReportHandler implements ReportService {
 
         CellRangeAddress countryOfOriginCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 1);
         sheet.addMergedRegion(countryOfOriginCellRangeAddress);
-        Cell countryOfOrigin = createCell(row, 0, "Country Of Origin", style, sheet,columns);
+        Cell countryOfOrigin = createCell(row, 0, "Invoice Number", style, sheet,columns);
         countryOfOrigin.setCellStyle(styleBoldItalicColourBg);
         RegionUtil.setBorderTop(BorderStyle.MEDIUM, countryOfOriginCellRangeAddress, sheet);
         RegionUtil.setBorderBottom(BorderStyle.MEDIUM, countryOfOriginCellRangeAddress, sheet);
@@ -1022,7 +1029,7 @@ public class ReportHandler implements ReportService {
 
         CellRangeAddress countryOfFinalDestCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 2, 3);
         sheet.addMergedRegion(countryOfFinalDestCellRangeAddress);
-        Cell countryOfFinalDest = createCell(row, 2, "Country Of Final Dest.", style, sheet,columns);
+        Cell countryOfFinalDest = createCell(row, 2, "Invoice Date", style, sheet,columns);
         countryOfFinalDest.setCellStyle(styleBoldItalicColourBg);
         RegionUtil.setBorderTop(BorderStyle.MEDIUM, countryOfFinalDestCellRangeAddress, sheet);
         RegionUtil.setBorderBottom(BorderStyle.MEDIUM, countryOfFinalDestCellRangeAddress, sheet);
@@ -1030,7 +1037,7 @@ public class ReportHandler implements ReportService {
         RegionUtil.setBorderRight(BorderStyle.MEDIUM, countryOfFinalDestCellRangeAddress, sheet);
 
         columncount = 4;
-        createCell(row, columncount, "Collie", styleBoldItalicColourBg, sheet,columns);
+        createCell(row, columncount, "Boxes", styleBoldItalicColourBg, sheet,columns);
 
         CellRangeAddress nettoCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 5, 6);
         sheet.addMergedRegion(nettoCellRangeAddress);
@@ -1055,7 +1062,7 @@ public class ReportHandler implements ReportService {
         columncount = 0;
         CellRangeAddress valuecountryOfOriginCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 1);
         sheet.addMergedRegion(valuecountryOfOriginCellRangeAddress);
-        Cell valuecountryOfOrigin = createCell(row, 0, "CENGKARENG", style, sheet,columns);
+        Cell valuecountryOfOrigin = createCell(row, 0, invoice.getNodocument(), style, sheet,columns);
         CellUtil.setVerticalAlignment(valuecountryOfOrigin, VerticalAlignment.CENTER);
         CellUtil.setAlignment(valuecountryOfOrigin, HorizontalAlignment.CENTER);
 
@@ -1064,10 +1071,16 @@ public class ReportHandler implements ReportService {
         RegionUtil.setBorderLeft(BorderStyle.MEDIUM, valuecountryOfOriginCellRangeAddress, sheet);
         RegionUtil.setBorderRight(BorderStyle.MEDIUM, valuecountryOfOriginCellRangeAddress, sheet);
 
-
+        String invDate = "";
+        try {
+            invDate = GlobalFunc.getDateLongToString(invoice.getPackinglist().getDate().getTime(), "dd MMMM yyyy");
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         CellRangeAddress valuecountryOfFinalDestCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 2, 3);
         sheet.addMergedRegion(valuecountryOfFinalDestCellRangeAddress);
-        Cell valuecountryOfFinalDest = createCell(row, 2, getCodeAndCountryDest(invoice.getPackinglist().getCustomerAlias()).get("destination"), style, sheet,columns);
+        Cell valuecountryOfFinalDest = createCell(row, 2, invDate, style, sheet,columns);
         CellUtil.setVerticalAlignment(valuecountryOfFinalDest, VerticalAlignment.CENTER);
         CellUtil.setAlignment(valuecountryOfFinalDest, HorizontalAlignment.CENTER);
         RegionUtil.setBorderTop(BorderStyle.MEDIUM, valuecountryOfFinalDestCellRangeAddress, sheet);
