@@ -20,7 +20,7 @@ public class QueryDataDetail implements RowMapper<PackingListDataDetail> {
         sqlBuilder.append("data.idvendor as idvendor, ven.nama as venNama, ven.alias as venAlias, ven.address1 as venaddress1, ven.address2 as venaddress2, ven.npwp as vennpwp, ven.phone as venphone, ");
         sqlBuilder.append("data.createddate as createddate, data.modifieddate as modifieddate, ");
         sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama, ");
-        sqlBuilder.append("cus.nama as cusNama, cus.alias as cusAlias, cus.address as cusAddress, cus.phonenumber as cusphonenumber,cus.grupcode as cusgrupcode ");
+        sqlBuilder.append("cus.nama as cusNama, cus.alias as cusAlias, cus.address as cusAddress, cus.phonenumber as cusphonenumber,cus.grupcode as cusgrupcode, cus.attention as cusattention ");
         sqlBuilder.append("from packinglist as data ");
         sqlBuilder.append("left join m_vendor as ven on ven.id = data.idvendor ");
         sqlBuilder.append("left join m_customer as cus on cus.id = data.idcustomer ");
@@ -47,6 +47,7 @@ public class QueryDataDetail implements RowMapper<PackingListDataDetail> {
         final String cusphonenumber = rs.getString("cusphonenumber");
         final String city = rs.getString("city");
         final String attention = rs.getString("attention");
+        final String cusattention = rs.getString("cusattention");
         final String flightnumber = rs.getString("flightnumber");
         final String awbnumber = rs.getString("awbnumber");
         final Double netto = rs.getDouble("netto");
@@ -72,7 +73,7 @@ public class QueryDataDetail implements RowMapper<PackingListDataDetail> {
         data.setDate(date);
         data.setIdcustomer(idcustomer);
         data.setCity(city);
-        data.setAttention(attention);
+        data.setAttention(cusattention);
         data.setFlightnumber(flightnumber);
         data.setAwbnumber(awbnumber);
         data.setNetto(netto);

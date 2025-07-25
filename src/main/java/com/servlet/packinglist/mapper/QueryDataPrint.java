@@ -16,7 +16,7 @@ public class QueryDataPrint implements RowMapper<PrintPackingList> {
         sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.date as date, data.idcustomer as idcustomer, ");
         sqlBuilder.append("data.city as city, data.attention as attention, data.flightnumber as flightnumber, data.awbnumber as awbnumber,  ");
         sqlBuilder.append("data.netto as netto, data.koli as koli, data.idpricelist as idpricelist,  ");
-        sqlBuilder.append("cus.nama as cusNama, cus.alias as cusAlias, cus.address as cusAddress, cus.city as custcity ");
+        sqlBuilder.append("cus.nama as cusNama, cus.alias as cusAlias, cus.address as cusAddress, cus.city as custcity, cus.attention as cusattention ");
         sqlBuilder.append("from packinglist as data ");
         sqlBuilder.append("left join m_customer as cus on cus.id = data.idcustomer ");
 
@@ -40,6 +40,7 @@ public class QueryDataPrint implements RowMapper<PrintPackingList> {
         final String custcity = rs.getString("custcity");
 
         final String attention = rs.getString("attention");
+        final String cusattention = rs.getString("cusattention");
         final String flightnumber = rs.getString("flightnumber");
         final String awbnumber = rs.getString("awbnumber");
         final Double netto = rs.getDouble("netto");
@@ -51,7 +52,7 @@ public class QueryDataPrint implements RowMapper<PrintPackingList> {
         data.setIdcustomer(idcustomer);
 //        data.setCity(city);
         data.setCity(custcity);
-        data.setAttention(attention);
+        data.setAttention(cusattention);
         data.setFlightnumber(flightnumber);
         data.setAwbnumber(awbnumber);
         data.setNetto(netto);
