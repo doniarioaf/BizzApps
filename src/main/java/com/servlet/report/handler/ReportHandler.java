@@ -4290,7 +4290,7 @@ public class ReportHandler implements ReportService {
                         colomcount = 0;
                         rowcount++;
                         row = sheet.createRow(rowcount);
-                        createCell(row, colomcount, kd.getVendorAlias(), style, sheet,columns);
+                        createCell(row, colomcount,kd.getVendorName() +" ("+kd.getVendorAlias()+")", style, sheet,columns);
 
                         transDate = "";
                         try {
@@ -4778,7 +4778,7 @@ public class ReportHandler implements ReportService {
                         colomcount = 0;
                         rowcount++;
                         row = sheet.createRow(rowcount);
-                        createCell(row, colomcount, kd.getVendorAlias(), style, sheet,columns);
+                        createCell(row, colomcount, kd.getVendorName()+" ("+kd.getVendorAlias()+")", style, sheet,columns);
 
                         transDate = "";
                         try {
@@ -4942,6 +4942,7 @@ public class ReportHandler implements ReportService {
         if(!param.getListIdCategoryProduct().equals("ALL")){
             paramCP.setListidcategoryproduct(param.getListIdCategoryProduct());
         }
+        paramCP.setForcategory("CUSTOMER");
         List<CategoryProductList> listCP = categoryProductService.getDataForTemplate(idcompany,idbranch,paramCP);
 
         if(!param.getListIdCategoryProduct().equals("ALL")){
@@ -5393,6 +5394,7 @@ public class ReportHandler implements ReportService {
         data.setProductOpt(productService.getListAll(idcompany,idbranch));
         ParamTemplate paramCP = new ParamTemplate();
         paramCP.setShowOnlyCpMapping(true);
+        paramCP.setForcategory("CUSTOMER");
         data.setCategoryProductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,paramCP));
         return data;
     }

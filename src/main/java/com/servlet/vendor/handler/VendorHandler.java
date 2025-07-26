@@ -1,6 +1,7 @@
 package com.servlet.vendor.handler;
 
 import com.servlet.area.service.AreaService;
+import com.servlet.categoryproduct.entity.ParamTemplate;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.pricelist.entity.PriceListItemData;
@@ -259,7 +260,9 @@ public class VendorHandler implements VendorService {
     @Override
     public VendorTemplate getTemplate(Long idcompany, Long idbranch) {
         VendorTemplate template = new VendorTemplate();
-        template.setCategoryProductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,null));
+        ParamTemplate cpParam = new ParamTemplate();
+        cpParam.setForcategory("VENDOR");
+        template.setCategoryProductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,cpParam));
         ParamVendor pv = new ParamVendor();
         pv.setOnlyParent("Y");
         template.setVendorParentOpt(getListDropdown(idcompany,idbranch,pv));
