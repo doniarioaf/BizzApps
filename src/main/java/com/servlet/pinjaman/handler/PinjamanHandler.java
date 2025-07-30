@@ -191,7 +191,7 @@ public class PinjamanHandler implements PinjamanService {
                     listidvendor = listidvendor.replaceAll("\\]", "");
                 }
 
-                double summarySetorPurchaseReceive = purchaseReceiveService.calculateSetorPinjamanByIdVendor(table.getIdcompany(), table.getIdbranch(), null, listidvendor).doubleValue();
+                double summarySetorPurchaseReceive = purchaseReceiveService.calculateSetorPinjamanByIdVendor(table.getIdcompany(), table.getIdbranch(), null, listidvendor,null).doubleValue();
                 if (summarySetorPurchaseReceive > summaryPinjaman) {
                     ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.TOTAL_SETOR_GREATER_THAN, "Total Setor Lebih besar dari total pinjaman");
                     validations.add(msg);
@@ -253,7 +253,7 @@ public class PinjamanHandler implements PinjamanService {
                     listidvendor = listidvendor.replaceAll("\\]", "");
                 }
 //
-                double summarySetorPurchaseReceive = purchaseReceiveService.calculateSetorPinjamanByIdVendor(table.getIdcompany(), table.getIdbranch(), null, listidvendor).doubleValue();
+                double summarySetorPurchaseReceive = purchaseReceiveService.calculateSetorPinjamanByIdVendor(table.getIdcompany(), table.getIdbranch(), null, listidvendor,null).doubleValue();
                 if (summarySetorPurchaseReceive > summaryPinjaman) {
                     ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.TOTAL_SETOR_GREATER_THAN, "Total Setor Lebih besar dari total pinjaman");
                     validations.add(msg);
@@ -349,6 +349,10 @@ public class PinjamanHandler implements PinjamanService {
         }
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountPinjaman().schema());
         sqlBuilder.append(" where data.idcompany = ? and data.idvendor = ?  and data.isdelete = false ");
+        if(param.getDate() != null && param.getOperatorPerbandingan() != null){
+//            and data.createddate < '"+dt+"'
+            sqlBuilder.append(" and data.date "+param.getOperatorPerbandingan()+" '"+param.getDate()+"' ");
+        }
         final Object[] queryParameters = new Object[] {idcompany,idven};
         List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateAmountPinjaman(), queryParameters);
         if(list != null && list.size() > 0){
@@ -358,9 +362,11 @@ public class PinjamanHandler implements PinjamanService {
     }
 
     @Override
-    public Double calculateSisaPinjamanByIdVendor(Long idcompany, Long idbranch, Long idvendor) {
+    public Double calculateSisaPinjamanByIdVendor(Long idcompany, Long idbranch, Long idvendor, Date dateFrom) {
         ParameterPinjaman parameterPinjaman = new ParameterPinjaman();
         parameterPinjaman.setIdvendor(idvendor);
+        parameterPinjaman.setDate(dateFrom);
+        parameterPinjaman.setOperatorPerbandingan("<");
         double summaryAmount = calculateAmountByIdVendor(idcompany,idbranch,parameterPinjaman).doubleValue();
         Long idven = vendorService.getIdParent(idcompany,idbranch,idvendor);
         if(idven == null){
@@ -379,9 +385,9 @@ public class PinjamanHandler implements PinjamanService {
 
         double summarySetorPinjamanPurchaseReceive =  0;//purchaseReceiveService.calculateSetorByIdVendor(idcompany,idbranch,idvendor).doubleValue();
         if(!listidvendor.equals("")){
-            summarySetorPinjamanPurchaseReceive =  purchaseReceiveService.calculateSetorPinjamanByIdVendor(idcompany,idbranch,null,listidvendor).doubleValue();
+            summarySetorPinjamanPurchaseReceive =  purchaseReceiveService.calculateSetorPinjamanByIdVendor(idcompany,idbranch,null,listidvendor,dateFrom).doubleValue();
         }else{
-            summarySetorPinjamanPurchaseReceive =  purchaseReceiveService.calculateSetorPinjamanByIdVendor(idcompany,idbranch,idvendor,"").doubleValue();
+            summarySetorPinjamanPurchaseReceive =  purchaseReceiveService.calculateSetorPinjamanByIdVendor(idcompany,idbranch,idvendor,"",dateFrom).doubleValue();
         }
         double hasil = summaryAmount - summarySetorPinjamanPurchaseReceive;
         return hasil;

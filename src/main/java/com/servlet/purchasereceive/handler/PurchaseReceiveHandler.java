@@ -157,7 +157,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             data.setCharges(getPrintDataCharge(id));
             data.setInventori(getPrintDataItemsInventori(id));
             data.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch,data.getIdvendor()));
-            data.setSisaPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch, data.getIdvendor()));
+            data.setSisaPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch, data.getIdvendor(),null));
             return data;
         }
         return null;
@@ -431,7 +431,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         paramCategoryProduct.setIdvendor(idvendor);
         data.setCategoryproductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,paramCategoryProduct));
         data.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch,idvendor));
-        data.setSisaPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch,idvendor));
+        data.setSisaPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch,idvendor,null));
 
         ParamGetDataDraftPR paramDraftPR = new ParamGetDataDraftPR();
         paramDraftPR.setIdvendor(idvendor);
@@ -460,7 +460,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     }
 
     @Override
-    public Double calculateSetorPinjamanByIdVendor(Long idcompany, Long idbranch, Long idvendor,String listidvendor) {
+    public Double calculateSetorPinjamanByIdVendor(Long idcompany, Long idbranch, Long idvendor,String listidvendor, Date date) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountSetorPinjaman().schema());
         sqlBuilder.append(" where data.idcompany = ? and data.isdelete = false ");
         if(idvendor != null){
@@ -468,6 +468,9 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         }
         if(listidvendor != null && !listidvendor.equals("")){
             sqlBuilder.append(" and data.idvendor in ("+listidvendor+") ");
+        }
+        if(date != null){
+            sqlBuilder.append(" and data.transactiondate < '"+date+"' ");
         }
         final Object[] queryParameters = new Object[] {idcompany};
         List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateAmountSetorPinjaman(), queryParameters);
@@ -591,7 +594,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         paramCalcDeposit.setListNotSUMIdDeposit(iddeposits);
 
         print.setSaldoDepositBeforeNotaSubmit(depositService.calculateSaldoDepositForPrinted(idcompany,idbranch, paramCalcDeposit));
-        print.setSaldoPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch,print.getIdvendor()));
+        print.setSaldoPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch,print.getIdvendor(),null));
         print.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADNOTA",namaMenu));
         print.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
         UserListData user = userAppsService.getUserByID(iduser);
@@ -606,9 +609,10 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
 
     @Override
     public Double calculateSetorByIdVendorAndCreatedDate(Long idcompany, Long idbranch, Long idvendor, Long date,String listidvendor) {
-        Timestamp dt = new Timestamp(date);
+//        Timestamp dt = new Timestamp(date);
+        Date dt = new Date(date);
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountSetor().schema());
-        sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false and data.createddate < '"+dt+"' ");
+        sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false and data.transactiondate < '"+dt+"' ");
         if(idvendor != null){
             sqlBuilder.append(" and data.idvendor = "+idvendor+"  ");
         }

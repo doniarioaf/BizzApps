@@ -17,6 +17,6 @@ public interface PinjamanService {
     ReturnData uploadFileDoc(ParameterPinjaman param);
     FileDocumentData downloadFile(ParameterPinjaman param);
     Double calculateAmountByIdVendor(Long idcompany, Long idbranch, ParameterPinjaman param);
-    Double calculateSisaPinjamanByIdVendor(Long idcompany, Long idbranch, Long idvendor);
+    Double calculateSisaPinjamanByIdVendor(Long idcompany, Long idbranch, Long idvendor,Date dateFrom);
     List<ReportKartuPinjaman> getListReportKartuPinjaman(Long idcompany, Long idbranch, ParamReportKartuPinjamanList param);
 }

@@ -4166,18 +4166,18 @@ public class ReportHandler implements ReportService {
                         }
                         if(param.getShowNol().equals("NO")){
                             if(kd.getType().equals("DEPOSIT")){
-                                if(grupByVendorMasuk.get(ven.getId()) == null){
-                                    grupByVendorMasuk.put(ven.getId(),kd.getAmount());
+                                if(grupByVendorMasuk.get(kd.getIdvendor()) == null){
+                                    grupByVendorMasuk.put(kd.getIdvendor(),kd.getAmount());
                                 }else {
-                                    Double amt = kd.getAmount().doubleValue() + grupByVendorMasuk.get(kd.getIdvendor()).doubleValue();
-                                    grupByVendorMasuk.put(ven.getId(),amt);
+                                    Double amt = (kd.getAmount() != null?kd.getAmount().doubleValue():0.0) + grupByVendorMasuk.get(kd.getIdvendor()).doubleValue();
+                                    grupByVendorMasuk.put(kd.getIdvendor(),amt);
                                 }
                             }else{
-                                if(grupByVendorKeluar.get(ven.getId()) == null){
-                                    grupByVendorKeluar.put(ven.getId(),kd.getAmount());
+                                if(grupByVendorKeluar.get(kd.getIdvendor()) == null){
+                                    grupByVendorKeluar.put(kd.getIdvendor(),kd.getAmount());
                                 }else {
                                     Double amt = kd.getAmount().doubleValue() + grupByVendorKeluar.get(kd.getIdvendor()).doubleValue();
-                                    grupByVendorKeluar.put(ven.getId(),amt);
+                                    grupByVendorKeluar.put(kd.getIdvendor(),amt);
                                 }
                             }
                         }
@@ -4687,19 +4687,19 @@ public class ReportHandler implements ReportService {
                             listKDTemp.add(kd);
                         }
                         if(param.getShowNol().equals("NO")){
-                            if(kd.getType().equals("DEPOSIT")){
-                                if(grupByVendorMasuk.get(ven.getId()) == null){
-                                    grupByVendorMasuk.put(ven.getId(),kd.getAmount());
+                            if(kd.getType().equals("PINJAMAN")){
+                                if(grupByVendorMasuk.get(kd.getIdvendor()) == null){
+                                    grupByVendorMasuk.put(kd.getIdvendor(),kd.getAmount());
                                 }else {
                                     Double amt = kd.getAmount().doubleValue() + grupByVendorMasuk.get(kd.getIdvendor()).doubleValue();
-                                    grupByVendorMasuk.put(ven.getId(),amt);
+                                    grupByVendorMasuk.put(kd.getIdvendor(),amt);
                                 }
                             }else{
-                                if(grupByVendorKeluar.get(ven.getId()) == null){
-                                    grupByVendorKeluar.put(ven.getId(),kd.getAmount());
+                                if(grupByVendorKeluar.get(kd.getIdvendor()) == null){
+                                    grupByVendorKeluar.put(kd.getIdvendor(),kd.getAmount());
                                 }else {
                                     Double amt = kd.getAmount().doubleValue() + grupByVendorKeluar.get(kd.getIdvendor()).doubleValue();
-                                    grupByVendorKeluar.put(ven.getId(),amt);
+                                    grupByVendorKeluar.put(kd.getIdvendor(),amt);
                                 }
                             }
                         }
@@ -4713,7 +4713,7 @@ public class ReportHandler implements ReportService {
                 paramPinjamanCalc.setDate(new java.sql.Date(param.getFrom()));
                 paramPinjamanCalc.setIdvendor(ven.getId());
                 paramPinjamanCalc.setOperatorPerbandingan("<");
-                Double saldoAwal = pinjamanService.calculateAmountByIdVendor(idcompany,idbranch,paramPinjamanCalc);
+                Double saldoAwal = pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch,ven.getId(),paramPinjamanCalc.getDate());
                 Double saldo = saldoAwal;
                 if(param.getShowNol().equals("NO")){
                     Double tempSaldo = saldoAwal;
@@ -4725,6 +4725,10 @@ public class ReportHandler implements ReportService {
                     if(saldokeluar != null){
                         tempSaldo = tempSaldo.doubleValue() - saldokeluar.doubleValue();
                     }
+                    System.out.println("=== "+ven.getNama()+" ====");
+                    System.out.println("saldomasuk "+saldomasuk);
+                    System.out.println("saldokeluar "+saldokeluar);
+                    System.out.println("tempSaldo "+tempSaldo);
                     if(tempSaldo.doubleValue() < 1){
                         continue;
                     }
