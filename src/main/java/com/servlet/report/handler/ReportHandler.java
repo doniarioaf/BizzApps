@@ -4117,10 +4117,10 @@ public class ReportHandler implements ReportService {
         createCell(row, colomcount, "Saldo Awal", style, sheet,columns);
 
         colomcount++;
-        createCell(row, colomcount, "Deposit Keluar", style, sheet,columns);
+        createCell(row, colomcount, "Deposit Masuk", style, sheet,columns);
 
         colomcount++;
-        createCell(row, colomcount, "Deposit Masuk", style, sheet,columns);
+        createCell(row, colomcount, "Deposit Keluar", style, sheet,columns);
 
         colomcount++;
         createCell(row, colomcount, "Saldo Akhir", style, sheet,columns);
@@ -4313,18 +4313,18 @@ public class ReportHandler implements ReportService {
                         }
                         if(kd.getType().equals("DEPOSIT")){
                             colomcount++;
-                            createCell(row, colomcount, "", style, sheet,columns);
+                            createCell(row, colomcount, kd.getAmount(), styleAmount, sheet,columns);
 
                             colomcount++;
-                            createCell(row, colomcount, kd.getAmount(), styleAmount, sheet,columns);
+                            createCell(row, colomcount, "", style, sheet,columns);
 
                             saldo = saldo + kd.getAmount();
                         }else{
                             colomcount++;
-                            createCell(row, colomcount, kd.getAmount(), styleAmount, sheet,columns);
+                            createCell(row, colomcount, "", style, sheet,columns);
 
                             colomcount++;
-                            createCell(row, colomcount, "", style, sheet,columns);
+                            createCell(row, colomcount, kd.getAmount(), styleAmount, sheet,columns);
                             saldo = saldo - kd.getAmount();
                         }
 
@@ -4640,10 +4640,10 @@ public class ReportHandler implements ReportService {
         createCell(row, colomcount, "Saldo Awal", style, sheet,columns);
 
         colomcount++;
-        createCell(row, colomcount, "Pinjaman Keluar", style, sheet,columns);
+        createCell(row, colomcount, "Pinjaman Masuk", style, sheet,columns);
 
         colomcount++;
-        createCell(row, colomcount, "Pinjaman Masuk", style, sheet,columns);
+        createCell(row, colomcount, "Pinjaman Keluar", style, sheet,columns);
 
         colomcount++;
         createCell(row, colomcount, "Saldo Akhir", style, sheet,columns);
@@ -4725,10 +4725,10 @@ public class ReportHandler implements ReportService {
                     if(saldokeluar != null){
                         tempSaldo = tempSaldo.doubleValue() - saldokeluar.doubleValue();
                     }
-                    System.out.println("=== "+ven.getNama()+" ====");
-                    System.out.println("saldomasuk "+saldomasuk);
-                    System.out.println("saldokeluar "+saldokeluar);
-                    System.out.println("tempSaldo "+tempSaldo);
+//                    System.out.println("=== "+ven.getNama()+" ====");
+//                    System.out.println("saldomasuk "+saldomasuk);
+//                    System.out.println("saldokeluar "+saldokeluar);
+//                    System.out.println("tempSaldo "+tempSaldo);
                     if(tempSaldo.doubleValue() < 1){
                         continue;
                     }
@@ -4805,18 +4805,19 @@ public class ReportHandler implements ReportService {
                         }
                         if(kd.getType().equals("PINJAMAN")){
                             colomcount++;
-                            createCell(row, colomcount, "", style, sheet,columns);
+                            createCell(row, colomcount, kd.getAmount(), styleAmount, sheet,columns);
 
                             colomcount++;
-                            createCell(row, colomcount, kd.getAmount(), styleAmount, sheet,columns);
+                            createCell(row, colomcount, "", style, sheet,columns);
 
                             saldo = saldo + kd.getAmount();
                         }else{
                             colomcount++;
-                            createCell(row, colomcount, kd.getAmount(), styleAmount, sheet,columns);
+                            createCell(row, colomcount, "", style, sheet,columns);
 
                             colomcount++;
-                            createCell(row, colomcount, "", style, sheet,columns);
+                            createCell(row, colomcount, kd.getAmount(), styleAmount, sheet,columns);
+
                             saldo = saldo - kd.getAmount();
                         }
 
