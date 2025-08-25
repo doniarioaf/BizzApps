@@ -76,6 +76,15 @@ public class PurchaseReceiveAPI {
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
+    @GetMapping("/getlastdocitem/{idvendor}")
+    ResponseEntity<Response> getDetailLastDocumentByVendor(@PathVariable long idvendor,@RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "LastDocumentByVendor");
+        param.put("idvendor", idvendor);
+        Response response = securityService.response(ConstansPermission.READ_PURCHASERECEIVE,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
     @GetMapping("/template")
     ResponseEntity<Response> getTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
         HashMap<String, Object> param = new HashMap<String, Object>();

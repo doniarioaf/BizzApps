@@ -1029,6 +1029,25 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         return templist;
     }
 
+    @Override
+    public PurchaseReceiveDataDetail getDetailLastDocumentByVendor(Long idcompany, Long idbranch, Long idvendor) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataDetail().schema());
+        sqlBuilder.append(" where data.idvendor = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+        sqlBuilder.append(" order by data.id desc ");
+        final Object[] queryParameters = new Object[] {idvendor,idcompany,idbranch};
+        List<PurchaseReceiveDataDetail> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataDetail(), queryParameters);
+        if(list != null && list.size() > 0){
+            PurchaseReceiveDataDetail data = list.get(0);
+            data.setItems(getPrintDataItems(data.getId()));
+//            data.setCharges(getPrintDataCharge(id));
+//            data.setInventori(getPrintDataItemsInventori(id));
+//            data.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch,data.getIdvendor()));
+//            data.setSisaPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch, data.getIdvendor(),null));
+            return data;
+        }
+        return null;
+    }
+
     private List<Long> getListIdDeposit(Long idpurchasereceive){
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataPurchaseReceiveDeposit().schema());
         sqlBuilder.append(" where data.idpurchasereceive = ?  ");

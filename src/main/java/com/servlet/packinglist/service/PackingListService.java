@@ -20,4 +20,5 @@ public interface PackingListService {
     List<ReportKartuStock> getListReportKartuStock(Long idcompany, Long idbranch, ParamSearchPackingList param);
     ReturnData updateColumsIsAlreadyUpdatePriceToFalse(Long idcompany, Long idbranch, Long idcustomer, Long idpricelist);
     ReturnData updatePrice(Long id, Long idcompany, Long idbranch, Long iduser);
+    ReturnData cancelPackingList(Long idcompany, Long idbranch, Long iduser, Long idpackinglist);
 }

@@ -72,5 +72,6 @@ public class ConstansCodeMessage {
 	public static final String THIS_ID_ALREADY_INSTALLED_PELUNASANPIUTANG = "this.id.already.installed.pelunasanpiutang";
 	public static final String STATUS_DEPOSIT_NON_ACTIVE = "status.deposit.non.active";
 	public static final String THIS_ID_ALREADY_UPDATE_PRICE = "this.id.already.update.price";
+	public static final String THIS_ID_ALREADY_CANCEL = "this.id.already.cancel";
 
 }

@@ -1393,6 +1393,9 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
 					val.setData(purchaseReceiveService.getDetail(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("LastDocumentByVendor")) {
+					long idvendor = (long) param.get("idvendor");
+					val.setData(purchaseReceiveService.getDetailLastDocumentByVendor(auth.getIdcompany(), auth.getIdbranch(),idvendor));
 				}else if(type.equals("TEMPLATE")) {
 					val.setData(purchaseReceiveService.getTemplate(auth.getIdcompany(), auth.getIdbranch()));
 				}else if(type.equals("SEARCHBYVENDOR")) {

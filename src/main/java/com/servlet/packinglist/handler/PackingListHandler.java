@@ -1,5 +1,8 @@
 package com.servlet.packinglist.handler;
 
+import com.servlet.cancelpackinglist.entity.BodyCancelPackingList;
+import com.servlet.cancelpackinglist.entity.QueryNotJoinCancelPackingListData;
+import com.servlet.cancelpackinglist.service.CancelPackingListService;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.customer.service.CustomerService;
 import com.servlet.draftpurchasereceive.entity.BodyDraftPurchaseReceiveItems;
@@ -91,11 +94,14 @@ public class PackingListHandler implements PackingListService {
     @Autowired
     private PelunasanPiutangService pelunasanPiutangService;
 
+    @Autowired
+    private CancelPackingListService cancelPackingListService;
+
     protected final String namaMenu = "PackingList";
     @Override
     public List<PackingListDataList> getList(Long idcompany, Long idbranch, ParamSearchPackingList param) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataList().schema());
-        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false and data.id not in (select cancel.idpackinglist from cancel_packinglist as cancel where cancel.idcompany = "+idcompany+" and cancel.idbranch = "+idbranch+" and cancel.isdelete = false)  ");
         if(param.getFrom() != null){
             Date dt = new Date(param.getFrom());
             sqlBuilder.append(" and data.date >= '"+dt.toString()+"'");
@@ -186,7 +192,7 @@ public class PackingListHandler implements PackingListService {
     @Override
     public PackingListDataDetail getDetail(Long id, Long idcompany, Long idbranch) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataDetail().schema());
-        sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  and data.id not in (select cancel.idpackinglist from cancel_packinglist as cancel where cancel.idcompany = "+idcompany+" and cancel.idbranch = "+idbranch+" and cancel.isdelete = false) ");
         final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
         List<PackingListDataDetail> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataDetail(), queryParameters);
         if(list != null && list.size() > 0){
@@ -213,6 +219,14 @@ public class PackingListHandler implements PackingListService {
 //            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_INVOICE,"packinglist ini terpasang pada invoice ("+inv.getNodocument()+")");
 //            validations.add(msg);
         }
+        if(validations.size() == 0){
+            List<QueryNotJoinCancelPackingListData> cancelData = cancelPackingListService.getDataByIdPackingList(idcompany,idbranch,id);
+            if(cancelData != null && cancelData.size() > 0){
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_CANCEL,"Document ini sudah di Cancel");
+                validations.add(msg);
+            }
+        }
+
         if(validations.size() == 0) {
             try{
                 PackingList table = repo.getById(id);
@@ -579,6 +593,36 @@ public class PackingListHandler implements PackingListService {
         }
         ReturnData data = new ReturnData();
         data.setId(id);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public ReturnData cancelPackingList(Long idcompany, Long idbranch, Long iduser, Long idpackinglist) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        if(validations.size() == 0) {
+            try{
+                PackingList table = repo.getById(idpackinglist);
+                BodyCancelPackingList bodyCancel = new BodyCancelPackingList();
+                bodyCancel.setIdpackinglist(idpackinglist);
+                bodyCancel.setNodocumentPL(table.getNodocument());
+                bodyCancel.setDatecancel(new java.util.Date().getTime());
+                ReturnData dataCancel = cancelPackingListService.cancelPackingList(idcompany,idbranch,iduser,bodyCancel);
+                if(dataCancel.isSuccess()){
+
+                }else{
+                    return dataCancel;
+                }
+            }catch (Exception e) {
+                e.printStackTrace();
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
+        }
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
         data.setSuccess(validations.size() > 0?false:true);
         data.setValidations(validations);
         return data;

@@ -118,6 +118,7 @@ public class CargoHandler implements CargoService {
                 idsave = repo.saveAndFlush(table).getId();
                 historyAppsService.saveHistory(idcompany,idbranch,iduser,"ADD",namaMenu,table.toString(),"","",ts);
             }catch (Exception e) {
+                e.printStackTrace();
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
                 validations.add(msg);
             }
@@ -160,6 +161,7 @@ public class CargoHandler implements CargoService {
                 String after = table.toString();
                 historyAppsService.saveHistory(idcompany,idbranch,iduser,"EDIT",namaMenu,"",after,before,ts);
             }catch (Exception e) {
+                e.printStackTrace();
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
                 validations.add(msg);
             }
@@ -185,6 +187,7 @@ public class CargoHandler implements CargoService {
                 idsave = repo.saveAndFlush(table).getId();
                 historyAppsService.saveHistory(idcompany,idbranch,iduser,"DELETE",namaMenu,table.toString(),"","",ts);
             }catch (Exception e) {
+                e.printStackTrace();
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
                 validations.add(msg);
             }
@@ -242,6 +245,7 @@ public class CargoHandler implements CargoService {
                     }
                 }
             }catch (Exception e) {
+                e.printStackTrace();
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
                 validations.add(msg);
             }
@@ -276,6 +280,7 @@ public class CargoHandler implements CargoService {
                 table.setOutstanding(outstanding);
                 idsave = repo.saveAndFlush(table).getId();
             }catch (Exception e) {
+                e.printStackTrace();
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
                 validations.add(msg);
             }
