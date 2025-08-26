@@ -290,6 +290,13 @@ public class PackingListHandler implements PackingListService {
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_INVOICE,"packinglist ini terpasang pada invoice ("+inv.getNodocument()+")");
             validations.add(msg);
         }
+        if(validations.size() == 0){
+            List<QueryNotJoinCancelPackingListData> cancelData = cancelPackingListService.getDataByIdPackingList(idcompany,idbranch,id);
+            if(cancelData != null && cancelData.size() > 0){
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_CANCEL,"Document ini sudah di Cancel");
+                validations.add(msg);
+            }
+        }
         if(validations.size() == 0) {
             try{
                 PackingList table = repo.getById(id);
@@ -337,6 +344,10 @@ public class PackingListHandler implements PackingListService {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataPrint().schema());
         sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
         final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+        List<QueryNotJoinCancelPackingListData> cancelData = cancelPackingListService.getDataByIdPackingList(idcompany,idbranch,id);
+        if(cancelData != null && cancelData.size() > 0){
+            return null;
+        }
         List<PrintPackingList> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataPrint(), queryParameters);
         if(list != null && list.size() > 0){
             ValueParameter param = parameterClientService.getValueByParamName(idcompany,idbranch,"COMPANYNAME","TEXT");
@@ -375,6 +386,7 @@ public class PackingListHandler implements PackingListService {
     @Override
     public Long calculateQtyPL(Long idcompany, Long idbranch, ParamCalculateQtyPL param) {
         String selectidPr = " select pr.id from packinglist as pr where pr.idcompany = "+idcompany+" and pr.idbranch = "+idbranch+" and pr.isdelete = false ";
+        String selectidCancelPl = " select cpl.idpackinglist from cancel_packinglist as cpl where cpl.idcompany = "+idcompany+" and cpl.idbranch = "+idbranch+" and cpl.isdelete = false ";
         if(param.getDateFrom() != null){
             Date dt = new Date(param.getDateFrom());
             selectidPr += " and pr.date >= '"+dt.toString()+"' ";
@@ -384,7 +396,7 @@ public class PackingListHandler implements PackingListService {
             selectidPr += " and pr.date <= '"+dt.toString()+"' ";
         }
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateQtyPL().schema());
-        sqlBuilder.append(" where data.idpackinglist in ("+selectidPr+") ");
+        sqlBuilder.append(" where data.idpackinglist in ("+selectidPr+") and data.idpackinglist not in ("+selectidCancelPl+") ");
         if(param.getIdcategoryproduct() != null){
             sqlBuilder.append(" and data.idcategoryproduct = "+param.getIdcategoryproduct()+" ");
         }
@@ -471,6 +483,13 @@ public class PackingListHandler implements PackingListService {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        if(validations.size() == 0){
+            List<QueryNotJoinCancelPackingListData> cancelData = cancelPackingListService.getDataByIdPackingList(idcompany,idbranch,id);
+            if(cancelData != null && cancelData.size() > 0){
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_CANCEL,"Document ini sudah di Cancel");
+                validations.add(msg);
+            }
+        }
         if(validations.size() == 0) {
             try{
                 PackingList table = repo.getById(id);
@@ -602,6 +621,13 @@ public class PackingListHandler implements PackingListService {
     public ReturnData cancelPackingList(Long idcompany, Long idbranch, Long iduser, Long idpackinglist) {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
+        if(validations.size() == 0){
+            List<QueryNotJoinCancelPackingListData> cancelData = cancelPackingListService.getDataByIdPackingList(idcompany,idbranch,idpackinglist);
+            if(cancelData != null && cancelData.size() > 0){
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_CANCEL,"Document ini sudah di Cancel");
+                validations.add(msg);
+            }
+        }
         if(validations.size() == 0) {
             try{
                 PackingList table = repo.getById(idpackinglist);
