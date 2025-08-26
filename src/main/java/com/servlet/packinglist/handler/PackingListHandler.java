@@ -619,39 +619,38 @@ public class PackingListHandler implements PackingListService {
 
     @Override
     public ReturnData cancelPackingList(Long idcompany, Long idbranch, Long iduser, Long idpackinglist) {
-        List<ValidationDataMessage> validations = new ArrayList<>();
-        long idsave = 0;
-        if(validations.size() == 0){
-            List<QueryNotJoinCancelPackingListData> cancelData = cancelPackingListService.getDataByIdPackingList(idcompany,idbranch,idpackinglist);
-            if(cancelData != null && cancelData.size() > 0){
-                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_CANCEL,"Document ini sudah di Cancel");
-                validations.add(msg);
-            }
-        }
-        if(validations.size() == 0) {
-            try{
-                PackingList table = repo.getById(idpackinglist);
-                BodyCancelPackingList bodyCancel = new BodyCancelPackingList();
-                bodyCancel.setIdpackinglist(idpackinglist);
-                bodyCancel.setNodocumentPL(table.getNodocument());
-                bodyCancel.setDatecancel(new java.util.Date().getTime());
-                ReturnData dataCancel = cancelPackingListService.cancelPackingList(idcompany,idbranch,iduser,bodyCancel);
-                if(dataCancel.isSuccess()){
-
-                }else{
-                    return dataCancel;
-                }
-            }catch (Exception e) {
-                e.printStackTrace();
-                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
-                validations.add(msg);
-            }
-        }
-        ReturnData data = new ReturnData();
-        data.setId(idsave);
-        data.setSuccess(validations.size() > 0?false:true);
-        data.setValidations(validations);
-        return data;
+//        List<ValidationDataMessage> validations = new ArrayList<>();
+//        long idsave = 0;
+//        if(validations.size() == 0){
+//            List<QueryNotJoinCancelPackingListData> cancelData = cancelPackingListService.getDataByIdPackingList(idcompany,idbranch,idpackinglist);
+//            if(cancelData != null && cancelData.size() > 0){
+//                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_CANCEL,"Document ini sudah di Cancel");
+//                validations.add(msg);
+//            }
+//        }
+//        if(validations.size() == 0) {
+//            try{
+//                PackingList table = repo.getById(idpackinglist);
+//                BodyCancelPackingList bodyCancel = new BodyCancelPackingList();
+//                bodyCancel.setIdpackinglist(idpackinglist);
+//                bodyCancel.setDatecancel(new java.util.Date().getTime());
+//                ReturnData dataCancel = cancelPackingListService.cancelPackingList(idcompany,idbranch,iduser,bodyCancel);
+//                if(dataCancel.isSuccess()){
+//
+//                }else{
+//                    return dataCancel;
+//                }
+//            }catch (Exception e) {
+//                e.printStackTrace();
+//                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+//                validations.add(msg);
+//            }
+//        }
+//        ReturnData data = new ReturnData();
+//        data.setId(idsave);
+//        data.setSuccess(validations.size() > 0?false:true);
+//        data.setValidations(validations);
+        return null;
     }
 
     private HashMap<Object,Object> tambahStockItems(Long idcompany, Long idbranch, Long idpackinglist){

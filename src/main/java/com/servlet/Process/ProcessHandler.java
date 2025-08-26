@@ -8,6 +8,8 @@ import com.servlet.area.entity.BodyArea;
 import com.servlet.area.service.AreaService;
 import com.servlet.bank.entity.BodyBank;
 import com.servlet.bank.service.BankService;
+import com.servlet.cancelpackinglist.entity.BodyCancelPackingList;
+import com.servlet.cancelpackinglist.service.CancelPackingListService;
 import com.servlet.cargo.entity.BodyCargo;
 import com.servlet.cargo.entity.ParamCargoSearch;
 import com.servlet.cargo.service.CargoService;
@@ -172,6 +174,9 @@ public class ProcessHandler implements ProcessService{
 
 	@Autowired
 	PinjamanService pinjamanService;
+
+	@Autowired
+	CancelPackingListService cancelPackingListService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -1161,6 +1166,18 @@ public class ProcessHandler implements ProcessService{
 				paramHandler.setIduser(auth.getId());
 
 				ReturnData valReturn = pinjamanService.delete(paramHandler);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}
+			else if(codepermission.equals(ConstansPermission.CREATE_CANCELPACKINGLIST)) {
+				BodyCancelPackingList param = (BodyCancelPackingList) data;
+				ReturnData valReturn = cancelPackingListService.cancelPackingList(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),param);
 				if(valReturn.isSuccess()) {
 					val.setData(valReturn.getId());
 				}else {

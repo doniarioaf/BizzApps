@@ -1,17 +1,18 @@
 package com.servlet.cancelpackinglist.entity;
 
+
 public class BodyCancelPackingList {
     private Long idpackinglist;
-    private String nodocumentPL;
-    private String nodocument;
+    private String keterangan;
     private Long datecancel;
+    private BodyCancelPackingListItem[] items;
 
-    public String getNodocumentPL() {
-        return nodocumentPL;
+    public BodyCancelPackingListItem[] getItems() {
+        return items;
     }
 
-    public void setNodocumentPL(String nodocumentPL) {
-        this.nodocumentPL = nodocumentPL;
+    public void setItems(BodyCancelPackingListItem[] items) {
+        this.items = items;
     }
 
     public Long getIdpackinglist() {
@@ -22,12 +23,12 @@ public class BodyCancelPackingList {
         this.idpackinglist = idpackinglist;
     }
 
-    public String getNodocument() {
-        return nodocument;
+    public String getKeterangan() {
+        return keterangan;
     }
 
-    public void setNodocument(String nodocument) {
-        this.nodocument = nodocument;
+    public void setKeterangan(String keterangan) {
+        this.keterangan = keterangan;
     }
 
     public Long getDatecancel() {

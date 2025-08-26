@@ -7,7 +7,7 @@ import java.io.Serializable;
 public class CancelPackingListItemPK implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private long idpackinglist;
+    private long idcancelpackinglist;
     private Long idproduct;
     private Long idcategoryproduct;
     private String box;
@@ -16,7 +16,7 @@ public class CancelPackingListItemPK implements Serializable {
     @Override
     public String toString() {
         return "CancelPackingListItemPK{" +
-                "idpackinglist=" + idpackinglist +
+                "idcancelpackinglist=" + idcancelpackinglist +
                 ", idproduct=" + idproduct +
                 ", idcategoryproduct=" + idcategoryproduct +
                 ", box='" + box + '\'' +
@@ -40,12 +40,12 @@ public class CancelPackingListItemPK implements Serializable {
         this.noseq = noseq;
     }
 
-    public long getIdpackinglist() {
-        return idpackinglist;
+    public long getIdcancelpackinglist() {
+        return idcancelpackinglist;
     }
 
-    public void setIdpackinglist(long idpackinglist) {
-        this.idpackinglist = idpackinglist;
+    public void setIdcancelpackinglist(long idcancelpackinglist) {
+        this.idcancelpackinglist = idcancelpackinglist;
     }
 
     public Long getIdproduct() {

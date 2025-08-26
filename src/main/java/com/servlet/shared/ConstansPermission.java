@@ -132,5 +132,7 @@ public class ConstansPermission {
 	public static final String CREATE_PINJAMAN = "CREATE_PINJAMAN";
 	public static final String EDIT_PINJAMAN = "EDIT_PINJAMAN";
 	public static final String DELETE_PINJAMAN = "DELETE_PINJAMAN";
+
+	public static final String CREATE_CANCELPACKINGLIST = "CREATE_CANCELPACKINGLIST";
 	
 }

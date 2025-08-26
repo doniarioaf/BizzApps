@@ -17,7 +17,7 @@ public class CancelPackingListItem implements Serializable {
     private Double nettoweight;
     private Double price;
     private Double totalprice;
-
+    private String type;
     @Override
     public String toString() {
         return "CancelPackingListItem{" +
@@ -27,6 +27,14 @@ public class CancelPackingListItem implements Serializable {
                 ", price=" + price +
                 ", totalprice=" + totalprice +
                 '}';
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public CancelPackingListItemPK getCancelPackingListItemPK() {

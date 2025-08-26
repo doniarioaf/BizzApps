@@ -31,3 +31,7 @@ CREATE TABLE public.cancel_packinglistitems (
 );
 
 ALTER TABLE public.cancel_packinglist ADD keterangan varchar NOT NULL;
+
+ALTER TABLE public.cancel_packinglistitems ADD "type" varchar NOT NULL;
+INSERT INTO m_running_number VALUES ('CPL', 1, 6,1);
+INSERT INTO m_running_number VALUES ('CPL', 1, 2,1);
