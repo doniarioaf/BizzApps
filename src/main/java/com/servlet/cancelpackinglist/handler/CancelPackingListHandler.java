@@ -2,12 +2,14 @@ package com.servlet.cancelpackinglist.handler;
 
 import com.servlet.cancelpackinglist.entity.*;
 import com.servlet.cancelpackinglist.mapper.QueryNotJoinCancelPackingList;
+import com.servlet.cancelpackinglist.mapper.Query_CancelPLList;
 import com.servlet.cancelpackinglist.repo.CancelPackingListRepo;
 import com.servlet.cancelpackinglist.repo.CancelPakcingListItemRepo;
 import com.servlet.cancelpackinglist.service.CancelPackingListService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.invoice.entity.InvoiceDataList;
 import com.servlet.invoice.service.InvoiceService;
+import com.servlet.packinglist.mapper.QueryDataList;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
@@ -43,6 +45,23 @@ public class CancelPackingListHandler implements CancelPackingListService {
     private RunningNumberService runningNumberService;
 
     protected final String namaMenu = "CancelPackingList";
+
+    @Override
+    public List<CancelPLList> getList(Long idcompany, Long idbranch, ParamSearchCancelPackingList param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new Query_CancelPLList().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+        if(param.getFrom() != null){
+            Date dt = new Date(param.getFrom());
+            sqlBuilder.append(" and data.datecancel >= '"+dt.toString()+"'");
+        }
+        if(param.getTo() != null){
+            Date dt = new Date(param.getTo());
+            sqlBuilder.append(" and data.datecancel <= '"+dt.toString()+"'");
+        }
+        sqlBuilder.append(" order by data.id desc ");
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new Query_CancelPLList(), queryParameters);
+    }
 
     @Override
     public ReturnData cancelPackingList(Long idcompany, Long idbranch, Long iduser, BodyCancelPackingList body) {

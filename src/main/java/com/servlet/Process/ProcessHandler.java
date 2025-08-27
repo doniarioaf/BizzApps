@@ -9,6 +9,7 @@ import com.servlet.area.service.AreaService;
 import com.servlet.bank.entity.BodyBank;
 import com.servlet.bank.service.BankService;
 import com.servlet.cancelpackinglist.entity.BodyCancelPackingList;
+import com.servlet.cancelpackinglist.entity.ParamSearchCancelPackingList;
 import com.servlet.cancelpackinglist.service.CancelPackingListService;
 import com.servlet.cargo.entity.BodyCargo;
 import com.servlet.cargo.entity.ParamCargoSearch;
@@ -1818,6 +1819,18 @@ public class ProcessHandler implements ProcessService{
 					paramHandler.setIdcompany(auth.getIdcompany());
 					paramHandler.setIdbranch(auth.getIdbranch());
 					val.setData(pinjamanService.downloadFile(paramHandler));
+				}
+			}
+
+			else if(codepermission.equals(ConstansPermission.READ_CANCELPACKINGLIST)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				ParamSearchCancelPackingList paramsearch = (ParamSearchCancelPackingList) param.get("paramsearch");
+				if(type.equals("ALL")) {
+					val.setData(cancelPackingListService.getList(auth.getIdcompany(), auth.getIdbranch(),paramsearch));
+				}else if(type.equals("DETAIL")) {
+					long id = (long) param.get("id");
+					val.setData(packingListService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}
 
