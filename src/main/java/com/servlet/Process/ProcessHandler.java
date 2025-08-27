@@ -1187,6 +1187,20 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
+			}else if(codepermission.equals(ConstansPermission.EDIT_CANCELPACKINGLIST)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				long id  = (long) param.get("id");
+				BodyCancelPackingList body  = (BodyCancelPackingList) param.get("body");
+
+				ReturnData valReturn = cancelPackingListService.editCancelPackingList(id, auth.getIdcompany(), auth.getIdbranch(), auth.getId(), body);
+				if(valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
 			}
 
 
@@ -1825,12 +1839,12 @@ public class ProcessHandler implements ProcessService{
 			else if(codepermission.equals(ConstansPermission.READ_CANCELPACKINGLIST)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
 				String type = (String) param.get("type");
-				ParamSearchCancelPackingList paramsearch = (ParamSearchCancelPackingList) param.get("paramsearch");
 				if(type.equals("ALL")) {
+					ParamSearchCancelPackingList paramsearch = (ParamSearchCancelPackingList) param.get("paramsearch");
 					val.setData(cancelPackingListService.getList(auth.getIdcompany(), auth.getIdbranch(),paramsearch));
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
-					val.setData(packingListService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
+					val.setData(cancelPackingListService.getDetail(auth.getIdcompany(), auth.getIdbranch(),id));
 				}
 			}
 

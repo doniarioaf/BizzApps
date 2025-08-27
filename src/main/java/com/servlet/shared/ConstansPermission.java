@@ -135,5 +135,5 @@ public class ConstansPermission {
 
 	public static final String CREATE_CANCELPACKINGLIST = "CREATE_CANCELPACKINGLIST";
 	public static final String READ_CANCELPACKINGLIST = "READ_CANCELPACKINGLIST";
-	
+	public static final String EDIT_CANCELPACKINGLIST = "EDIT_CANCELPACKINGLIST";
 }

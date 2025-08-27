@@ -3,6 +3,8 @@ package com.servlet.cancelpackinglist.handler;
 import com.servlet.cancelpackinglist.entity.*;
 import com.servlet.cancelpackinglist.mapper.QueryNotJoinCancelPackingList;
 import com.servlet.cancelpackinglist.mapper.Query_CancelPLList;
+import com.servlet.cancelpackinglist.mapper.Query_CancelPackingListData;
+import com.servlet.cancelpackinglist.mapper.Query_CancelPackingListItemData;
 import com.servlet.cancelpackinglist.repo.CancelPackingListRepo;
 import com.servlet.cancelpackinglist.repo.CancelPakcingListItemRepo;
 import com.servlet.cancelpackinglist.service.CancelPackingListService;
@@ -127,6 +129,46 @@ public class CancelPackingListHandler implements CancelPackingListService {
     }
 
     @Override
+    public ReturnData editCancelPackingList(Long idcancel, Long idcompany, Long idbranch, Long iduser, BodyCancelPackingList body) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        if(validations.size() == 0) {
+            try{
+                CancelPackingList table = repo.getById(idcancel);
+                if(table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue() && !table.isIsdelete()) {
+                    String mixDataBef = "";
+                    table.setKeterangan(body.getKeterangan());
+                    table.setModifieddate(ts);
+                    table.setModifiedby(iduser);
+                    idsave = repo.saveAndFlush(table).getId();
+                    itemrepo.deleteAllDetailByIdCancelPackingList(idcancel);
+                    HashMap<Object, Object> mapsItems = setItems(idcompany,idbranch,idsave, body.getItems());
+                    List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
+                    if (validationsItems.size() == 0) {
+//                        String data = table.toString();
+//                        String dataItems = (String) mapsItems.get("dataItems");
+//                        String mixData = "header = " + data + " | Items = " + dataItems;
+//                        historyAppsService.saveHistory(idcompany, idbranch, iduser, "EDIT", namaMenu, "", mixData, mixDataBef, ts);
+                    } else {
+                        validations.add(validationsItems.get(0));
+                    }
+                }
+
+            }catch (Exception e) {
+                e.printStackTrace();
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
+        }
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
     public ReturnData deleteCancelPackingListByidpackinglist(Long idcompany, Long idbranch, Long iduser, Long idpackinglist) {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
@@ -155,6 +197,18 @@ public class CancelPackingListHandler implements CancelPackingListService {
         sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryNotJoinCancelPackingList(), queryParameters);
+    }
+
+    @Override
+    public CancelPackingListData getDetail(Long idcompany, Long idbranch, Long id) {
+        List<CancelPackingListData> list = getDetailByID(idcompany,idbranch,id);
+        if(list != null && list.size() > 0){
+            CancelPackingListData data = list.get(0);
+            data.setItems(getListItemByIDCancel(data.getId()));
+
+            return data;
+        }
+        return null;
     }
 
     private HashMap<Object,Object> setItems(Long idcompany, Long idbranch, Long idcancelpackinglist, BodyCancelPackingListItem[] items){
@@ -193,6 +247,20 @@ public class CancelPackingListHandler implements CancelPackingListService {
         maps.put("validations",validations);
         maps.put("dataItems",dataItems);
         return maps;
+    }
+
+    private List<CancelPackingListData> getDetailByID(Long idcompany, Long idbranch, Long id) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new Query_CancelPackingListData().schema());
+        sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+        final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new Query_CancelPackingListData(), queryParameters);
+    }
+
+    private List<CancelPackingListItemData> getListItemByIDCancel(Long idcancel) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new Query_CancelPackingListItemData().schema());
+        sqlBuilder.append(" where data.idcancelpackinglist = ? ");
+        final Object[] queryParameters = new Object[] {idcancel};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new Query_CancelPackingListItemData(), queryParameters);
     }
 
 }

@@ -2,7 +2,7 @@ package com.servlet.cancelpackinglist.api;
 
 import com.servlet.cancelpackinglist.entity.BodyCancelPackingList;
 import com.servlet.cancelpackinglist.entity.ParamSearchCancelPackingList;
-import com.servlet.packinglist.entity.ParamSearchPackingList;
+import com.servlet.cargo.entity.BodyCargo;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConstansPermission;
@@ -34,6 +34,23 @@ public class CancelPackingListAPI {
     @PostMapping
     ResponseEntity<Response> createObject(@RequestBody @Validated BodyCancelPackingList body, @RequestHeader(ConstansKey.AUTH) String authorization) {
         Response response = securityService.response(ConstansPermission.CREATE_CANCELPACKINGLIST,body,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+    @PutMapping("{id}")
+    ResponseEntity<Response> updateObject(@PathVariable long id, @RequestBody @Validated BodyCancelPackingList body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("id", id);
+        param.put("body", body);
+        Response response = securityService.response(ConstansPermission.EDIT_CANCELPACKINGLIST,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @GetMapping("{id}")
+    ResponseEntity<Response> getById(@PathVariable long id,@RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "DETAIL");
+        param.put("id", id);
+        Response response = securityService.response(ConstansPermission.READ_CANCELPACKINGLIST,param,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 }

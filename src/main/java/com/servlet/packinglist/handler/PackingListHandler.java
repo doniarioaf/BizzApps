@@ -265,6 +265,7 @@ public class PackingListHandler implements PackingListService {
                 }
 
             }catch (Exception e) {
+                e.printStackTrace();
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
                 validations.add(msg);
             }
