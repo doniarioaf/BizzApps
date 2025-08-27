@@ -12,4 +12,5 @@ public interface CancelPackingListService {
     ReturnData deleteCancelPackingListByidpackinglist(Long idcompany, Long idbranch, Long iduser, Long idpackinglist);
     List<QueryNotJoinCancelPackingListData> getDataByIdPackingList(Long idcompany, Long idbranch, Long idpackinglist);
     CancelPackingListData getDetail(Long idcompany, Long idbranch, Long id);
+    Long calculateQtyCPL(Long idcompany, Long idbranch, ParamCalculateQtyCPL param);
 }

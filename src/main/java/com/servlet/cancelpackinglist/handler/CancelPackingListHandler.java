@@ -1,10 +1,7 @@
 package com.servlet.cancelpackinglist.handler;
 
 import com.servlet.cancelpackinglist.entity.*;
-import com.servlet.cancelpackinglist.mapper.QueryNotJoinCancelPackingList;
-import com.servlet.cancelpackinglist.mapper.Query_CancelPLList;
-import com.servlet.cancelpackinglist.mapper.Query_CancelPackingListData;
-import com.servlet.cancelpackinglist.mapper.Query_CancelPackingListItemData;
+import com.servlet.cancelpackinglist.mapper.*;
 import com.servlet.cancelpackinglist.repo.CancelPackingListRepo;
 import com.servlet.cancelpackinglist.repo.CancelPakcingListItemRepo;
 import com.servlet.cancelpackinglist.service.CancelPackingListService;
@@ -17,6 +14,7 @@ import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.stockadjusment.mapper.QueryCalculateQtySA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -209,6 +207,34 @@ public class CancelPackingListHandler implements CancelPackingListService {
             return data;
         }
         return null;
+    }
+
+    @Override
+    public Long calculateQtyCPL(Long idcompany, Long idbranch, ParamCalculateQtyCPL param) {
+        String selectidCPL = " select cpl.id from cancel_packinglist as cpl where cpl.idcompany = "+idcompany+" and cpl.idbranch = "+idbranch+" and cpl.isdelete = false ";
+        if(param.getDateFrom() != null){
+            Date dt = new Date(param.getDateFrom());
+            selectidCPL += " and cpl.datecancel >= '"+dt.toString()+"' ";
+        }
+        if(param.getDateThru() != null){
+            Date dt = new Date(param.getDateThru());
+            selectidCPL += " and cpl.datecancel <= '"+dt.toString()+"' ";
+        }
+
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateQtyCPL().schema());
+        sqlBuilder.append(" where data.idcancelpackinglist in ("+selectidCPL+") ");
+        if(param.getIdcategoryproduct() != null){
+            sqlBuilder.append(" and data.idcategoryproduct = "+param.getIdcategoryproduct()+" ");
+        }
+        if(param.getType() != null){
+            sqlBuilder.append(" and data.type = '"+param.getType()+"' ");
+        }
+        final Object[] queryParameters = new Object[] {};
+        List<Long> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateQtyCPL(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return 0L;
     }
 
     private HashMap<Object,Object> setItems(Long idcompany, Long idbranch, Long idcancelpackinglist, BodyCancelPackingListItem[] items){

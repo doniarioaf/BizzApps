@@ -2,6 +2,8 @@ package com.servlet.report.handler;
 
 import com.servlet.admin.branch.entity.Branch;
 import com.servlet.admin.branch.service.BranchService;
+import com.servlet.cancelpackinglist.entity.ParamCalculateQtyCPL;
+import com.servlet.cancelpackinglist.service.CancelPackingListService;
 import com.servlet.cargo.entity.CargoDataReportStatusTagihanCargo;
 import com.servlet.cargo.entity.ParamCargoSearch;
 import com.servlet.cargo.service.CargoService;
@@ -151,6 +153,9 @@ public class ReportHandler implements ReportService {
 
     @Autowired
     KomisiService komisiService;
+
+    @Autowired
+    CancelPackingListService cancelPackingListService;
 
     @Override
     public ReportWorkBookExcel getExcelPackingListByID(long id, long idcompany, long idbranch,long iduser) {
@@ -1942,6 +1947,15 @@ public class ReportHandler implements ReportService {
             paramSAUdangMati.setDateThru(param.getDate());
             paramSAUdangMati.setIdcategoryproduct(cp.getId());
             Long stockUdangMati = stockAdjusmentService.calculateQtySA(idcompany,idbranch,"M",paramSAUdangMati);
+
+            ParamCalculateQtyCPL paramCalculateQtyCPL = new ParamCalculateQtyCPL();
+            paramCalculateQtyCPL.setDateFrom(param.getDate());
+            paramCalculateQtyCPL.setDateThru(param.getDate());
+            paramCalculateQtyCPL.setIdcategoryproduct(cp.getId());
+            paramCalculateQtyCPL.setType("M");
+            Long stockUdangMatiCPL = cancelPackingListService.calculateQtyCPL(idcompany,idbranch,paramCalculateQtyCPL);
+
+            stockUdangMati = stockUdangMati.longValue() + stockUdangMatiCPL.longValue();
             stockUdangMatiByIDcategory.put(cp.getId(),stockUdangMati);
 
             ParamCalculateQtyPR paramUdangMasuk = new ParamCalculateQtyPR();
