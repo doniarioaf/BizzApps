@@ -6,6 +6,24 @@ public class ParamCalculateQtyCPL {
     private Long dateFrom;
     private Long dateThru;
     private String type;
+    private String listidproduct;
+    private String listidcategoryproduct;
+
+    public String getListidproduct() {
+        return listidproduct;
+    }
+
+    public void setListidproduct(String listidproduct) {
+        this.listidproduct = listidproduct;
+    }
+
+    public String getListidcategoryproduct() {
+        return listidcategoryproduct;
+    }
+
+    public void setListidcategoryproduct(String listidcategoryproduct) {
+        this.listidcategoryproduct = listidcategoryproduct;
+    }
 
     public String getType() {
         return type;

@@ -1,5 +1,6 @@
 package com.servlet.stockitems.handle;
 
+import com.servlet.cancelpackinglist.service.CancelPackingListService;
 import com.servlet.draftpurchasereceive.service.DraftPurchaseReceiveService;
 import com.servlet.packinglist.service.PackingListService;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
@@ -32,6 +33,8 @@ public class StockItemHandler implements StockItemService {
     private StockAdjusmentService stockAdjusmentService;
     @Autowired
     private PackingListService packingListService;
+    @Autowired
+    private CancelPackingListService cancelPackingListService;
 
     @Override
     public ReturnData tambah(Long idcompany, Long idbranch,Long idproduct,Long idcategoryproduct,String type, Long qty) {
@@ -119,8 +122,9 @@ public class StockItemHandler implements StockItemService {
         //Type udah hidup
         Long qtyKeluar2 = stockAdjusmentService.calculateQtySA(idcompany,idbranch,"M", param.getParamCalculateQtySA());
 //        System.out.println("qtyKeluar2 "+qtyKeluar2);
+        Long qtyKeluar3 = cancelPackingListService.calculateQtyCPL(idcompany,idbranch, param.getParamCalculateQtyCPL());
 
-        Long hasil = (qtyMasuk1.longValue() + qtyMasuk2.longValue()) - (qtyKeluar1.longValue() + qtyKeluar2.longValue());
+        Long hasil = (qtyMasuk1.longValue() + qtyMasuk2.longValue()) - (qtyKeluar1.longValue() + qtyKeluar2.longValue() + qtyKeluar3.longValue());
         return hasil;
     }
 }

@@ -9,12 +9,14 @@ import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.invoice.entity.InvoiceDataList;
 import com.servlet.invoice.service.InvoiceService;
 import com.servlet.packinglist.mapper.QueryDataList;
+import com.servlet.packinglist.mapper.QueryPackingListReportKartuStock;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 import com.servlet.stockadjusment.mapper.QueryCalculateQtySA;
+import com.servlet.stockitems.entity.ReportKartuStock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -226,6 +228,17 @@ public class CancelPackingListHandler implements CancelPackingListService {
         if(param.getIdcategoryproduct() != null){
             sqlBuilder.append(" and data.idcategoryproduct = "+param.getIdcategoryproduct()+" ");
         }
+        if(param.getListidcategoryproduct() != null && !param.getListidcategoryproduct().equals("")){
+            sqlBuilder.append(" and data.idcategoryproduct in ("+param.getListidcategoryproduct()+") ");
+        }
+        if(param.getIdproduct() != null){
+            sqlBuilder.append(" and data.idproduct = "+param.getIdproduct()+" ");
+        }
+
+        if(param.getListidproduct() != null && !param.getListidproduct().equals("")){
+            sqlBuilder.append(" and data.idproduct in ("+param.getListidproduct()+") ");
+        }
+
         if(param.getType() != null){
             sqlBuilder.append(" and data.type = '"+param.getType()+"' ");
         }
@@ -235,6 +248,29 @@ public class CancelPackingListHandler implements CancelPackingListService {
             return list.get(0);
         }
         return 0L;
+    }
+
+    @Override
+    public List<ReportKartuStock> getListReportKartuStock(Long idcompany, Long idbranch, ParamSearchCancelPackingList param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCancelPackingListReportKartuStock().schema());
+        sqlBuilder.append(" where cpl.idcompany = ? and cpl.idbranch = ? and cpl.isdelete = false  ");
+        if(param.getFrom() != null){
+            Date dt = new Date(param.getFrom());
+            sqlBuilder.append(" and cpl.datecancel >= '"+dt.toString()+"'");
+        }
+        if(param.getTo() != null){
+            Date dt = new Date(param.getTo());
+            sqlBuilder.append(" and cpl.datecancel <= '"+dt.toString()+"'");
+        }
+        if(param.getListIdProduct() != null && !param.getListIdProduct().equals("")){
+            sqlBuilder.append(" and data.idproduct in ("+param.getListIdProduct()+") ");
+        }
+        if(param.getListIdCategoryProduct() != null && !param.getListIdCategoryProduct().equals("")){
+            sqlBuilder.append(" and data.idcategoryproduct in ("+param.getListIdCategoryProduct()+") ");
+        }
+//        sqlBuilder.append(" and data.qty > 0 ");
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCancelPackingListReportKartuStock(), queryParameters);
     }
 
     private HashMap<Object,Object> setItems(Long idcompany, Long idbranch, Long idcancelpackinglist, BodyCancelPackingListItem[] items){

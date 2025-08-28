@@ -7,6 +7,15 @@ public class ParamCalculateQtyPL {
     private Long dateThru;
     private String listidcategoryproduct;
     private String listidproduct;
+    private Long idpackinglist;
+
+    public Long getIdpackinglist() {
+        return idpackinglist;
+    }
+
+    public void setIdpackinglist(Long idpackinglist) {
+        this.idpackinglist = idpackinglist;
+    }
 
     public Long getIdproduct() {
         return idproduct;

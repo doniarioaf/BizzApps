@@ -1,5 +1,6 @@
 package com.servlet.stockitems.entity;
 
+import com.servlet.cancelpackinglist.entity.ParamCalculateQtyCPL;
 import com.servlet.draftpurchasereceive.entity.ParamCalculateQtyDPR;
 import com.servlet.packinglist.entity.ParamCalculateQtyPL;
 import com.servlet.purchasereceive.entity.ParamCalculateQtyPR;
@@ -10,6 +11,15 @@ public class ParamCalculateQty {
 //    private ParamCalculateQtyPR paramCalculateQtyPR;
     private ParamCalculateQtyDPR paramCalculateQtyDPR;
     private ParamCalculateQtySA paramCalculateQtySA;
+    private ParamCalculateQtyCPL paramCalculateQtyCPL;
+
+    public ParamCalculateQtyCPL getParamCalculateQtyCPL() {
+        return paramCalculateQtyCPL;
+    }
+
+    public void setParamCalculateQtyCPL(ParamCalculateQtyCPL paramCalculateQtyCPL) {
+        this.paramCalculateQtyCPL = paramCalculateQtyCPL;
+    }
 
     public ParamCalculateQtyDPR getParamCalculateQtyDPR() {
         return paramCalculateQtyDPR;

@@ -421,6 +421,22 @@ public class PackingListHandler implements PackingListService {
     }
 
     @Override
+    public Long calculateQtyPLByIdPackingList(Long idcompany, Long idbranch, ParamCalculateQtyPL param) {
+        //query disini jangan dikasih query not in ke cancel packing list okee
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateQtyPL().schema());
+        sqlBuilder.append(" where ");
+        sqlBuilder.append(" data.idcategoryproduct = "+param.getIdcategoryproduct()+" ");
+        sqlBuilder.append(" and data.idproduct = "+param.getIdproduct()+" ");
+        sqlBuilder.append(" and data.idpackinglist = "+param.getIdpackinglist()+" ");
+        final Object[] queryParameters = new Object[] {};
+        List<Long> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateQtyPL(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return 0L;
+    }
+
+    @Override
     public ReturnData catatDownload(Long id, Long idcompany, Long idbranch, Long iduser) {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;

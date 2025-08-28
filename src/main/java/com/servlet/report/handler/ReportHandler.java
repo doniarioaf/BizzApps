@@ -3,6 +3,7 @@ package com.servlet.report.handler;
 import com.servlet.admin.branch.entity.Branch;
 import com.servlet.admin.branch.service.BranchService;
 import com.servlet.cancelpackinglist.entity.ParamCalculateQtyCPL;
+import com.servlet.cancelpackinglist.entity.ParamSearchCancelPackingList;
 import com.servlet.cancelpackinglist.service.CancelPackingListService;
 import com.servlet.cargo.entity.CargoDataReportStatusTagihanCargo;
 import com.servlet.cargo.entity.ParamCargoSearch;
@@ -5090,6 +5091,31 @@ public class ReportHandler implements ReportService {
         paramPL.setListIdCategoryProduct(idCategoryProducts);
         List<ReportKartuStock> itemsPL = packingListService.getListReportKartuStock(idcompany,idbranch,paramPL);
 
+        ParamSearchCancelPackingList paramCPL = new ParamSearchCancelPackingList();
+        paramCPL.setFrom(param.getFrom());
+        paramCPL.setTo(param.getTo());
+        paramCPL.setListIdProduct(listIdProduct);
+        paramCPL.setListIdCategoryProduct(idCategoryProducts);
+        List<ReportKartuStock> tempitemsCPL = cancelPackingListService.getListReportKartuStock(idcompany,idbranch,paramCPL);
+
+        List<ReportKartuStock> itemsCPL = new ArrayList<>();
+        if(tempitemsCPL != null && tempitemsCPL.size() > 0){
+            for(ReportKartuStock cpl : tempitemsCPL){
+                ParamCalculateQtyPL paramCalc = new ParamCalculateQtyPL();
+                paramCalc.setIdpackinglist(cpl.getIdpackinglist());
+                paramCalc.setIdproduct(cpl.getIdproduct());
+                paramCalc.setIdcategoryproduct(cpl.getIdcategoryproduct());
+                //qtyInPackingList = summary qty yang ada di PL
+                Long qtyInPackingList = packingListService.calculateQtyPLByIdPackingList(idcompany,idbranch,paramCalc);
+
+                //qtyInPackingList akan dikurangi dengan Qty di CPL , qty di CPL adalah udang mati
+                Long qtySisa = qtyInPackingList.longValue() - cpl.getQty().longValue();
+                ReportKartuStock newCPL = new ReportKartuStock();
+                newCPL = cpl;
+                newCPL.setQtypackinglistcancel(qtySisa);
+                itemsCPL.add(newCPL);
+            }
+        }
         List<ReportKartuStock> listItems = new ArrayList<>();
         if(itemsSA != null && itemsSA.size() > 0){
             listItems.addAll(itemsSA);
@@ -5099,6 +5125,9 @@ public class ReportHandler implements ReportService {
         }
         if(itemsPL != null && itemsPL.size() > 0){
             listItems.addAll(itemsPL);
+        }
+        if(itemsCPL != null && itemsCPL.size() > 0){
+            listItems.addAll(itemsCPL);
         }
         Collections.sort(listItems);
 
@@ -5204,10 +5233,21 @@ public class ReportHandler implements ReportService {
                                     paramCalcPL.setIdcategoryproduct(valKS.getIdcategoryproduct());
                                 }
 
+                                ParamCalculateQtyCPL paramCalcCPL = new ParamCalculateQtyCPL();
+                                paramCalcCPL.setDateFrom(satuJan70);
+                                paramCalcCPL.setDateThru(dateMinus1);
+                                paramCalcCPL.setIdproduct(val.getId());
+                                if(listIdCPMapping != null){
+                                    paramCalcCPL.setListidcategoryproduct(idcategorys);
+                                }else{
+                                    paramCalcCPL.setIdcategoryproduct(valKS.getIdcategoryproduct());
+                                }
+
                                 ParamCalculateQty paramQty = new ParamCalculateQty();
                                 paramQty.setParamCalculateQtyDPR(paramCalcPR);
                                 paramQty.setParamCalculateQtySA(paramCalcSA);
                                 paramQty.setParamCalculateQtyPL(paramCalcPL);
+                                paramQty.setParamCalculateQtyCPL(paramCalcCPL);
 
                                 Long stockMinus1DateFrom = stockItemService.calculateQty(idcompany,idbranch,paramQty);
 
@@ -5280,7 +5320,11 @@ public class ReportHandler implements ReportService {
                                 qtyOut = valKS.getQty().toString();
                             }else if(valKS.getType().equals("SA_H") || valKS.getType().equals("DPR")){
                                 qtyIn = valKS.getQty().toString();
+                            }else if(valKS.getType().equals("CANCELPACKINGLIST")){
+                                qtyIn = valKS.getQtypackinglistcancel().toString();
+                                qtyOut = valKS.getQty().toString();
                             }
+
                             styleAmount = workbook.createCellStyle();
                             styleAmount.setDataFormat(format.getFormat("#,###"));
                             colomcount++;
@@ -5352,10 +5396,21 @@ public class ReportHandler implements ReportService {
                                 paramCalcPL.setIdcategoryproduct(valCp.getId());
                             }
 
+                            ParamCalculateQtyCPL paramCalcCPL = new ParamCalculateQtyCPL();
+                            paramCalcCPL.setDateFrom(satuJan70);
+                            paramCalcCPL.setDateThru(param.getTo());
+                            paramCalcCPL.setIdproduct(val.getId());
+                            if(listIdCPMapping != null){
+                                paramCalcCPL.setListidcategoryproduct(idcategorys);
+                            }else{
+                                paramCalcCPL.setIdcategoryproduct(valCp.getId());
+                            }
+
                             ParamCalculateQty paramQty = new ParamCalculateQty();
                             paramQty.setParamCalculateQtyDPR(paramCalcPR);
                             paramQty.setParamCalculateQtySA(paramCalcSA);
                             paramQty.setParamCalculateQtyPL(paramCalcPL);
+                            paramQty.setParamCalculateQtyCPL(paramCalcCPL);
                             Long stockThru = stockItemService.calculateQty(idcompany,idbranch,paramQty);
 
                             colomcount = 0;

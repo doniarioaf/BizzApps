@@ -2,6 +2,7 @@ package com.servlet.cancelpackinglist.service;
 
 import com.servlet.cancelpackinglist.entity.*;
 import com.servlet.shared.ReturnData;
+import com.servlet.stockitems.entity.ReportKartuStock;
 
 import java.util.List;
 
@@ -13,4 +14,5 @@ public interface CancelPackingListService {
     List<QueryNotJoinCancelPackingListData> getDataByIdPackingList(Long idcompany, Long idbranch, Long idpackinglist);
     CancelPackingListData getDetail(Long idcompany, Long idbranch, Long id);
     Long calculateQtyCPL(Long idcompany, Long idbranch, ParamCalculateQtyCPL param);
+    List<ReportKartuStock> getListReportKartuStock(Long idcompany, Long idbranch, ParamSearchCancelPackingList param);
 }
