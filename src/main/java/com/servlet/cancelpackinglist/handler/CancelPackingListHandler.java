@@ -273,6 +273,23 @@ public class CancelPackingListHandler implements CancelPackingListService {
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCancelPackingListReportKartuStock(), queryParameters);
     }
 
+    @Override
+    public List<ReportCancelPackingList> getReportCancelPackingList(Long idcompany, Long idbranch, ParamReportCancelPackingList param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new Query_ReportCancelPackingList().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        if(param.getFrom() != null){
+            Date dt = new Date(param.getFrom());
+            sqlBuilder.append(" and data.datecancel >= '"+dt.toString()+"'");
+        }
+        if(param.getTo() != null){
+            Date dt = new Date(param.getTo());
+            sqlBuilder.append(" and data.datecancel <= '"+dt.toString()+"'");
+        }
+
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new Query_ReportCancelPackingList(), queryParameters);
+    }
+
     private HashMap<Object,Object> setItems(Long idcompany, Long idbranch, Long idcancelpackinglist, BodyCancelPackingListItem[] items){
         List<ValidationDataMessage> validations = new ArrayList<>();
         HashMap<Object,Object> maps = new HashMap<>();

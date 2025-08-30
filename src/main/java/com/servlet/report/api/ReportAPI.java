@@ -1,5 +1,6 @@
 package com.servlet.report.api;
 
+import com.servlet.cancelpackinglist.entity.ParamReportCancelPackingList;
 import com.servlet.pinjaman.entity.ParamReportKartuPinjaman;
 import com.servlet.report.entity.*;
 import com.servlet.security.service.SecurityService;
@@ -348,6 +349,25 @@ public class ReportAPI {
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
+    @GetMapping("/reportcpl")
+    ResponseEntity<Response> getReportCancelPackingList(  @RequestParam("from") Long from,@RequestParam("to") Long to, HttpServletResponse response, @RequestHeader(ConstansKey.AUTH) String authorization) throws IOException{
+        ParamReportCancelPackingList body = new ParamReportCancelPackingList();
+        body.setFrom(from);
+        body.setTo(to);
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "REPORTCPL");
+        param.put("body", body);
+        Response response1 = securityService.response(ConstansPermission.READ_REPORT_CANCELPACKINGLIST,param,authorization);
+        if(response1.getHttpcode() == HttpStatus.OK.value()) {
+            XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+            export(response, workbook);
+
+            return ResponseEntity.ok().build();
+        }else{
+            return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
+        }
+
+    }
     private void export(HttpServletResponse response, XSSFWorkbook workbook) throws IOException {
         ServletOutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);

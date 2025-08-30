@@ -15,4 +15,5 @@ public interface CancelPackingListService {
     CancelPackingListData getDetail(Long idcompany, Long idbranch, Long id);
     Long calculateQtyCPL(Long idcompany, Long idbranch, ParamCalculateQtyCPL param);
     List<ReportKartuStock> getListReportKartuStock(Long idcompany, Long idbranch, ParamSearchCancelPackingList param);
+    List<ReportCancelPackingList> getReportCancelPackingList(Long idcompany, Long idbranch, ParamReportCancelPackingList param);
 }

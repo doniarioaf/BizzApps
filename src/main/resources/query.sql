@@ -35,3 +35,8 @@ ALTER TABLE public.cancel_packinglist ADD keterangan varchar NOT NULL;
 ALTER TABLE public.cancel_packinglistitems ADD "type" varchar NOT NULL;
 INSERT INTO m_running_number VALUES ('CPL', 1, 6,1);
 INSERT INTO m_running_number VALUES ('CPL', 1, 2,1);
+
+INSERT INTO m_permissions VALUES (nextval('permissions_id_seq'::regclass), 'CREATE_CANCELPACKINGLIST', 'Cancel Packing List');
+INSERT INTO m_permissions VALUES (nextval('permissions_id_seq'::regclass), 'READ_CANCELPACKINGLIST', 'Read Cancel Packing List');
+INSERT INTO m_permissions VALUES (nextval('permissions_id_seq'::regclass), 'EDIT_CANCELPACKINGLIST', 'Edit Cancel Packing List');
+INSERT INTO m_permissions VALUES (nextval('permissions_id_seq'::regclass), 'READ_REPORT_CANCELPACKINGLIST', 'Report Cancel Packing List');

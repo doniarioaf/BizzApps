@@ -3,7 +3,9 @@ package com.servlet.report.handler;
 import com.servlet.admin.branch.entity.Branch;
 import com.servlet.admin.branch.service.BranchService;
 import com.servlet.cancelpackinglist.entity.ParamCalculateQtyCPL;
+import com.servlet.cancelpackinglist.entity.ParamReportCancelPackingList;
 import com.servlet.cancelpackinglist.entity.ParamSearchCancelPackingList;
+import com.servlet.cancelpackinglist.entity.ReportCancelPackingList;
 import com.servlet.cancelpackinglist.service.CancelPackingListService;
 import com.servlet.cargo.entity.CargoDataReportStatusTagihanCargo;
 import com.servlet.cargo.entity.ParamCargoSearch;
@@ -5322,7 +5324,9 @@ public class ReportHandler implements ReportService {
                                 qtyIn = valKS.getQty().toString();
                             }else if(valKS.getType().equals("CANCELPACKINGLIST")){
                                 qtyIn = valKS.getQtypackinglistcancel().toString();
-                                qtyOut = valKS.getQty().toString();
+                                if(valKS.getQty().longValue() > 0){
+                                    qtyOut = valKS.getQty().toString();
+                                }
                             }
 
                             styleAmount = workbook.createCellStyle();
@@ -5887,6 +5891,210 @@ public class ReportHandler implements ReportService {
                     styleAmount.setDataFormat(format.getFormat("#,###"));
                     createCell(row, colomcount, item.getQty(), styleAmount, sheet,columns);
                 }
+            }
+        }
+
+        data.setWorkbook(workbook);
+        return data;
+    }
+
+    @Override
+    public ReportWorkBookExcel reportReportCancelPackingList(long idcompany, long idbranch, ParamReportCancelPackingList param) {
+        ReportWorkBookExcel data = new ReportWorkBookExcel();
+        XSSFWorkbook workbook = new XSSFWorkbook();
+
+        XSSFDataFormat format = workbook.createDataFormat();
+
+        XSSFSheet sheet = workbook.createSheet("Laporan Cancel Packing List");
+        sheet.setDefaultColumnWidth(1000);
+        List<Integer> columns = getWidthColumns(20);
+
+        String namaCabang = "";
+        Branch branch = branchService.getBranchByID(idbranch);
+        if(branch != null){
+            namaCabang = branch.getNama();
+        }
+
+        int fontHeight = 12;
+        CellStyle style = workbook.createCellStyle();
+        CellStyle styleBold = workbook.createCellStyle();
+        CellStyle styleAmount = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setBold(false);
+        font.setFontHeight(fontHeight);
+        style.setFont(font);
+        styleAmount.setFont(font);
+
+
+        XSSFFont fontBold = workbook.createFont();
+        fontBold.setBold(true);
+        fontBold.setFontHeight(fontHeight);
+        styleBold.setFont(fontBold);
+
+        int rowcount = 2;
+        Row row = sheet.createRow(rowcount);
+        createCell(row, 0, "PT Sumber Berlian Samudra", style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Laporan Cancel Packing List", style, sheet,columns);
+
+        String dateFrom = "";
+        try {
+            dateFrom = GlobalFunc.getDateLongToString(param.getFrom(), "dd-MMMM-yyyy");
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String dateThru = "";
+        try {
+            dateThru = GlobalFunc.getDateLongToString(param.getTo(), "dd-MMMM-yyyy");
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Periode", style, sheet,columns);
+        createCell(row, 1, dateFrom+" s/d "+dateThru, style, sheet,columns);
+
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Cabang", style, sheet,columns);
+        createCell(row, 1, namaCabang, style, sheet,columns);
+
+        int colomcount = 0;
+        rowcount++;
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, colomcount, "No Dokumen Cancel PL", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Tanggal Dokumen", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "No Dokumen PL", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Customer", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Vendor", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Product", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Category Product", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Qty PL", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Qty Mati", style, sheet,columns);
+
+
+        ParamReportCancelPackingList paramCPL = new ParamReportCancelPackingList();
+        paramCPL.setFrom(param.getFrom());
+        paramCPL.setTo(param.getTo());
+
+        List<ReportCancelPackingList> listData = cancelPackingListService.getReportCancelPackingList(idcompany,idbranch,paramCPL);
+        if(listData != null && listData.size() > 0) {
+            String noDocCPL = "";
+            for(ReportCancelPackingList dataCPL : listData){
+                ParamCalculateQtyPL paramCalc = new ParamCalculateQtyPL();
+                paramCalc.setIdpackinglist(dataCPL.getIdpackinglist());
+                paramCalc.setIdproduct(dataCPL.getIdProduct());
+                paramCalc.setIdcategoryproduct(dataCPL.getIdcategoryProduct());
+                Long qtyInPackingList = packingListService.calculateQtyPLByIdPackingList(idcompany,idbranch,paramCalc);
+
+                colomcount = 0;
+
+                if(noDocCPL.equals(dataCPL.getNoDocumentCPL())){
+                    rowcount++;
+                    row = sheet.createRow(rowcount);
+                    createCell(row, colomcount, "", style, sheet,columns);
+
+                    String tanggalDoc = "";
+//                    try {
+//                        tanggalDoc = GlobalFunc.getDateLongToString(dataCPL.getTanggalcancel().getTime(), "dd-MMMM-yyyy");
+//                    } catch (ParseException e) {
+//                        // TODO Auto-generated catch block
+//                        e.printStackTrace();
+//                    }
+                    colomcount++;
+                    createCell(row, colomcount, tanggalDoc, style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, "", style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, "", style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, "", style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, dataCPL.getProductName(), style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, dataCPL.getCategoryProductName()+" ("+dataCPL.getCategoryProductSize()+")", style, sheet,columns);
+
+                    styleAmount = workbook.createCellStyle();
+                    styleAmount.setDataFormat(format.getFormat("#,###"));
+
+                    colomcount++;
+                    createCell(row, colomcount, Integer.valueOf(qtyInPackingList.intValue()), styleAmount, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, dataCPL.getQtyMati().intValue(), styleAmount, sheet,columns);
+                }else{
+                    if(noDocCPL.equals("")){
+                        rowcount++;
+                    }else{
+                        rowcount++;
+                        rowcount++;
+                    }
+
+                    row = sheet.createRow(rowcount);
+                    createCell(row, colomcount, dataCPL.getNoDocumentCPL(), style, sheet,columns);
+
+                    String tanggalDoc = "";
+                    try {
+                        tanggalDoc = GlobalFunc.getDateLongToString(dataCPL.getTanggalcancel().getTime(), "dd-MMMM-yyyy");
+                    } catch (ParseException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    colomcount++;
+                    createCell(row, colomcount, tanggalDoc, style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, dataCPL.getNoDocumentPL(), style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, dataCPL.getCustomerName(), style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, dataCPL.getVendorName(), style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, dataCPL.getProductName(), style, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, dataCPL.getCategoryProductName()+" ("+dataCPL.getCategoryProductSize()+")", style, sheet,columns);
+
+                    styleAmount = workbook.createCellStyle();
+                    styleAmount.setDataFormat(format.getFormat("#,###"));
+
+                    colomcount++;
+                    createCell(row, colomcount, Integer.valueOf(qtyInPackingList.intValue()), styleAmount, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, dataCPL.getQtyMati().intValue(), styleAmount, sheet,columns);
+                }
+                noDocCPL = dataCPL.getNoDocumentCPL();
             }
         }
 

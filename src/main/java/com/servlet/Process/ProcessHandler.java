@@ -9,6 +9,7 @@ import com.servlet.area.service.AreaService;
 import com.servlet.bank.entity.BodyBank;
 import com.servlet.bank.service.BankService;
 import com.servlet.cancelpackinglist.entity.BodyCancelPackingList;
+import com.servlet.cancelpackinglist.entity.ParamReportCancelPackingList;
 import com.servlet.cancelpackinglist.entity.ParamSearchCancelPackingList;
 import com.servlet.cancelpackinglist.service.CancelPackingListService;
 import com.servlet.cargo.entity.BodyCargo;
@@ -1788,6 +1789,17 @@ public class ProcessHandler implements ProcessService{
 					val.setData(reportService.reportReportKomisi(auth.getIdcompany(), auth.getIdbranch(),body).getWorkbook());
 				}else if(type.equals("REPORTKOMISI_TEMPLATE")) {
 					val.setData(reportService.reportTemplateReportKomisi(auth.getIdcompany(), auth.getIdbranch()));
+				}
+			}
+
+			else if(codepermission.equals(ConstansPermission.READ_REPORT_CANCELPACKINGLIST)) {
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				if(type.equals("REPORTCPL")) {
+					ParamReportCancelPackingList body = (ParamReportCancelPackingList) param.get("body");
+					val.setData(reportService.reportReportCancelPackingList(auth.getIdcompany(), auth.getIdbranch(),body).getWorkbook());
+				}else if(type.equals("REPORTCPL_TEMPLATE")) {
+//					val.setData(reportService.reportTemplateReportKomisi(auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}
 

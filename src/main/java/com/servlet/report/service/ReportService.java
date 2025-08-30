@@ -1,5 +1,6 @@
 package com.servlet.report.service;
 
+import com.servlet.cancelpackinglist.entity.ParamReportCancelPackingList;
 import com.servlet.pinjaman.entity.ParamReportKartuPinjaman;
 import com.servlet.report.entity.*;
 
@@ -29,4 +30,5 @@ public interface ReportService {
     ReportWorkBookExcel reportReportKomisi(long idcompany, long idbranch, ParamReportKomisi param);
     ReportTemplate reportTemplateReportKomisi(long idcompany, long idbranch);
     ReportWorkBookExcel reportUdangMati(long idcompany, long idbranch, long idstockadjusment);
+    ReportWorkBookExcel reportReportCancelPackingList(long idcompany, long idbranch, ParamReportCancelPackingList param);
 }
