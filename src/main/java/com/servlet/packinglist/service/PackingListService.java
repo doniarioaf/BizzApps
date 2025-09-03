@@ -22,4 +22,5 @@ public interface PackingListService {
     ReturnData updateColumsIsAlreadyUpdatePriceToFalse(Long idcompany, Long idbranch, Long idcustomer, Long idpricelist);
     ReturnData updatePrice(Long id, Long idcompany, Long idbranch, Long iduser);
     ReturnData cancelPackingList(Long idcompany, Long idbranch, Long iduser, Long idpackinglist);
+    List<PackingListDataItemDetail> getListItemsByIdPackingList(Long idpackinglist);
 }

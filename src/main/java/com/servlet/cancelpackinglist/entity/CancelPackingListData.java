@@ -1,5 +1,7 @@
 package com.servlet.cancelpackinglist.entity;
 
+import com.servlet.packinglist.entity.PackingListDataItemDetail;
+
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
@@ -19,10 +21,19 @@ public class CancelPackingListData {
     private String vendorAlias;
 
     private List<CancelPackingListItemData> items;
+    private List<PackingListDataItemDetail> itemsPL;
     private String createdbyName;
     private Timestamp createddate;
     private String modifiedbyName;
     private Timestamp modifieddate;
+
+    public List<PackingListDataItemDetail> getItemsPL() {
+        return itemsPL;
+    }
+
+    public void setItemsPL(List<PackingListDataItemDetail> itemsPL) {
+        this.itemsPL = itemsPL;
+    }
 
     public String getCreatedbyName() {
         return createdbyName;

@@ -5906,8 +5906,11 @@ public class ReportHandler implements ReportService {
         XSSFDataFormat format = workbook.createDataFormat();
 
         XSSFSheet sheet = workbook.createSheet("Laporan Cancel Packing List");
-        sheet.setDefaultColumnWidth(1000);
-        List<Integer> columns = getWidthColumns(20);
+//        sheet.setDefaultColumnWidth(1000);
+        List<Integer> columns = getWidthColumns(3000);
+        int customColumWitdh = 8000;
+        int customColumWitdhCustomer = 12000;
+        int customColumWitdhVendor = 12000;
 
         String namaCabang = "";
         Branch branch = branchService.getBranchByID(idbranch);
@@ -5968,7 +5971,7 @@ public class ReportHandler implements ReportService {
         rowcount++;
         rowcount++;
         row = sheet.createRow(rowcount);
-        createCell(row, colomcount, "No Dokumen Cancel PL", style, sheet,columns);
+        createCellCustomWidthColumn(row, colomcount, "No Dokumen Cancel PL", style, sheet,customColumWitdh);
 
         colomcount++;
         createCell(row, colomcount, "Tanggal Dokumen", style, sheet,columns);
@@ -5977,16 +5980,16 @@ public class ReportHandler implements ReportService {
         createCell(row, colomcount, "No Dokumen PL", style, sheet,columns);
 
         colomcount++;
-        createCell(row, colomcount, "Customer", style, sheet,columns);
+        createCellCustomWidthColumn(row, colomcount, "Customer", style, sheet,customColumWitdhCustomer);
 
         colomcount++;
-        createCell(row, colomcount, "Vendor", style, sheet,columns);
+        createCellCustomWidthColumn(row, colomcount, "Vendor", style, sheet,customColumWitdhVendor);
 
         colomcount++;
         createCell(row, colomcount, "Product", style, sheet,columns);
 
         colomcount++;
-        createCell(row, colomcount, "Category Product", style, sheet,columns);
+        createCellCustomWidthColumn(row, colomcount, "Category Product", style, sheet,customColumWitdh);
 
         colomcount++;
         createCell(row, colomcount, "Qty PL", style, sheet,columns);
@@ -6014,7 +6017,7 @@ public class ReportHandler implements ReportService {
                 if(noDocCPL.equals(dataCPL.getNoDocumentCPL())){
                     rowcount++;
                     row = sheet.createRow(rowcount);
-                    createCell(row, colomcount, "", style, sheet,columns);
+                    createCellCustomWidthColumn(row, colomcount, "", style, sheet,10000);
 
                     String tanggalDoc = "";
 //                    try {
@@ -6030,16 +6033,16 @@ public class ReportHandler implements ReportService {
                     createCell(row, colomcount, "", style, sheet,columns);
 
                     colomcount++;
-                    createCell(row, colomcount, "", style, sheet,columns);
+                    createCellCustomWidthColumn(row, colomcount, "", style, sheet,customColumWitdhCustomer);
 
                     colomcount++;
-                    createCell(row, colomcount, "", style, sheet,columns);
+                    createCellCustomWidthColumn(row, colomcount, "", style, sheet,customColumWitdhVendor);
 
                     colomcount++;
                     createCell(row, colomcount, dataCPL.getProductName(), style, sheet,columns);
 
                     colomcount++;
-                    createCell(row, colomcount, dataCPL.getCategoryProductName()+" ("+dataCPL.getCategoryProductSize()+")", style, sheet,columns);
+                    createCellCustomWidthColumn(row, colomcount, dataCPL.getCategoryProductName()+" ("+dataCPL.getCategoryProductSize()+")", style, sheet,customColumWitdh);
 
                     styleAmount = workbook.createCellStyle();
                     styleAmount.setDataFormat(format.getFormat("#,###"));
@@ -6058,7 +6061,7 @@ public class ReportHandler implements ReportService {
                     }
 
                     row = sheet.createRow(rowcount);
-                    createCell(row, colomcount, dataCPL.getNoDocumentCPL(), style, sheet,columns);
+                    createCellCustomWidthColumn(row, colomcount, dataCPL.getNoDocumentCPL(), style, sheet,customColumWitdh);
 
                     String tanggalDoc = "";
                     try {
@@ -6074,16 +6077,16 @@ public class ReportHandler implements ReportService {
                     createCell(row, colomcount, dataCPL.getNoDocumentPL(), style, sheet,columns);
 
                     colomcount++;
-                    createCell(row, colomcount, dataCPL.getCustomerName(), style, sheet,columns);
+                    createCellCustomWidthColumn(row, colomcount, dataCPL.getCustomerName(), style, sheet,customColumWitdhCustomer);
 
                     colomcount++;
-                    createCell(row, colomcount, dataCPL.getVendorName(), style, sheet,columns);
+                    createCellCustomWidthColumn(row, colomcount, dataCPL.getVendorName(), style, sheet,customColumWitdhVendor);
 
                     colomcount++;
                     createCell(row, colomcount, dataCPL.getProductName(), style, sheet,columns);
 
                     colomcount++;
-                    createCell(row, colomcount, dataCPL.getCategoryProductName()+" ("+dataCPL.getCategoryProductSize()+")", style, sheet,columns);
+                    createCellCustomWidthColumn(row, colomcount, dataCPL.getCategoryProductName()+" ("+dataCPL.getCategoryProductSize()+")", style, sheet,customColumWitdh);
 
                     styleAmount = workbook.createCellStyle();
                     styleAmount.setDataFormat(format.getFormat("#,###"));
@@ -6242,6 +6245,34 @@ public class ReportHandler implements ReportService {
     private Cell createCell(Row row, int columnCount, Object value, CellStyle style,XSSFSheet sheet,List<Integer> widthcols) {
 //        sheet.autoSizeColumn(columnCount);
         sheet.setColumnWidth(columnCount, widthcols.get(columnCount));
+        Cell cell = row.createCell(columnCount);
+        if (value instanceof Integer) {
+            cell.setCellValue((Integer) value);
+        } else if (value instanceof Boolean) {
+            cell.setCellValue((Boolean) value);
+        }else if (value instanceof Date) {
+            cell.setCellValue((java.util.Date) value);
+        }else if (value instanceof Timestamp) {
+            cell.setCellValue((Timestamp) value);
+        }else if (value instanceof Long) {
+            cell.setCellValue((Long) value);
+        }else if (value instanceof Double) {
+            cell.setCellValue((Double) value);
+        }else {
+            String textval = (String) value;
+//        	int numberOfLines = textval.split("\n").length;
+//        	row.setHeightInPoints((2+numberOfLines) * sheet.getDefaultRowHeightInPoints());
+//        	style.setWrapText(true);
+            cell.setCellValue(textval);
+        }
+        cell.setCellStyle(style);
+
+        return cell;
+    }
+
+    private Cell createCellCustomWidthColumn(Row row, int columnCount, Object value, CellStyle style,XSSFSheet sheet,int widthColumns) {
+//        sheet.autoSizeColumn(columnCount);
+        sheet.setColumnWidth(columnCount, widthColumns);
         Cell cell = row.createCell(columnCount);
         if (value instanceof Integer) {
             cell.setCellValue((Integer) value);

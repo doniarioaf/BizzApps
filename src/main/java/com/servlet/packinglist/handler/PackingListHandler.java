@@ -346,6 +346,7 @@ public class PackingListHandler implements PackingListService {
         sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
         final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
         List<QueryNotJoinCancelPackingListData> cancelData = cancelPackingListService.getDataByIdPackingList(idcompany,idbranch,id);
+        System.out.println("cancelData "+cancelData.size());
         if(cancelData != null && cancelData.size() > 0){
             return null;
         }
@@ -668,6 +669,11 @@ public class PackingListHandler implements PackingListService {
 //        data.setSuccess(validations.size() > 0?false:true);
 //        data.setValidations(validations);
         return null;
+    }
+
+    @Override
+    public List<PackingListDataItemDetail> getListItemsByIdPackingList(Long idpackinglist) {
+        return getListItems(idpackinglist);
     }
 
     private HashMap<Object,Object> tambahStockItems(Long idcompany, Long idbranch, Long idpackinglist){

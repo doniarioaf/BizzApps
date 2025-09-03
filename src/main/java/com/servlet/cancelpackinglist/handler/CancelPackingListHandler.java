@@ -10,6 +10,7 @@ import com.servlet.invoice.entity.InvoiceDataList;
 import com.servlet.invoice.service.InvoiceService;
 import com.servlet.packinglist.mapper.QueryDataList;
 import com.servlet.packinglist.mapper.QueryPackingListReportKartuStock;
+import com.servlet.packinglist.service.PackingListService;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
@@ -43,6 +44,9 @@ public class CancelPackingListHandler implements CancelPackingListService {
 
     @Autowired
     private InvoiceService invoiceService;
+
+    @Autowired
+    private PackingListService packingListService;
     @Autowired
     private RunningNumberService runningNumberService;
 
@@ -194,8 +198,8 @@ public class CancelPackingListHandler implements CancelPackingListService {
     @Override
     public List<QueryNotJoinCancelPackingListData> getDataByIdPackingList(Long idcompany, Long idbranch, Long idpackinglist) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryNotJoinCancelPackingList().schema());
-        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
-        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        sqlBuilder.append(" where data.idpackinglist = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+        final Object[] queryParameters = new Object[] {idpackinglist,idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryNotJoinCancelPackingList(), queryParameters);
     }
 
@@ -205,7 +209,7 @@ public class CancelPackingListHandler implements CancelPackingListService {
         if(list != null && list.size() > 0){
             CancelPackingListData data = list.get(0);
             data.setItems(getListItemByIDCancel(data.getId()));
-
+            data.setItemsPL(packingListService.getListItemsByIdPackingList(data.getIdpackinglist()));
             return data;
         }
         return null;
