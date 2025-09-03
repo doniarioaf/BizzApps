@@ -279,7 +279,8 @@ public class ReportHandler implements ReportService {
 
             Double totalNettoHeader = 0.0;
             for(PackingListDataItemDetail item : print.getItems()){
-                totalNettoHeader += convertkg(item.getNettoweight());
+//                totalNettoHeader += convertkg(item.getNettoweight());
+                totalNettoHeader += item.getNettoweight();
             }
 
             createCell(row, 5, "Netto", style, sheet,columns);
@@ -364,7 +365,8 @@ public class ReportHandler implements ReportService {
                 createCell(row, colomcount, item.getQty(), style, sheet,columns);
 
                 colomcount++;
-                createCell(row, colomcount, convertkg(item.getNettoweight()), style, sheet,columns);
+//                createCell(row, colomcount, convertkg(item.getNettoweight()), style, sheet,columns);
+                createCell(row, colomcount, item.getNettoweight(), style, sheet,columns);
 
                 colomcount++;
                 createCell(row, colomcount, item.getPrice(), style, sheet,columns);
