@@ -346,7 +346,7 @@ public class PackingListHandler implements PackingListService {
         sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
         final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
         List<QueryNotJoinCancelPackingListData> cancelData = cancelPackingListService.getDataByIdPackingList(idcompany,idbranch,id);
-        
+
         if(cancelData != null && cancelData.size() > 0){
             return null;
         }
