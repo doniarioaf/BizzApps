@@ -73,5 +73,6 @@ public class ConstansCodeMessage {
 	public static final String STATUS_DEPOSIT_NON_ACTIVE = "status.deposit.non.active";
 	public static final String THIS_ID_ALREADY_UPDATE_PRICE = "this.id.already.update.price";
 	public static final String THIS_ID_ALREADY_CANCEL = "this.id.already.cancel";
+	public static final String CAN_NOT_EDIT_DELETE_CATEGORYPRODUCT_EXIST_IN_TRANSACTION = "can.not.edit.delete.categoryproduct.exist.in.transaction";
 
 }

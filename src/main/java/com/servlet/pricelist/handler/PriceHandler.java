@@ -6,6 +6,7 @@ import com.servlet.customer.service.CustomerService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.packinglist.service.PackingListService;
 import com.servlet.pricelist.entity.*;
+import com.servlet.pricelist.mapper.QueryCheckIdCategoryProduct;
 import com.servlet.pricelist.mapper.QueryDataDetail;
 import com.servlet.pricelist.mapper.QueryDataList;
 import com.servlet.pricelist.mapper.QueryDataPriceItem;
@@ -262,6 +263,14 @@ public class PriceHandler implements PriceService {
         }
         return null;
 
+    }
+
+    @Override
+    public List<Long> checkIdCP(Long idcompany, Long idbranch, Long idcategoryProduct) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCheckIdCategoryProduct().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and items.categoryproductid = ? and data.isdelete = false  ");
+        final Object[] queryParameters = new Object[] {idcompany,idbranch,idcategoryProduct};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCheckIdCategoryProduct(), queryParameters);
     }
 
     private List<PriceListItemData> getPriceListItems(Long idpricelist){

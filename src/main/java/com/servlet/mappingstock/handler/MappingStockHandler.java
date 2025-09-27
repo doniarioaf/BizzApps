@@ -4,10 +4,7 @@ import com.servlet.categoryproduct.entity.CategoryProduct;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.mappingstock.entity.*;
-import com.servlet.mappingstock.mapper.QueryDataCategoryProductID;
-import com.servlet.mappingstock.mapper.QueryDataDetail;
-import com.servlet.mappingstock.mapper.QueryDataList;
-import com.servlet.mappingstock.mapper.QueryGetCategoryProductID;
+import com.servlet.mappingstock.mapper.*;
 import com.servlet.mappingstock.repo.MappingStockRepo;
 import com.servlet.mappingstock.service.MappingStockService;
 import com.servlet.shared.ConstansCodeMessage;
@@ -180,5 +177,13 @@ public class MappingStockHandler implements MappingStockService {
         }
         final Object[] queryParameters = new Object[] {idcompany};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryGetCategoryProductID(), queryParameters);
+    }
+
+    @Override
+    public List<Long> checkIdCP(Long idcompany, Long idbranch, Long idcategoryProduct) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCheckIdCategoryProduct().schema());
+        sqlBuilder.append(" where items.idcompany = ? and items.idbranch = ? and (items.categoryproductid = "+idcategoryProduct+" or items.categoryproductidmapping = "+idcategoryProduct+" )  ");
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCheckIdCategoryProduct(), queryParameters);
     }
 }

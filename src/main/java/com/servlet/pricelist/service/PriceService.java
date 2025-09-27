@@ -14,4 +14,5 @@ public interface PriceService {
     ReturnData delete(Long id,Long idcompany, Long idbranch,Long iduser);
     PriceListDetail getDetail(Long id,Long idcompany, Long idbranch);
     PriceItemsDataForTemplate getDataPriceByDate(Long idcompany, Long idbranch,Long priceDate, Long idcustomer);
+    List<Long> checkIdCP(Long idcompany, Long idbranch, Long idcategoryProduct);
 }

@@ -23,4 +23,5 @@ public interface PackingListService {
     ReturnData updatePrice(Long id, Long idcompany, Long idbranch, Long iduser);
     ReturnData cancelPackingList(Long idcompany, Long idbranch, Long iduser, Long idpackinglist);
     List<PackingListDataItemDetail> getListItemsByIdPackingList(Long idpackinglist);
+    List<Long> checkIdCP(Long idcompany, Long idbranch, Long idcategoryProduct);
 }

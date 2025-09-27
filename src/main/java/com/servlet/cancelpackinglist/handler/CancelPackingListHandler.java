@@ -8,15 +8,13 @@ import com.servlet.cancelpackinglist.service.CancelPackingListService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.invoice.entity.InvoiceDataList;
 import com.servlet.invoice.service.InvoiceService;
-import com.servlet.packinglist.mapper.QueryDataList;
-import com.servlet.packinglist.mapper.QueryPackingListReportKartuStock;
+
 import com.servlet.packinglist.service.PackingListService;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
-import com.servlet.stockadjusment.mapper.QueryCalculateQtySA;
 import com.servlet.stockitems.entity.ReportKartuStock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -292,6 +290,14 @@ public class CancelPackingListHandler implements CancelPackingListService {
 
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new Query_ReportCancelPackingList(), queryParameters);
+    }
+
+    @Override
+    public List<Long> checkIdCP(Long idcompany, Long idbranch, Long idcategoryProduct) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCheckIdCategoryProduct().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and items.idcategoryproduct = ? and data.isdelete = false  ");
+        final Object[] queryParameters = new Object[] {idcompany,idbranch,idcategoryProduct};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCheckIdCategoryProduct(), queryParameters);
     }
 
     private HashMap<Object,Object> setItems(Long idcompany, Long idbranch, Long idcancelpackinglist, BodyCancelPackingListItem[] items){

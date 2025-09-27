@@ -1,5 +1,6 @@
 package com.servlet.categoryproduct.handler;
 
+import com.servlet.cancelpackinglist.service.CancelPackingListService;
 import com.servlet.categoryproduct.entity.*;
 import com.servlet.categoryproduct.mapper.QueryDataDetail;
 import com.servlet.categoryproduct.mapper.QueryDataList;
@@ -8,11 +9,16 @@ import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.customer.entity.Customer;
 import com.servlet.customer.mapper.QueryCustomerList;
 import com.servlet.customer.repo.CustomerRepo;
+import com.servlet.draftpurchasereceive.service.DraftPurchaseReceiveService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.mappingstock.service.MappingStockService;
+import com.servlet.packinglist.service.PackingListService;
+import com.servlet.pricelist.service.PriceService;
+import com.servlet.purchasereceive.service.PurchaseReceiveService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.stockadjusment.service.StockAdjusmentService;
 import com.servlet.vendor.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -39,6 +45,22 @@ public class CategoryProductHandler implements CategoryProductService {
 
     @Autowired
     private VendorService vendorService;
+
+    @Autowired
+    private StockAdjusmentService stockAdjusmentService;
+    @Autowired
+    private PurchaseReceiveService purchaseReceiveService;
+    @Autowired
+    private PriceService priceService;
+    @Autowired
+    private PackingListService packingListService;
+
+    @Autowired
+    private DraftPurchaseReceiveService draftPurchaseReceiveService;
+
+    @Autowired
+    private CancelPackingListService cancelPackingListService;
+
     protected final String namaMenu = "CategoryProduct";
 
     /**
@@ -104,25 +126,29 @@ public class CategoryProductHandler implements CategoryProductService {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
         Timestamp ts = new Timestamp(new Date().getTime());
-        try{
-            CategoryProduct table = repo.getById(id);
-            String databefore = table.toString();
-            table.setNama(body.getNama());
-            table.setSize(body.getSize());
-            table.setWeightfromingram(body.getWeightfromingram());
-            table.setWeighttoingram(body.getWeighttoingram());
-            table.setJumlahitemsperkoli(body.getJumlahitemsperkoli());
-            table.setForcategory(body.getForcategory());
-            table.setModifieddate(ts);
-            table.setModifiedby(iduser);
-            idsave = repo.saveAndFlush(table).getId();
-            String dataafter = table.toString();
-            historyAppsService.saveHistory(idcompany,idbranch,iduser,"EDIT",namaMenu,"",dataafter,databefore,ts);
+        List<ValidationDataMessage> validationsCheck = checkIDCP(idcompany,idbranch,id);
+        validations.addAll(validationsCheck);
+        if(validations.size() == 0) {
+            try {
+                CategoryProduct table = repo.getById(id);
+                String databefore = table.toString();
+                table.setNama(body.getNama());
+                table.setSize(body.getSize());
+                table.setWeightfromingram(body.getWeightfromingram());
+                table.setWeighttoingram(body.getWeighttoingram());
+                table.setJumlahitemsperkoli(body.getJumlahitemsperkoli());
+                table.setForcategory(body.getForcategory());
+                table.setModifieddate(ts);
+                table.setModifiedby(iduser);
+                idsave = repo.saveAndFlush(table).getId();
+                String dataafter = table.toString();
+                historyAppsService.saveHistory(idcompany, idbranch, iduser, "EDIT", namaMenu, "", dataafter, databefore, ts);
 
-        }catch (Exception e){
-            // TODO: handle exception
-            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
-            validations.add(msg);
+            } catch (Exception e) {
+                // TODO: handle exception
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
         }
         ReturnData data = new ReturnData();
         data.setId(idsave);
@@ -136,14 +162,19 @@ public class CategoryProductHandler implements CategoryProductService {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
         Timestamp ts = new Timestamp(new Date().getTime());
+
         try{
             CategoryProduct table = repo.getById(id);
-            table.setIsdelete(true);
-            table.setDeletedate(ts);
-            table.setDeleteby(iduser);
-            idsave = repo.saveAndFlush(table).getId();
-            String data = table.toString();
-            historyAppsService.saveHistory(table.getIdcompany(),table.getIdbranch(),iduser,"DELETE",namaMenu,data,"","",ts);
+            List<ValidationDataMessage> validationsCheck = checkIDCP(table.getIdcompany(), table.getIdbranch(), id);
+            validations.addAll(validationsCheck);
+            if(validations.size() == 0) {
+                table.setIsdelete(true);
+                table.setDeletedate(ts);
+                table.setDeleteby(iduser);
+                idsave = repo.saveAndFlush(table).getId();
+                String data = table.toString();
+                historyAppsService.saveHistory(table.getIdcompany(), table.getIdbranch(), iduser, "DELETE", namaMenu, data, "", "", ts);
+            }
 
         }catch (Exception e){
             // TODO: handle exception
@@ -189,5 +220,61 @@ public class CategoryProductHandler implements CategoryProductService {
         sqlBuilder.append(" order by data.weightfromingram desc ");
         final Object[] queryParameters = new Object[] {idcompany};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataList(), queryParameters);
+    }
+
+    private List<ValidationDataMessage> checkIDCP(Long idcompany, Long idbranch,Long idcp){
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        boolean flag = false;
+        List<Long> checkIdCPStockAdjusment = stockAdjusmentService.checkIdCP(idcompany,idbranch,idcp);
+        if(checkIdCPStockAdjusment != null && checkIdCPStockAdjusment.size() > 0 && !flag){
+            flag = true;
+        }
+        if(!flag){
+            List<Long> checkIdCPpurchaseReceive = purchaseReceiveService.checkIdCP(idcompany,idbranch,idcp);
+            if(checkIdCPpurchaseReceive != null && checkIdCPpurchaseReceive.size() > 0 ){
+                flag = true;
+            }
+        }
+
+        if(!flag){
+            List<Long> checkIdCPprice = priceService.checkIdCP(idcompany,idbranch,idcp);
+            if(checkIdCPprice != null && checkIdCPprice.size() > 0){
+                flag = true;
+            }
+        }
+
+        if(!flag){
+            List<Long> checkIdCPpackingList = packingListService.checkIdCP(idcompany,idbranch,idcp);
+            if(checkIdCPpackingList != null && checkIdCPpackingList.size() > 0){
+                flag = true;
+            }
+        }
+
+        if(!flag) {
+            List<Long> checkIdCPmappingStock = mappingStockService.checkIdCP(idcompany, idbranch, idcp);
+            if (checkIdCPmappingStock != null && checkIdCPmappingStock.size() > 0) {
+                flag = true;
+            }
+        }
+
+        if(!flag) {
+            List<Long> checkIdCPdraftPurchaseReceive = draftPurchaseReceiveService.checkIdCP(idcompany, idbranch, idcp);
+            if (checkIdCPdraftPurchaseReceive != null && checkIdCPdraftPurchaseReceive.size() > 0) {
+                flag = true;
+            }
+        }
+
+        if(!flag) {
+            List<Long> checkIdCPcancelPackingList = cancelPackingListService.checkIdCP(idcompany, idbranch, idcp);
+            if (checkIdCPcancelPackingList != null && checkIdCPcancelPackingList.size() > 0) {
+                flag = true;
+            }
+        }
+
+        if(flag){
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CAN_NOT_EDIT_DELETE_CATEGORYPRODUCT_EXIST_IN_TRANSACTION,"Category Product sudah ada dalam transaksi, tidak bisa edit/delete");
+            validations.add(msg);
+        }
+        return validations;
     }
 }
