@@ -61,6 +61,7 @@ public class CategoryProductHandler implements CategoryProductService {
     @Autowired
     private CancelPackingListService cancelPackingListService;
 
+
     protected final String namaMenu = "CategoryProduct";
 
     /**
@@ -267,6 +268,13 @@ public class CategoryProductHandler implements CategoryProductService {
         if(!flag) {
             List<Long> checkIdCPcancelPackingList = cancelPackingListService.checkIdCP(idcompany, idbranch, idcp);
             if (checkIdCPcancelPackingList != null && checkIdCPcancelPackingList.size() > 0) {
+                flag = true;
+            }
+        }
+
+        if(!flag) {
+            List<Long> checkIdCPVendor = vendorService.checkIdCP(idcompany, idbranch, idcp);
+            if (checkIdCPVendor != null && checkIdCPVendor.size() > 0) {
                 flag = true;
             }
         }

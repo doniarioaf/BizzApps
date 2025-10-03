@@ -4,9 +4,6 @@ import com.servlet.area.service.AreaService;
 import com.servlet.categoryproduct.entity.ParamTemplate;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.historyapps.service.HistoryAppsService;
-import com.servlet.pricelist.entity.PriceListItemData;
-import com.servlet.product.entity.Product;
-import com.servlet.product.mapper.QueryProductList;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
@@ -348,6 +345,14 @@ public class VendorHandler implements VendorService {
         sqlBuilder.append(" and data.idvendorparent in ("+listidvendorparents+") ");
         final Object[] queryParameters = new Object[] {idcompany};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryGetId(), queryParameters);
+    }
+
+    @Override
+    public List<Long> checkIdCP(Long idcompany, Long idbranch, Long idcategoryProduct) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCheckIdCategoryProduct().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and items.idcategoryproduct = ? and data.isdelete = false  ");
+        final Object[] queryParameters = new Object[] {idcompany,idbranch,idcategoryProduct};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCheckIdCategoryProduct(), queryParameters);
     }
 
 
