@@ -14,6 +14,15 @@ public class PelunasanPiutangList {
     private Double amountInvoice;
     private String customerName;
     private String customerAlias;
+    private String noDocumentPL;
+
+    public String getNoDocumentPL() {
+        return noDocumentPL;
+    }
+
+    public void setNoDocumentPL(String noDocumentPL) {
+        this.noDocumentPL = noDocumentPL;
+    }
 
     public Double getKursInvoice() {
         return kursInvoice;

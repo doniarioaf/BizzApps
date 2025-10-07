@@ -929,96 +929,96 @@ public class ReportHandler implements ReportService {
         RegionUtil.setBorderRight(BorderStyle.MEDIUM, toCellRangeAddress, sheet);
 
         //Header dan value attn,code,Flight No.,abw, Packing List No.
-        CellRangeAddress attnCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 1);
-        sheet.addMergedRegion(attnCellRangeAddress);
-        Cell attn = createCell(row, 0, "Attn.", style, sheet,columns);
-        CellUtil.setVerticalAlignment(attn, VerticalAlignment.CENTER);
-        CellUtil.setAlignment(attn, HorizontalAlignment.CENTER);
-        attn.setCellStyle(styleBoldItalicColourBg);
-        RegionUtil.setBorderTop(BorderStyle.MEDIUM, attnCellRangeAddress, sheet);
-        RegionUtil.setBorderBottom(BorderStyle.MEDIUM, attnCellRangeAddress, sheet);
-        RegionUtil.setBorderLeft(BorderStyle.MEDIUM, attnCellRangeAddress, sheet);
-        RegionUtil.setBorderRight(BorderStyle.MEDIUM, attnCellRangeAddress, sheet);
+//        CellRangeAddress attnCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 1);
+//        sheet.addMergedRegion(attnCellRangeAddress);
+//        Cell attn = createCell(row, 0, "Attn.", style, sheet,columns);
+//        CellUtil.setVerticalAlignment(attn, VerticalAlignment.CENTER);
+//        CellUtil.setAlignment(attn, HorizontalAlignment.CENTER);
+//        attn.setCellStyle(styleBoldItalicColourBg);
+//        RegionUtil.setBorderTop(BorderStyle.MEDIUM, attnCellRangeAddress, sheet);
+//        RegionUtil.setBorderBottom(BorderStyle.MEDIUM, attnCellRangeAddress, sheet);
+//        RegionUtil.setBorderLeft(BorderStyle.MEDIUM, attnCellRangeAddress, sheet);
+//        RegionUtil.setBorderRight(BorderStyle.MEDIUM, attnCellRangeAddress, sheet);
 
 
-        CellRangeAddress codeCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 2, 3);
-        sheet.addMergedRegion(codeCellRangeAddress);
-        Cell code = createCell(row, 2, "Code", style, sheet,columns);
-        code.setCellStyle(styleBoldItalicColourBg);
-        RegionUtil.setBorderTop(BorderStyle.MEDIUM, codeCellRangeAddress, sheet);
-        RegionUtil.setBorderBottom(BorderStyle.MEDIUM, codeCellRangeAddress, sheet);
-        RegionUtil.setBorderLeft(BorderStyle.MEDIUM, codeCellRangeAddress, sheet);
-        RegionUtil.setBorderRight(BorderStyle.MEDIUM, codeCellRangeAddress, sheet);
+//        CellRangeAddress codeCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 2, 3);
+//        sheet.addMergedRegion(codeCellRangeAddress);
+//        Cell code = createCell(row, 2, "Code", style, sheet,columns);
+//        code.setCellStyle(styleBoldItalicColourBg);
+//        RegionUtil.setBorderTop(BorderStyle.MEDIUM, codeCellRangeAddress, sheet);
+//        RegionUtil.setBorderBottom(BorderStyle.MEDIUM, codeCellRangeAddress, sheet);
+//        RegionUtil.setBorderLeft(BorderStyle.MEDIUM, codeCellRangeAddress, sheet);
+//        RegionUtil.setBorderRight(BorderStyle.MEDIUM, codeCellRangeAddress, sheet);
 
-        columncount = 4;
-        createCell(row, columncount, "Flight No.", styleBoldItalicColourBg, sheet,columns);
+//        columncount = 4;
+//        createCell(row, columncount, "Flight No.", styleBoldItalicColourBg, sheet,columns);
 
-        CellRangeAddress abwCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 5, 6);
-        sheet.addMergedRegion(abwCellRangeAddress);
-        Cell abw = createCell(row, 5, "AWB", style, sheet,columns);
-        abw.setCellStyle(styleBoldItalicColourBg);
-        RegionUtil.setBorderTop(BorderStyle.MEDIUM, abwCellRangeAddress, sheet);
-        RegionUtil.setBorderBottom(BorderStyle.MEDIUM, abwCellRangeAddress, sheet);
-        RegionUtil.setBorderLeft(BorderStyle.MEDIUM, abwCellRangeAddress, sheet);
-        RegionUtil.setBorderRight(BorderStyle.MEDIUM, abwCellRangeAddress, sheet);
+//        CellRangeAddress abwCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 5, 6);
+//        sheet.addMergedRegion(abwCellRangeAddress);
+//        Cell abw = createCell(row, 5, "AWB", style, sheet,columns);
+//        abw.setCellStyle(styleBoldItalicColourBg);
+//        RegionUtil.setBorderTop(BorderStyle.MEDIUM, abwCellRangeAddress, sheet);
+//        RegionUtil.setBorderBottom(BorderStyle.MEDIUM, abwCellRangeAddress, sheet);
+//        RegionUtil.setBorderLeft(BorderStyle.MEDIUM, abwCellRangeAddress, sheet);
+//        RegionUtil.setBorderRight(BorderStyle.MEDIUM, abwCellRangeAddress, sheet);
 
-        CellRangeAddress packinglistnoCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 7, 8);
-        sheet.addMergedRegion(packinglistnoCellRangeAddress);
-        Cell plno = createCell(row, 7, "Packing List No.", style, sheet,columns);
-        plno.setCellStyle(styleBoldItalicColourBg);
-        RegionUtil.setBorderTop(BorderStyle.MEDIUM, packinglistnoCellRangeAddress, sheet);
-        RegionUtil.setBorderBottom(BorderStyle.MEDIUM, packinglistnoCellRangeAddress, sheet);
-        RegionUtil.setBorderLeft(BorderStyle.MEDIUM, packinglistnoCellRangeAddress, sheet);
-        RegionUtil.setBorderRight(BorderStyle.MEDIUM, packinglistnoCellRangeAddress, sheet);
+//        CellRangeAddress packinglistnoCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 7, 8);
+//        sheet.addMergedRegion(packinglistnoCellRangeAddress);
+//        Cell plno = createCell(row, 7, "Packing List No.", style, sheet,columns);
+//        plno.setCellStyle(styleBoldItalicColourBg);
+//        RegionUtil.setBorderTop(BorderStyle.MEDIUM, packinglistnoCellRangeAddress, sheet);
+//        RegionUtil.setBorderBottom(BorderStyle.MEDIUM, packinglistnoCellRangeAddress, sheet);
+//        RegionUtil.setBorderLeft(BorderStyle.MEDIUM, packinglistnoCellRangeAddress, sheet);
+//        RegionUtil.setBorderRight(BorderStyle.MEDIUM, packinglistnoCellRangeAddress, sheet);
 
-        rowcount++;
-        row = sheet.createRow(rowcount);
-        columncount = 0;
-        CellRangeAddress valueattnCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 1);
-        sheet.addMergedRegion(valueattnCellRangeAddress);
-        Cell valueattn = createCell(row, 0, invoice.getPackinglist().getAttention(), style, sheet,columns);
-        CellUtil.setVerticalAlignment(valueattn, VerticalAlignment.CENTER);
-        CellUtil.setAlignment(valueattn, HorizontalAlignment.CENTER);
-        RegionUtil.setBorderTop(BorderStyle.MEDIUM, valueattnCellRangeAddress, sheet);
-        RegionUtil.setBorderBottom(BorderStyle.MEDIUM, valueattnCellRangeAddress, sheet);
-        RegionUtil.setBorderLeft(BorderStyle.MEDIUM, valueattnCellRangeAddress, sheet);
-        RegionUtil.setBorderRight(BorderStyle.MEDIUM, valueattnCellRangeAddress, sheet);
+//        rowcount++;
+//        row = sheet.createRow(rowcount);
+//        columncount = 0;
+//        CellRangeAddress valueattnCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 1);
+//        sheet.addMergedRegion(valueattnCellRangeAddress);
+//        Cell valueattn = createCell(row, 0, invoice.getPackinglist().getAttention(), style, sheet,columns);
+//        CellUtil.setVerticalAlignment(valueattn, VerticalAlignment.CENTER);
+//        CellUtil.setAlignment(valueattn, HorizontalAlignment.CENTER);
+//        RegionUtil.setBorderTop(BorderStyle.MEDIUM, valueattnCellRangeAddress, sheet);
+//        RegionUtil.setBorderBottom(BorderStyle.MEDIUM, valueattnCellRangeAddress, sheet);
+//        RegionUtil.setBorderLeft(BorderStyle.MEDIUM, valueattnCellRangeAddress, sheet);
+//        RegionUtil.setBorderRight(BorderStyle.MEDIUM, valueattnCellRangeAddress, sheet);
 
 
-        CellRangeAddress valuecodeCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 2, 3);
-        sheet.addMergedRegion(valuecodeCellRangeAddress);
-        Cell valuecode = createCell(row, 2, getCodeAndCountryDest(invoice.getPackinglist().getCustomerAlias()).get("code"), style, sheet,columns);
-        CellUtil.setVerticalAlignment(valuecode, VerticalAlignment.CENTER);
-        CellUtil.setAlignment(valuecode, HorizontalAlignment.CENTER);
-        RegionUtil.setBorderTop(BorderStyle.MEDIUM, valuecodeCellRangeAddress, sheet);
-        RegionUtil.setBorderBottom(BorderStyle.MEDIUM, valuecodeCellRangeAddress, sheet);
-        RegionUtil.setBorderLeft(BorderStyle.MEDIUM, valuecodeCellRangeAddress, sheet);
-        RegionUtil.setBorderRight(BorderStyle.MEDIUM, valuecodeCellRangeAddress, sheet);
+//        CellRangeAddress valuecodeCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 2, 3);
+//        sheet.addMergedRegion(valuecodeCellRangeAddress);
+//        Cell valuecode = createCell(row, 2, getCodeAndCountryDest(invoice.getPackinglist().getCustomerAlias()).get("code"), style, sheet,columns);
+//        CellUtil.setVerticalAlignment(valuecode, VerticalAlignment.CENTER);
+//        CellUtil.setAlignment(valuecode, HorizontalAlignment.CENTER);
+//        RegionUtil.setBorderTop(BorderStyle.MEDIUM, valuecodeCellRangeAddress, sheet);
+//        RegionUtil.setBorderBottom(BorderStyle.MEDIUM, valuecodeCellRangeAddress, sheet);
+//        RegionUtil.setBorderLeft(BorderStyle.MEDIUM, valuecodeCellRangeAddress, sheet);
+//        RegionUtil.setBorderRight(BorderStyle.MEDIUM, valuecodeCellRangeAddress, sheet);
 
-        columncount = 4;
-        Cell valueflight = createCell(row, columncount, invoice.getPackinglist().getFlightnumber(), style, sheet,columns);
-        CellUtil.setVerticalAlignment(valueflight, VerticalAlignment.CENTER);
-        CellUtil.setAlignment(valueflight, HorizontalAlignment.CENTER);
+//        columncount = 4;
+//        Cell valueflight = createCell(row, columncount, invoice.getPackinglist().getFlightnumber(), style, sheet,columns);
+//        CellUtil.setVerticalAlignment(valueflight, VerticalAlignment.CENTER);
+//        CellUtil.setAlignment(valueflight, HorizontalAlignment.CENTER);
 
-        CellRangeAddress valueabwCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 5, 6);
-        sheet.addMergedRegion(valueabwCellRangeAddress);
-        Cell valueabw = createCell(row, 5, invoice.getPackinglist().getAwbnumber()+" "+invoice.getPackinglist().getCodeGrupcustomer(), style, sheet,columns);
-        CellUtil.setVerticalAlignment(valueabw, VerticalAlignment.CENTER);
-        CellUtil.setAlignment(valueabw, HorizontalAlignment.CENTER);
-        RegionUtil.setBorderTop(BorderStyle.MEDIUM, valueabwCellRangeAddress, sheet);
-        RegionUtil.setBorderBottom(BorderStyle.MEDIUM, valueabwCellRangeAddress, sheet);
-        RegionUtil.setBorderLeft(BorderStyle.MEDIUM, valueabwCellRangeAddress, sheet);
-        RegionUtil.setBorderRight(BorderStyle.MEDIUM, valueabwCellRangeAddress, sheet);
+//        CellRangeAddress valueabwCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 5, 6);
+//        sheet.addMergedRegion(valueabwCellRangeAddress);
+//        Cell valueabw = createCell(row, 5, invoice.getPackinglist().getAwbnumber()+" "+invoice.getPackinglist().getCodeGrupcustomer(), style, sheet,columns);
+//        CellUtil.setVerticalAlignment(valueabw, VerticalAlignment.CENTER);
+//        CellUtil.setAlignment(valueabw, HorizontalAlignment.CENTER);
+//        RegionUtil.setBorderTop(BorderStyle.MEDIUM, valueabwCellRangeAddress, sheet);
+//        RegionUtil.setBorderBottom(BorderStyle.MEDIUM, valueabwCellRangeAddress, sheet);
+//        RegionUtil.setBorderLeft(BorderStyle.MEDIUM, valueabwCellRangeAddress, sheet);
+//        RegionUtil.setBorderRight(BorderStyle.MEDIUM, valueabwCellRangeAddress, sheet);
 
-        CellRangeAddress valuepackinglistnoCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 7, 8);
-        sheet.addMergedRegion(valuepackinglistnoCellRangeAddress);
-        Cell valueplno = createCell(row, 7, invoice.getPackinglist().getNodocument(), style, sheet,columns);
-        CellUtil.setVerticalAlignment(valueplno, VerticalAlignment.CENTER);
-        CellUtil.setAlignment(valueplno, HorizontalAlignment.CENTER);
-        RegionUtil.setBorderTop(BorderStyle.MEDIUM, valuepackinglistnoCellRangeAddress, sheet);
-        RegionUtil.setBorderBottom(BorderStyle.MEDIUM, valuepackinglistnoCellRangeAddress, sheet);
-        RegionUtil.setBorderLeft(BorderStyle.MEDIUM, valuepackinglistnoCellRangeAddress, sheet);
-        RegionUtil.setBorderRight(BorderStyle.MEDIUM, valuepackinglistnoCellRangeAddress, sheet);
+//        CellRangeAddress valuepackinglistnoCellRangeAddress = new CellRangeAddress(rowcount, rowcount, 7, 8);
+//        sheet.addMergedRegion(valuepackinglistnoCellRangeAddress);
+//        Cell valueplno = createCell(row, 7, invoice.getPackinglist().getNodocument(), style, sheet,columns);
+//        CellUtil.setVerticalAlignment(valueplno, VerticalAlignment.CENTER);
+//        CellUtil.setAlignment(valueplno, HorizontalAlignment.CENTER);
+//        RegionUtil.setBorderTop(BorderStyle.MEDIUM, valuepackinglistnoCellRangeAddress, sheet);
+//        RegionUtil.setBorderBottom(BorderStyle.MEDIUM, valuepackinglistnoCellRangeAddress, sheet);
+//        RegionUtil.setBorderLeft(BorderStyle.MEDIUM, valuepackinglistnoCellRangeAddress, sheet);
+//        RegionUtil.setBorderRight(BorderStyle.MEDIUM, valuepackinglistnoCellRangeAddress, sheet);
         //End
 
 
