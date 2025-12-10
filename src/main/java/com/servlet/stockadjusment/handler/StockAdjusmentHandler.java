@@ -330,6 +330,7 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
             }
             ParamTemplate paramcp = new ParamTemplate();
             paramcp.setShowOnlyCpMapping(true);
+            paramcp.setForcategory("CUSTOMER");
             print.setListcp(categoryProductService.getDataForTemplate(idcompany,idbranch,paramcp));
             print.setMappingstock(mappingStockService.getListAll(idcompany,idbranch));
             if(typefile.equals("PDF")){
