@@ -1940,10 +1940,16 @@ public class ReportHandler implements ReportService {
             paramPL.setDateThru(dateMinus1);
             paramPL.setIdcategoryproduct(cp.getId());
 
+            ParamCalculateQtyCPL paramCPL = new ParamCalculateQtyCPL();
+            paramCPL.setDateFrom(satuJan70);
+            paramCPL.setDateThru(dateMinus1);
+            paramCPL.setIdcategoryproduct(cp.getId());
+
             ParamCalculateQty paramQty = new ParamCalculateQty();
             paramQty.setParamCalculateQtyDPR(paramPR);
             paramQty.setParamCalculateQtySA(paramSA);
             paramQty.setParamCalculateQtyPL(paramPL);
+            paramQty.setParamCalculateQtyCPL(paramCPL);
             Long stockKolamTerakhir = stockItemService.calculateQty(idcompany,idbranch,paramQty);
             stockKolamTerakhirByIDcategory.put(cp.getId(),stockKolamTerakhir);
 
@@ -5194,6 +5200,7 @@ public class ReportHandler implements ReportService {
                     String key = val.getId()+"-"+ valCp.getId();
                     String size = valCp.getSize();
                     List<ReportKartuStock> tempList = mapsGrupByIdProdAndCP.get(key);
+
                     if(tempList != null){
                         for(ReportKartuStock valKS : tempList){
 
