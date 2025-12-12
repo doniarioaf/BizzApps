@@ -2,6 +2,7 @@ package com.servlet.stockadjusment.handler;
 
 import com.servlet.admin.branch.entity.Branch;
 import com.servlet.admin.branch.service.BranchService;
+import com.servlet.cancelpackinglist.entity.ParamCalculateQtyCPL;
 import com.servlet.categoryproduct.entity.CategoryProductList;
 import com.servlet.categoryproduct.entity.ParamTemplate;
 import com.servlet.categoryproduct.service.CategoryProductService;
@@ -383,10 +384,16 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
             paramPL.setDateThru(dateMinus1);
             paramPL.setIdcategoryproduct(cp.getId());
 
+            ParamCalculateQtyCPL paramCPL = new ParamCalculateQtyCPL();
+            paramCPL.setDateFrom(satuJan70);
+            paramCPL.setDateThru(dateMinus1);
+            paramCPL.setIdcategoryproduct(cp.getId());
+
             ParamCalculateQty paramQty = new ParamCalculateQty();
             paramQty.setParamCalculateQtyDPR(paramPR);
             paramQty.setParamCalculateQtySA(paramSA);
             paramQty.setParamCalculateQtyPL(paramPL);
+            paramQty.setParamCalculateQtyCPL(paramCPL);
             Long stockKolamTerakhir = stockItemService.calculateQty(idcompany,idbranch,paramQty);
             stockKolamTerakhirByIDcategory.put(cp.getId(),stockKolamTerakhir);
 
