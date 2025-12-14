@@ -310,7 +310,7 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
     public PrintDataStockUdangMati getPrintData(Long idcompany, Long idbranch, Long iduser, Long id,String typefile) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPrintDataStockUdangMati().schema());
         sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
-        sqlBuilder.append(" and data.type = 'M' ");
+//        sqlBuilder.append(" and data.type = 'M' ");
 
         final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
         List<PrintDataStockUdangMati> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPrintDataStockUdangMati(), queryParameters);
