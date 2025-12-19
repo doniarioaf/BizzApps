@@ -301,6 +301,7 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
             }
         }
 
+        sqlBuilder.append(" GROUP BY data.idproduct, data.idcategoryproduct,data.type, sa.nodocument, sa.date,sa.note ");
 //        sqlBuilder.append(" order by sa.id ");
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryStockAdjusmentReportKartuStock(), queryParameters);

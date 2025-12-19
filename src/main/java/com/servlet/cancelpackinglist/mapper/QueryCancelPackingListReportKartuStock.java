@@ -14,7 +14,7 @@ public class QueryCancelPackingListReportKartuStock implements RowMapper<ReportK
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("cpl.idpackinglist as idpackinglist, data.idproduct as idproduct, data.idcategoryproduct as idcategoryproduct, cpl.keterangan as keterangan, ");
-        sqlBuilder.append("data.qty as qty, cpl.nodocument as nodocument, cpl.datecancel as date, ");
+        sqlBuilder.append("sum(data.qty) as qty, cpl.nodocument as nodocument, cpl.datecancel as date, ");
         sqlBuilder.append("cus.nama as cusnama, cus.alias as cusalias ");
         sqlBuilder.append("from cancel_packinglistitems as data ");
         sqlBuilder.append("left join cancel_packinglist as cpl on cpl.id = data.idcancelpackinglist ");

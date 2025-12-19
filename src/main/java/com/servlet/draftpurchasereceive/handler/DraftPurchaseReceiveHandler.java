@@ -466,6 +466,9 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
         }
         sqlBuilder.append(" and data.ekor > 0 ");
 
+        sqlBuilder.append(" GROUP BY  data.idproduct, data.idcategoryproduct, pr.nodocument,pr.notes1,ven.nama, ven.alias, pr.date ");
+
+        System.out.println("sqlBuilder "+sqlBuilder.toString());
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDPRReportKartuStock(), queryParameters);
     }

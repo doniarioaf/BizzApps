@@ -14,7 +14,7 @@ public class QueryPackingListReportKartuStock implements RowMapper<ReportKartuSt
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.idpackinglist as idpackinglist, data.idproduct as idproduct, data.idcategoryproduct as idcategoryproduct, ");
-        sqlBuilder.append("data.qty as qty, pl.nodocument as nodocument, pl.date as date, ");
+        sqlBuilder.append("sum(data.qty) as qty, pl.nodocument as nodocument, pl.date as date, ");
         sqlBuilder.append("cus.nama as cusnama, cus.alias as cusalias ");
         sqlBuilder.append("from packinglist_item as data ");
         sqlBuilder.append("left join packinglist as pl on pl.id = data.idpackinglist ");

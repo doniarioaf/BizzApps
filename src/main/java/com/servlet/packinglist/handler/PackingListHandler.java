@@ -475,6 +475,7 @@ public class PackingListHandler implements PackingListService {
         if(param.getListIdCategoryProduct() != null && !param.getListIdCategoryProduct().equals("")){
             sqlBuilder.append(" and data.idcategoryproduct in ("+param.getListIdCategoryProduct()+") ");
         }
+        sqlBuilder.append(" GROUP BY data.idpackinglist,pl.nodocument,pl.date,cus.nama, cus.alias, data.idproduct, data.idcategoryproduct ");
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPackingListReportKartuStock(), queryParameters);
     }

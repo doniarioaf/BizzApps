@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -47,6 +48,23 @@ public class HistoryAppsHandler implements HistoryAppsService {
     public Long countByActionAndMenu(Long idcompany, Long idbranch, String action, String menu) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculteCountRow().schema());
         sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.action = ? and data.menu = ? ");
+        final Object[] queryParameters = new Object[] {idcompany,idbranch,action, menu};
+        List<Long> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculteCountRow(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return 0L;
+    }
+
+    @Override
+    public Long countByActionAndMenuParam(Long idcompany, Long idbranch, String action, String menu, HashMap<String, Object> param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculteCountRow().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.action = ? and data.menu = ? ");
+        if(param != null){
+            if(param.get("nodocument") != null){
+                sqlBuilder.append(" and data.data like '%nodocument=''"+param.get("nodocument")+"''%' ");
+            }
+        }
         final Object[] queryParameters = new Object[] {idcompany,idbranch,action, menu};
         List<Long> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculteCountRow(), queryParameters);
         if(list != null && list.size() > 0){

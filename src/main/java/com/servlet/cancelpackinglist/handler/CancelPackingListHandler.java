@@ -271,6 +271,7 @@ public class CancelPackingListHandler implements CancelPackingListService {
             sqlBuilder.append(" and data.idcategoryproduct in ("+param.getListIdCategoryProduct()+") ");
         }
 //        sqlBuilder.append(" and data.qty > 0 ");
+        sqlBuilder.append(" GROUP BY cpl.idpackinglist , data.idproduct, data.idcategoryproduct, cpl.keterangan,cpl.nodocument, cpl.datecancel,cus.nama, cus.alias ");
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCancelPackingListReportKartuStock(), queryParameters);
     }

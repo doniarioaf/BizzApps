@@ -13,7 +13,7 @@ public class QueryDPRReportKartuStock implements RowMapper<ReportKartuStock> {
     public QueryDPRReportKartuStock() {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
-        sqlBuilder.append("data.idcategoryproduct as idcategoryproduct, data.idproduct as idproduct, data.ekor as qty, ");
+        sqlBuilder.append("data.idcategoryproduct as idcategoryproduct, data.idproduct as idproduct, sum(data.ekor) as qty, ");
         sqlBuilder.append("pr.nodocument as nodocument, pr.date as date, pr.notes1 as notes1, ");
         sqlBuilder.append("ven.nama as vennama, ven.alias as venalias  ");
         sqlBuilder.append("from draft_purchasereceive_items as data ");

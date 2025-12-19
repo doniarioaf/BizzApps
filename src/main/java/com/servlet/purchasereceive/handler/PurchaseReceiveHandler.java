@@ -591,11 +591,14 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         ParamCalculateDeposit paramCalcDeposit = new ParamCalculateDeposit();
         paramCalcDeposit.setDate(print.getTransactiondate().getTime());
         paramCalcDeposit.setIdvendor(print.getIdvendor());
-        paramCalcDeposit.setListNotSUMIdDeposit(iddeposits);
-
-        print.setSaldoDepositBeforeNotaSubmit(depositService.calculateSaldoDepositForPrinted(idcompany,idbranch, paramCalcDeposit));
+//        paramCalcDeposit.setListNotSUMIdDeposit(iddeposits); // ini di remark dulu, hehe. karena bikin bingung, kenapa ada beberapa iddeposit yang tidak boleh kena hitung
+        Double sd = depositService.calculateSaldoDepositForPrinted(idcompany,idbranch, paramCalcDeposit);
+        print.setSaldoDepositBeforeNotaSubmit(sd);
         print.setSaldoPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch,print.getIdvendor(),null));
-        print.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADNOTA",namaMenu));
+
+        HashMap mapParamPrint = new HashMap();
+        mapParamPrint.put("nodocument",value.getNodocument());
+        print.setCountPrint(historyAppsService.countByActionAndMenuParam(idcompany,idbranch,"DOWNLOADNOTA",namaMenu,mapParamPrint));
         print.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
         UserListData user = userAppsService.getUserByID(iduser);
         String namaUser  = "";
@@ -603,7 +606,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             namaUser = user.getNama();
         }
         print.setNamaUser(namaUser);
-        catatDownload(id,idcompany,idbranch,iduser);
+//        catatDownload(id,idcompany,idbranch,iduser);
         return print;
     }
 
