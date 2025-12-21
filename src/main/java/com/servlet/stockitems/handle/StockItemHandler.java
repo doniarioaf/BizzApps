@@ -116,15 +116,25 @@ public class StockItemHandler implements StockItemService {
 //        System.out.println("qtyMasuk1 "+qtyMasuk1);
         //Type udah hidup
         Long qtyMasuk2 = stockAdjusmentService.calculateQtySA(idcompany,idbranch,"H", param.getParamCalculateQtySA());
+
+        Long qtyMasuk3 = cancelPackingListService.calculateQtyCPL(idcompany,idbranch, param.getParamCalculateQtyCPL());
 //        System.out.println("qtyMasuk2 "+qtyMasuk2);
         Long qtyKeluar1 = packingListService.calculateQtyPL(idcompany,idbranch, param.getParamCalculateQtyPL());
 //        System.out.println("qtyKeluar1 "+qtyKeluar1);
         //Type udah hidup
         Long qtyKeluar2 = stockAdjusmentService.calculateQtySA(idcompany,idbranch,"M", param.getParamCalculateQtySA());
 //        System.out.println("qtyKeluar2 "+qtyKeluar2);
-        Long qtyKeluar3 = cancelPackingListService.calculateQtyCPL(idcompany,idbranch, param.getParamCalculateQtyCPL());
-
-        Long hasil = (qtyMasuk1.longValue() + qtyMasuk2.longValue()) - (qtyKeluar1.longValue() + qtyKeluar2.longValue() + qtyKeluar3.longValue());
+//        Long qtyKeluar3 = cancelPackingListService.calculateQtyCPL(idcompany,idbranch, param.getParamCalculateQtyCPL());
+//        if(param.getParamCalculateQtyCPL().getIdcategoryproduct() == 24 || param.getParamCalculateQtyCPL().getIdcategoryproduct() == 22){
+//            System.out.println("param.getParamCalculateQtyCPL() "+param.getParamCalculateQtyCPL());
+//            System.out.println("qtyMasuk1 "+qtyMasuk1);
+//            System.out.println("qtyMasuk2 "+qtyMasuk2);
+//            System.out.println("qtyMasuk3 "+qtyMasuk3);
+//            System.out.println("qtyKeluar1 "+qtyKeluar1);
+//            System.out.println("qtyKeluar2 "+qtyKeluar2);
+//
+//        }
+        Long hasil = (qtyMasuk1.longValue() + qtyMasuk2.longValue() + qtyMasuk3.longValue()) - (qtyKeluar1.longValue() + qtyKeluar2.longValue());
         return hasil;
     }
 }

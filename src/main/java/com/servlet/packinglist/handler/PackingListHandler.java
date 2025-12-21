@@ -363,7 +363,11 @@ public class PackingListHandler implements PackingListService {
             data.setAddress1(paramAddress1.getStrValue());
             data.setAddress2(paramAddress2.getStrValue());
             data.setAddress3(paramAddress3.getStrValue());
-            data.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADPDF",namaMenu));
+
+            HashMap mapParamPrint = new HashMap();
+            mapParamPrint.put("data-id",data.getId());
+            data.setCountPrint(historyAppsService.countByActionAndMenuParam(idcompany,idbranch,"DOWNLOADPDF",namaMenu,mapParamPrint));
+//            data.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADPDF",namaMenu));
             data.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
             if(iduser != null) {
                 UserListData user = userAppsService.getUserByID(iduser);
@@ -373,13 +377,13 @@ public class PackingListHandler implements PackingListService {
                 }
                 data.setNamaUser(namaUser);
             }
-            if(paramPrint != null){
-                if(paramPrint.getNamaMenu() != null){
-                    if(paramPrint.getNamaMenu().equals("PRINT")){
-                        catatDownload(id,idcompany,idbranch,iduser);
-                    }
-                }
-            }
+//            if(paramPrint != null){
+//                if(paramPrint.getNamaMenu() != null){
+//                    if(paramPrint.getNamaMenu().equals("PRINT")){
+//                        catatDownload(id,idcompany,idbranch,iduser);
+//                    }
+//                }
+//            }
             return data;
         }
         return null;

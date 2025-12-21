@@ -319,7 +319,10 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
             PrintDataStockUdangMati print = list.get(0);
             print.setItems(getItems(id));
             if(typefile.equals("PDF")) {
-                print.setCountPrint(historyAppsService.countByActionAndMenu(idcompany, idbranch, "DOWNLOADPDF", namaMenu));
+//                print.setCountPrint(historyAppsService.countByActionAndMenu(idcompany, idbranch, "DOWNLOADPDF", namaMenu));
+                HashMap mapParamPrint = new HashMap();
+                mapParamPrint.put("data-id",id);
+                print.setCountPrint(historyAppsService.countByActionAndMenuParam(idcompany,idbranch,"DOWNLOADPDF",namaMenu,mapParamPrint));
                 print.setCountEdit(historyAppsService.countByActionAndMenu(idcompany, idbranch, "EDIT", namaMenu));
             }
             if(iduser != null) {
@@ -336,7 +339,7 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
             print.setListcp(categoryProductService.getDataForTemplate(idcompany,idbranch,paramcp));
             print.setMappingstock(mappingStockService.getListAll(idcompany,idbranch));
             if(typefile.equals("PDF")){
-                catatDownload(id,idcompany,idbranch,iduser);
+//                catatDownload(id,idcompany,idbranch,iduser);
             }
 
             return print;
@@ -578,8 +581,8 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
         final Object[] queryParameters = new Object[] {idcompany,idbranch,idcategoryProduct};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCheckIdCategoryProduct(), queryParameters);
     }
-
-    private ReturnData catatDownload(Long id, Long idcompany, Long idbranch, Long iduser) {
+    @Override
+    public ReturnData catatDownload(Long id, Long idcompany, Long idbranch, Long iduser) {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
         Timestamp ts = new Timestamp(new java.util.Date().getTime());

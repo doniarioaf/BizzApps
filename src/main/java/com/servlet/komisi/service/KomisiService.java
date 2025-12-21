@@ -25,4 +25,5 @@ public interface KomisiService {
     KomisiItemJoinHeader getDetailItemByIdPR(Long idcompany, Long idbranch, Long idpr);
 
     List<KomisiDataReportKomisi> getListReportKomisi(Long idcompany, Long idbranch, ParamKomisiReportKomisi param);
+    ReturnData catatDownload(Long id,Long idcompany, Long idbranch, Long iduser);
 }

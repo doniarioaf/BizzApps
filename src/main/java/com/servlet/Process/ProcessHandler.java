@@ -1487,6 +1487,9 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("PRINT")) {
 					long id = (long) param.get("id");
 					val.setData(draftPurchaseReceiveService.printDataDraftPR(auth.getIdcompany(), auth.getIdbranch(), auth.getId(), id));
+				}else if(type.equals("DOWNLOAD_PRINTPDF")) {
+					long id = (long) param.get("id");
+					val.setData(draftPurchaseReceiveService.catatDownload(id,auth.getIdcompany(), auth.getIdbranch(),auth.getId()));
 				}
 			}
 			else if(codepermission.equals(ConstansPermission.READ_REPORT_PURCHASERECEIVE)) {
@@ -1532,6 +1535,9 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("REPORT_STOCK")) {
 					long id = (long) param.get("id");
 					val.setData(reportService.reportUdangMati(auth.getIdcompany(), auth.getIdbranch(), id).getWorkbook());
+				}else if(type.equals("DOWNLOAD_PRINTPDF")) {
+					long id = (long) param.get("id");
+					val.setData(stockAdjusmentService.catatDownload(id,auth.getIdcompany(), auth.getIdbranch(),auth.getId()));
 				}
 			}
 
@@ -1778,6 +1784,9 @@ public class ProcessHandler implements ProcessService{
 					ParamPrintKomisi paramkomisi = new ParamPrintKomisi();
 					paramkomisi.setMenu("PRINT");
 					val.setData(komisiService.getPrint(id,auth.getIdcompany(), auth.getIdbranch(), auth.getId(), paramkomisi));
+				}else if(type.equals("DOWNLOAD_PRINTPDF")) {
+					long id = (long) param.get("id");
+					val.setData(komisiService.catatDownload(id,auth.getIdcompany(), auth.getIdbranch(),auth.getId()));
 				}
 			}
 

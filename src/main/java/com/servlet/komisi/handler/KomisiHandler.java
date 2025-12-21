@@ -281,7 +281,10 @@ public class KomisiHandler implements KomisiService {
             print.setDate(komisi.getDate());
             print.setNote(komisi.getNote());
             print.setItems(purchaseReceiveService.getListKomisi(idcompany,idbranch,pk));
-            print.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADPDF",namaMenu));
+            HashMap mapParamPrint = new HashMap();
+            mapParamPrint.put("data-id",id);
+            print.setCountPrint(historyAppsService.countByActionAndMenuParam(idcompany,idbranch,"DOWNLOADPDF",namaMenu,mapParamPrint));
+//            print.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADPDF",namaMenu));
             print.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
             if(iduser != null) {
                 UserListData user = userAppsService.getUserByID(iduser);
@@ -294,7 +297,7 @@ public class KomisiHandler implements KomisiService {
             if(param != null){
                 if(param.getMenu() != null){
                     if(param.getMenu().equals("PRINT")){
-                        catatDownload(id,idcompany,idbranch,iduser);
+//                        catatDownload(id,idcompany,idbranch,iduser);
                     }
                 }
             }
@@ -340,8 +343,8 @@ public class KomisiHandler implements KomisiService {
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryKomisiReportKomisi(), queryParameters);
     }
-
-    private ReturnData catatDownload(Long id, Long idcompany, Long idbranch, Long iduser) {
+    @Override
+    public ReturnData catatDownload(Long id, Long idcompany, Long idbranch, Long iduser) {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
         Timestamp ts = new Timestamp(new java.util.Date().getTime());

@@ -388,7 +388,10 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
             PrintDataDraftPR print = list.get(0);
 
             print.setItems(getListItems(id,idcompany,idbranch));
-            print.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADPDF",namaMenu));
+            HashMap mapParamPrint = new HashMap();
+            mapParamPrint.put("data-id",id);
+            print.setCountPrint(historyAppsService.countByActionAndMenuParam(idcompany,idbranch,"DOWNLOADPDF",namaMenu,mapParamPrint));
+//            print.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADPDF",namaMenu));
             print.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
             if(iduser != null) {
                 UserListData user = userAppsService.getUserByID(iduser);
@@ -398,7 +401,7 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
                 }
                 print.setNamaUser(namaUser);
             }
-            catatDownload(id,idcompany,idbranch,iduser);
+//            catatDownload(id,idcompany,idbranch,iduser);
             return print;
         }
         return null;
@@ -480,8 +483,8 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
         final Object[] queryParameters = new Object[] {idcompany,idbranch,idcategoryProduct};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCheckIdCategoryProduct(), queryParameters);
     }
-
-    private ReturnData catatDownload(Long id, Long idcompany, Long idbranch, Long iduser) {
+    @Override
+    public ReturnData catatDownload(Long id, Long idcompany, Long idbranch, Long iduser) {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
         Timestamp ts = new Timestamp(new java.util.Date().getTime());

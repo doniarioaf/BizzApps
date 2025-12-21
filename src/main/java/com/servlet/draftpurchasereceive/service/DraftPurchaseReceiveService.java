@@ -23,4 +23,5 @@ public interface DraftPurchaseReceiveService {
     Long calculateQtyDpr(Long idcompany, Long idbranch,ParamCalculateQtyDPR param);
     List<ReportKartuStock> getListDprReportKartuStock(Long idcompany, Long idbranch,ParamSearchDraftPurchaseReceive param);
     List<Long> checkIdCP(Long idcompany, Long idbranch, Long idcategoryProduct);
+    ReturnData catatDownload(Long id,Long idcompany, Long idbranch, Long iduser);
 }

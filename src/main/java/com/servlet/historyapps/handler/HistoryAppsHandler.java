@@ -63,6 +63,8 @@ public class HistoryAppsHandler implements HistoryAppsService {
         if(param != null){
             if(param.get("nodocument") != null){
                 sqlBuilder.append(" and data.data like '%nodocument=''"+param.get("nodocument")+"''%' ");
+            }else if(param.get("data-id") != null){
+                sqlBuilder.append(" and data.data = '"+param.get("data-id")+"' ");
             }
         }
         final Object[] queryParameters = new Object[] {idcompany,idbranch,action, menu};

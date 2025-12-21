@@ -312,7 +312,10 @@ public class InvoiceHandler implements InvoiceService {
             det.setBankCompany(parambankComp.getStrValue());
             det.setBankAccNoCompany(parambankAccnoComp.getStrValue());
             det.setBankAccNameCompany(parambankAccnameComp.getStrValue());
-            det.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADPDF",namaMenu));
+            HashMap mapParamPrint = new HashMap();
+            mapParamPrint.put("data-id",id);
+            det.setCountPrint(historyAppsService.countByActionAndMenuParam(idcompany,idbranch,"DOWNLOADPDF",namaMenu,mapParamPrint));
+//            det.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADPDF",namaMenu));
             det.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
             if(iduser != null) {
                 UserListData user = userAppsService.getUserByID(iduser);

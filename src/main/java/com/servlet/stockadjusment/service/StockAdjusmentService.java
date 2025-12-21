@@ -19,4 +19,5 @@ public interface StockAdjusmentService {
     PrintDataStockUdangMati getPrintData(Long idcompany, Long idbranch,Long iduser,Long id,String typefile);
     List<PrintDataStockAdjusmentHidupDanMati> printStockUdangHidupMati(Long idcompany, Long idbranch, ParamReportStockUdangHidupMati param);
     List<Long> checkIdCP(Long idcompany, Long idbranch, Long idcategoryProduct);
+    ReturnData catatDownload(Long id,Long idcompany, Long idbranch, Long iduser);
 }

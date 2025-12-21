@@ -1998,7 +1998,12 @@ public class ReportHandler implements ReportService {
                     stockKolamTerakhir2 = 0L;
                 }
                 Long stockKolamTerakhir = stockKolamTerakhir1.longValue() +  stockKolamTerakhir2.longValue();
-
+//                if(mapp.getCategoryproductidmapping() == 24){
+//                    System.out.println("mapp.getCategoryproductid() "+mapp.getCategoryproductid());
+//                    System.out.println("mapp.getCategoryproductidmapping() "+mapp.getCategoryproductidmapping());
+//                    System.out.println("stockKolamTerakhir1 "+stockKolamTerakhir1);
+//                    System.out.println("stockKolamTerakhir2 "+stockKolamTerakhir2);
+//                }
                 Long stockUdangMati1 = stockUdangMatiByIDcategory.get(mapp.getCategoryproductid());
                 if(stockUdangMati1 == null){
                     stockUdangMati1 = 0L;
@@ -2034,6 +2039,10 @@ public class ReportHandler implements ReportService {
                     calculateStockByIdCPMappingStockUdangMati.put(mapp.getCategoryproductidmapping(),stockUdangMati);
                     calculateStockByIdCPMappingStockUdangMasuk.put(mapp.getCategoryproductidmapping(),stockUdangMasuk);
                 }
+//                if(mapp.getCategoryproductidmapping() == 24){
+//                    System.out.println("stockKolamTerakhir "+stockKolamTerakhir);
+//                    System.out.println("calculateStockByIdCPMappingStockKolamTerakhir "+calculateStockByIdCPMappingStockKolamTerakhir.get(mapp.getCategoryproductidmapping()));
+//                }
             }
         }
         HashMap<Long,Long> done = new HashMap<>();
