@@ -13,12 +13,20 @@ public class QueryDPRReportKartuStock implements RowMapper<ReportKartuStock> {
     public QueryDPRReportKartuStock() {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
-        sqlBuilder.append("data.idcategoryproduct as idcategoryproduct, data.idproduct as idproduct, sum(data.ekor) as qty, ");
+        sqlBuilder.append("mp.categoryproductidmapping as idcategoryproduct, data.idproduct as idproduct, sum(data.ekor) as qty, ");
         sqlBuilder.append("pr.nodocument as nodocument, pr.date as date, pr.notes1 as notes1, ");
         sqlBuilder.append("ven.nama as vennama, ven.alias as venalias  ");
         sqlBuilder.append("from draft_purchasereceive_items as data ");
         sqlBuilder.append("left join draft_purchasereceive as pr on pr.id = data.iddraftpurchasereceive ");
         sqlBuilder.append("left join m_vendor as ven on ven.id = pr.idvendor ");
+
+        //draft_purchasereceive_items ini Category Product ambil type Vendor
+        //kenapa di join ke mapping_stock, itu karena untuk mengambil mp.categoryproductidmapping(Customer) untuk di grup dan di qty nya di sum
+        //konsep nya sama kaya mapping, tapi ini di query
+        //misal, di document DraftPR ini ada doc DPR01, ada CP A,B,C di mapping Stock, A,B,C > D (Customer)
+        //maka si CP D ini nantinya ada 3 row, di grup lah yg menjadi akhirnya 1 row (Seperti Distinct) ,
+        // untuk Qty nya di SUM, jadi walaupung jadi 1 row, qty nya tetap hitung dari ke 3 Row itu (A,B,C)
+        sqlBuilder.append("left join mapping_stock as mp on mp.categoryproductid = data.idcategoryproduct ");
 
         this.schemaSql = sqlBuilder.toString();
     }

@@ -5153,6 +5153,8 @@ public class ReportHandler implements ReportService {
         List<MappingStockList> listMapping = mappingStockService.getListAll(idcompany,idbranch);
         HashMap<Long, Long> mapMapStock = new HashMap<>();
         HashMap<Long, List<String>> mapMapStockByIDMapping = new HashMap<>();
+        //getCategoryproductid = Vendor
+        //getCategoryproductidmapping = Customer
         for(MappingStockList val : listMapping){
             mapMapStock.put(val.getCategoryproductid(), val.getCategoryproductidmapping());
             List<String> tempList = new ArrayList<>();

@@ -588,12 +588,23 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         print.setCharges(getPrintDataCharge(id));
         print.setCompanyName(param.getStrValue());
         print.setInventori(getPrintDataItemsInventori(id));
+
+        /*
+            kenapa saldo dp minus, itu karena Summary(Deposit)  - Summary(Deposit yang terpakai di PRC),
+            yang hitung Summary(Deposit). untuk Tambah DP itu dikecualikan atau tidak terhitung,
+            makanya jadi minus tuh si Saldo DP. karena si tambahDP itu, hitungnya di depan,
+         */
         ParamCalculateDeposit paramCalcDeposit = new ParamCalculateDeposit();
         paramCalcDeposit.setDate(print.getTransactiondate().getTime());
         paramCalcDeposit.setIdvendor(print.getIdvendor());
-//        paramCalcDeposit.setListNotSUMIdDeposit(iddeposits); // ini di remark dulu, hehe. karena bikin bingung, kenapa ada beberapa iddeposit yang tidak boleh kena hitung
+        paramCalcDeposit.setListNotSUMIdDeposit(iddeposits);
         Double sd = depositService.calculateSaldoDepositForPrinted(idcompany,idbranch, paramCalcDeposit);
         print.setSaldoDepositBeforeNotaSubmit(sd);
+        /*
+        ========================
+         */
+
+
         print.setSaldoPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch,print.getIdvendor(),null));
 
         HashMap mapParamPrint = new HashMap();
