@@ -74,5 +74,6 @@ public class ConstansCodeMessage {
 	public static final String THIS_ID_ALREADY_UPDATE_PRICE = "this.id.already.update.price";
 	public static final String THIS_ID_ALREADY_CANCEL = "this.id.already.cancel";
 	public static final String CAN_NOT_EDIT_DELETE_CATEGORYPRODUCT_EXIST_IN_TRANSACTION = "can.not.edit.delete.categoryproduct.exist.in.transaction";
+	public static final String VENDOR_NOT_DO_TRANS_IN_THE_SAME_TIME_ONLY_ONE_TRANS = "vendor.not.do.transaction.in.the.same.time.only.one.transaction";
 
 }
