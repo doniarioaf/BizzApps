@@ -17,4 +17,6 @@ public interface CancelPackingListService {
     List<ReportKartuStock> getListReportKartuStock(Long idcompany, Long idbranch, ParamSearchCancelPackingList param);
     List<ReportCancelPackingList> getReportCancelPackingList(Long idcompany, Long idbranch, ParamReportCancelPackingList param);
     List<Long> checkIdCP(Long idcompany, Long idbranch, Long idcategoryProduct);
+    ReturnData catatDownload(Long id,Long idcompany, Long idbranch, Long iduser);
+    PrintCancelPackingList getPrintData(Long id,Long idcompany, Long idbranch,Long iduser);
 }

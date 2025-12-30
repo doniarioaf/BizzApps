@@ -9,6 +9,8 @@ import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.invoice.entity.InvoiceDataList;
 import com.servlet.invoice.service.InvoiceService;
 
+import com.servlet.packinglist.entity.PackingList;
+import com.servlet.packinglist.entity.PrintPackingList;
 import com.servlet.packinglist.service.PackingListService;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
@@ -16,6 +18,8 @@ import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 import com.servlet.stockitems.entity.ReportKartuStock;
+import com.servlet.user.entity.UserListData;
+import com.servlet.user.service.UserAppsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -47,6 +51,8 @@ public class CancelPackingListHandler implements CancelPackingListService {
     private PackingListService packingListService;
     @Autowired
     private RunningNumberService runningNumberService;
+    @Autowired
+    private UserAppsService userAppsService;
 
     protected final String namaMenu = "CancelPackingList";
 
@@ -299,6 +305,56 @@ public class CancelPackingListHandler implements CancelPackingListService {
         sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and items.idcategoryproduct = ? and data.isdelete = false  ");
         final Object[] queryParameters = new Object[] {idcompany,idbranch,idcategoryProduct};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCheckIdCategoryProduct(), queryParameters);
+    }
+
+    @Override
+    public ReturnData catatDownload(Long id, Long idcompany, Long idbranch, Long iduser) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        try {
+            historyAppsService.saveHistory(idcompany,idbranch,iduser,"DOWNLOADPDF",namaMenu,id.toString(),"","",ts);
+        }catch (Exception e) {
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+            validations.add(msg);
+        }
+
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public PrintCancelPackingList getPrintData(Long id, Long idcompany, Long idbranch, Long iduser) {
+        PrintCancelPackingList data = new PrintCancelPackingList();
+
+        CancelPackingList table = repo.getById(id);
+        data.setIdCPL(id);
+        data.setKeteranganCPL(table.getKeterangan());
+        data.setNodocumentCPL(table.getNodocument());
+
+        PrintPackingList dataPL = packingListService.printPLData(table.getIdpackinglist(), idcompany,idbranch);
+        if(dataPL != null){
+            HashMap mapParamPrint = new HashMap();
+            mapParamPrint.put("data-id",id);
+            dataPL.setCountPrint(historyAppsService.countByActionAndMenuParam(idcompany,idbranch,"DOWNLOADPDF",namaMenu,mapParamPrint));
+//            data.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADPDF",namaMenu));
+            dataPL.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
+            if(iduser != null) {
+                UserListData user = userAppsService.getUserByID(iduser);
+                String namaUser = "";
+                if (user != null) {
+                    namaUser = user.getNama();
+                }
+                dataPL.setNamaUser(namaUser);
+            }
+
+            data.setPackingList(dataPL);
+        }
+
+        return data;
     }
 
     private HashMap<Object,Object> setItems(Long idcompany, Long idbranch, Long idcancelpackinglist, BodyCancelPackingListItem[] items){

@@ -342,27 +342,28 @@ public class PackingListHandler implements PackingListService {
 
     @Override
     public PrintPackingList getPrintData(Long id, Long idcompany, Long idbranch,Long iduser,ParamPrint paramPrint) {
-        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataPrint().schema());
-        sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
-        final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+//        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataPrint().schema());
+//        sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+//        final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
         List<QueryNotJoinCancelPackingListData> cancelData = cancelPackingListService.getDataByIdPackingList(idcompany,idbranch,id);
 
         if(cancelData != null && cancelData.size() > 0){
             return null;
         }
-        List<PrintPackingList> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataPrint(), queryParameters);
-        if(list != null && list.size() > 0){
-            ValueParameter param = parameterClientService.getValueByParamName(idcompany,idbranch,"COMPANYNAME","TEXT");
-            ValueParameter paramAddress1 = parameterClientService.getValueByParamName(idcompany,idbranch,"ADDRESS1","TEXT");
-            ValueParameter paramAddress2 = parameterClientService.getValueByParamName(idcompany,idbranch,"ADDRESS2","TEXT");
-            ValueParameter paramAddress3 = parameterClientService.getValueByParamName(idcompany,idbranch,"ADDRESS3","TEXT");
+//        List<PrintPackingList> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataPrint(), queryParameters);
+        PrintPackingList data = printPLData(id,idcompany,idbranch);
+        if(data != null){
+//            ValueParameter param = parameterClientService.getValueByParamName(idcompany,idbranch,"COMPANYNAME","TEXT");
+//            ValueParameter paramAddress1 = parameterClientService.getValueByParamName(idcompany,idbranch,"ADDRESS1","TEXT");
+//            ValueParameter paramAddress2 = parameterClientService.getValueByParamName(idcompany,idbranch,"ADDRESS2","TEXT");
+//            ValueParameter paramAddress3 = parameterClientService.getValueByParamName(idcompany,idbranch,"ADDRESS3","TEXT");
 
-            PrintPackingList data = list.get(0);
-            data.setItems(getListItems(data.getId()));
-            data.setCompanyName(param.getStrValue());
-            data.setAddress1(paramAddress1.getStrValue());
-            data.setAddress2(paramAddress2.getStrValue());
-            data.setAddress3(paramAddress3.getStrValue());
+//            PrintPackingList data = list.get(0);
+//            data.setItems(getListItems(data.getId()));
+//            data.setCompanyName(param.getStrValue());
+//            data.setAddress1(paramAddress1.getStrValue());
+//            data.setAddress2(paramAddress2.getStrValue());
+//            data.setAddress3(paramAddress3.getStrValue());
 
             HashMap mapParamPrint = new HashMap();
             mapParamPrint.put("data-id",data.getId());
@@ -384,6 +385,30 @@ public class PackingListHandler implements PackingListService {
 //                    }
 //                }
 //            }
+            return data;
+        }
+        return null;
+    }
+
+    @Override
+    public PrintPackingList printPLData(Long id, Long idcompany, Long idbranch) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataPrint().schema());
+        sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+        List<PrintPackingList> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataPrint(), queryParameters);
+
+        if(list != null && list.size() > 0){
+            ValueParameter param = parameterClientService.getValueByParamName(idcompany,idbranch,"COMPANYNAME","TEXT");
+            ValueParameter paramAddress1 = parameterClientService.getValueByParamName(idcompany,idbranch,"ADDRESS1","TEXT");
+            ValueParameter paramAddress2 = parameterClientService.getValueByParamName(idcompany,idbranch,"ADDRESS2","TEXT");
+            ValueParameter paramAddress3 = parameterClientService.getValueByParamName(idcompany,idbranch,"ADDRESS3","TEXT");
+
+            PrintPackingList data = list.get(0);
+            data.setItems(getListItems(data.getId()));
+            data.setCompanyName(param.getStrValue());
+            data.setAddress1(paramAddress1.getStrValue());
+            data.setAddress2(paramAddress2.getStrValue());
+            data.setAddress3(paramAddress3.getStrValue());
             return data;
         }
         return null;

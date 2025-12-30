@@ -1866,6 +1866,12 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
 					val.setData(cancelPackingListService.getDetail(auth.getIdcompany(), auth.getIdbranch(),id));
+				}else if(type.equals("PRINT")) {
+					long id = (long) param.get("id");
+					val.setData(cancelPackingListService.getPrintData(id,auth.getIdcompany(), auth.getIdbranch(), auth.getId()));
+				}else if(type.equals("DOWNLOAD_PRINTPDF")) {
+					long id = (long) param.get("id");
+					val.setData(cancelPackingListService.catatDownload(id,auth.getIdcompany(), auth.getIdbranch(), auth.getId()));
 				}
 			}
 
