@@ -11,7 +11,25 @@ public class PrintCancelPackingList {
     private Long idCPL;
     private String nodocumentCPL;
     private String keteranganCPL;
+    private Date datecancel;
     private PrintPackingList packingList;
+    private List<CancelPackingListItemData> listcancelitem;
+
+    public Date getDatecancel() {
+        return datecancel;
+    }
+
+    public void setDatecancel(Date datecancel) {
+        this.datecancel = datecancel;
+    }
+
+    public List<CancelPackingListItemData> getListcancelitem() {
+        return listcancelitem;
+    }
+
+    public void setListcancelitem(List<CancelPackingListItemData> listcancelitem) {
+        this.listcancelitem = listcancelitem;
+    }
 
     public Long getIdCPL() {
         return idCPL;

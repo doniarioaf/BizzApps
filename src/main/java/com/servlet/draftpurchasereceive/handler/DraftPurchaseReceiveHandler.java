@@ -220,7 +220,7 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
             try {
                 String docDateDB = GlobalFunc.getDateLongToString(table.getDate().getTime(), "yyyy-MM-dd");
                 String docDateBody = GlobalFunc.getDateLongToString(body.getDate(), "yyyy-MM-dd");
-                if (!docDateDB.equals(docDateBody)) {
+                if (!docDateDB.equals(docDateBody) || table.getIdvendor().longValue() != body.getIdvendor().longValue()) {
                     List<DraftPurchaseReceiveDropDownList> listcheck = checkIdVendorAndDate(idcompany, idbranch, body);
                     if (listcheck != null && listcheck.size() > 0) {
                         ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_DO_TRANS_IN_THE_SAME_TIME_ONLY_ONE_TRANS, "Vendor Sudah melakukan transaksi pada tanggal tersebut");

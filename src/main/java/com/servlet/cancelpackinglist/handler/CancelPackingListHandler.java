@@ -332,9 +332,10 @@ public class CancelPackingListHandler implements CancelPackingListService {
 
         CancelPackingList table = repo.getById(id);
         data.setIdCPL(id);
+        data.setDatecancel(table.getDatecancel());
         data.setKeteranganCPL(table.getKeterangan());
         data.setNodocumentCPL(table.getNodocument());
-
+        data.setListcancelitem(getListItemByIDCancel(id));
         PrintPackingList dataPL = packingListService.printPLData(table.getIdpackinglist(), idcompany,idbranch);
         if(dataPL != null){
             HashMap mapParamPrint = new HashMap();
