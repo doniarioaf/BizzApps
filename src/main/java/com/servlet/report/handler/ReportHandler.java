@@ -2,10 +2,7 @@ package com.servlet.report.handler;
 
 import com.servlet.admin.branch.entity.Branch;
 import com.servlet.admin.branch.service.BranchService;
-import com.servlet.cancelpackinglist.entity.ParamCalculateQtyCPL;
-import com.servlet.cancelpackinglist.entity.ParamReportCancelPackingList;
-import com.servlet.cancelpackinglist.entity.ParamSearchCancelPackingList;
-import com.servlet.cancelpackinglist.entity.ReportCancelPackingList;
+import com.servlet.cancelpackinglist.entity.*;
 import com.servlet.cancelpackinglist.service.CancelPackingListService;
 import com.servlet.cargo.entity.CargoDataReportStatusTagihanCargo;
 import com.servlet.cargo.entity.ParamCargoSearch;
@@ -363,6 +360,257 @@ public class ReportHandler implements ReportService {
 
                 colomcount++;
                 createCell(row, colomcount, item.getQty(), style, sheet,columns);
+
+                colomcount++;
+//                createCell(row, colomcount, convertkg(item.getNettoweight()), style, sheet,columns);
+                createCell(row, colomcount, item.getNettoweight(), style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, item.getPrice(), style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, item.getTotalprice(), style, sheet,columns);
+            }
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            colomcount = 0;
+            colomcount++;
+            colomcount++;
+            colomcount++;
+            createCell(row, colomcount, totalqty, style, sheet,columns);
+
+            colomcount++;
+//            createCell(row, colomcount, totalweight, style, sheet,columns);
+            createCell(row, colomcount, totalNettoHeader, style, sheet,columns);
+
+
+            colomcount++;
+            colomcount++;
+            createCell(row, colomcount, totalprice, style, sheet,columns);
+
+        }
+        data.setWorkbook(workbook);
+        return data;
+    }
+
+    @Override
+    public ReportWorkBookExcel getExcelCancelPackingListByID(long id, long idcompany, long idbranch,long iduser) {
+        ReportWorkBookExcel data = new ReportWorkBookExcel();
+        XSSFWorkbook workbook = new XSSFWorkbook();
+
+        XSSFDataFormat format = workbook.createDataFormat();
+
+        XSSFSheet sheet = workbook.createSheet("Cancel Packing List");
+        sheet.setDefaultColumnWidth(1000);
+        List<Integer> columns = new ArrayList<>();
+        columns.add(5000); //0
+        columns.add(5000); //1
+        columns.add(5000); //2
+        columns.add(5000); //3
+        columns.add(5000); //4
+        columns.add(5000); //5
+        columns.add(5000); //6
+
+        PrintCancelPackingList printCPL = cancelPackingListService.getPrintData(id,idcompany,idbranch,null);
+        if(printCPL != null) {
+            PrintPackingList print = printCPL.getPackingList();
+            int fontHeight = 12;
+            CellStyle style = workbook.createCellStyle();
+            CellStyle styleBold = workbook.createCellStyle();
+            CellStyle styleAmount = workbook.createCellStyle();
+            XSSFFont font = workbook.createFont();
+            font.setBold(false);
+            font.setFontHeight(fontHeight);
+            style.setFont(font);
+            styleAmount.setFont(font);
+
+            XSSFFont fontBold = workbook.createFont();
+            fontBold.setBold(true);
+            fontBold.setFontHeight(fontHeight);
+            styleBold.setFont(fontBold);
+
+            int rowcount = 0;
+            Row row = sheet.createRow(rowcount);
+
+            Long countEdit = historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT","CancelPackingList");
+            UserListData user = userAppsService.getUserByID(iduser);
+            String namaUser = "";
+            if (user != null) {
+                namaUser = user.getNama();
+            }
+
+            String transDate = "";
+            try {
+                transDate = GlobalFunc.getDateLongToString(new Date().getTime(), "dd MMMM yyyy HH:mm:ss");
+            } catch (ParseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            createCell(row, 6, "Edit : "+countEdit+", Dicetak Oleh : "+namaUser+", "+transDate, style, sheet,columns);
+
+            rowcount = 2;
+            row = sheet.createRow(rowcount);
+
+            CellRangeAddress companyNameCellRangeAddress = new CellRangeAddress(2, 2, 0, 5);
+            sheet.addMergedRegion(companyNameCellRangeAddress);
+            Cell compnayname = createCell(row, 0, print.getCompanyName(), styleBold, sheet,columns);
+            CellUtil.setVerticalAlignment(compnayname, VerticalAlignment.CENTER);
+            CellUtil.setAlignment(compnayname, HorizontalAlignment.CENTER);
+            RegionUtil.setBorderRight(BorderStyle.THIN, companyNameCellRangeAddress, sheet);
+            RegionUtil.setRightBorderColor(IndexedColors.WHITE.getIndex(), companyNameCellRangeAddress, sheet);
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            CellRangeAddress address1CellRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 5);
+            sheet.addMergedRegion(address1CellRangeAddress);
+            Cell addrees1 = createCell(row, 0, print.getAddress1(), style, sheet,columns);
+            CellUtil.setVerticalAlignment(addrees1, VerticalAlignment.CENTER);
+            CellUtil.setAlignment(addrees1, HorizontalAlignment.CENTER);
+            RegionUtil.setBorderRight(BorderStyle.THIN, address1CellRangeAddress, sheet);
+            RegionUtil.setRightBorderColor(IndexedColors.WHITE.getIndex(), address1CellRangeAddress, sheet);
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            CellRangeAddress address2CellRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 5);
+            sheet.addMergedRegion(address2CellRangeAddress);
+            Cell addrees2 = createCell(row, 0, print.getAddress2(), style, sheet,columns);
+            CellUtil.setVerticalAlignment(addrees2, VerticalAlignment.CENTER);
+            CellUtil.setAlignment(addrees2, HorizontalAlignment.CENTER);
+            RegionUtil.setBorderRight(BorderStyle.THIN, address2CellRangeAddress, sheet);
+            RegionUtil.setRightBorderColor(IndexedColors.WHITE.getIndex(), address2CellRangeAddress, sheet);
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            CellRangeAddress address3CellRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 5);
+            sheet.addMergedRegion(address3CellRangeAddress);
+            Cell addrees3 = createCell(row, 0, print.getAddress3(), style, sheet,columns);
+            CellUtil.setVerticalAlignment(addrees3, VerticalAlignment.CENTER);
+            CellUtil.setAlignment(addrees3, HorizontalAlignment.CENTER);
+            RegionUtil.setBorderRight(BorderStyle.THIN, address3CellRangeAddress, sheet);
+            RegionUtil.setRightBorderColor(IndexedColors.WHITE.getIndex(), address3CellRangeAddress, sheet);
+
+            rowcount++;
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            createCell(row, 0, "PL No / CPL No", style, sheet,columns);
+            createCell(row, 1, print.getNodocument()+" / "+printCPL.getNodocumentCPL(), style, sheet,columns);
+
+            createCell(row, 5, "Fligh No", style, sheet,columns);
+            createCell(row, 6, print.getFlightnumber(), style, sheet,columns);
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            createCell(row, 0, "To", style, sheet,columns);
+            createCell(row, 1, print.getCustomerName(), style, sheet,columns);
+
+            createCell(row, 5, "AWB", style, sheet,columns);
+            createCell(row, 6, print.getAwbnumber(), style, sheet,columns);
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            createCell(row, 0, "ATTN", style, sheet,columns);
+            createCell(row, 1, print.getAttention(), style, sheet,columns);
+
+            Double totalNettoHeader = 0.0;
+            for(PackingListDataItemDetail item : print.getItems()){
+//                totalNettoHeader += convertkg(item.getNettoweight());
+                totalNettoHeader += item.getNettoweight();
+            }
+
+            createCell(row, 5, "Netto", style, sheet,columns);
+            createCell(row, 6, totalNettoHeader , style, sheet,columns);
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+
+            createCell(row, 5, "Collie", style, sheet,columns);
+            createCell(row, 6, print.getKoli(), style, sheet,columns);
+
+            rowcount++;
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            CellRangeAddress aliasCustRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 5);
+            sheet.addMergedRegion(aliasCustRangeAddress);
+            Cell aliascust = createCell(row, 0, print.getCustomerAlias(), style, sheet,columns);
+            CellUtil.setVerticalAlignment(aliascust, VerticalAlignment.CENTER);
+            CellUtil.setAlignment(aliascust, HorizontalAlignment.CENTER);
+            RegionUtil.setBorderRight(BorderStyle.THIN, aliasCustRangeAddress, sheet);
+            RegionUtil.setRightBorderColor(IndexedColors.WHITE.getIndex(), aliasCustRangeAddress, sheet);
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            CellRangeAddress namaCustRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 5);
+            sheet.addMergedRegion(namaCustRangeAddress);
+            String tanggal = "";
+            try{
+                tanggal = GlobalFunc.getDateLongToString(print.getDate().getTime(), "dd-MMMM-yyyy");
+            }catch (ParseException e){
+                e.printStackTrace();
+            }
+            Cell namacust = createCell(row, 0, "P.LIST EXPORT "+print.getCustomerName()+" "+ tanggal, style, sheet,columns);
+            CellUtil.setVerticalAlignment(namacust, VerticalAlignment.CENTER);
+            CellUtil.setAlignment(namacust, HorizontalAlignment.CENTER);
+            RegionUtil.setBorderRight(BorderStyle.THIN, namaCustRangeAddress, sheet);
+            RegionUtil.setRightBorderColor(IndexedColors.WHITE.getIndex(), namaCustRangeAddress, sheet);
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            int colomcount = 0;
+            createCell(row, colomcount, "BOX", style, sheet,columns);
+
+            colomcount++;
+            createCell(row, colomcount, "SIZE", style, sheet,columns);
+
+            colomcount++;
+            createCell(row, colomcount, "GRAM", style, sheet,columns);
+
+            colomcount++;
+            createCell(row, colomcount, "PIECES", style, sheet,columns);
+
+            colomcount++;
+            createCell(row, colomcount, "WEIGHT(KG)", style, sheet,columns);
+
+            colomcount++;
+            createCell(row, colomcount, "PRICE", style, sheet,columns);
+
+            colomcount++;
+            createCell(row, colomcount, "TOTAL", style, sheet,columns);
+
+            int totalqty = 0;
+            double totalweight = 0;
+            double totalprice = 0;
+            HashMap<String,String> mappUdangMati = new HashMap<>();
+            if(printCPL.getListcancelitem() != null && printCPL.getListcancelitem().size() > 0){
+                for(CancelPackingListItemData item : printCPL.getListcancelitem()){
+                    mappUdangMati.put(item.getIdproduct()+ item.getIdcategoryproduct()+"CP"," ("+item.getQty()+")");
+                }
+            }
+
+            //Karena di item, CP yang sama bisa lebih dari 1, sedangkan udang mati tidak begitu.
+            HashMap<String,String> isDoneCatatUdangMati = new HashMap<>();
+            for(PackingListDataItemDetail item : print.getItems()){
+                totalqty += item.getQty().intValue();
+                totalweight += item.getNettoweight().doubleValue();
+                totalprice += item.getTotalprice().doubleValue();
+                String udangMati = "";
+                if(isDoneCatatUdangMati.get(item.getIdproduct()+item.getIdcategoryproduct()+"CP") == null){
+                    udangMati = mappUdangMati.get(item.getIdproduct()+ item.getIdcategoryproduct()+"CP");
+                    isDoneCatatUdangMati.put(item.getIdproduct()+item.getIdcategoryproduct()+"CP","");
+                }
+                rowcount++;
+                row = sheet.createRow(rowcount);
+                colomcount = 0;
+                createCell(row, colomcount, item.getBox(), style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, item.getCategoryProductSize(), style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, item.getCategoryProductFromGr()+"-"+item.getCategoryProductThruGr(), style, sheet,columns);
+
+                colomcount++;
+                createCell(row, colomcount, item.getQty()+udangMati, style, sheet,columns);
 
                 colomcount++;
 //                createCell(row, colomcount, convertkg(item.getNettoweight()), style, sheet,columns);

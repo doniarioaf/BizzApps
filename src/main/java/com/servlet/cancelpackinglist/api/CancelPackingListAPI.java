@@ -7,12 +7,17 @@ import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
 import com.servlet.shared.ConstansPermission;
 import com.servlet.shared.Response;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.HashMap;
 
 @RestController
@@ -70,5 +75,32 @@ public class CancelPackingListAPI {
         param.put("id", id);
         Response response = securityService.response(ConstansPermission.READ_CANCELPACKINGLIST,param,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @GetMapping("/printexcel/{idcancelpackinglist}")
+    ResponseEntity<Response> getPrintExcel(@PathVariable long idcancelpackinglist, HttpServletResponse response, @RequestHeader(ConstansKey.AUTH) String authorization) throws IOException {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "PRINTEXCEL");
+        param.put("id", idcancelpackinglist);
+        Response response1 = securityService.response(ConstansPermission.READ_CANCELPACKINGLIST,param,authorization);
+        if(response1.getHttpcode() == HttpStatus.OK.value()) {
+            XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+            export(response, workbook);
+
+            return ResponseEntity.ok().build();
+        }else{
+            return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
+        }
+
+    }
+
+
+    private void export(HttpServletResponse response, XSSFWorkbook workbook) throws IOException {
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+
+        outputStream.close();
+
     }
 }

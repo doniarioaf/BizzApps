@@ -8,6 +8,7 @@ import java.text.ParseException;
 
 public interface ReportService {
     ReportWorkBookExcel getExcelPackingListByID(long id, long idcompany, long idbranch, long iduser);
+    ReportWorkBookExcel getExcelCancelPackingListByID(long id, long idcompany, long idbranch, long iduser);
     ReportWorkBookExcel getExcelInvoiceByID(long id, long idcompany, long idbranch, long iduser);
     ReportWorkBookExcel getExcelInvoiceByID2(long id, long idcompany, long idbranch, long iduser);
     ReportWorkBookExcel reportPembelian(long idcompany, long idbranch, ParamReportPembelian param);
