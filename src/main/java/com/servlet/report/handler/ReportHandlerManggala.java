@@ -2225,18 +2225,18 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 
 //		List<String> arridwo = new ArrayList<>();
 		List<String> arridinv = new ArrayList<>();
-		HashMap<Long,Double> countingWO = new HashMap<>();
-		if(listWO != null && listWO.size() > 0) {
-			for(WorkOrderData datawo : listWO) {
-				if(countingWO.get(datawo.getId()) == null){
-					countingWO.put(datawo.getId(),1.0);
-				}else{
-					Double temp = countingWO.get(datawo.getId());
-					temp = temp.doubleValue() + 1;
-					countingWO.put(datawo.getId(),temp);
-				}
-			}
-		}
+//		HashMap<Long,Double> countingWO = new HashMap<>();
+//		if(listWO != null && listWO.size() > 0) {
+//			for(WorkOrderData datawo : listWO) {
+//				if(countingWO.get(datawo.getId()) == null){
+//					countingWO.put(datawo.getId(),1.0);
+//				}else{
+//					Double temp = countingWO.get(datawo.getId());
+//					temp = temp.doubleValue() + 1;
+//					countingWO.put(datawo.getId(),temp);
+//				}
+//			}
+//		}
 //		String listIdWO = arridwo.toString().replaceAll("\\[","");
 //		listIdWO = listIdWO.replaceAll("\\]","");
 
@@ -2324,15 +2324,15 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 			Double totalAkhir = 0.0;
 //			Double kalkulasiNilaiLR = 0.0;
 			HashMap<String,String> doneDataWO = new HashMap<>();
-			HashMap<Long,Double> countingDoneWO = new HashMap<>();
 			for(WorkOrderData datawo : listWO) {
-				if(countingDoneWO.get(datawo.getId()) == null){
-					countingDoneWO.put(datawo.getId(),1.0);
+				// dikasih if dibawah karena, document WO ada yang double,
+				//dikarenakan pada query getListDataWoForReportLabaRugi2 left join yang membuat double, ditandai dengan A1
+				if(doneDataWO.get(datawo.getNodocument()) == null){
+					doneDataWO.put(datawo.getNodocument(),"");
 				}else{
-					Double temp = countingDoneWO.get(datawo.getId());
-					temp = temp.doubleValue() + 1;
-					countingDoneWO.put(datawo.getId(),temp);
+					continue;
 				}
+
 
 				Double kalkulasiNilaiLR = 0.0;
 				Double NilaiLabaRugi = 0.00;
@@ -2342,9 +2342,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 				List<InvoiceDataReportLabaRugi> listInv = grupingByIDWO.get(datawo.getId());
 				boolean adapenerimaan = false;
 				boolean adapengeluaran = false;
-
-				if (listInv != null && listInv.size() > 0 && doneDataWO.get("INV-WITH-WO"+datawo.getId()) == null) {
-					doneDataWO.put("INV-WITH-WO"+datawo.getId(),datawo.getId()+"");
+				if (listInv != null && listInv.size() > 0) {
 					for (InvoiceDataReportLabaRugi dataInv : listInv) {
 						List<DetailPenerimaanKasBankDataLabaRugi> listPenerimaanMapping = grupingByIDInv.get("INV-"+dataInv.getId());//penerimaanKasBankService.getListDetailReportLabaRugi(idcompany, idbranch, dataInv.getId(), (bankData != null ? bankData.getId() : null));
 
@@ -2488,7 +2486,6 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 					}
 
 					}else{
-						doneDataWO.put("ONLY-WO"+datawo.getId(),datawo.getId()+"");
 						List<DetailPenerimaanKasBankDataLabaRugi> listPenerimaanMapping = grupingPenerimaanByIDWo.get("WO-"+datawo.getId());
 						if (listPenerimaanMapping != null && listPenerimaanMapping.size() > 0) {
 							adapenerimaan = true;
@@ -2619,7 +2616,7 @@ public class ReportHandlerManggala implements ReportServiceManggala{
 				NilaiLabaRugi = SubtotalNilaiPembayaran;
 				List<PengeluaranReportLabaRugi> listPengeluaranMapping = grupingPengluaranByIDWo.get(datawo.getId());
 
-				if (listPengeluaranMapping != null && listPengeluaranMapping.size() > 0 && adapenerimaan && countingDoneWO.get(datawo.getId()).doubleValue() == countingWO.get(datawo.getId()).doubleValue()) {
+				if (listPengeluaranMapping != null && listPengeluaranMapping.size() > 0 && adapenerimaan) {
 					adapengeluaran = true;
 					Double subTotalAmountPengeluaran = 0.0;
 					for (PengeluaranReportLabaRugi dataPengeluaran : listPengeluaranMapping) {
