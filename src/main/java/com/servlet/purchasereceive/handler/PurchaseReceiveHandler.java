@@ -11,6 +11,9 @@ import com.servlet.draftpurchasereceive.entity.ParamSearchDraftPurchaseReceive;
 import com.servlet.draftpurchasereceive.service.DraftPurchaseReceiveService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.inventori.service.InventoriService;
+import com.servlet.journal.entity.PostingJournalParam;
+import com.servlet.journal.entity.SourceTypeEnum;
+import com.servlet.journal.service.JournalService;
 import com.servlet.komisi.entity.KomisiItemJoinHeader;
 import com.servlet.komisi.entity.ParamKomisi;
 import com.servlet.komisi.service.KomisiService;
@@ -111,6 +114,9 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
 
     @Autowired
     private PinjamanService pinjamanService;
+
+    @Autowired
+    private JournalService journalService;
 
     protected final String namaMenu = "PURCHASE_RECEIVE";
 
@@ -261,6 +267,22 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                     runningNumberService.rollBackDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_PURCHASERECEIVE);
                     validations.add(validationsItems.get(0));
                 }
+
+                PostingJournalParam paramPosting = new PostingJournalParam();
+                paramPosting.setIdcompany(idcompany);
+                paramPosting.setIdbranch(idbranch);
+                paramPosting.setAmountPemakaianDeposit(table.getSetor());
+                paramPosting.setDescriptionDetailDeposit("");
+                paramPosting.setAmountPembayaranPinjaman(table.getSetor_pinjaman());
+                paramPosting.setDescriptionDetailPinjaman("");
+                paramPosting.setIdvendor(table.getIdvendor());
+                paramPosting.setSourcenumber(docNumber);
+                paramPosting.setSourcetype(SourceTypeEnum.TRANSAKSI_PRC.getSourceType());
+                paramPosting.setTransaksitime(ts);
+                paramPosting.setDescription("");
+                paramPosting.setCreatedby(iduser);
+                journalService.postingJournal(paramPosting);
+
             } catch (Exception e) {
                 runningNumberService.rollBackDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_PURCHASERECEIVE);
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
@@ -328,6 +350,22 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                     table.setModifieddate(ts);
                     idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
 
+                    if(validations.size() == 0){
+                        PostingJournalParam paramPosting = new PostingJournalParam();
+                        paramPosting.setIdcompany(table.getIdcompany());
+                        paramPosting.setIdbranch(table.getIdbranch());
+                        paramPosting.setAmountPemakaianDeposit(table.getSetor());
+                        paramPosting.setDescriptionDetailDeposit("");
+                        paramPosting.setAmountPembayaranPinjaman(table.getSetor_pinjaman());
+                        paramPosting.setDescriptionDetailPinjaman("");
+                        paramPosting.setSourcenumber(table.getNodocument());
+                        paramPosting.setSourcetype(SourceTypeEnum.TRANSAKSI_PRC.getSourceType());
+                        paramPosting.setTransaksitime(ts);
+                        paramPosting.setDescription("");
+                        paramPosting.setCreatedby(iduser);
+                        journalService.updateJournalDetail(paramPosting);
+                    }
+
                     kurangiStockItems(idcompany, idbranch, id);
 
                     purchaseReceiveItemsRepo.deleteAllDetailByIdPurchaseReceive(idsave);
@@ -344,6 +382,8 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                     } else {
                         validations.add(validationsItems.get(0));
                     }
+
+
                 }
             } catch (Exception e) {
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
@@ -384,6 +424,9 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                     table.setDeleteby(iduser);
                     table.setDeletedate(ts);
                     idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
+
+                    journalService.deleteJournalBySourceNumber(table.getNodocument());
+
                     aktivasiDeposit(idcompany,idbranch,iduser,id);
 
                     kurangiStockItems(idcompany, idbranch, id);

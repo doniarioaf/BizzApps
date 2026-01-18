@@ -8,6 +8,9 @@ import com.servlet.filedocument.entity.BodyFileDocument;
 import com.servlet.filedocument.entity.FileDocumentData;
 import com.servlet.filedocument.service.FileDocumentService;
 import com.servlet.historyapps.service.HistoryAppsService;
+import com.servlet.journal.entity.PostingJournalParam;
+import com.servlet.journal.entity.SourceTypeEnum;
+import com.servlet.journal.service.JournalService;
 import com.servlet.purchasereceive.entity.PurchaseReceiveDataList;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
 import com.servlet.runningnumber.service.RunningNumberService;
@@ -55,6 +58,9 @@ public class DepositHandler implements DepositService {
     private FileDocumentService fileDocumentService;
     @Autowired
     private FileStorageService fileStorageService;
+
+    @Autowired
+    private JournalService journalService;
 
     protected final String namaMenu = "Deposit";
 
@@ -214,6 +220,19 @@ public class DepositHandler implements DepositService {
                 table.setCreatedby(iduser);
                 idsave = repo.saveAndFlush(table).getId();
 
+                PostingJournalParam paramPosting = new PostingJournalParam();
+                paramPosting.setIdcompany(idcompany);
+                paramPosting.setIdbranch(idbranch);
+                paramPosting.setAmount(body.getAmount());
+                paramPosting.setDescriptionDetail("");
+                paramPosting.setIdvendor(body.getIdvendor());
+                paramPosting.setSourcenumber(docNumber);
+                paramPosting.setSourcetype(SourceTypeEnum.TOPUP_DEPOSIT.getSourceType());
+                paramPosting.setTransaksitime(ts);
+                paramPosting.setDescription("");
+                paramPosting.setCreatedby(iduser);
+                journalService.postingJournal(paramPosting);
+
                 String data = table.toString();
                 historyAppsService.saveHistory(idcompany, idbranch, iduser, "ADD", namaMenu, data, "", "", ts);
             } catch (Exception e) {
@@ -279,6 +298,18 @@ public class DepositHandler implements DepositService {
                     table.setModifiedby(iduser);
                     idsave = repo.saveAndFlush(table).getId();
 
+                    PostingJournalParam paramPosting = new PostingJournalParam();
+                    paramPosting.setIdcompany(table.getIdcompany());
+                    paramPosting.setIdbranch(table.getIdbranch());
+                    paramPosting.setAmount(body.getAmount());
+                    paramPosting.setDescriptionDetail("");
+                    paramPosting.setSourcenumber(table.getNodocument());
+                    paramPosting.setSourcetype(SourceTypeEnum.TOPUP_DEPOSIT.getSourceType());
+                    paramPosting.setTransaksitime(ts);
+                    paramPosting.setDescription("");
+                    paramPosting.setCreatedby(iduser);
+                    journalService.updateJournalDetail(paramPosting);
+
                     String data = table.toString();
                     historyAppsService.saveHistory(idcompany, idbranch, iduser, "EDIT", namaMenu, "", data, dataBefore, ts);
                 }
@@ -336,6 +367,8 @@ public class DepositHandler implements DepositService {
                     table.setDeletedate(ts);
                     table.setDeleteby(iduser);
                     idsave = repo.saveAndFlush(table).getId();
+
+                    journalService.deleteJournalBySourceNumber(table.getNodocument());
 
                     String data = table.toString();
                     historyAppsService.saveHistory(idcompany, idbranch, iduser, "DELETE", namaMenu, data, "", "", ts);

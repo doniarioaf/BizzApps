@@ -1,0 +1,38 @@
+package com.servlet.journal.repo;
+
+import com.servlet.journal.entity.JournalDetail;
+import com.servlet.journal.entity.JournalDetailPK;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Repository("JournalDetailRepo")
+public interface JournalDetailRepo extends JpaRepository<JournalDetail, JournalDetailPK> {
+
+    @Transactional
+    @Modifying
+    @Query(value ="delete from journal_detail where journalid = :journalid ",nativeQuery = true)
+    void deleteDetailByIdJournal(@Param("journalid") long journalid);
+
+    @Transactional
+    @Modifying
+    @Query(value ="delete from journal_detail where sourcenumber = :sourcenumber ",nativeQuery = true)
+    void deleteDetailBySourceNumber(@Param("sourcenumber") String sourcenumber);
+
+    @Transactional
+    @Modifying
+    @Query(value ="delete from journal_detail where sourcenumber IN (:sourcenumber) ",nativeQuery = true)
+    void deleteDetailByListSourceNumber(@Param("sourcenumber") List<String> sourcenumber);
+
+    @Transactional
+    @Query(
+            value = "SELECT * FROM journal_detail WHERE sourcenumber = :sourcenumber and idcompany :=idcompany and idbranch :idbranch " ,
+            nativeQuery = true
+    )
+    List<JournalDetail> fingBySourceNumber(@Param("idcompany") Long idcompany,@Param("idbranch") Long idbranch,@Param("sourcenumber") String sourcenumber);
+}

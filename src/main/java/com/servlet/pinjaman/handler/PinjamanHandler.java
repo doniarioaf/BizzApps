@@ -12,6 +12,9 @@ import com.servlet.filedocument.entity.BodyFileDocument;
 import com.servlet.filedocument.entity.FileDocumentData;
 import com.servlet.filedocument.service.FileDocumentService;
 import com.servlet.historyapps.service.HistoryAppsService;
+import com.servlet.journal.entity.PostingJournalParam;
+import com.servlet.journal.entity.SourceTypeEnum;
+import com.servlet.journal.service.JournalService;
 import com.servlet.pinjaman.entity.*;
 import com.servlet.pinjaman.mapper.PinjamanQueryDetail;
 import com.servlet.pinjaman.mapper.PinjamanQueryListData;
@@ -65,6 +68,9 @@ public class PinjamanHandler implements PinjamanService {
 
     @Autowired
     private RunningNumberService runningNumberService;
+
+    @Autowired
+    private JournalService journalService;
 
     protected final String namaMenu = "Pinjaman";
 
@@ -150,6 +156,20 @@ public class PinjamanHandler implements PinjamanService {
                 table.setCreateddate(ts);
                 table.setCreatedby(param.getIduser());
                 idsave = repo.saveAndFlush(table).getId();
+
+                PostingJournalParam paramPosting = new PostingJournalParam();
+                paramPosting.setIdcompany(param.getIdcompany());
+                paramPosting.setIdbranch(param.getIdbranch());
+                paramPosting.setAmount(param.getBody().getAmount());
+                paramPosting.setDescriptionDetail("");
+                paramPosting.setIdvendor(param.getBody().getIdvendor());
+                paramPosting.setSourcenumber(docNumber);
+                paramPosting.setSourcetype(SourceTypeEnum.TOPUP_PINJAMAN.getSourceType());
+                paramPosting.setTransaksitime(ts);
+                paramPosting.setDescription("");
+                paramPosting.setCreatedby(param.getIduser());
+                journalService.postingJournal(paramPosting);
+
             }catch (Exception e) {
                 runningNumberService.rollBackDocNumber(param.getIdcompany(), param.getIdbranch(), ConstantCodeDocument.DOC_PINJAMAN);
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
@@ -211,6 +231,18 @@ public class PinjamanHandler implements PinjamanService {
                     table.setModifiedby(param.getIduser());
                     idsave = repo.saveAndFlush(table).getId();
 
+                    PostingJournalParam paramPosting = new PostingJournalParam();
+                    paramPosting.setIdcompany(table.getIdcompany());
+                    paramPosting.setIdbranch(table.getIdbranch());
+                    paramPosting.setAmount(param.getBody().getAmount());
+                    paramPosting.setDescriptionDetail("");
+                    paramPosting.setSourcenumber(table.getNodocument());
+                    paramPosting.setSourcetype(SourceTypeEnum.TOPUP_PINJAMAN.getSourceType());
+                    paramPosting.setTransaksitime(ts);
+                    paramPosting.setDescription("");
+                    paramPosting.setCreatedby(param.getIduser());
+                    journalService.updateJournalDetail(paramPosting);
+
                     String data = table.toString();
                     historyAppsService.saveHistory(param.getIdcompany(), param.getIdbranch(), param.getIduser(), "EDIT", namaMenu, "", data, dataBefore, ts);
                 }
@@ -263,6 +295,8 @@ public class PinjamanHandler implements PinjamanService {
                     table.setDeletedate(ts);
                     table.setDeleteby(param.getIduser());
                     idsave = repo.saveAndFlush(table).getId();
+
+                    journalService.deleteJournalBySourceNumber(table.getNodocument());
 
                     String data = table.toString();
                     historyAppsService.saveHistory(param.getIdcompany(), param.getIdbranch(), param.getIduser(), "DELETE", namaMenu, data, "", "", ts);
