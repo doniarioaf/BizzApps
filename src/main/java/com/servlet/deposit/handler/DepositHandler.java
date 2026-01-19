@@ -227,14 +227,23 @@ public class DepositHandler implements DepositService {
                 paramPosting.setDescriptionDetail("");
                 paramPosting.setIdvendor(body.getIdvendor());
                 paramPosting.setSourcenumber(docNumber);
+                paramPosting.setSourcedocumentdate(table.getDepositdate());
                 paramPosting.setSourcetype(SourceTypeEnum.TOPUP_DEPOSIT.getSourceType());
                 paramPosting.setTransaksitime(ts);
                 paramPosting.setDescription("");
                 paramPosting.setCreatedby(iduser);
-                journalService.postingJournal(paramPosting);
 
-                String data = table.toString();
-                historyAppsService.saveHistory(idcompany, idbranch, iduser, "ADD", namaMenu, data, "", "", ts);
+                List<ValidationDataMessage> validationsPosting = journalService.postingJournal(paramPosting);
+                if(validationsPosting.size() > 0){
+                    runningNumberService.rollBackDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_DEPOSIT);
+                    repo.deleteById(idsave);
+                    validations.addAll(validationsPosting);
+                }else{
+                    String data = table.toString();
+                    historyAppsService.saveHistory(idcompany, idbranch, iduser, "ADD", namaMenu, data, "", "", ts);
+                }
+
+
             } catch (Exception e) {
                 runningNumberService.rollBackDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_DEPOSIT);
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
@@ -255,10 +264,12 @@ public class DepositHandler implements DepositService {
         Long timeNow = new java.util.Date().getTime();
         Timestamp ts = new Timestamp(timeNow);
         Deposit table = repo.getById(id);
+        final Deposit befTable = table;
         if(!table.getIsactive()){
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.STATUS_DEPOSIT_NON_ACTIVE,"Status Deposit Non Active");
             validations.add(msg);
         }
+
         if(validations.size() == 0) {
             try {
                 double summaryDeposit = calculateAmountByIdVendorNotInIDDeposit(id, idcompany, idbranch, table.getIdvendor()).doubleValue() + body.getAmount().doubleValue();
@@ -303,15 +314,23 @@ public class DepositHandler implements DepositService {
                     paramPosting.setIdbranch(table.getIdbranch());
                     paramPosting.setAmount(body.getAmount());
                     paramPosting.setDescriptionDetail("");
+                    paramPosting.setIdvendor(table.getIdvendor());
                     paramPosting.setSourcenumber(table.getNodocument());
+                    paramPosting.setSourcedocumentdate(table.getDepositdate());
                     paramPosting.setSourcetype(SourceTypeEnum.TOPUP_DEPOSIT.getSourceType());
                     paramPosting.setTransaksitime(ts);
                     paramPosting.setDescription("");
                     paramPosting.setCreatedby(iduser);
-                    journalService.updateJournalDetail(paramPosting);
 
-                    String data = table.toString();
-                    historyAppsService.saveHistory(idcompany, idbranch, iduser, "EDIT", namaMenu, "", data, dataBefore, ts);
+                    List<ValidationDataMessage> validationsPosting = journalService.updateJournalDetail(paramPosting);
+                    if(validationsPosting.size() > 0){
+                        repo.saveAndFlush(befTable);
+                        validations.addAll(validationsPosting);
+                    }else{
+                        String data = table.toString();
+                        historyAppsService.saveHistory(idcompany, idbranch, iduser, "EDIT", namaMenu, "", data, dataBefore, ts);
+                    }
+
                 }
             } catch (Exception e) {
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");

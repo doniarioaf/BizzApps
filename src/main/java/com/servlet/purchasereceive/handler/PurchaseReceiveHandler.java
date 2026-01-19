@@ -248,6 +248,25 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
 
                 HashMap<Object, Object> mapsItems = setItems(idcompany,idbranch,body.getCharges(), body.getItems(),body.getInventori(), idsave);
                 List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
+
+                PostingJournalParam paramPosting = new PostingJournalParam();
+                paramPosting.setIdcompany(idcompany);
+                paramPosting.setIdbranch(idbranch);
+                paramPosting.setAmountPemakaianDeposit(table.getSetor());
+                paramPosting.setDescriptionDetailDeposit("");
+                paramPosting.setAmountPembayaranPinjaman(table.getSetor_pinjaman());
+                paramPosting.setDescriptionDetailPinjaman("");
+                paramPosting.setIdvendor(table.getIdvendor());
+                paramPosting.setSourcenumber(docNumber);
+                paramPosting.setSourcedocumentdate(table.getTransactiondate());
+                paramPosting.setSourcetype(SourceTypeEnum.TRANSAKSI_PRC.getSourceType());
+                paramPosting.setTransaksitime(ts);
+                paramPosting.setDescription("");
+                paramPosting.setCreatedby(iduser);
+                List<ValidationDataMessage> validationsPosting = journalService.postingJournal(paramPosting);
+                //sengaja set ke validationsItems, karena jika gagal posting, rollback
+                validationsItems.addAll(validationsPosting);
+
                 if(validationsItems.size() == 0){
                     HashMap<Object, Object> mapsItemsDeposit = setItemsDeposit(idcompany,idbranch,iduser,idsave, body.getIdvendor());
                     List<ValidationDataMessage> validationsItemsDeposit = (List<ValidationDataMessage>) mapsItemsDeposit.get("validations");
@@ -268,20 +287,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                     validations.add(validationsItems.get(0));
                 }
 
-                PostingJournalParam paramPosting = new PostingJournalParam();
-                paramPosting.setIdcompany(idcompany);
-                paramPosting.setIdbranch(idbranch);
-                paramPosting.setAmountPemakaianDeposit(table.getSetor());
-                paramPosting.setDescriptionDetailDeposit("");
-                paramPosting.setAmountPembayaranPinjaman(table.getSetor_pinjaman());
-                paramPosting.setDescriptionDetailPinjaman("");
-                paramPosting.setIdvendor(table.getIdvendor());
-                paramPosting.setSourcenumber(docNumber);
-                paramPosting.setSourcetype(SourceTypeEnum.TRANSAKSI_PRC.getSourceType());
-                paramPosting.setTransaksitime(ts);
-                paramPosting.setDescription("");
-                paramPosting.setCreatedby(iduser);
-                journalService.postingJournal(paramPosting);
+
 
             } catch (Exception e) {
                 runningNumberService.rollBackDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_PURCHASERECEIVE);
@@ -316,6 +322,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         if(validations.size() == 0) {
             try {
                 PurchaseReceive table = purchaseReceiveRepo.getById(id);
+                final PurchaseReceive befTable = table;
                 if (table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue() && !table.isIsdelete()) {
                     List<PurchaseReceiveItemsNotJoin> listItems = getDataItemsNotJoin(id);
                     List<PurchaseReceiveChargeNotJoin> listItemsCharge = getDataItemsChargeNotJoin(id);
@@ -358,31 +365,38 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                         paramPosting.setDescriptionDetailDeposit("");
                         paramPosting.setAmountPembayaranPinjaman(table.getSetor_pinjaman());
                         paramPosting.setDescriptionDetailPinjaman("");
+                        paramPosting.setIdvendor(table.getIdvendor());
                         paramPosting.setSourcenumber(table.getNodocument());
+                        paramPosting.setSourcedocumentdate(table.getTransactiondate());
                         paramPosting.setSourcetype(SourceTypeEnum.TRANSAKSI_PRC.getSourceType());
                         paramPosting.setTransaksitime(ts);
                         paramPosting.setDescription("");
                         paramPosting.setCreatedby(iduser);
-                        journalService.updateJournalDetail(paramPosting);
+
+                        List<ValidationDataMessage> validationsPosting = journalService.updateJournalDetail(paramPosting);
+                        validations.addAll(validationsPosting);
+                        if(validationsPosting.size() > 0){
+                            purchaseReceiveRepo.saveAndFlush(befTable);
+                        }
                     }
+                    if(validations.size() == 0){
+                        kurangiStockItems(idcompany, idbranch, id);
 
-                    kurangiStockItems(idcompany, idbranch, id);
+                        purchaseReceiveItemsRepo.deleteAllDetailByIdPurchaseReceive(idsave);
+                        purchaseReceiveChargeRepo.deleteAllDetailByIdPurchaseReceive(idsave);
+                        purchaseReceiveInventoriRepo.deleteAllDetailByIdPurchaseReceiveInventory(idsave);
 
-                    purchaseReceiveItemsRepo.deleteAllDetailByIdPurchaseReceive(idsave);
-                    purchaseReceiveChargeRepo.deleteAllDetailByIdPurchaseReceive(idsave);
-                    purchaseReceiveInventoriRepo.deleteAllDetailByIdPurchaseReceiveInventory(idsave);
-
-                    HashMap<Object, Object> mapsItems = setItems(idcompany, idbranch, body.getCharges(), body.getItems(), body.getInventori(), idsave);
-                    List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
-                    if (validationsItems.size() == 0) {
-                        String data = table.toString();
-                        String dataItems = (String) mapsItems.get("dataItems");
-                        String mixData = "header = " + data + " | Items = " + dataItems;
-                        historyAppsService.saveHistory(idcompany, idbranch, iduser, "EDIT", namaMenu, "", mixData, mixDataBefore, ts);
-                    } else {
-                        validations.add(validationsItems.get(0));
+                        HashMap<Object, Object> mapsItems = setItems(idcompany, idbranch, body.getCharges(), body.getItems(), body.getInventori(), idsave);
+                        List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
+                        if (validationsItems.size() == 0) {
+                            String data = table.toString();
+                            String dataItems = (String) mapsItems.get("dataItems");
+                            String mixData = "header = " + data + " | Items = " + dataItems;
+                            historyAppsService.saveHistory(idcompany, idbranch, iduser, "EDIT", namaMenu, "", mixData, mixDataBefore, ts);
+                        } else {
+                            validations.add(validationsItems.get(0));
+                        }
                     }
-
 
                 }
             } catch (Exception e) {

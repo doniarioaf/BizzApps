@@ -5,7 +5,7 @@ package com.servlet.chartofaccount;
 //data ini harus sama dengan table chartoffaccount
 public enum AccountCOAEnum {
     KAS_ASSET("1-1001"),
-    DEPOSITVENDOR_ASSET("1-1001"),
+    DEPOSITVENDOR_ASSET("1-1101"),
     HUTANGUSAHA_LIABILITY("2-2101"),
     HUTANGUSAHA_DEPOSIT_LIABILITY("2-2101-D"),
     HUTANGUSAHA_PINJAMAN_LIABILITY("2-2101-P"),

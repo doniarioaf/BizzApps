@@ -4,6 +4,7 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.sql.Date;
 import java.sql.Timestamp;
 
 @Entity
@@ -17,6 +18,7 @@ public class JournalDetail implements Serializable {
     private Double credit;
     private Long idvendor;
     private String sourcenumber;
+    private Date sourcedocumentdate;
     private Timestamp transaksitime;
     private String description;
     private Long idcompany;
@@ -28,6 +30,14 @@ public class JournalDetail implements Serializable {
 
     public void setJournalDetailPK(JournalDetailPK journalDetailPK) {
         this.journalDetailPK = journalDetailPK;
+    }
+
+    public Date getSourcedocumentdate() {
+        return sourcedocumentdate;
+    }
+
+    public void setSourcedocumentdate(Date sourcedocumentdate) {
+        this.sourcedocumentdate = sourcedocumentdate;
     }
 
     public Double getDebit() {

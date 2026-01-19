@@ -2,6 +2,7 @@ package com.servlet.journal.service;
 
 import com.servlet.journal.entity.BodyMigrasi;
 import com.servlet.journal.entity.PostingJournalParam;
+import com.servlet.journal.entity.SaldoJournal;
 import com.servlet.shared.ValidationDataMessage;
 
 import java.util.List;
@@ -12,4 +13,5 @@ public interface JournalService {
 
     List<ValidationDataMessage> updateJournalDetail(PostingJournalParam param);
     List<ValidationDataMessage> deleteJournalBySourceNumber(String sourceNumber);
+    SaldoJournal calculateSaldo(Long idcompany,Long idbranch, Long idvendor, String accountCode);
 }

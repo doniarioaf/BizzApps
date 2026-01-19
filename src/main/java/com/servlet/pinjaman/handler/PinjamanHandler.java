@@ -164,11 +164,20 @@ public class PinjamanHandler implements PinjamanService {
                 paramPosting.setDescriptionDetail("");
                 paramPosting.setIdvendor(param.getBody().getIdvendor());
                 paramPosting.setSourcenumber(docNumber);
+                paramPosting.setSourcedocumentdate(table.getDate());
                 paramPosting.setSourcetype(SourceTypeEnum.TOPUP_PINJAMAN.getSourceType());
                 paramPosting.setTransaksitime(ts);
                 paramPosting.setDescription("");
                 paramPosting.setCreatedby(param.getIduser());
-                journalService.postingJournal(paramPosting);
+                List<ValidationDataMessage> validationsPosting = journalService.postingJournal(paramPosting);
+                if(validationsPosting.size() > 0){
+                    runningNumberService.rollBackDocNumber(param.getIdcompany(), param.getIdbranch(), ConstantCodeDocument.DOC_PINJAMAN);
+                    repo.deleteById(idsave);
+                    validations.addAll(validationsPosting);
+                }else{
+                    String data = table.toString();
+                    historyAppsService.saveHistory(param.getIdcompany(), param.getIdbranch(), param.getIduser(), "ADD", namaMenu, data, "", "", ts);
+                }
 
             }catch (Exception e) {
                 runningNumberService.rollBackDocNumber(param.getIdcompany(), param.getIdbranch(), ConstantCodeDocument.DOC_PINJAMAN);
@@ -189,6 +198,7 @@ public class PinjamanHandler implements PinjamanService {
         long idsave = 0;
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
         Pinjaman table = repo.getById(param.getId());
+        final Pinjaman befTable = table;
         if(!table.getIsactive()){
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.STATUS_DEPOSIT_NON_ACTIVE,"Status Deposit Non Active");
             validations.add(msg);
@@ -235,16 +245,24 @@ public class PinjamanHandler implements PinjamanService {
                     paramPosting.setIdcompany(table.getIdcompany());
                     paramPosting.setIdbranch(table.getIdbranch());
                     paramPosting.setAmount(param.getBody().getAmount());
+                    paramPosting.setIdvendor(table.getIdvendor());
                     paramPosting.setDescriptionDetail("");
                     paramPosting.setSourcenumber(table.getNodocument());
+                    paramPosting.setSourcedocumentdate(table.getDate());
                     paramPosting.setSourcetype(SourceTypeEnum.TOPUP_PINJAMAN.getSourceType());
                     paramPosting.setTransaksitime(ts);
                     paramPosting.setDescription("");
                     paramPosting.setCreatedby(param.getIduser());
-                    journalService.updateJournalDetail(paramPosting);
 
-                    String data = table.toString();
-                    historyAppsService.saveHistory(param.getIdcompany(), param.getIdbranch(), param.getIduser(), "EDIT", namaMenu, "", data, dataBefore, ts);
+                    List<ValidationDataMessage> validationsPosting = journalService.updateJournalDetail(paramPosting);
+                    if(validationsPosting.size() > 0){
+                        repo.saveAndFlush(befTable);
+                        validations.addAll(validationsPosting);
+                    }else{
+                        String data = table.toString();
+                        historyAppsService.saveHistory(param.getIdcompany(), param.getIdbranch(), param.getIduser(), "EDIT", namaMenu, "", data, dataBefore, ts);
+                    }
+
                 }
             }catch (Exception e) {
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");

@@ -1,5 +1,6 @@
 package com.servlet.journal.entity;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 public class PostingJournalParam {
@@ -15,10 +16,19 @@ public class PostingJournalParam {
     private String descriptionDetailPinjaman;
     private Long idvendor;
     private String sourcenumber;
+    private Date sourcedocumentdate;
     private String sourcetype;
     private Timestamp transaksitime;
     private String description;
     private Long createdby;
+
+    public Date getSourcedocumentdate() {
+        return sourcedocumentdate;
+    }
+
+    public void setSourcedocumentdate(Date sourcedocumentdate) {
+        this.sourcedocumentdate = sourcedocumentdate;
+    }
 
     public String getDescriptionDetail() {
         return descriptionDetail;
