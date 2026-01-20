@@ -594,11 +594,14 @@ public class JournalHandler implements JournalService {
     }
 
     @Override
-    public SaldoJournal calculateSaldo(Long idcompany, Long idbranch, Long idvendor, String accountCode) {
+    public SaldoJournal calculateSaldo(SaldoJournalParam param) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QuerySaldo().schema());
-        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.idvendor = ? and data.accountcode = ? ");
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.accountcode = ? ");
+        if(param.getIdvendor() != null){
+            sqlBuilder.append(" and data.idvendor = "+param.getIdvendor());
+        }
         sqlBuilder.append(" GROUP BY data.accountcode, data.idvendor ");
-        final Object[] queryParameters = new Object[] {idcompany, idbranch, idvendor, accountCode};
+        final Object[] queryParameters = new Object[] {param.getIdcompany(), param.getIdbranch(), param.getAccountCode()};
         List<SaldoJournal> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QuerySaldo(), queryParameters);
         if(list != null && list.size() > 0){
             return list.get(0);
