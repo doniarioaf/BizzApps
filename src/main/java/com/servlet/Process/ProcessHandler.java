@@ -31,6 +31,8 @@ import com.servlet.invoice.entity.BodyInvoice;
 import com.servlet.invoice.entity.ParamPrintInvoice;
 import com.servlet.invoice.entity.ParamSearchInvoice;
 import com.servlet.invoice.service.InvoiceService;
+import com.servlet.journal.entity.BodyMigrasi;
+import com.servlet.journal.service.JournalService;
 import com.servlet.komisi.entity.BodyKomisi;
 import com.servlet.komisi.entity.ParamKomisi;
 import com.servlet.komisi.entity.ParamPrintKomisi;
@@ -179,6 +181,9 @@ public class ProcessHandler implements ProcessService{
 
 	@Autowired
 	CancelPackingListService cancelPackingListService;
+
+	@Autowired
+	JournalService journalService;
 	
 	@Override
 	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
@@ -1197,6 +1202,17 @@ public class ProcessHandler implements ProcessService{
 				if(valReturn.isSuccess()) {
 					val.setData(valReturn.getId());
 				}else {
+					val.setSuccess(valReturn.isSuccess());
+					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
+					val.setValidations(valReturn.getValidations());
+					val.setData(null);
+				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_INTEGRASI)) {
+				BodyMigrasi param = (BodyMigrasi) data;
+				ReturnData valReturn = journalService.migrationOrIntegrity(auth.getIdcompany(), auth.getIdbranch(), auth.getId(), param);
+				if (valReturn.isSuccess()) {
+					val.setData(valReturn.getId());
+				} else {
 					val.setSuccess(valReturn.isSuccess());
 					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
 					val.setValidations(valReturn.getValidations());

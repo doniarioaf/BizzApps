@@ -4,16 +4,6 @@ public class BodyMigrasi {
     private Long from;
     private Long to;
     private String isall;
-    private Long iduser;
-
-    public Long getIduser() {
-        return iduser;
-    }
-
-    public void setIduser(Long iduser) {
-        this.iduser = iduser;
-    }
-
     public Long getFrom() {
         return from;
     }

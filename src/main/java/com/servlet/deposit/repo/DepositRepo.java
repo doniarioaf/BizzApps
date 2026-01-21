@@ -15,9 +15,19 @@ public interface DepositRepo extends JpaRepository<Deposit, Long> {
 //    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Transactional
     @Query(
-            value = "SELECT * FROM deposit WHERE depositdate >= :fromdate" +
-                    "AND depositdate < :thruDate FOR UPDATE ",
+            value = "SELECT * FROM deposit WHERE depositdate >= :fromdate " +
+                    "AND idcompany = :idcompany AND idbranch = :idbranch  "+
+                    "AND depositdate <= :thruDate FOR UPDATE ",
             nativeQuery = true
     )
-    List<Deposit> fingByRangeDate(@Param("fromdate") String fromdate,@Param("thruDate") String thruDate);
+    List<Deposit> fingByRangeDate(@Param("idcompany") Long idcompany, @Param("idbranch") Long idbranch,@Param("fromdate") String fromdate,@Param("thruDate") String thruDate);
+
+    @Transactional
+    @Query(
+            value = "SELECT * FROM deposit WHERE " +
+                    "idcompany = :idcompany AND idbranch = :idbranch  "+
+                    "FOR UPDATE ",
+            nativeQuery = true
+    )
+    List<Deposit> fingByIdcompanyAndBranch(@Param("idcompany") Long idcompany, @Param("idbranch") Long idbranch);
 }

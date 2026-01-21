@@ -14,9 +14,19 @@ public interface PinjamanRepo extends JpaRepository<Pinjaman, Long> {
 
     @Transactional
     @Query(
-            value = "SELECT * FROM pinjaman WHERE date >= :fromdate" +
-                    "AND date < :thruDate FOR UPDATE ",
+            value = "SELECT * FROM pinjaman WHERE date >= :fromdate " +
+                    "AND idcompany = :idcompany AND idbranch = :idbranch  "+
+                    "AND date <= :thruDate FOR UPDATE ",
             nativeQuery = true
     )
-    List<Pinjaman> fingByRangeDate(@Param("fromdate") String fromdate, @Param("thruDate") String thruDate);
+    List<Pinjaman> fingByRangeDate(@Param("idcompany") Long idcompany, @Param("idbranch") Long idbranch,@Param("fromdate") String fromdate, @Param("thruDate") String thruDate);
+
+    @Transactional
+    @Query(
+            value = "SELECT * FROM pinjaman WHERE " +
+                    "idcompany = :idcompany AND idbranch = :idbranch "+
+                    "FOR UPDATE ",
+            nativeQuery = true
+    )
+    List<Pinjaman> fingByIdcompanyAndBranch(@Param("idcompany") Long idcompany, @Param("idbranch") Long idbranch);
 }

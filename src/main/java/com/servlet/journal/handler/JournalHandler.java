@@ -16,6 +16,7 @@ import com.servlet.purchasereceive.mapper.QueryCalculateAmountSetor;
 import com.servlet.purchasereceive.repo.PurchaseReceiveRepo;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.GlobalFunc;
+import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -252,19 +253,19 @@ public class JournalHandler implements JournalService {
     }
 
     @Override
-    public List<ValidationDataMessage> migrationOrIntegrity(BodyMigrasi payload) {
+    public ReturnData migrationOrIntegrity(Long idcompany, Long idbranch, Long iduser, BodyMigrasi payload) {
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
         List<ValidationDataMessage> validations = new ArrayList<>();
         List<Deposit> listDeposit = new ArrayList<>();
         List<Pinjaman> listPinjaman = new ArrayList<>();
         List<PurchaseReceive> listPurchaseReceive = new ArrayList<>();
         List<String> listSourceNumber = new ArrayList<>();
-        HashMap<String,String> listCompBranch = new HashMap<>();
+
         try {
             if (payload.getIsall().equals("Y")) {
-                listDeposit = depositRepo.findAll();
-                listPinjaman = pinjamanRepo.findAll();
-                listPurchaseReceive = purchaseReceiveRepo.findAll();
+                listDeposit = depositRepo.fingByIdcompanyAndBranch(idcompany,idbranch);
+                listPinjaman = pinjamanRepo.fingByIdcompanyAndBranch(idcompany,idbranch);
+                listPurchaseReceive = purchaseReceiveRepo.fingByIdcompanyAndBranch(idcompany,idbranch);
             } else {
                 if (payload.getFrom() != null && payload.getTo() != null) {
                     String fromDate = "";
@@ -282,20 +283,15 @@ public class JournalHandler implements JournalService {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
-                    listDeposit = depositRepo.fingByRangeDate(fromDate, toDate);
-                    listPinjaman = pinjamanRepo.fingByRangeDate(fromDate, toDate);
-                    listPurchaseReceive = purchaseReceiveRepo.fingByRangeDate(fromDate, toDate);
+                    listDeposit = depositRepo.fingByRangeDate(idcompany,idbranch,fromDate, toDate);
+                    listPinjaman = pinjamanRepo.fingByRangeDate(idcompany,idbranch,fromDate, toDate);
+                    listPurchaseReceive = purchaseReceiveRepo.fingByRangeDate(idcompany,idbranch,fromDate, toDate);
                 }
 
             }
 
             if(listDeposit != null && listDeposit.size() > 0){
                 for(Deposit val : listDeposit){
-                    String compBranch = val.getIdcompany()+"-"+ val.getIdbranch();
-                    if(listCompBranch.get(compBranch) == null){
-                        listCompBranch.put(compBranch,compBranch);
-                    }
-
                     if(val.isIsdelete()){
                         listSourceNumber.add(val.getNodocument());
                         repo.deleteBySourceNumber(val.getNodocument());
@@ -330,6 +326,7 @@ public class JournalHandler implements JournalService {
                             param.setDescriptionDetail("INTEGRASI");
                             param.setIdvendor(val.getIdvendor());
                             param.setSourcenumber(val.getNodocument());
+                            param.setSourcedocumentdate(val.getDepositdate());
                             param.setSourcetype(SourceTypeEnum.TOPUP_DEPOSIT.getSourceType());
                             param.setTransaksitime(val.getCreateddate());
 //                            if(val.getModifieddate() != null){
@@ -338,7 +335,7 @@ public class JournalHandler implements JournalService {
 //                                param.setTransaksitime(val.getCreateddate());
 //                            }
                             param.setDescription("INTEGRASI");
-                            param.setCreatedby(payload.getIduser());
+                            param.setCreatedby(iduser);
 
                             List<ValidationDataMessage> validationsPosting = postingJournal(param);
 
@@ -352,10 +349,6 @@ public class JournalHandler implements JournalService {
 
             if(listPinjaman != null && listPinjaman.size() > 0){
                 for(Pinjaman val : listPinjaman){
-                    String compBranch = val.getIdcompany()+"-"+ val.getIdbranch();
-                    if(listCompBranch.get(compBranch) == null){
-                        listCompBranch.put(compBranch,compBranch);
-                    }
                     if(val.isIsdelete()){
                         listSourceNumber.add(val.getNodocument());
                         repo.deleteBySourceNumber(val.getNodocument());
@@ -399,7 +392,7 @@ public class JournalHandler implements JournalService {
 //                                param.setTransaksitime(val.getCreateddate());
 //                            }
                             param.setDescription("INTEGRASI");
-                            param.setCreatedby(payload.getIduser());
+                            param.setCreatedby(iduser);
 
                             List<ValidationDataMessage> validationsPosting = postingJournal(param);
 
@@ -414,11 +407,6 @@ public class JournalHandler implements JournalService {
 
             if(listPurchaseReceive != null && listPurchaseReceive.size() > 0){
                 for(PurchaseReceive val : listPurchaseReceive){
-                    String compBranch = val.getIdcompany()+"-"+ val.getIdbranch();
-                    if(listCompBranch.get(compBranch) == null){
-                        listCompBranch.put(compBranch,compBranch);
-                    }
-
                     if(val.isIsdelete()){
                         listSourceNumber.add(val.getNodocument());
                         repo.deleteBySourceNumber(val.getNodocument());
@@ -465,7 +453,7 @@ public class JournalHandler implements JournalService {
 //                                param.setTransaksitime(val.getCreateddate());
 //                            }
                             param.setDescription("INTEGRASI");
-                            param.setCreatedby(payload.getIduser());
+                            param.setCreatedby(iduser);
 
                             List<ValidationDataMessage> validationsPosting = postingJournal(param);
 
@@ -490,22 +478,13 @@ public class JournalHandler implements JournalService {
 
 //        String compBranch = val.getIdcompany()+"-"+ val.getIdbranch();
         if(validations.size() == 0){
-            if(listCompBranch != null && listCompBranch.size() > 0){
-                for (Map.Entry<String, String> entry : listCompBranch.entrySet()) {
-                    String[] arrVal = entry.getValue().split("-");
-                    if(arrVal.length > 0){
-                        Long idcoompany = Long.getLong(arrVal[0]);
-                        Long idbranch = Long.getLong(arrVal[1]);
-                        historyAppsService.saveHistory(idcoompany, idbranch, payload.getIduser(), "INTEGRASI",namaMenu,payload.toString(),"","",ts);
-                    }
-
-
-                }
-            }
-
-
+            historyAppsService.saveHistory(idcompany, idbranch, iduser, "INTEGRASI",namaMenu,payload.toString(),"","",ts);
         }
-        return validations;
+        ReturnData data = new ReturnData();
+        data.setId(0L);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
     }
 
     @Override
