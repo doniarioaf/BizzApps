@@ -1,11 +1,21 @@
 package com.servlet.journal.entity;
 
+
 public class SaldoJournalParam {
     private Long idcompany;
     private Long idbranch;
     private Long idvendor;
     private String listVendor;
     private String accountCode;
+    private String transaksiTime;
+
+    public String getTransaksiTime() {
+        return transaksiTime;
+    }
+
+    public void setTransaksiTime(String transaksiTime) {
+        this.transaksiTime = transaksiTime;
+    }
 
     public String getListVendor() {
         return listVendor;

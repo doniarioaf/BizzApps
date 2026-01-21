@@ -4,6 +4,7 @@ import com.servlet.area.service.AreaService;
 import com.servlet.categoryproduct.entity.ParamTemplate;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.charge.service.ChargeService;
+import com.servlet.chartofaccount.AccountCOAEnum;
 import com.servlet.deposit.entity.*;
 import com.servlet.deposit.service.DepositService;
 import com.servlet.draftpurchasereceive.entity.ParamGetDataDraftPR;
@@ -12,6 +13,8 @@ import com.servlet.draftpurchasereceive.service.DraftPurchaseReceiveService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.inventori.service.InventoriService;
 import com.servlet.journal.entity.PostingJournalParam;
+import com.servlet.journal.entity.SaldoJournal;
+import com.servlet.journal.entity.SaldoJournalParam;
 import com.servlet.journal.entity.SourceTypeEnum;
 import com.servlet.journal.service.JournalService;
 import com.servlet.komisi.entity.KomisiItemJoinHeader;
@@ -162,8 +165,42 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             data.setItems(getPrintDataItems(id));
             data.setCharges(getPrintDataCharge(id));
             data.setInventori(getPrintDataItemsInventori(id));
-            data.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch,data.getIdvendor()));
-            data.setSisaPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch, data.getIdvendor(),null));
+
+            //untuk tsCd ini sengaja, soalnya pas query di sql, walaupun sama, tapi ga ke detect
+            //jadi solusinya di tambahin sedikit, sekitar beberapa 0.3 detik, biar sedikit lebih gede
+            Timestamp tsCd = data.getCreateddate();
+
+            // ambil millisecond
+            int ms = tsCd.getNanos() / 1000000;
+
+            // reset ke detik
+            tsCd.setNanos(0);
+
+            // jika ada ms → naikkan, 1 detik = 1000
+            if (ms > 0) {
+                tsCd.setTime(tsCd.getTime() + 300);
+            }
+
+            SaldoJournalParam paramDeposit = new SaldoJournalParam();
+            paramDeposit.setIdcompany(idcompany);
+            paramDeposit.setIdbranch(idbranch);
+            paramDeposit.setIdvendor(data.getIdvendor());
+            paramDeposit.setAccountCode(AccountCOAEnum.DEPOSITVENDOR_ASSET.getAccCode());
+            paramDeposit.setTransaksiTime(tsCd.toString());
+            SaldoJournal saldoDeposit = journalService.calculateSaldo(paramDeposit);
+
+            SaldoJournalParam paramPinjaman = new SaldoJournalParam();
+            paramPinjaman.setIdcompany(idcompany);
+            paramPinjaman.setIdbranch(idbranch);
+            paramPinjaman.setIdvendor(data.getIdvendor());
+            paramPinjaman.setAccountCode(AccountCOAEnum.PINJAMANVENDOR_LIABILITY.getAccCode());
+            paramPinjaman.setTransaksiTime(tsCd.toString());
+            SaldoJournal saldoPinjaman = journalService.calculateSaldo(paramPinjaman);
+
+//            data.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch,data.getIdvendor()));
+//            data.setSisaPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch, data.getIdvendor(),null));
+            data.setSisaDeposit(saldoDeposit.getSaldo());
+            data.setSisaPinjaman(saldoPinjaman.getSaldo());
             return data;
         }
         return null;
@@ -487,8 +524,26 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         paramCategoryProduct.setForcategory("VENDOR");
         paramCategoryProduct.setIdvendor(idvendor);
         data.setCategoryproductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,paramCategoryProduct));
-        data.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch,idvendor));
-        data.setSisaPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch,idvendor,null));
+
+        SaldoJournalParam paramDeposit = new SaldoJournalParam();
+        paramDeposit.setIdcompany(idcompany);
+        paramDeposit.setIdbranch(idbranch);
+        paramDeposit.setIdvendor(idvendor);
+        paramDeposit.setAccountCode(AccountCOAEnum.DEPOSITVENDOR_ASSET.getAccCode());
+        SaldoJournal saldoDeposit = journalService.calculateSaldo(paramDeposit);
+
+        SaldoJournalParam paramPinjaman = new SaldoJournalParam();
+        paramPinjaman.setIdcompany(idcompany);
+        paramPinjaman.setIdbranch(idbranch);
+        paramPinjaman.setIdvendor(idvendor);
+        paramPinjaman.setAccountCode(AccountCOAEnum.PINJAMANVENDOR_LIABILITY.getAccCode());
+        SaldoJournal saldoPinjaman = journalService.calculateSaldo(paramPinjaman);
+
+//        data.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch,idvendor));
+//        data.setSisaPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch,idvendor,null));
+
+        data.setSisaDeposit(saldoDeposit.getSaldo());
+        data.setSisaPinjaman(saldoPinjaman.getSaldo());
 
         ParamGetDataDraftPR paramDraftPR = new ParamGetDataDraftPR();
         paramDraftPR.setIdvendor(idvendor);

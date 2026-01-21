@@ -18,6 +18,7 @@ import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.GlobalFunc;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.vendor.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -53,6 +54,9 @@ public class JournalHandler implements JournalService {
     @Autowired
     private HistoryAppsService historyAppsService;
 
+    @Autowired
+    private VendorService vendorService;
+
     protected final String namaMenu = "POSTING-JOURNAL";
 
     @Override
@@ -74,6 +78,7 @@ public class JournalHandler implements JournalService {
             journal.setDescription(param.getDescription());
             journal.setCreatedby(param.getCreatedby());
             journal.setCreateddate(ts);
+
             idjournal = repo.saveAndFlush(journal).getId();
 
             JournalDetail detailDebit = new JournalDetail();
@@ -301,9 +306,10 @@ public class JournalHandler implements JournalService {
                         PostingJournalParam param = new PostingJournalParam();
                         if(listDetail != null && listDetail.size() > 0){
                             param.setIdcompany(val.getIdcompany());
-                            param.setIdbranch(val.getIdcompany());
+                            param.setIdbranch(val.getIdbranch());
                             param.setAmount(val.getAmount());
                             param.setDescriptionDetail("INTEGRASI");
+                            param.setIdvendor(val.getIdvendor());
                             param.setSourcenumber(val.getNodocument());
                             param.setSourcedocumentdate(val.getDepositdate());
                             param.setSourcetype(SourceTypeEnum.TOPUP_DEPOSIT.getSourceType());
@@ -321,7 +327,7 @@ public class JournalHandler implements JournalService {
                         }else{
 
                             param.setIdcompany(val.getIdcompany());
-                            param.setIdbranch(val.getIdcompany());
+                            param.setIdbranch(val.getIdbranch());
                             param.setAmount(val.getAmount());
                             param.setDescriptionDetail("INTEGRASI");
                             param.setIdvendor(val.getIdvendor());
@@ -358,9 +364,10 @@ public class JournalHandler implements JournalService {
                         PostingJournalParam param = new PostingJournalParam();
                         if(listDetail != null && listDetail.size() > 0){
                             param.setIdcompany(val.getIdcompany());
-                            param.setIdbranch(val.getIdcompany());
+                            param.setIdbranch(val.getIdbranch());
                             param.setAmount(val.getAmount());
                             param.setDescriptionDetail("INTEGRASI");
+                            param.setIdvendor(val.getIdvendor());
                             param.setSourcenumber(val.getNodocument());
                             param.setSourcedocumentdate(val.getDate());
                             param.setSourcetype(SourceTypeEnum.TOPUP_PINJAMAN.getSourceType());
@@ -378,7 +385,7 @@ public class JournalHandler implements JournalService {
                         }else{
 
                             param.setIdcompany(val.getIdcompany());
-                            param.setIdbranch(val.getIdcompany());
+                            param.setIdbranch(val.getIdbranch());
                             param.setAmount(val.getAmount());
                             param.setDescriptionDetail("INTEGRASI");
                             param.setIdvendor(val.getIdvendor());
@@ -416,7 +423,8 @@ public class JournalHandler implements JournalService {
                         PostingJournalParam param = new PostingJournalParam();
                         if(listDetail != null && listDetail.size() > 0){
                             param.setIdcompany(val.getIdcompany());
-                            param.setIdbranch(val.getIdcompany());
+                            param.setIdbranch(val.getIdbranch());
+                            param.setIdvendor(val.getIdvendor());
                             param.setAmountPemakaianDeposit(val.getSetor());
                             param.setDescriptionDetailDeposit("INTEGRASI");
                             param.setAmountPembayaranPinjaman(val.getSetor_pinjaman());
@@ -574,12 +582,37 @@ public class JournalHandler implements JournalService {
 
     @Override
     public SaldoJournal calculateSaldo(SaldoJournalParam param) {
+        Long idven = vendorService.getIdParent(param.getIdcompany(),param.getIdbranch(),param.getIdvendor());
+        if(idven == null){
+            idven = param.getIdvendor();
+        }else if(idven == 0){
+            idven = param.getIdvendor();
+        }
+        List<Long> listidven = vendorService.getListSubIdParent(param.getIdcompany(),param.getIdbranch(),idven);
+        //kenapa di add, karena di anggap ini idparent, jika query diatas ga dapet hanya sub nya saja
+        listidven.add(idven);
+        String listidvendor = "";
+        if(listidven != null && listidven.size() > 0){
+            listidvendor = listidven.toString().replaceAll("\\[","");
+            listidvendor = listidvendor.replaceAll("\\]","");
+        }
+
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QuerySaldo().schema());
         sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.accountcode = ? ");
-        if(param.getIdvendor() != null){
-            sqlBuilder.append(" and data.idvendor = "+param.getIdvendor());
+        if(listidvendor != null && !listidvendor.equals("")){
+            sqlBuilder.append(" and data.idvendor in ("+listidvendor+") ");
+        }else{
+            if(param.getIdvendor() != null){
+                sqlBuilder.append(" and data.idvendor = "+param.getIdvendor());
+            }
         }
+
+        if(param.getTransaksiTime() != null){
+            sqlBuilder.append(" and data.transaksitime <= '"+param.getTransaksiTime().toString()+"'");
+        }
+
         sqlBuilder.append(" GROUP BY data.accountcode, data.idvendor ");
+//        System.out.println("Query "+param.getAccountCode()+" | "+sqlBuilder.toString());
         final Object[] queryParameters = new Object[] {param.getIdcompany(), param.getIdbranch(), param.getAccountCode()};
         List<SaldoJournal> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QuerySaldo(), queryParameters);
         if(list != null && list.size() > 0){
