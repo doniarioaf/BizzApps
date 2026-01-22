@@ -233,18 +233,14 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     public ReturnData save(Long idcompany, Long idbranch, Long iduser, BodyPurchaseReceive body) {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
-        Timestamp ts = new Timestamp(new java.util.Date().getTime());
-        String docNumber = runningNumberService.getDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_PURCHASERECEIVE, ts);
-        if(docNumber.equals("")) {
-            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_GENERATE_DOC_NUMBER,"Gagal Generate Document Number");
-            validations.add(msg);
-        }
+
         long iddeposit = 0;
         if(body.getTambahdeposit() != null && body.getTambahdeposit().doubleValue() > 0){
+            Timestamp depoDate = new Timestamp(new java.util.Date().getTime());
             BodyDeposit bodyDep = new BodyDeposit();
             bodyDep.setIdvendor(body.getIdvendor());
             bodyDep.setAmount(body.getTambahdeposit());
-            bodyDep.setDepositdate(ts.getTime());
+            bodyDep.setDepositdate(depoDate.getTime());
             ReturnData retDeposit = depositService.save(idcompany,idbranch,iduser,bodyDep);
             if(retDeposit.getValidations().size() > 0){
                 validations.add(retDeposit.getValidations().get(0));
@@ -254,6 +250,12 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
 
         }
 
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        String docNumber = runningNumberService.getDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_PURCHASERECEIVE, ts);
+        if(docNumber.equals("")) {
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_GENERATE_DOC_NUMBER,"Gagal Generate Document Number");
+            validations.add(msg);
+        }
         if(validations.size() == 0) {
             try {
                 PurchaseReceive table = new PurchaseReceive();
@@ -330,6 +332,10 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                 runningNumberService.rollBackDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_PURCHASERECEIVE);
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
                 validations.add(msg);
+            }
+        }else{
+            if(iddeposit > 0){
+                depositService.deleteRollBack(iddeposit);
             }
         }
         ReturnData data = new ReturnData();
