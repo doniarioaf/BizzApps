@@ -74,7 +74,11 @@ public class JournalHandler implements JournalService {
             journal.setIdvendor(param.getIdvendor());
             journal.setSourcenumber(param.getSourcenumber());
             journal.setSourcetype(param.getSourcetype());
-            journal.setTransaksitime(ts);
+            if(param.getTransaksitime() != null){
+                journal.setTransaksitime(param.getTransaksitime());
+            }else{
+                journal.setTransaksitime(ts);
+            }
             journal.setDescription(param.getDescription());
             journal.setCreatedby(param.getCreatedby());
             journal.setCreateddate(ts);
@@ -108,7 +112,12 @@ public class JournalHandler implements JournalService {
 
                 detailCredit.setIdvendor(param.getIdvendor());
                 detailCredit.setSourcenumber(param.getSourcenumber());
-                detailCredit.setTransaksitime(ts);
+                if(param.getTransaksitime() != null){
+                    detailCredit.setTransaksitime(param.getTransaksitime());
+                }else{
+                    detailCredit.setTransaksitime(ts);
+                }
+
                 detailCredit.setIdcompany(param.getIdcompany());
                 detailCredit.setIdbranch(param.getIdbranch());
                 detailCredit.setSourcedocumentdate(param.getSourcedocumentdate());
@@ -138,7 +147,11 @@ public class JournalHandler implements JournalService {
 
                 detailCredit.setIdvendor(param.getIdvendor());
                 detailCredit.setSourcenumber(param.getSourcenumber());
-                detailCredit.setTransaksitime(ts);
+                if(param.getTransaksitime() != null){
+                    detailCredit.setTransaksitime(param.getTransaksitime());
+                }else{
+                    detailCredit.setTransaksitime(ts);
+                }
                 detailCredit.setIdcompany(param.getIdcompany());
                 detailCredit.setIdbranch(param.getIdbranch());
                 detailCredit.setSourcedocumentdate(param.getSourcedocumentdate());
@@ -173,7 +186,11 @@ public class JournalHandler implements JournalService {
 
                     pemakaianDepositDebit2.setIdvendor(param.getIdvendor());
                     pemakaianDepositDebit2.setSourcenumber(param.getSourcenumber());
-                    pemakaianDepositDebit2.setTransaksitime(ts);
+                    if(param.getTransaksitime() != null){
+                        pemakaianDepositDebit2.setTransaksitime(param.getTransaksitime());
+                    }else{
+                        pemakaianDepositDebit2.setTransaksitime(ts);
+                    }
                     pemakaianDepositDebit2.setIdcompany(param.getIdcompany());
                     pemakaianDepositDebit2.setIdbranch(param.getIdbranch());
                     pemakaianDepositDebit2.setSourcedocumentdate(param.getSourcedocumentdate());
@@ -209,7 +226,11 @@ public class JournalHandler implements JournalService {
 
                     pembayaranPinjamanDebit2.setIdvendor(param.getIdvendor());
                     pembayaranPinjamanDebit2.setSourcenumber(param.getSourcenumber());
-                    pembayaranPinjamanDebit2.setTransaksitime(ts);
+                    if(param.getTransaksitime() != null){
+                        pembayaranPinjamanDebit2.setTransaksitime(param.getTransaksitime());
+                    }else{
+                        pembayaranPinjamanDebit2.setTransaksitime(ts);
+                    }
                     pembayaranPinjamanDebit2.setIdcompany(param.getIdcompany());
                     pembayaranPinjamanDebit2.setIdbranch(param.getIdbranch());
                     pembayaranPinjamanDebit2.setSourcedocumentdate(param.getSourcedocumentdate());
@@ -445,7 +466,7 @@ public class JournalHandler implements JournalService {
                             }
                         }else{
                             param.setIdcompany(val.getIdcompany());
-                            param.setIdbranch(val.getIdcompany());
+                            param.setIdbranch(val.getIdbranch());
                             param.setAmountPemakaianDeposit(val.getSetor());
                             param.setDescriptionDetailDeposit("INTEGRASI");
                             param.setAmountPembayaranPinjaman(val.getSetor_pinjaman());
@@ -469,6 +490,7 @@ public class JournalHandler implements JournalService {
                                 validations.addAll(validationsPosting);
                             }
                         }
+
                     }
                 }
             }
@@ -550,7 +572,7 @@ public class JournalHandler implements JournalService {
                             table.setDescription(param.getDescriptionDetailPinjaman());
                         }
                     }
-//                    table.setTransaksitime(param.getTransaksitime());
+                    table.setTransaksitime(param.getTransaksitime());
                     table.setSourcedocumentdate(param.getSourcedocumentdate());
                     detailrepo.saveAndFlush(table);
                 }
@@ -608,11 +630,12 @@ public class JournalHandler implements JournalService {
         }
 
         if(param.getTransaksiTime() != null){
-            sqlBuilder.append(" and data.transaksitime <= '"+param.getTransaksiTime().toString()+"'");
+            sqlBuilder.append(" and data.transaksitime < '"+param.getTransaksiTime().toString()+"'");
         }
 
         sqlBuilder.append(" GROUP BY data.accountcode, data.idvendor ");
-//        System.out.println("Query "+param.getAccountCode()+" | "+sqlBuilder.toString());
+        System.out.println("Query "+param.getAccountCode()+" | "+sqlBuilder.toString());
+        System.out.println("Companyid "+param.getIdcompany()+" | branchID "+param.getIdbranch());
         final Object[] queryParameters = new Object[] {param.getIdcompany(), param.getIdbranch(), param.getAccountCode()};
         List<SaldoJournal> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QuerySaldo(), queryParameters);
         if(list != null && list.size() > 0){

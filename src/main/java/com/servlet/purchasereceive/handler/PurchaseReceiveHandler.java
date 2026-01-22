@@ -167,7 +167,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             data.setInventori(getPrintDataItemsInventori(id));
 
             //untuk tsCd ini sengaja, soalnya pas query di sql, walaupun sama, tapi ga ke detect
-            //jadi solusinya di tambahin sedikit, sekitar beberapa 0.3 detik, biar sedikit lebih gede
+            //jadi solusinya di tambahin sedikit, sekitar beberapa 1 detik, biar sedikit lebih gede
             Timestamp tsCd = data.getCreateddate();
 
             // ambil millisecond
@@ -178,7 +178,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
 
             // jika ada ms → naikkan, 1 detik = 1000
             if (ms > 0) {
-                tsCd.setTime(tsCd.getTime() + 300);
+                tsCd.setTime(tsCd.getTime() + 1000);
             }
 
             SaldoJournalParam paramDeposit = new SaldoJournalParam();
@@ -412,7 +412,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                         paramPosting.setSourcenumber(table.getNodocument());
                         paramPosting.setSourcedocumentdate(table.getTransactiondate());
                         paramPosting.setSourcetype(SourceTypeEnum.TRANSAKSI_PRC.getSourceType());
-                        paramPosting.setTransaksitime(ts);
+                        paramPosting.setTransaksitime(table.getCreateddate());
                         paramPosting.setDescription("");
                         paramPosting.setCreatedby(iduser);
 
@@ -712,18 +712,58 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             yang hitung Summary(Deposit). untuk Tambah DP itu dikecualikan atau tidak terhitung,
             makanya jadi minus tuh si Saldo DP. karena si tambahDP itu, hitungnya di depan,
          */
-        ParamCalculateDeposit paramCalcDeposit = new ParamCalculateDeposit();
-        paramCalcDeposit.setDate(print.getTransactiondate().getTime());
-        paramCalcDeposit.setIdvendor(print.getIdvendor());
-        paramCalcDeposit.setListNotSUMIdDeposit(iddeposits);
-        Double sd = depositService.calculateSaldoDepositForPrinted(idcompany,idbranch, paramCalcDeposit);
-        print.setSaldoDepositBeforeNotaSubmit(sd);
+//        ParamCalculateDeposit paramCalcDeposit = new ParamCalculateDeposit();
+//        paramCalcDeposit.setDate(print.getTransactiondate().getTime());
+//        paramCalcDeposit.setIdvendor(print.getIdvendor());
+//        paramCalcDeposit.setListNotSUMIdDeposit(iddeposits);
+//        Double sd = depositService.calculateSaldoDepositForPrinted(idcompany,idbranch, paramCalcDeposit);
+//        print.setSaldoDepositBeforeNotaSubmit(sd);
         /*
         ========================
          */
 
 
-        print.setSaldoPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch,print.getIdvendor(),null));
+//        print.setSaldoPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch,print.getIdvendor(),null));
+
+        //untuk tsCd ini sengaja, soalnya pas query di sql, walaupun sama, tapi ga ke detect
+        //jadi solusinya di tambahin sedikit, sekitar beberapa 1 detik, biar sedikit lebih gede
+        Timestamp tsCd = print.getCreateddate();
+
+        // ambil millisecond
+        int ms = tsCd.getNanos() / 1000000;
+
+        // reset ke detik
+        tsCd.setNanos(0);
+
+        // jika ada ms → naikkan, 1 detik = 1000
+        if (ms > 0) {
+            tsCd.setTime(tsCd.getTime() + 1000);
+        }
+
+        SaldoJournalParam paramDeposit = new SaldoJournalParam();
+        paramDeposit.setIdcompany(idcompany);
+        paramDeposit.setIdbranch(idbranch);
+        paramDeposit.setIdvendor(print.getIdvendor());
+        paramDeposit.setAccountCode(AccountCOAEnum.DEPOSITVENDOR_ASSET.getAccCode());
+        paramDeposit.setTransaksiTime(tsCd.toString());
+        SaldoJournal saldoDeposit = journalService.calculateSaldo(paramDeposit);
+        Double sisaDeposit = saldoDeposit.getSaldo();
+//        if(listdeposit != null && listdeposit.size() > 0){
+//            for(PurchaseReceiveDepositData depo : listdeposit){
+//                sisaDeposit = sisaDeposit - depo.getAmount();
+//            }
+//        }
+        print.setSisaDeposit(sisaDeposit);
+        print.setSaldoDepositBeforeNotaSubmit(sisaDeposit);
+
+        SaldoJournalParam paramPinjaman = new SaldoJournalParam();
+        paramPinjaman.setIdcompany(idcompany);
+        paramPinjaman.setIdbranch(idbranch);
+        paramPinjaman.setIdvendor(print.getIdvendor());
+        paramPinjaman.setAccountCode(AccountCOAEnum.PINJAMANVENDOR_LIABILITY.getAccCode());
+        paramPinjaman.setTransaksiTime(tsCd.toString());
+        SaldoJournal saldoPinjaman = journalService.calculateSaldo(paramPinjaman);
+        print.setSaldoPinjaman(saldoPinjaman.getSaldo());
 
         HashMap mapParamPrint = new HashMap();
         mapParamPrint.put("nodocument",value.getNodocument());

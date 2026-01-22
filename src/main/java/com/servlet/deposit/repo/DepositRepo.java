@@ -22,7 +22,7 @@ public interface DepositRepo extends JpaRepository<Deposit, Long> {
     )
     List<Deposit> fingByRangeDate(@Param("idcompany") Long idcompany, @Param("idbranch") Long idbranch,@Param("fromdate") String fromdate,@Param("thruDate") String thruDate);
 
-    @Transactional
+//    @Transactional
     @Query(
             value = "SELECT * FROM deposit WHERE " +
                     "idcompany = :idcompany AND idbranch = :idbranch  "+

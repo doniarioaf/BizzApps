@@ -318,7 +318,7 @@ public class DepositHandler implements DepositService {
                     paramPosting.setSourcenumber(table.getNodocument());
                     paramPosting.setSourcedocumentdate(table.getDepositdate());
                     paramPosting.setSourcetype(SourceTypeEnum.TOPUP_DEPOSIT.getSourceType());
-                    paramPosting.setTransaksitime(ts);
+                    paramPosting.setTransaksitime(table.getCreateddate());
                     paramPosting.setDescription("");
                     paramPosting.setCreatedby(iduser);
 

@@ -31,7 +31,7 @@ public interface JournalDetailRepo extends JpaRepository<JournalDetail, JournalD
 
     @Transactional
     @Query(
-            value = "SELECT * FROM journal_detail WHERE idcompany =:idcompany and idbranch =:idbranch and sourcenumber = :sourcenumber " ,
+            value = "SELECT * FROM journal_detail WHERE idcompany =:idcompany and idbranch =:idbranch and LOWER(TRIM(sourcenumber)) = LOWER(TRIM(:sourcenumber)) " ,
             nativeQuery = true
     )
     List<JournalDetail> fingBySourceNumber(@Param("idcompany") Long idcompany,@Param("idbranch") Long idbranch,@Param("sourcenumber") String sourcenumber);

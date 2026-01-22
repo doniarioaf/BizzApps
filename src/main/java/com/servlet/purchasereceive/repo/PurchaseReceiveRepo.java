@@ -21,7 +21,7 @@ public interface PurchaseReceiveRepo extends JpaRepository<PurchaseReceive, Long
     )
     List<PurchaseReceive> fingByRangeDate(@Param("idcompany") Long idcompany, @Param("idbranch") Long idbranch,@Param("fromdate") String fromdate, @Param("thruDate") String thruDate);
 
-    @Transactional
+//    @Transactional
     @Query(
             value = "SELECT * FROM purchasereceive WHERE " +
                     "idcompany = :idcompany AND idbranch = :idbranch  "+

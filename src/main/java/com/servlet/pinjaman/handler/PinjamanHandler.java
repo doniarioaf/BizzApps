@@ -250,7 +250,7 @@ public class PinjamanHandler implements PinjamanService {
                     paramPosting.setSourcenumber(table.getNodocument());
                     paramPosting.setSourcedocumentdate(table.getDate());
                     paramPosting.setSourcetype(SourceTypeEnum.TOPUP_PINJAMAN.getSourceType());
-                    paramPosting.setTransaksitime(ts);
+                    paramPosting.setTransaksitime(table.getCreateddate());
                     paramPosting.setDescription("");
                     paramPosting.setCreatedby(param.getIduser());
 

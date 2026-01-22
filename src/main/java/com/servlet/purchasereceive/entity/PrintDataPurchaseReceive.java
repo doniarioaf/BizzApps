@@ -27,6 +27,7 @@ public class PrintDataPurchaseReceive {
     private Long iddeposit;
     private Double depositAmount;
     private Double sisaDeposit;
+    private Double nilaitransfer; //nilai transfer, totalinvoice - setor/deposit;
     private Long countPrint;
     private Long countEdit;
     private String namaUser;
@@ -42,6 +43,14 @@ public class PrintDataPurchaseReceive {
     private String flightno;
     private String namaArea;
     private String aliasArea;
+
+    public Double getNilaitransfer() {
+        return nilaitransfer;
+    }
+
+    public void setNilaitransfer(Double nilaitransfer) {
+        this.nilaitransfer = nilaitransfer;
+    }
 
     public Double getSaldoPinjaman() {
         return saldoPinjaman;

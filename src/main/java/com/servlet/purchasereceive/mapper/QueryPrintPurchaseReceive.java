@@ -14,7 +14,7 @@ public class QueryPrintPurchaseReceive implements RowMapper<PrintDataPurchaseRec
     public QueryPrintPurchaseReceive() {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(20);
-        sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.idvendor as idvendor, ");
+        sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.idvendor as idvendor, data.outstanding as outstanding, ");
         sqlBuilder.append("data.transactiondate as transactiondate, data.koli as koli, data.notes as notes, data.notes2 as notes2, ");
         sqlBuilder.append("data.bank as bank, data.accountnobank as accountnobank, data.accountnamebank as accountnamebank, ");
         sqlBuilder.append("data.totalprice as totalprice, data.setor as setor,data.setor_pinjaman as setor_pinjaman, data.iddeposit as iddeposit, data.createddate as createddate, ");
@@ -49,6 +49,8 @@ public class QueryPrintPurchaseReceive implements RowMapper<PrintDataPurchaseRec
         final Double totalprice = rs.getDouble("totalprice");
         final Double setor = rs.getDouble("setor");
         final Double setor_pinjaman = rs.getDouble("setor_pinjaman");
+        final Double outstanding = rs.getDouble("outstanding");
+
         final Long iddeposit = rs.getLong("iddeposit");
         final String vennama = rs.getString("vennama");
         final String venalias = rs.getString("venalias");
@@ -82,6 +84,7 @@ public class QueryPrintPurchaseReceive implements RowMapper<PrintDataPurchaseRec
         data.setTotalprice(totalprice);
         data.setSetor(setor);
         data.setSetorPinjaman(setor_pinjaman);
+        data.setNilaitransfer(outstanding);
         data.setIddeposit(iddeposit);
         data.setDepositAmount(depamount);
         data.setCreateddate(createddate);

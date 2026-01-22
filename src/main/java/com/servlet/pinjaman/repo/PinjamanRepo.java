@@ -21,7 +21,7 @@ public interface PinjamanRepo extends JpaRepository<Pinjaman, Long> {
     )
     List<Pinjaman> fingByRangeDate(@Param("idcompany") Long idcompany, @Param("idbranch") Long idbranch,@Param("fromdate") String fromdate, @Param("thruDate") String thruDate);
 
-    @Transactional
+//    @Transactional
     @Query(
             value = "SELECT * FROM pinjaman WHERE " +
                     "idcompany = :idcompany AND idbranch = :idbranch "+
