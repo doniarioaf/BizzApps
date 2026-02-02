@@ -630,12 +630,12 @@ public class JournalHandler implements JournalService {
         }
 
         if(param.getTransaksiTime() != null){
-            sqlBuilder.append(" and data.transaksitime < '"+param.getTransaksiTime().toString()+"'");
+            sqlBuilder.append(" and data.transaksitime <= '"+param.getTransaksiTime().toString()+"'");
         }
 
         sqlBuilder.append(" GROUP BY data.accountcode, data.idvendor ");
-        System.out.println("Query "+param.getAccountCode()+" | "+sqlBuilder.toString());
-        System.out.println("Companyid "+param.getIdcompany()+" | branchID "+param.getIdbranch());
+//        System.out.println("Query "+param.getAccountCode()+" | "+sqlBuilder.toString());
+//        System.out.println("Companyid "+param.getIdcompany()+" | branchID "+param.getIdbranch());
         final Object[] queryParameters = new Object[] {param.getIdcompany(), param.getIdbranch(), param.getAccountCode()};
         List<SaldoJournal> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QuerySaldo(), queryParameters);
         if(list != null && list.size() > 0){
