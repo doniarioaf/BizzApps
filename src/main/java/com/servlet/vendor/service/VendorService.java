@@ -20,4 +20,5 @@ public interface VendorService {
     List<Long> getListSubIdParent(Long idcompany, Long idbranch,Long idvendor);
     List<Long> getListSubIdParentByListIdParent(Long idcompany, Long idbranch,String listidvendorparents);
     List<Long> checkIdCP(Long idcompany, Long idbranch, Long idcategoryProduct);
+    Boolean isLimitTransaksi(Long id);
 }

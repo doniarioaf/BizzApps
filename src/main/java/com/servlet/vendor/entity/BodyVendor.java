@@ -23,6 +23,15 @@ public class BodyVendor {
     private String address2;
     private String npwp;
     private String phone;
+    private String limittransaction;
+
+    public String getLimittransaction() {
+        return limittransaction;
+    }
+
+    public void setLimittransaction(String limittransaction) {
+        this.limittransaction = limittransaction;
+    }
 
     public String getAddress1() {
         return address1;

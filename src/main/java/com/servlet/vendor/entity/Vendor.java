@@ -43,6 +43,7 @@ public class Vendor implements Serializable {
     private String address2;
     private String npwp;
     private String phone;
+    private Boolean limittransaction;
     @Override
     public String toString() {
         return "Vendor{" +
@@ -68,7 +69,16 @@ public class Vendor implements Serializable {
                 ", address1='" + address2 + '\'' +
                 ", npwp='" + npwp + '\'' +
                 ", phone='" + phone + '\'' +
+                ", limittransaction='" + limittransaction + '\'' +
                 '}';
+    }
+
+    public Boolean getLimittransaction() {
+        return limittransaction;
+    }
+
+    public void setLimittransaction(Boolean limittransaction) {
+        this.limittransaction = limittransaction;
     }
 
     public String getAddress1() {

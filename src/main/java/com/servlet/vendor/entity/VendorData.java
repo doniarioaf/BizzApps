@@ -37,6 +37,15 @@ public class VendorData {
     private String address2;
     private String npwp;
     private String phone;
+    private Boolean limittransaction;
+
+    public Boolean getLimittransaction() {
+        return limittransaction;
+    }
+
+    public void setLimittransaction(Boolean limittransaction) {
+        this.limittransaction = limittransaction;
+    }
 
     public String getAddress1() {
         return address1;

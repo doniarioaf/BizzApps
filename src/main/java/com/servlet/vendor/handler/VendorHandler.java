@@ -17,10 +17,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class VendorHandler implements VendorService {
@@ -113,6 +110,7 @@ public class VendorHandler implements VendorService {
                 vendor.setAddress2(body.getAddress2());
                 vendor.setNpwp(body.getNpwp());
                 vendor.setPhone(body.getPhone());
+                vendor.setLimittransaction(body.getLimittransaction().equals("Y")?true:false);
                 vendor.setIsdelete(false);
                 vendor.setCreateddate(ts);
                 vendor.setCreatedby(iduser);
@@ -190,6 +188,7 @@ public class VendorHandler implements VendorService {
                 vendor.setAddress2(body.getAddress2());
                 vendor.setNpwp(body.getNpwp());
                 vendor.setPhone(body.getPhone());
+                vendor.setLimittransaction(body.getLimittransaction().equals("Y")?true:false);
                 vendor.setModifieddate(ts);
                 vendor.setModifiedby(iduser);
                 idsave = repo.saveAndFlush(vendor).getId();
@@ -353,6 +352,15 @@ public class VendorHandler implements VendorService {
         sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and items.idcategoryproduct = ? and data.isdelete = false  ");
         final Object[] queryParameters = new Object[] {idcompany,idbranch,idcategoryProduct};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCheckIdCategoryProduct(), queryParameters);
+    }
+
+    @Override
+    public Boolean isLimitTransaksi(Long id) {
+        Vendor ven = repo.getById(id);
+        if(ven != null){
+            return ven.getLimittransaction();
+        }
+        return false;
     }
 
 

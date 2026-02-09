@@ -124,10 +124,12 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
                 REQUEST 17 Desember 2025
                 Pada input penerimaan barang dilakukan pengecekan jika sudah ada vendor yang sama di tanggal yang sama , maka di TOLAK jika mau add lagi.
              */
-            List<DraftPurchaseReceiveDropDownList> listcheck = checkIdVendorAndDate(idcompany,idbranch,body);
-            if(listcheck != null && listcheck.size() > 0){
-                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_DO_TRANS_IN_THE_SAME_TIME_ONLY_ONE_TRANS, "Vendor Sudah melakukan transaksi pada tanggal tersebut");
-                validations.add(msg);
+            if(vendorService.isLimitTransaksi(body.getIdvendor())) {
+                List<DraftPurchaseReceiveDropDownList> listcheck = checkIdVendorAndDate(idcompany, idbranch, body);
+                if (listcheck != null && listcheck.size() > 0) {
+                    ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_DO_TRANS_IN_THE_SAME_TIME_ONLY_ONE_TRANS, "Vendor Sudah melakukan transaksi pada tanggal tersebut");
+                    validations.add(msg);
+                }
             }
         }
         if (validations.size() == 0) {
@@ -221,10 +223,12 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
                 String docDateDB = GlobalFunc.getDateLongToString(table.getDate().getTime(), "yyyy-MM-dd");
                 String docDateBody = GlobalFunc.getDateLongToString(body.getDate(), "yyyy-MM-dd");
                 if (!docDateDB.equals(docDateBody) || table.getIdvendor().longValue() != body.getIdvendor().longValue()) {
-                    List<DraftPurchaseReceiveDropDownList> listcheck = checkIdVendorAndDate(idcompany, idbranch, body);
-                    if (listcheck != null && listcheck.size() > 0) {
-                        ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_DO_TRANS_IN_THE_SAME_TIME_ONLY_ONE_TRANS, "Vendor Sudah melakukan transaksi pada tanggal tersebut");
-                        validations.add(msg);
+                    if(vendorService.isLimitTransaksi(body.getIdvendor())) {
+                        List<DraftPurchaseReceiveDropDownList> listcheck = checkIdVendorAndDate(idcompany, idbranch, body);
+                        if (listcheck != null && listcheck.size() > 0) {
+                            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_DO_TRANS_IN_THE_SAME_TIME_ONLY_ONE_TRANS, "Vendor Sudah melakukan transaksi pada tanggal tersebut");
+                            validations.add(msg);
+                        }
                     }
                 }
             }catch (ParseException e){
