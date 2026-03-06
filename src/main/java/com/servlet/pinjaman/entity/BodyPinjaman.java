@@ -4,6 +4,15 @@ public class BodyPinjaman {
     private Long idvendor;
     private Double amount;
     private Long date;
+    private String catatan;
+
+    public String getCatatan() {
+        return catatan;
+    }
+
+    public void setCatatan(String catatan) {
+        this.catatan = catatan;
+    }
 
     public Long getIdvendor() {
         return idvendor;

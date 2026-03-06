@@ -18,6 +18,15 @@ public class DepositDetail {
     private String modifiedbyName;
     private Timestamp modifieddate;
     private Boolean isactive;
+    private String catatan;
+
+    public String getCatatan() {
+        return catatan;
+    }
+
+    public void setCatatan(String catatan) {
+        this.catatan = catatan;
+    }
 
     public Boolean getIsactive() {
         return isactive;

@@ -4410,6 +4410,9 @@ public class ReportHandler implements ReportService {
         colomcount++;
         createCell(row, colomcount, "Document Number", style, sheet,columns);
 
+        colomcount++;
+        createCell(row, colomcount, "Catatan", style, sheet,columns);
+
         if(getListVendor != null && getListVendor.size() > 0){
             List<ReportKartuDeposit> listKartuDeposit = new ArrayList<>();
             ParamList paramdp = new ParamList();
@@ -4616,6 +4619,9 @@ public class ReportHandler implements ReportService {
 
                         colomcount++;
                         createCell(row, colomcount, kd.getDocumentNumber(), style, sheet,columns);
+
+                        colomcount++;
+                        createCell(row, colomcount, kd.getCatatan(), style, sheet,columns);
                     }
 
                     colomcount = 0;
@@ -4643,6 +4649,9 @@ public class ReportHandler implements ReportService {
                     }
                     colomcount++;
                     createCell(row, colomcount, saldo, styleAmount, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, "", style, sheet,columns);
 
                     colomcount++;
                     createCell(row, colomcount, "", style, sheet,columns);
@@ -4933,6 +4942,9 @@ public class ReportHandler implements ReportService {
         colomcount++;
         createCell(row, colomcount, "Document Number", style, sheet,columns);
 
+        colomcount++;
+        createCell(row, colomcount, "Catatan", style, sheet,columns);
+
         if(getListVendor != null && getListVendor.size() > 0) {
             List<ReportKartuPinjaman> listKartuPinjaman = new ArrayList<>();
             ParamReportKartuPinjamanList paramPinjaman = new ParamReportKartuPinjamanList();
@@ -5109,6 +5121,9 @@ public class ReportHandler implements ReportService {
 
                         colomcount++;
                         createCell(row, colomcount, kd.getDocumentNumber(), style, sheet,columns);
+
+                        colomcount++;
+                        createCell(row, colomcount, kd.getCatatan(), style, sheet,columns);
                     }
 
                     colomcount = 0;
@@ -5136,6 +5151,9 @@ public class ReportHandler implements ReportService {
                     }
                     colomcount++;
                     createCell(row, colomcount, saldo, styleAmount, sheet,columns);
+
+                    colomcount++;
+                    createCell(row, colomcount, "", style, sheet,columns);
 
                     colomcount++;
                     createCell(row, colomcount, "", style, sheet,columns);

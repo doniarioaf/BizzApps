@@ -14,6 +14,15 @@ public class ReportKartuDeposit implements Comparable<ReportKartuDeposit>{
     private Double amount;
     private Date date;
     private String type;//DEPOSIT or PURCHASERECEIVE
+    private String catatan;
+
+    public String getCatatan() {
+        return catatan;
+    }
+
+    public void setCatatan(String catatan) {
+        this.catatan = catatan;
+    }
 
     public Long getIdvendor() {
         return idvendor;

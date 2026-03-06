@@ -19,6 +19,16 @@ public class PinjamanDetail {
     private Timestamp modifieddate;
     private Boolean isactive;
 
+    private String catatan;
+
+    public String getCatatan() {
+        return catatan;
+    }
+
+    public void setCatatan(String catatan) {
+        this.catatan = catatan;
+    }
+
     public Long getId() {
         return id;
     }

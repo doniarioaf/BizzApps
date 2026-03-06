@@ -151,6 +151,7 @@ public class PinjamanHandler implements PinjamanService {
                 table.setNodocument(docNumber);
                 table.setIdvendor(param.getBody().getIdvendor());
                 table.setAmount(param.getBody().getAmount());
+                table.setCatatan(param.getBody().getCatatan());
                 table.setDate(new Date(param.getBody().getDate()));
                 table.setIsactive(true);
                 table.setCreateddate(ts);
@@ -222,9 +223,11 @@ public class PinjamanHandler implements PinjamanService {
                 }
 
                 double summarySetorPurchaseReceive = purchaseReceiveService.calculateSetorPinjamanByIdVendor(table.getIdcompany(), table.getIdbranch(), null, listidvendor,null).doubleValue();
-                if (summarySetorPurchaseReceive > summaryPinjaman) {
-                    ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.TOTAL_SETOR_GREATER_THAN, "Total Setor Lebih besar dari total pinjaman");
-                    validations.add(msg);
+                if(summarySetorPurchaseReceive > 0) {
+                    if (summarySetorPurchaseReceive > summaryPinjaman) {
+                        ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.TOTAL_SETOR_GREATER_THAN, "Total Pinjaman PRC Lebih besar dari total pinjaman");
+                        validations.add(msg);
+                    }
                 }
                 if (validations.size() == 0) {
                     ListVendorData ven = vendorService.checkVendorIsParent(param.getIdcompany(), param.getIdbranch(), param.getBody().getIdvendor());
@@ -237,6 +240,7 @@ public class PinjamanHandler implements PinjamanService {
                     String dataBefore = table.toString();
                     table.setDate(new Date(param.getBody().getDate()));
                     table.setAmount(param.getBody().getAmount());
+                    table.setCatatan(param.getBody().getCatatan());
                     table.setModifieddate(ts);
                     table.setModifiedby(param.getIduser());
                     idsave = repo.saveAndFlush(table).getId();

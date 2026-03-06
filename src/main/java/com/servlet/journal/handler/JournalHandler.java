@@ -106,8 +106,16 @@ public class JournalHandler implements JournalService {
                 creditPK.setJournalid(idjournal);
                 creditPK.setAccountcode(AccountCOAEnum.DEPOSITVENDOR_ASSET.getAccCode());
                 detailCredit.setJournalDetailPK(creditPK);
-                detailCredit.setDebit(0.0);
-                detailCredit.setCredit(param.getAmount());
+
+                //Karena input top up bisa deposit bisa minus, jika minus dimasukan ke debit, karena di analogikan sebgai pengurangan saldo
+                if(param.getAmount() >= 0){
+                    detailCredit.setDebit(0.0);
+                    detailCredit.setCredit(param.getAmount());
+                }else{
+                    detailCredit.setDebit(Math.abs(param.getAmount()));
+                    detailCredit.setCredit(0.0);
+                }
+
                 detailCredit.setDescription(param.getDescriptionDetail());
 
                 detailCredit.setIdvendor(param.getIdvendor());
@@ -141,8 +149,14 @@ public class JournalHandler implements JournalService {
                 creditPK.setJournalid(idjournal);
                 creditPK.setAccountcode(AccountCOAEnum.PINJAMANVENDOR_LIABILITY.getAccCode());
                 detailCredit.setJournalDetailPK(creditPK);
-                detailCredit.setDebit(0.0);
-                detailCredit.setCredit(param.getAmount());
+                //Karena input top up bisa pinjaman bisa minus, jika minus dimasukan ke debit, karena di analogikan sebgai pengurangan saldo
+                if(param.getAmount() >= 0){
+                    detailCredit.setDebit(0.0);
+                    detailCredit.setCredit(param.getAmount());
+                }else{
+                    detailCredit.setDebit(Math.abs(param.getAmount()));
+                    detailCredit.setCredit(0.0);
+                }
                 detailCredit.setDescription(param.getDescriptionDetail());
 
                 detailCredit.setIdvendor(param.getIdvendor());
@@ -533,7 +547,14 @@ public class JournalHandler implements JournalService {
 //                            table.setCredit(param.getAmount());
 //                        }
                         if(val.getJournalDetailPK().getAccountcode().equals(AccountCOAEnum.DEPOSITVENDOR_ASSET.getAccCode())){
-                            table.setCredit(param.getAmount());
+                            //Karena input top up bisa deposit bisa minus, jika minus dimasukan ke debit, karena di analogikan sebgai pengurangan saldo
+                            if(param.getAmount() >= 0){
+                                table.setDebit(0.0);
+                                table.setCredit(param.getAmount());
+                            }else{
+                                table.setDebit(Math.abs(param.getAmount()));
+                                table.setCredit(0.0);
+                            }
                         }
                         table.setDescription(param.getDescriptionDetail());
                     }else if(param.getSourcetype().equals(SourceTypeEnum.TOPUP_PINJAMAN.getSourceType())){
@@ -543,7 +564,16 @@ public class JournalHandler implements JournalService {
 //                            table.setCredit(param.getAmount());
 //                        }
                         if(val.getJournalDetailPK().getAccountcode().equals(AccountCOAEnum.PINJAMANVENDOR_LIABILITY.getAccCode())){
-                            table.setCredit(param.getAmount());
+//                            table.setCredit(param.getAmount());
+
+                            //Karena input top up bisa deposit bisa minus, jika minus dimasukan ke debit, karena di analogikan sebgai pengurangan saldo
+                            if(param.getAmount() >= 0){
+                                table.setDebit(0.0);
+                                table.setCredit(param.getAmount());
+                            }else{
+                                table.setDebit(Math.abs(param.getAmount()));
+                                table.setCredit(0.0);
+                            }
                         }
                         table.setDescription(param.getDescriptionDetail());
                     }else if(param.getSourcetype().equals(SourceTypeEnum.TRANSAKSI_PRC.getSourceType())){

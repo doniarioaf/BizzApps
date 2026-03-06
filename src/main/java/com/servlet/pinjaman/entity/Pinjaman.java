@@ -28,6 +28,15 @@ public class Pinjaman implements Serializable {
     private Long deleteby;
     private Timestamp deletedate;
 
+    private String catatan;
+
+    public String getCatatan() {
+        return catatan;
+    }
+
+    public void setCatatan(String catatan) {
+        this.catatan = catatan;
+    }
     @Override
     public String toString() {
         return "Pinjaman{" +
@@ -36,6 +45,7 @@ public class Pinjaman implements Serializable {
                 ", idvendor=" + idvendor +
                 ", amount=" + amount +
                 ", date=" + date +
+                ", catatan=" + catatan +
                 '}';
     }
 

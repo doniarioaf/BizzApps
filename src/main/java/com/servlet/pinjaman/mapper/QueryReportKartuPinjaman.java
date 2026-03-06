@@ -13,7 +13,7 @@ public class QueryReportKartuPinjaman implements RowMapper<ReportKartuPinjaman> 
     public QueryReportKartuPinjaman() {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
-        sqlBuilder.append("data.id as id,data.nodocument as nodocument, data.amount as amount, data.date as date, data.idvendor as idvendor, ");
+        sqlBuilder.append("data.id as id,data.nodocument as nodocument, data.amount as amount, data.date as date, data.idvendor as idvendor, data.catatan as catatan, ");
         sqlBuilder.append("ven.nama as vennama, ven.alias as venalias  ");
         sqlBuilder.append("from pinjaman as data ");
         sqlBuilder.append("left join m_vendor as ven on ven.id = data.idvendor ");
@@ -33,6 +33,8 @@ public class QueryReportKartuPinjaman implements RowMapper<ReportKartuPinjaman> 
         final String nodocument = rs.getString("nodocument");
         final Double amount = rs.getDouble("amount");
         final Date date = rs.getDate("date");
+        final String catatan = rs.getString("catatan");
+
         ReportKartuPinjaman data = new ReportKartuPinjaman();
         data.setId(id);
         data.setIdvendor(idvendor != null?idvendor:0L);
@@ -44,6 +46,7 @@ public class QueryReportKartuPinjaman implements RowMapper<ReportKartuPinjaman> 
         data.setAmount(amount);
         data.setDate(date);
         data.setType("PINJAMAN");
+        data.setCatatan(catatan);
         return data;
     }
 }
