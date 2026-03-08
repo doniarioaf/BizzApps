@@ -1,6 +1,8 @@
 package com.servlet.pinjaman.api;
 
+import com.servlet.deposit.entity.PayloadSisaDepositVendor;
 import com.servlet.pinjaman.entity.BodyPinjaman;
+import com.servlet.pinjaman.entity.PayloadSisaPinjamanVendor;
 import com.servlet.pinjaman.entity.PinjamanParameterList;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
@@ -31,6 +33,14 @@ public class PinjamanApi {
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
+    @PostMapping("/listSisaPinjamanVendor")
+    ResponseEntity<Response> getListSisaPinjamanVendor(@RequestBody @Validated PayloadSisaPinjamanVendor payload, @RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "SisaPinjamanVendor");
+        param.put("payload", payload);
+        Response response = securityService.response(ConstansPermission.READ_PINJAMAN,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
     @GetMapping("/template")
     ResponseEntity<Response> getTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
         HashMap<String, Object> param = new HashMap<String, Object>();

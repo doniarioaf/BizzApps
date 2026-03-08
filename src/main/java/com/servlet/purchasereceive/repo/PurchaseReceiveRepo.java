@@ -24,7 +24,7 @@ public interface PurchaseReceiveRepo extends JpaRepository<PurchaseReceive, Long
 //    @Transactional
     @Query(
             value = "SELECT * FROM purchasereceive WHERE " +
-                    "idcompany = :idcompany AND idbranch = :idbranch  "+
+                    "idcompany = :idcompany AND idbranch = :idbranch order by createddate "+
                     "FOR UPDATE ",
             nativeQuery = true
     )

@@ -1,13 +1,6 @@
 package com.servlet.pinjaman.handler;
 
-import com.servlet.deposit.entity.Deposit;
-import com.servlet.deposit.entity.DepositDetail;
-import com.servlet.deposit.entity.DepositList;
-import com.servlet.deposit.entity.ReportKartuDeposit;
-import com.servlet.deposit.mapper.QueryCalculateAmountDeposit;
-import com.servlet.deposit.mapper.QueryDetailData;
-import com.servlet.deposit.mapper.QueryListData;
-import com.servlet.deposit.mapper.QueryReportKartuDeposit;
+import com.servlet.common.entity.PagingData;
 import com.servlet.filedocument.entity.BodyFileDocument;
 import com.servlet.filedocument.entity.FileDocumentData;
 import com.servlet.filedocument.service.FileDocumentService;
@@ -16,13 +9,9 @@ import com.servlet.journal.entity.PostingJournalParam;
 import com.servlet.journal.entity.SourceTypeEnum;
 import com.servlet.journal.service.JournalService;
 import com.servlet.pinjaman.entity.*;
-import com.servlet.pinjaman.mapper.PinjamanQueryDetail;
-import com.servlet.pinjaman.mapper.PinjamanQueryListData;
-import com.servlet.pinjaman.mapper.QueryCalculateAmountPinjaman;
-import com.servlet.pinjaman.mapper.QueryReportKartuPinjaman;
+import com.servlet.pinjaman.mapper.*;
 import com.servlet.pinjaman.repo.PinjamanRepo;
 import com.servlet.pinjaman.service.PinjamanService;
-import com.servlet.purchasereceive.entity.PurchaseReceiveDataList;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;
@@ -468,5 +457,37 @@ public class PinjamanHandler implements PinjamanService {
         }
         final Object[] queryParameters = new Object[] {idcompany};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryReportKartuPinjaman(), queryParameters);
+    }
+
+    @Override
+    public PagingData getListVendorSisaPinjaman(Long idcompany, Long idbranch, Integer Limit, Integer Offset, String search) {
+        final StringBuilder sqlBuilder = new StringBuilder(new QueryVendorSisaPinjaman().schema());
+        sqlBuilder.append(" where v.idcompany = ? and v.idbranch = ? and v.isdelete = false  ");
+        if(!search.equals("")){
+            sqlBuilder.append(" and ( LOWER(v.nama) LIKE LOWER(CONCAT('%' ,'"+search+"', '%')) or LOWER(v.alias) LIKE LOWER(CONCAT('%' ,'"+search+"', '%')) )");
+        }
+
+//        sqlBuilder.append(" ORDER BY v.nama ");
+        sqlBuilder.append(" LIMIT "+Limit+" OFFSET "+Offset+" ");
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+
+        List<VendorSisaPinjaman> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryVendorSisaPinjaman(), queryParameters);
+
+        final StringBuilder sqlBuilderTotalData = new StringBuilder(new QueryTotalDataVendorSisaPinjaman().schema());
+        sqlBuilderTotalData.append(" where v.idcompany = ? and v.idbranch = ? and v.isdelete = false  ");
+        if(!search.equals("")){
+            sqlBuilderTotalData.append(" and ( LOWER(v.nama) LIKE LOWER(CONCAT('%' ,'"+search+"', '%')) or LOWER(v.alias) LIKE LOWER(CONCAT('%' ,'"+search+"', '%')) )");
+        }
+        List<Long> listTotal = this.jdbcTemplate.query(sqlBuilderTotalData.toString(), new QueryTotalDataVendorSisaPinjaman(), queryParameters);
+        Long totalElements = 0L;
+        if(listTotal != null && listTotal.size() > 0){
+            totalElements = listTotal.get(0);
+        }
+        PagingData paging = new PagingData();
+        paging.setPage(Offset);
+        paging.setSize(Limit);
+        paging.setTotalElements(totalElements);
+        paging.setData(list);
+        return paging;
     }
 }

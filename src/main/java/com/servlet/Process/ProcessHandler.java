@@ -1874,6 +1874,9 @@ public class ProcessHandler implements ProcessService{
 					paramHandler.setIdcompany(auth.getIdcompany());
 					paramHandler.setIdbranch(auth.getIdbranch());
 					val.setData(pinjamanService.downloadFile(paramHandler));
+				}else if(type.equals("SisaPinjamanVendor")) {
+					PayloadSisaPinjamanVendor payload = (PayloadSisaPinjamanVendor) param.get("payload");
+					val.setData(pinjamanService.getListVendorSisaPinjaman(auth.getIdcompany(), auth.getIdbranch(), payload.getLimit(), payload.getOffset(), payload.getSearch()));
 				}
 			}
 

@@ -24,7 +24,7 @@ public interface PinjamanRepo extends JpaRepository<Pinjaman, Long> {
 //    @Transactional
     @Query(
             value = "SELECT * FROM pinjaman WHERE " +
-                    "idcompany = :idcompany AND idbranch = :idbranch "+
+                    "idcompany = :idcompany AND idbranch = :idbranch order by createddate "+
                     "FOR UPDATE ",
             nativeQuery = true
     )

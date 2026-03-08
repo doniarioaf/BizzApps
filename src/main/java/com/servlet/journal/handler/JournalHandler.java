@@ -337,6 +337,8 @@ public class JournalHandler implements JournalService {
                         repo.deleteBySourceNumber(val.getNodocument());
                         detailrepo.deleteDetailBySourceNumber(val.getNodocument());
                     }else{
+                        listSourceNumber.remove(val.getNodocument());
+
                         List<JournalDetail> listDetail = detailrepo.fingBySourceNumber(val.getIdcompany(),val.getIdbranch(),val.getNodocument());
                         PostingJournalParam param = new PostingJournalParam();
                         if(listDetail != null && listDetail.size() > 0){
@@ -395,6 +397,8 @@ public class JournalHandler implements JournalService {
                         repo.deleteBySourceNumber(val.getNodocument());
                         detailrepo.deleteDetailBySourceNumber(val.getNodocument());
                     }else{
+                        listSourceNumber.remove(val.getNodocument());
+
                         List<JournalDetail> listDetail = detailrepo.fingBySourceNumber(val.getIdcompany(),val.getIdbranch(),val.getNodocument());
                         PostingJournalParam param = new PostingJournalParam();
                         if(listDetail != null && listDetail.size() > 0){
@@ -454,6 +458,8 @@ public class JournalHandler implements JournalService {
                         repo.deleteBySourceNumber(val.getNodocument());
                         detailrepo.deleteDetailBySourceNumber(val.getNodocument());
                     }else{
+                        listSourceNumber.remove(val.getNodocument());
+
                         List<JournalDetail> listDetail = detailrepo.fingBySourceNumber(val.getIdcompany(),val.getIdbranch(),val.getNodocument());
                         PostingJournalParam param = new PostingJournalParam();
                         if(listDetail != null && listDetail.size() > 0){

@@ -34,7 +34,7 @@ public class DepositAPI {
     }
 
     @PostMapping("/listSisaDepositVendor")
-    ResponseEntity<Response> getList(@RequestBody @Validated PayloadSisaDepositVendor payload, @RequestHeader(ConstansKey.AUTH) String authorization) {
+    ResponseEntity<Response> getListSisaDepositVendor(@RequestBody @Validated PayloadSisaDepositVendor payload, @RequestHeader(ConstansKey.AUTH) String authorization) {
         HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("type", "SisaDepositVendor");
         param.put("payload", payload);

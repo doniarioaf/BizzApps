@@ -25,7 +25,7 @@ public interface DepositRepo extends JpaRepository<Deposit, Long> {
 //    @Transactional
     @Query(
             value = "SELECT * FROM deposit WHERE " +
-                    "idcompany = :idcompany AND idbranch = :idbranch  "+
+                    "idcompany = :idcompany AND idbranch = :idbranch order by createddate "+
                     "FOR UPDATE ",
             nativeQuery = true
     )
