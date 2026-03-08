@@ -1,5 +1,6 @@
 package com.servlet.deposit.handler;
 
+import com.servlet.common.entity.PagingData;
 import com.servlet.deposit.entity.*;
 import com.servlet.deposit.mapper.*;
 import com.servlet.deposit.repo.DepositRepo;
@@ -611,6 +612,38 @@ public class DepositHandler implements DepositService {
         data.setSuccess(validations.size() > 0?false:true);
         data.setValidations(validations);
         return data;
+    }
+
+    @Override
+    public PagingData getListVendorSisaDeposit(Long idcompany, Long idbranch, Integer Limit, Integer Offset, String search) {
+        final StringBuilder sqlBuilder = new StringBuilder(new QueryVendorSisaDeposit().schema());
+        sqlBuilder.append(" where v.idcompany = ? and v.idbranch = ? and v.isdelete = false  ");
+        if(!search.equals("")){
+            sqlBuilder.append(" and ( LOWER(v.nama) LIKE LOWER(CONCAT('%' ,'"+search+"', '%')) or LOWER(v.alias) LIKE LOWER(CONCAT('%' ,'"+search+"', '%')) )");
+        }
+
+//        sqlBuilder.append(" ORDER BY v.nama ");
+        sqlBuilder.append(" LIMIT "+Limit+" OFFSET "+Offset+" ");
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+
+        List<VendorSisaDeposit> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryVendorSisaDeposit(), queryParameters);
+
+        final StringBuilder sqlBuilderTotalData = new StringBuilder(new QueryTotalDataVendorSisaDeposit().schema());
+        sqlBuilderTotalData.append(" where v.idcompany = ? and v.idbranch = ? and v.isdelete = false  ");
+        if(!search.equals("")){
+            sqlBuilderTotalData.append(" and ( LOWER(v.nama) LIKE LOWER(CONCAT('%' ,'"+search+"', '%')) or LOWER(v.alias) LIKE LOWER(CONCAT('%' ,'"+search+"', '%')) )");
+        }
+        List<Long> listTotal = this.jdbcTemplate.query(sqlBuilderTotalData.toString(), new QueryTotalDataVendorSisaDeposit(), queryParameters);
+        Long totalElements = 0L;
+        if(listTotal != null && listTotal.size() > 0){
+            totalElements = listTotal.get(0);
+        }
+        PagingData paging = new PagingData();
+        paging.setPage(Offset);
+        paging.setSize(Limit);
+        paging.setTotalElements(totalElements);
+        paging.setData(list);
+        return paging;//this.jdbcTemplate.query(sqlBuilder.toString(), new QueryVendorSisaDeposit(), queryParameters);
     }
 
     private Double summaryCalculateSaldoDepositForPrinted(Long idcompany, Long idbranch, ParamCalculateDeposit param){

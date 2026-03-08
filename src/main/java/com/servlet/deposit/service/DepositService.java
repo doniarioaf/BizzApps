@@ -1,5 +1,6 @@
 package com.servlet.deposit.service;
 
+import com.servlet.common.entity.PagingData;
 import com.servlet.deposit.entity.*;
 import com.servlet.filedocument.entity.FileDocumentData;
 import com.servlet.shared.ReturnData;
@@ -27,4 +28,5 @@ public interface DepositService {
     FileDocumentData downloadFile(Long id, Long idcompany, Long idbranch);
     List<DepositDataNotJoin> getListDepositActive(Long idcompany, Long idbranch, ParamList param);
     ReturnData updateStatusDeposit(Long id,Long idcompany, Long idbranch, Long iduser,Boolean status);
+    PagingData getListVendorSisaDeposit(Long idcompany, Long idbranch, Integer Limit, Integer Offset, String search);
 }

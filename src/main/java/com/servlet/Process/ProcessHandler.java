@@ -21,6 +21,7 @@ import com.servlet.customer.entity.BodyCustomer;
 import com.servlet.customer.service.CustomerService;
 import com.servlet.deposit.entity.BodyDeposit;
 import com.servlet.deposit.entity.ParamList;
+import com.servlet.deposit.entity.PayloadSisaDepositVendor;
 import com.servlet.deposit.service.DepositService;
 import com.servlet.draftpurchasereceive.entity.BodyDraftPurchaseReceive;
 import com.servlet.draftpurchasereceive.entity.ParamSearchDraftPurchaseReceive;
@@ -1475,6 +1476,9 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("DOWNLOADFILE")) {
 					long id = (long) param.get("id");
 					val.setData(depositService.downloadFile(id,auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("SisaDepositVendor")) {
+					PayloadSisaDepositVendor payload = (PayloadSisaDepositVendor) param.get("payload");
+					val.setData(depositService.getListVendorSisaDeposit(auth.getIdcompany(), auth.getIdbranch(), payload.getLimit(), payload.getOffset(), payload.getSearch()));
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_AREA)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
