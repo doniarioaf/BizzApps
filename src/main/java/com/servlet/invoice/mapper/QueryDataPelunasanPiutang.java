@@ -16,9 +16,11 @@ public class QueryDataPelunasanPiutang implements RowMapper<InvoiceDataPelunasan
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.date as date, data.kurs as kurs, ");
         sqlBuilder.append("data.outstanding as outstanding, data.amount as amount, ");
-        sqlBuilder.append("cust.nama as custNama, cust.alias as custAlias, pl.nodocument as nodocumentpl ");
+        sqlBuilder.append("cust.nama as custNama, cust.alias as custAlias, pl.nodocument as nodocumentpl, ");
+        sqlBuilder.append("ven.nama as venNama, ven.alias as venAlias ");
         sqlBuilder.append("from invoice as data ");
         sqlBuilder.append("left join packinglist as pl on pl.id = data.idpackinglist ");
+        sqlBuilder.append("left join m_vendor as ven on ven.id = pl.idvendor ");
         sqlBuilder.append("left join m_customer as cust on cust.id = pl.idcustomer ");
 
 
@@ -40,6 +42,8 @@ public class QueryDataPelunasanPiutang implements RowMapper<InvoiceDataPelunasan
         final Double outstanding = rs.getDouble("outstanding");
         final Double amount = rs.getDouble("amount");
         final String nodocumentpl = rs.getString("nodocumentpl");
+        final String venNama = rs.getString("venNama");
+        final String venAlias = rs.getString("venAlias");
 
         InvoiceDataPelunasanPiutang data = new InvoiceDataPelunasanPiutang();
         data.setId(id);
@@ -51,6 +55,8 @@ public class QueryDataPelunasanPiutang implements RowMapper<InvoiceDataPelunasan
         data.setOutstanding(outstanding > 1?outstanding:0.0);
         data.setAmount(amount);
         data.setNodocumentPL(nodocumentpl);
+        data.setVendorName(venNama);
+        data.setVendorAlias(venAlias);
         return data;
     }
 }

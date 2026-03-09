@@ -8,10 +8,28 @@ public class InvoiceDataPelunasanPiutang {
     private String nodocumentPL;
     private String customerName;
     private String customerAlias;
+    private String vendorName;
+    private String vendorAlias;
     private Date date;
     private Double kurs;
     private Double outstanding;
     private Double amount;
+
+    public String getVendorName() {
+        return vendorName;
+    }
+
+    public void setVendorName(String vendorName) {
+        this.vendorName = vendorName;
+    }
+
+    public String getVendorAlias() {
+        return vendorAlias;
+    }
+
+    public void setVendorAlias(String vendorAlias) {
+        this.vendorAlias = vendorAlias;
+    }
 
     public String getNodocumentPL() {
         return nodocumentPL;
