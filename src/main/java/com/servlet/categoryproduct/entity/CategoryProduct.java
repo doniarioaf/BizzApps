@@ -32,6 +32,7 @@ public class CategoryProduct implements Serializable {
     private Long deleteby;
     private Timestamp deletedate;
     private String forcategory;//CUSTOMER / VENDOR
+    private Integer sequence;
 
     /**
      * jika ada penambahan, tambahkan pada toString. wajib!!
@@ -50,7 +51,16 @@ public class CategoryProduct implements Serializable {
                 ", weighttoingram='" + weighttoingram + '\'' +
                 ", jumlahitemsperkoli='" + jumlahitemsperkoli + '\'' +
                 ", forcategory='" + forcategory + '\'' +
+                ", sequence='" + sequence + '\'' +
                 '}';
+    }
+
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
     }
 
     public String getForcategory() {

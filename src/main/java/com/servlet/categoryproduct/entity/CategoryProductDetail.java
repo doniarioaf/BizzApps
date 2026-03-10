@@ -14,6 +14,15 @@ public class CategoryProductDetail {
     private String modifiedbyName;
     private Timestamp modifieddate;
     private String forcategory;
+    private Integer sequence;
+
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
+    }
 
     public String getForcategory() {
         return forcategory;

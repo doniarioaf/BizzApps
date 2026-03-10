@@ -248,7 +248,12 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
             Date dt = new Date(param.getDateThru());
             selectidPr += " and pr.date <= '"+dt.toString()+"' ";
         }
-        selectidPr += " and pr.type = '"+type+"' ";
+        if(type.equals("MINUS_QTY")){
+            selectidPr += " and pr.type in ('H','M') ";
+        }else{
+            selectidPr += " and pr.type = '"+type+"' ";
+        }
+
 
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateQtySA().schema());
         sqlBuilder.append(" where data.idstockadjusment in ("+selectidPr+") ");
@@ -268,7 +273,11 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
         if(param.getListidproduct() != null && !param.getListidproduct().equals("")){
             sqlBuilder.append(" and data.idproduct in ("+param.getListidproduct()+") ");
         }
-
+        if(type.equals("MINUS_QTY")){
+            sqlBuilder.append(" and data.qty < 0  ");
+        }else{
+            sqlBuilder.append(" and data.qty > 0  ");
+        }
         final Object[] queryParameters = new Object[] {};
         List<Long> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateQtySA(), queryParameters);
         if(list != null && list.size() > 0){

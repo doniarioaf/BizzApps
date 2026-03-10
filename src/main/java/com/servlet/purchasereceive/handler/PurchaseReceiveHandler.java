@@ -1246,7 +1246,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     private List<PrintDataPurchaseReceiveItems> getPrintDataItems(Long idpurchasereceive){
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPrintDataPurchaseReceiveItems().schema());
         sqlBuilder.append(" where data.idpurchasereceive = ?  ");
-        sqlBuilder.append(" order by  cprod.weightfromingram desc ");
+        sqlBuilder.append(" order by  cprod.sequence ");
         //cprod
         final Object[] queryParameters = new Object[] {idpurchasereceive};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPrintDataPurchaseReceiveItems(), queryParameters);

@@ -5486,6 +5486,7 @@ public class ReportHandler implements ReportService {
                                 List<String> listIdCPMapping = mapMapStockByIDMapping.get(valCp.getId());
                                 String idcategorys = "";
                                 if(listIdCPMapping != null){
+                                    listIdCPMapping.add(valCp.getId().toString());
                                     idcategorys = listIdCPMapping.toString().replaceAll("\\[","");
                                     idcategorys = idcategorys.replaceAll("\\]","");
                                 }
@@ -5608,6 +5609,10 @@ public class ReportHandler implements ReportService {
                                 qtyOut = valKS.getQty().toString();
                             }else if(valKS.getType().equals("SA_H") || valKS.getType().equals("DPR")){
                                 qtyIn = valKS.getQty().toString();
+                                if(valKS.getType().equals("SA_H") && valKS.getQty() < 0){
+                                    qtyIn = "";
+                                    qtyOut = valKS.getQty().toString();
+                                }
                             }else if(valKS.getType().equals("CANCELPACKINGLIST")){
                                 qtyIn = valKS.getQtypackinglistcancel().toString();
                                 if(valKS.getQty().longValue() > 0){
@@ -5649,6 +5654,7 @@ public class ReportHandler implements ReportService {
                         }
 
                         //Stock Akhir (Thru)
+//                        System.out.println("STOCK Akhir");
                             List<String> listIdCPMapping = mapMapStockByIDMapping.get(valCp.getId());
                             String idcategorys = "";
                             if(listIdCPMapping != null){
@@ -5656,6 +5662,7 @@ public class ReportHandler implements ReportService {
                                 idcategorys = listIdCPMapping.toString().replaceAll("\\[","");
                                 idcategorys = idcategorys.replaceAll("\\]","");
                             }
+
                             ParamCalculateQtyDPR paramCalcPR = new ParamCalculateQtyDPR();
                             paramCalcPR.setDateFrom(satuJan70);
                             paramCalcPR.setDateThru(param.getTo());

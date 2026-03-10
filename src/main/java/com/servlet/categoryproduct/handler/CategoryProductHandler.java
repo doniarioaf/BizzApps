@@ -103,6 +103,7 @@ public class CategoryProductHandler implements CategoryProductService {
             table.setWeighttoingram(body.getWeighttoingram());
             table.setJumlahitemsperkoli(body.getJumlahitemsperkoli());
             table.setForcategory(body.getForcategory());
+            table.setSequence(body.getSequence());
             table.setIsdelete(false);
             table.setCreateddate(ts);
             table.setCreatedby(iduser);
@@ -139,6 +140,7 @@ public class CategoryProductHandler implements CategoryProductService {
                 table.setWeighttoingram(body.getWeighttoingram());
                 table.setJumlahitemsperkoli(body.getJumlahitemsperkoli());
                 table.setForcategory(body.getForcategory());
+                table.setSequence(body.getSequence());
                 table.setModifieddate(ts);
                 table.setModifiedby(iduser);
                 idsave = repo.saveAndFlush(table).getId();
@@ -218,7 +220,7 @@ public class CategoryProductHandler implements CategoryProductService {
                 sqlBuilder.append(" and data.forcategory = 'none' ");
             }
         }
-        sqlBuilder.append(" order by data.weightfromingram desc ");
+        sqlBuilder.append(" order by data.sequence ");
         final Object[] queryParameters = new Object[] {idcompany};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataList(), queryParameters);
     }

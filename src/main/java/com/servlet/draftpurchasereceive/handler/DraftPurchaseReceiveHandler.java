@@ -387,7 +387,7 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
     public List<DraftPurchaseReceiveItemsDetailData> getListItemsByIDForPR(Long iddraftpurchasereceive) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataItemsDetail().schema());
         sqlBuilder.append(" where data.iddraftpurchasereceive = ?  ");
-        sqlBuilder.append(" order by cp.weightfromingram desc  ");
+        sqlBuilder.append(" order by cp.sequence  ");
         final Object[] queryParameters = new Object[]{iddraftpurchasereceive};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataItemsDetail(), queryParameters);
     }
@@ -574,7 +574,7 @@ public class DraftPurchaseReceiveHandler implements DraftPurchaseReceiveService 
     private List<DraftPurchaseReceiveItemsDetailData> getListItems(Long iddraftpurchasereceive, Long idcompany, Long idbranch) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataItemsDetail().schema());
         sqlBuilder.append(" where data.iddraftpurchasereceive = ?  ");
-        sqlBuilder.append(" order by data.boxsequence asc  ");
+        sqlBuilder.append(" order by data.boxsequence  ");
         final Object[] queryParameters = new Object[]{iddraftpurchasereceive};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataItemsDetail(), queryParameters);
     }

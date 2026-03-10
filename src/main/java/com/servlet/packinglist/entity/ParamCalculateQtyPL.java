@@ -64,4 +64,17 @@ public class ParamCalculateQtyPL {
     public void setDateThru(Long dateThru) {
         this.dateThru = dateThru;
     }
+
+    @Override
+    public String toString() {
+        return "ParamCalculateQtyPL{" +
+                "idcategoryproduct=" + idcategoryproduct +
+                ", idproduct=" + idproduct +
+                ", dateFrom=" + dateFrom +
+                ", dateThru=" + dateThru +
+                ", listidcategoryproduct='" + listidcategoryproduct + '\'' +
+                ", listidproduct='" + listidproduct + '\'' +
+                ", idpackinglist=" + idpackinglist +
+                '}';
+    }
 }

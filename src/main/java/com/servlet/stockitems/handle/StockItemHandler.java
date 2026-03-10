@@ -123,18 +123,28 @@ public class StockItemHandler implements StockItemService {
 //        System.out.println("qtyKeluar1 "+qtyKeluar1);
         //Type udah hidup
         Long qtyKeluar2 = stockAdjusmentService.calculateQtySA(idcompany,idbranch,"M", param.getParamCalculateQtySA());
+
+        //Khusus untuk Qty yang di input minus, karena auto menjadi qty keluar
+        Long qtyKeluar3 = stockAdjusmentService.calculateQtySA(idcompany,idbranch,"MINUS_QTY", param.getParamCalculateQtySA());
+        //di convert menjadi +, agar gampang dihitung
+        qtyKeluar3 = Math.abs(qtyKeluar3.longValue());
+
 //        System.out.println("qtyKeluar2 "+qtyKeluar2);
 //        Long qtyKeluar3 = cancelPackingListService.calculateQtyCPL(idcompany,idbranch, param.getParamCalculateQtyCPL());
-//        if(param.getParamCalculateQtyCPL().getIdcategoryproduct() == 24 || param.getParamCalculateQtyCPL().getIdcategoryproduct() == 22){
-//            System.out.println("param.getParamCalculateQtyCPL() "+param.getParamCalculateQtyCPL());
+//        if(param.getParamCalculateQtyCPL().getIdcategoryproduct() == 7 ){
+//            System.out.println("param.getParamCalculateQtyPL() "+param.getParamCalculateQtyPL().toString());
 //            System.out.println("qtyMasuk1 "+qtyMasuk1);
 //            System.out.println("qtyMasuk2 "+qtyMasuk2);
 //            System.out.println("qtyMasuk3 "+qtyMasuk3);
 //            System.out.println("qtyKeluar1 "+qtyKeluar1);
 //            System.out.println("qtyKeluar2 "+qtyKeluar2);
-//
+//            System.out.println("qtyKeluar2 "+qtyKeluar3);
+
 //        }
-        Long hasil = (qtyMasuk1.longValue() + qtyMasuk2.longValue() + qtyMasuk3.longValue()) - (qtyKeluar1.longValue() + qtyKeluar2.longValue());
+        Long hasil = (qtyMasuk1.longValue() + qtyMasuk2.longValue() + qtyMasuk3.longValue()) - (qtyKeluar1.longValue() + qtyKeluar2.longValue() + qtyKeluar3.longValue());
+
+//        System.out.println("hasil "+hasil);
+
         return hasil;
     }
 }
