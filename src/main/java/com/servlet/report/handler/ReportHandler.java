@@ -181,11 +181,19 @@ public class ReportHandler implements ReportService {
             CellStyle style = workbook.createCellStyle();
             CellStyle styleBold = workbook.createCellStyle();
             CellStyle styleAmount = workbook.createCellStyle();
+            CellStyle borderStyle = workbook.createCellStyle();
+
+            borderStyle.setBorderTop(BorderStyle.THIN);
+            borderStyle.setBorderBottom(BorderStyle.THIN);
+            borderStyle.setBorderLeft(BorderStyle.THIN);
+            borderStyle.setBorderRight(BorderStyle.THIN);
+
             XSSFFont font = workbook.createFont();
             font.setBold(false);
             font.setFontHeight(fontHeight);
             style.setFont(font);
             styleAmount.setFont(font);
+            borderStyle.setFont(font);
 
             XSSFFont fontBold = workbook.createFont();
             fontBold.setBold(true);
@@ -316,28 +324,29 @@ public class ReportHandler implements ReportService {
             RegionUtil.setBorderRight(BorderStyle.THIN, namaCustRangeAddress, sheet);
             RegionUtil.setRightBorderColor(IndexedColors.WHITE.getIndex(), namaCustRangeAddress, sheet);
 
+
             rowcount++;
             row = sheet.createRow(rowcount);
             int colomcount = 0;
-            createCell(row, colomcount, "BOX", style, sheet,columns);
+            createCell(row, colomcount, "BOX", borderStyle, sheet,columns);
 
             colomcount++;
-            createCell(row, colomcount, "SIZE", style, sheet,columns);
+            createCell(row, colomcount, "SIZE", borderStyle, sheet,columns);
 
             colomcount++;
-            createCell(row, colomcount, "GRAM", style, sheet,columns);
+            createCell(row, colomcount, "GRAM", borderStyle, sheet,columns);
 
             colomcount++;
-            createCell(row, colomcount, "PIECES", style, sheet,columns);
+            createCell(row, colomcount, "PIECES", borderStyle, sheet,columns);
 
             colomcount++;
-            createCell(row, colomcount, "WEIGHT(KG)", style, sheet,columns);
+            createCell(row, colomcount, "WEIGHT(KG)", borderStyle, sheet,columns);
 
             colomcount++;
-            createCell(row, colomcount, "PRICE", style, sheet,columns);
+            createCell(row, colomcount, "PRICE", borderStyle, sheet,columns);
 
             colomcount++;
-            createCell(row, colomcount, "TOTAL", style, sheet,columns);
+            createCell(row, colomcount, "TOTAL", borderStyle, sheet,columns);
 
             int totalqty = 0;
             double totalweight = 0;
@@ -350,44 +359,48 @@ public class ReportHandler implements ReportService {
                 rowcount++;
                 row = sheet.createRow(rowcount);
                 colomcount = 0;
-                createCell(row, colomcount, item.getBox(), style, sheet,columns);
+                createCell(row, colomcount, item.getBox(), borderStyle, sheet,columns);
 
                 colomcount++;
-                createCell(row, colomcount, item.getCategoryProductSize(), style, sheet,columns);
+                createCell(row, colomcount, item.getCategoryProductSize(), borderStyle, sheet,columns);
 
                 colomcount++;
-                createCell(row, colomcount, item.getCategoryProductFromGr()+"-"+item.getCategoryProductThruGr(), style, sheet,columns);
+                createCell(row, colomcount, item.getCategoryProductFromGr()+"-"+item.getCategoryProductThruGr(), borderStyle, sheet,columns);
 
                 colomcount++;
-                createCell(row, colomcount, item.getQty(), style, sheet,columns);
+                createCell(row, colomcount, item.getQty(), borderStyle, sheet,columns);
 
                 colomcount++;
 //                createCell(row, colomcount, convertkg(item.getNettoweight()), style, sheet,columns);
-                createCell(row, colomcount, item.getNettoweight(), style, sheet,columns);
+                createCell(row, colomcount, item.getNettoweight(), borderStyle, sheet,columns);
 
                 colomcount++;
-                createCell(row, colomcount, item.getPrice(), style, sheet,columns);
+                createCell(row, colomcount, item.getPrice(), borderStyle, sheet,columns);
 
                 colomcount++;
-                createCell(row, colomcount, item.getTotalprice(), style, sheet,columns);
+                createCell(row, colomcount, item.getTotalprice(), borderStyle, sheet,columns);
             }
 
             rowcount++;
             row = sheet.createRow(rowcount);
             colomcount = 0;
+            createCell(row, colomcount, "", borderStyle, sheet,columns);
             colomcount++;
+            createCell(row, colomcount, "", borderStyle, sheet,columns);
             colomcount++;
+            createCell(row, colomcount, "", borderStyle, sheet,columns);
             colomcount++;
-            createCell(row, colomcount, totalqty, style, sheet,columns);
+            createCell(row, colomcount, totalqty, borderStyle, sheet,columns);
 
             colomcount++;
 //            createCell(row, colomcount, totalweight, style, sheet,columns);
-            createCell(row, colomcount, totalNettoHeader, style, sheet,columns);
-
+            createCell(row, colomcount, totalNettoHeader, borderStyle, sheet,columns);
 
             colomcount++;
+            createCell(row, colomcount, "", borderStyle, sheet,columns);
+            
             colomcount++;
-            createCell(row, colomcount, totalprice, style, sheet,columns);
+            createCell(row, colomcount, totalprice, borderStyle, sheet,columns);
 
         }
         data.setWorkbook(workbook);

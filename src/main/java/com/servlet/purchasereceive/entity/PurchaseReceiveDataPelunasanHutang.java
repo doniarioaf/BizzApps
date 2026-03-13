@@ -1,5 +1,7 @@
 package com.servlet.purchasereceive.entity;
 
+import java.sql.Date;
+
 public class PurchaseReceiveDataPelunasanHutang {
     private Long id;
     private String nodocument;
@@ -7,6 +9,15 @@ public class PurchaseReceiveDataPelunasanHutang {
     private String vendorAlias;
     private Double totalprice;
     private Double outstanding;
+    private Date transactiondate;
+
+    public Date getTransactiondate() {
+        return transactiondate;
+    }
+
+    public void setTransactiondate(Date transactiondate) {
+        this.transactiondate = transactiondate;
+    }
 
     public String getVendorName() {
         return vendorName;
