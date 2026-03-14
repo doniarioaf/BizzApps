@@ -398,7 +398,7 @@ public class ReportHandler implements ReportService {
 
             colomcount++;
             createCell(row, colomcount, "", borderStyle, sheet,columns);
-            
+
             colomcount++;
             createCell(row, colomcount, totalprice, borderStyle, sheet,columns);
 
