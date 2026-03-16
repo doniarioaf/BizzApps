@@ -128,11 +128,17 @@ public class CategoryProductHandler implements CategoryProductService {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
         Timestamp ts = new Timestamp(new Date().getTime());
-        List<ValidationDataMessage> validationsCheck = checkIDCP(idcompany,idbranch,id);
-        validations.addAll(validationsCheck);
+        CategoryProduct table = repo.getById(id);
+        if(checkChangeJsonPayload(table,body)){
+            //hanya bisa edit sequence saja
+            List<ValidationDataMessage> validationsCheck = checkIDCP(idcompany,idbranch,id);
+            validations.addAll(validationsCheck);
+        }
+//        List<ValidationDataMessage> validationsCheck = checkIDCP(idcompany,idbranch,id);
+//        validations.addAll(validationsCheck);
         if(validations.size() == 0) {
             try {
-                CategoryProduct table = repo.getById(id);
+
                 String databefore = table.toString();
                 table.setNama(body.getNama());
                 table.setSize(body.getSize());
@@ -225,6 +231,18 @@ public class CategoryProductHandler implements CategoryProductService {
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataList(), queryParameters);
     }
 
+    private boolean checkChangeJsonPayload(CategoryProduct table, BodyCategoryProduct body){
+        //jika true, ada perubahan data
+        if(
+                !table.getNama().equals(body.getNama()) || table.getWeightfromingram().intValue() != body.getWeightfromingram()
+                || table.getWeighttoingram().intValue() != body.getWeighttoingram() || table.getJumlahitemsperkoli().intValue() != body.getJumlahitemsperkoli()
+                || !table.getForcategory().equals(body.getForcategory()) || !table.getSize().equals(body.getSize())
+
+            ){
+            return true;
+        }
+        return false;
+    }
     private List<ValidationDataMessage> checkIDCP(Long idcompany, Long idbranch,Long idcp){
         List<ValidationDataMessage> validations = new ArrayList<>();
         boolean flag = false;
