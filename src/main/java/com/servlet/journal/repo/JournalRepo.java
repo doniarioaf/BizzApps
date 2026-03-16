@@ -27,4 +27,9 @@ public interface JournalRepo extends JpaRepository<Journal, Long> {
     @Modifying
     @Query(value ="delete from journal where sourcenumber IN (:sourcenumber) ",nativeQuery = true)
     void deleteByListSourceNumber(@Param("sourcenumber") List<String> sourcenumber);
+
+    @Transactional
+    @Modifying
+    @Query(value ="delete from journal where concat(idvendor,sourcenumber) IN (:idvendorsourcenumber) ",nativeQuery = true)
+    void deleteByListSourceNumberIdVendor(@Param("idvendorsourcenumber") List<String> idvendorsourcenumber);
 }

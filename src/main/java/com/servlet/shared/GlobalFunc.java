@@ -173,4 +173,22 @@ public class GlobalFunc {
 		}
 		return null;
 	}
+
+	public static Timestamp getTimeForCalcSaldo(Timestamp date){
+		//untuk tsCd ini sengaja, soalnya pas query di sql, walaupun sama, tapi ga ke detect
+		//jadi solusinya di tambahin sedikit, sekitar beberapa 1 detik, biar sedikit lebih gede
+		Timestamp tsCd = date;
+
+		// ambil millisecond
+		int ms = tsCd.getNanos() / 1000000;
+
+		// reset ke detik
+		tsCd.setNanos(0);
+
+		// jika ada ms → naikkan, 1 detik = 1000
+		if (ms > 0) {
+			tsCd.setTime(tsCd.getTime() + 1000);
+		}
+		return tsCd;
+	}
 }

@@ -300,6 +300,7 @@ public class JournalHandler implements JournalService {
         List<Pinjaman> listPinjaman = new ArrayList<>();
         List<PurchaseReceive> listPurchaseReceive = new ArrayList<>();
         List<String> listSourceNumber = new ArrayList<>();
+        List<String> listSourceNumberIdVendor = new ArrayList<>();
 
         try {
             if (payload.getIsall().equals("Y")) {
@@ -333,13 +334,15 @@ public class JournalHandler implements JournalService {
             if(listDeposit != null && listDeposit.size() > 0){
                 for(Deposit val : listDeposit){
                     if(val.isIsdelete()){
-                        listSourceNumber.add(val.getNodocument());
-                        repo.deleteBySourceNumber(val.getNodocument());
-                        detailrepo.deleteDetailBySourceNumber(val.getNodocument());
+//                        listSourceNumber.add(val.getNodocument());
+                        listSourceNumberIdVendor.add(val.getIdvendor()+val.getNodocument());
+//                        repo.deleteBySourceNumber(val.getNodocument());
+//                        detailrepo.deleteDetailBySourceNumber(val.getNodocument());
                     }else{
-                        listSourceNumber.remove(val.getNodocument());
+                        listSourceNumberIdVendor.remove(val.getIdvendor()+val.getNodocument());
+//                        listSourceNumber.remove(val.getNodocument());
 
-                        List<JournalDetail> listDetail = detailrepo.fingBySourceNumber(val.getIdcompany(),val.getIdbranch(),val.getNodocument());
+                        List<JournalDetail> listDetail = detailrepo.fingBySourceNumberAndIdVendor(val.getIdcompany(),val.getIdbranch(),val.getIdvendor(),val.getNodocument());
                         PostingJournalParam param = new PostingJournalParam();
                         if(listDetail != null && listDetail.size() > 0){
                             param.setIdcompany(val.getIdcompany());
@@ -393,13 +396,14 @@ public class JournalHandler implements JournalService {
             if(listPinjaman != null && listPinjaman.size() > 0){
                 for(Pinjaman val : listPinjaman){
                     if(val.isIsdelete()){
-                        listSourceNumber.add(val.getNodocument());
-                        repo.deleteBySourceNumber(val.getNodocument());
-                        detailrepo.deleteDetailBySourceNumber(val.getNodocument());
+//                        listSourceNumber.add(val.getNodocument());
+                        listSourceNumberIdVendor.add(val.getIdvendor()+val.getNodocument());
+//                        repo.deleteBySourceNumber(val.getNodocument());
+//                        detailrepo.deleteDetailBySourceNumber(val.getNodocument());
                     }else{
-                        listSourceNumber.remove(val.getNodocument());
-
-                        List<JournalDetail> listDetail = detailrepo.fingBySourceNumber(val.getIdcompany(),val.getIdbranch(),val.getNodocument());
+//                        listSourceNumber.remove(val.getNodocument());
+                        listSourceNumberIdVendor.remove(val.getIdvendor()+val.getNodocument());
+                        List<JournalDetail> listDetail = detailrepo.fingBySourceNumberAndIdVendor(val.getIdcompany(),val.getIdbranch(), val.getIdvendor(), val.getNodocument());
                         PostingJournalParam param = new PostingJournalParam();
                         if(listDetail != null && listDetail.size() > 0){
                             param.setIdcompany(val.getIdcompany());
@@ -515,6 +519,13 @@ public class JournalHandler implements JournalService {
                 }
             }
 
+            //khusus untuk pinjamn dan deposit, karena ada error source number sama,
+            //dikarenakan ketika clear db pinjaman deposit tidak dihapus, sedangkan penomoran running number di reset ke 1.
+            if(listSourceNumberIdVendor.size() > 0){
+                detailrepo.deleteDetailByListIdVendorAndSourceNumber(listSourceNumberIdVendor);
+                repo.deleteByListSourceNumberIdVendor(listSourceNumberIdVendor);
+            }
+
             //untuk hapus, data yang sudah di delete , tapi di jurnal masih ada
             if(listSourceNumber.size() > 0){
                 detailrepo.deleteDetailByListSourceNumber(listSourceNumber);
@@ -542,7 +553,12 @@ public class JournalHandler implements JournalService {
         List<ValidationDataMessage> validations = new ArrayList<>();
 
         try{
-            List<JournalDetail> listDetail = detailrepo.fingBySourceNumber(param.getIdcompany(),param.getIdbranch(),param.getSourcenumber());
+            List<JournalDetail> listDetail = new ArrayList<>();//detailrepo.fingBySourceNumber(param.getIdcompany(),param.getIdbranch(),param.getSourcenumber());
+            if(SourceTypeEnum.TOPUP_PINJAMAN.getSourceType().equals(param.getSourcetype()) || SourceTypeEnum.TOPUP_DEPOSIT.getSourceType().equals(param.getSourcetype()) ){
+                listDetail = detailrepo.fingBySourceNumberAndIdVendor(param.getIdcompany(),param.getIdbranch(), param.getIdvendor(), param.getSourcenumber());
+            }else{
+                listDetail = detailrepo.fingBySourceNumber(param.getIdcompany(),param.getIdbranch(),param.getSourcenumber());
+            }
             if(listDetail != null && listDetail.size() > 0){
                 for(JournalDetail val : listDetail){
                     JournalDetail table = val;

@@ -38,10 +38,7 @@ import com.servlet.purchasereceive.repo.*;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
 import com.servlet.report.entity.ParamReportPembelian;
 import com.servlet.runningnumber.service.RunningNumberService;
-import com.servlet.shared.ConstansCodeMessage;
-import com.servlet.shared.ConstantCodeDocument;
-import com.servlet.shared.ReturnData;
-import com.servlet.shared.ValidationDataMessage;
+import com.servlet.shared.*;
 import com.servlet.stockitems.entity.ReportKartuStock;
 import com.servlet.stockitems.service.StockItemService;
 import com.servlet.user.entity.UserListData;
@@ -168,18 +165,19 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
 
             //untuk tsCd ini sengaja, soalnya pas query di sql, walaupun sama, tapi ga ke detect
             //jadi solusinya di tambahin sedikit, sekitar beberapa 1 detik, biar sedikit lebih gede
-            Timestamp tsCd = data.getCreateddate();
-
-            // ambil millisecond
-            int ms = tsCd.getNanos() / 1000000;
-
-            // reset ke detik
-            tsCd.setNanos(0);
-
-            // jika ada ms → naikkan, 1 detik = 1000
-            if (ms > 0) {
-                tsCd.setTime(tsCd.getTime() + 1000);
-            }
+//            Timestamp tsCd = data.getCreateddate();
+//
+//            // ambil millisecond
+//            int ms = tsCd.getNanos() / 1000000;
+//
+//            // reset ke detik
+//            tsCd.setNanos(0);
+//
+//            // jika ada ms → naikkan, 1 detik = 1000
+//            if (ms > 0) {
+//                tsCd.setTime(tsCd.getTime() + 1000);
+//            }
+            Timestamp tsCd = GlobalFunc.getTimeForCalcSaldo(data.getCreateddate());
 
             SaldoJournalParam paramDeposit = new SaldoJournalParam();
             paramDeposit.setIdcompany(idcompany);

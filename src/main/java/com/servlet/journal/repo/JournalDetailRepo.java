@@ -35,4 +35,16 @@ public interface JournalDetailRepo extends JpaRepository<JournalDetail, JournalD
             nativeQuery = true
     )
     List<JournalDetail> fingBySourceNumber(@Param("idcompany") Long idcompany,@Param("idbranch") Long idbranch,@Param("sourcenumber") String sourcenumber);
+
+    @Transactional
+    @Query(
+            value = "SELECT * FROM journal_detail WHERE idcompany =:idcompany and idbranch =:idbranch and idvendor =:idvendor and LOWER(TRIM(sourcenumber)) = LOWER(TRIM(:sourcenumber)) " ,
+            nativeQuery = true
+    )
+    List<JournalDetail> fingBySourceNumberAndIdVendor(@Param("idcompany") Long idcompany,@Param("idbranch") Long idbranch,@Param("idvendor") Long idvendor,@Param("sourcenumber") String sourcenumber);
+
+    @Transactional
+    @Modifying
+    @Query(value ="delete from journal_detail where concat(idvendor,sourcenumber) IN (:idvendorsourcenumber) ",nativeQuery = true)
+    void deleteDetailByListIdVendorAndSourceNumber(@Param("idvendorsourcenumber") List<String> idvendorsourcenumber);
 }

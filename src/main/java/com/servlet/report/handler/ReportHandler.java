@@ -12,6 +12,7 @@ import com.servlet.categoryproduct.entity.ParamTemplate;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.charge.entity.ChargeList;
 import com.servlet.charge.service.ChargeService;
+import com.servlet.chartofaccount.AccountCOAEnum;
 import com.servlet.customer.entity.CustomerForReport;
 import com.servlet.customer.entity.CustomerGrup;
 import com.servlet.customer.service.CustomerService;
@@ -24,6 +25,9 @@ import com.servlet.draftpurchasereceive.service.DraftPurchaseReceiveService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.invoice.entity.*;
 import com.servlet.invoice.service.InvoiceService;
+import com.servlet.journal.entity.SaldoJournal;
+import com.servlet.journal.entity.SaldoJournalParam;
+import com.servlet.journal.service.JournalService;
 import com.servlet.komisi.entity.KomisiDataReportKomisi;
 import com.servlet.komisi.entity.ParamKomisiReportKomisi;
 import com.servlet.komisi.service.KomisiService;
@@ -156,6 +160,9 @@ public class ReportHandler implements ReportService {
 
     @Autowired
     CancelPackingListService cancelPackingListService;
+
+    @Autowired
+    private JournalService journalService;
 
     @Override
     public ReportWorkBookExcel getExcelPackingListByID(long id, long idcompany, long idbranch,long iduser) {
@@ -4827,7 +4834,7 @@ public class ReportHandler implements ReportService {
 
         XSSFDataFormat format = workbook.createDataFormat();
 
-        XSSFSheet sheet = workbook.createSheet("Laporan Kartu Pinjaman");
+        XSSFSheet sheet = workbook.createSheet("Laporan Kartu Pinjamann");
         sheet.setDefaultColumnWidth(1000);
         List<Integer> columns = getWidthColumns(15);
 
@@ -4862,6 +4869,7 @@ public class ReportHandler implements ReportService {
         List<String> list = new ArrayList<>();
         //ini list vendorparent
         List<VendorDataForTemplate> getListVendor = vendorService.getListDropdown(idcompany,idbranch,paramvendor);
+
         List<String> idvendors = new ArrayList<>();
         for(VendorDataForTemplate ven : getListVendor){
             list.add(ven.getNama()+" ("+ven.getAlias()+")");
@@ -4869,6 +4877,7 @@ public class ReportHandler implements ReportService {
         }
         String listIdVendor = idvendors.toString().replaceAll("\\[","");
         listIdVendor = listIdVendor.replaceAll("\\]","");
+
 
         List<Long> listIdParentAndSubIdParent = vendorService.getListSubIdParentByListIdParent(idcompany,idbranch,listIdVendor);
         for(VendorDataForTemplate ven : getListVendor){
@@ -5016,11 +5025,24 @@ public class ReportHandler implements ReportService {
             }
 
             for(VendorDataForTemplate ven : getListVendor){
-                ParameterPinjaman paramPinjamanCalc = new ParameterPinjaman();
-                paramPinjamanCalc.setDate(new java.sql.Date(param.getFrom()));
-                paramPinjamanCalc.setIdvendor(ven.getId());
-                paramPinjamanCalc.setOperatorPerbandingan("<");
-                Double saldoAwal = pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch,ven.getId(),paramPinjamanCalc.getDate());
+//                ParameterPinjaman paramPinjamanCalc = new ParameterPinjaman();
+//                paramPinjamanCalc.setDate(new java.sql.Date(param.getFrom()));
+//                paramPinjamanCalc.setIdvendor(ven.getId());
+//                paramPinjamanCalc.setOperatorPerbandingan("<");
+//                Double saldoAwal = pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch,ven.getId(),paramPinjamanCalc.getDate());
+
+                Timestamp ts = new Timestamp(param.getFrom());
+                Timestamp tsCd = GlobalFunc.getTimeForCalcSaldo(ts);
+
+                SaldoJournalParam paramDeposit = new SaldoJournalParam();
+                paramDeposit.setIdcompany(idcompany);
+                paramDeposit.setIdbranch(idbranch);
+                paramDeposit.setIdvendor(ven.getId());
+                paramDeposit.setAccountCode(AccountCOAEnum.PINJAMANVENDOR_LIABILITY.getAccCode());
+                paramDeposit.setTransaksiTime(tsCd.toString());
+                SaldoJournal saldoPinjaman = journalService.calculateSaldo(paramDeposit);
+                Double saldoAwal = saldoPinjaman.getSaldo();
+
                 Double saldo = saldoAwal;
                 if(param.getShowNol().equals("NO")){
                     Double tempSaldo = saldoAwal;
