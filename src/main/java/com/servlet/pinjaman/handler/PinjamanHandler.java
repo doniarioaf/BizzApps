@@ -462,10 +462,11 @@ public class PinjamanHandler implements PinjamanService {
     @Override
     public PagingData getListVendorSisaPinjaman(Long idcompany, Long idbranch, Integer Limit, Integer Offset, String search) {
         final StringBuilder sqlBuilder = new StringBuilder(new QueryVendorSisaPinjaman().schema());
-        sqlBuilder.append(" where v.idcompany = ? and v.idbranch = ? and v.isdelete = false  ");
+        sqlBuilder.append(" where v.idcompany = ? and v.idbranch = ? and v.isdelete = false and v.type = 'UDANG' and COALESCE(j.balance,0) > 0  ");
         if(!search.equals("")){
             sqlBuilder.append(" and ( LOWER(v.nama) LIKE LOWER(CONCAT('%' ,'"+search+"', '%')) or LOWER(v.alias) LIKE LOWER(CONCAT('%' ,'"+search+"', '%')) )");
         }
+//        String queryTotal = sqlBuilder.toString();
 
 //        sqlBuilder.append(" ORDER BY v.nama ");
         sqlBuilder.append(" LIMIT "+Limit+" OFFSET "+Offset+" ");
@@ -474,10 +475,11 @@ public class PinjamanHandler implements PinjamanService {
         List<VendorSisaPinjaman> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryVendorSisaPinjaman(), queryParameters);
 
         final StringBuilder sqlBuilderTotalData = new StringBuilder(new QueryTotalDataVendorSisaPinjaman().schema());
-        sqlBuilderTotalData.append(" where v.idcompany = ? and v.idbranch = ? and v.isdelete = false  ");
+        sqlBuilderTotalData.append(" where v.idcompany = ? and v.idbranch = ? and v.isdelete = false and v.type = 'UDANG' ");
         if(!search.equals("")){
             sqlBuilderTotalData.append(" and ( LOWER(v.nama) LIKE LOWER(CONCAT('%' ,'"+search+"', '%')) or LOWER(v.alias) LIKE LOWER(CONCAT('%' ,'"+search+"', '%')) )");
         }
+//        sqlBuilderTotalData.append(queryTotal);
         List<Long> listTotal = this.jdbcTemplate.query(sqlBuilderTotalData.toString(), new QueryTotalDataVendorSisaPinjaman(), queryParameters);
         Long totalElements = 0L;
         if(listTotal != null && listTotal.size() > 0){

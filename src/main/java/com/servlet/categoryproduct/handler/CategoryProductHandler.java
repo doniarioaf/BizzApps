@@ -71,7 +71,7 @@ public class CategoryProductHandler implements CategoryProductService {
     @Override
     public List<CategoryProductList> getListAll(Long idcompany, Long idbranch) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataList().schema());
-        sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false ");
+        sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false order by data.sequence ");
         final Object[] queryParameters = new Object[] {idcompany};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataList(), queryParameters);
     }
