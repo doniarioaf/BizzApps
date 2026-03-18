@@ -16,6 +16,15 @@ public class PackingListDataItemDetail {
     private Double price;
     private Double totalprice;
     private String box;
+    private Boolean check;
+
+    public Boolean getCheck() {
+        return check;
+    }
+
+    public void setCheck(Boolean check) {
+        this.check = check;
+    }
 
     public Long getCategoryJumlahitemsperkoli() {
         return categoryJumlahitemsperkoli;

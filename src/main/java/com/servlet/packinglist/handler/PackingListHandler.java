@@ -137,6 +137,7 @@ public class PackingListHandler implements PackingListService {
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_GENERATE_DOC_NUMBER,"Gagal Generate Document Number");
             validations.add(msg);
         }
+
         if(validations.size() == 0) {
             try{
                 PackingList table = new PackingList();
@@ -774,6 +775,7 @@ public class PackingListHandler implements PackingListService {
                     table.setNettoweight(val.getNettoweight());
                     table.setPrice(val.getPrice());
                     table.setTotalprice(val.getTotalprice());
+                    table.setCheck(val.getCheck());
                     itemRepo.saveAndFlush(table);
                     listitem.add(val);
                     mapsStock.put(keyMaps,table);

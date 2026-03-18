@@ -10,6 +10,7 @@ public class BodyPackingListItem {
     private Double price;
     private Double totalprice;
     private String box;
+    private Boolean check;
 
     @Override
     public String toString() {
@@ -22,8 +23,17 @@ public class BodyPackingListItem {
                 ", nettoweight=" + nettoweight +
                 ", price=" + price +
                 ", totalprice=" + totalprice +
+                ", check=" + check +
                 ", box='" + box + '\'' +
                 '}';
+    }
+
+    public Boolean getCheck() {
+        return check;
+    }
+
+    public void setCheck(Boolean check) {
+        this.check = check;
     }
 
     public String getBox() {
