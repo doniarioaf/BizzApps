@@ -47,4 +47,5 @@ public interface PurchaseReceiveService {
     List<PurchaseReceiveGetPrice> getListPurchaseReceiveGetPrice(Long idcompany, Long idbranch, ParamGetPrice param);
     PurchaseReceiveDataDetail getDetailLastDocumentByVendor(Long idcompany, Long idbranch, Long idvendor);
     List<Long> checkIdCP(Long idcompany, Long idbranch, Long idcategoryProduct);
+    List<QueryLastPriceSellData> listLastPriceSell(Long idcompany, Long idbranch);
 }

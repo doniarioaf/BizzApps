@@ -278,6 +278,8 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                 table.setFlightno(body.getFlightno());
                 table.setSmu(body.getSmu());
                 table.setNotes2(body.getNotes2());
+                table.setKurs(body.getKurs());
+                table.setSelisih(body.getSelisih());
                 table.setCreateddate(ts);
                 table.setCreatedby(iduser);
                 idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
@@ -394,6 +396,8 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                     table.setFlightno(body.getFlightno());
                     table.setSmu(body.getSmu());
                     table.setNotes2(body.getNotes2());
+                    table.setKurs(body.getKurs());
+                    table.setSelisih(body.getSelisih());
                     table.setModifiedby(iduser);
                     table.setModifieddate(ts);
                     idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
@@ -1226,6 +1230,26 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCheckIdCategoryProduct(), queryParameters);
     }
 
+    @Override
+    public List<QueryLastPriceSellData> listLastPriceSell(Long idcompany, Long idbranch) {
+        String idCustomer = "0";
+        //paramBranch mengecek, idcustomer sesuai branch, karena pada parameter tidak ada branch;
+        ValueParameter paramBranch = parameterClientService.getValueByParamName(idcompany,idbranch,"CUSTOMER_HARGAJUAL_NB_"+idbranch,"TEXT");
+        if(!paramBranch.getStrValue().equals("")){
+            idCustomer = paramBranch.getStrValue();
+        }else{
+            ValueParameter param = parameterClientService.getValueByParamName(idcompany,idbranch,"CUSTOMER_HARGAJUAL_NB","TEXT");
+            if(!param.getStrValue().equals("")){
+                idCustomer = param.getStrValue();
+            }
+        }
+        Long idCust = Long.parseLong(idCustomer);
+
+        final StringBuilder sqlBuilder = new StringBuilder(new QueryLastPriceSell(idcompany,idbranch,idCust).schema());
+        final Object[] queryParameters = new Object[] {};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryLastPriceSell(idcompany,idbranch,idCust), queryParameters);
+    }
+
     private List<Long> getListIdDeposit(Long idpurchasereceive){
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataPurchaseReceiveDeposit().schema());
         sqlBuilder.append(" where data.idpurchasereceive = ?  ");
@@ -1376,6 +1400,12 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                     table.setQtynota(val.getQtynota());
                     table.setPrice(val.getPrice());
                     table.setSubtotalprice(val.getSubtotalprice());
+                    table.setHargajual_terakhir(val.getHargajual_terakhir());
+                    table.setHargajual(val.getHargajual());
+                    table.setTotalusd(val.getTotalusd());
+                    table.setTotalrupiah(val.getTotalrupiah());
+                    table.setIdpackinglist_acuan_hargajual_terakhir(val.getIdpackinglist_acuan_hargajual_terakhir());
+                    table.setWeight_udang(val.getWeight_udang());
                     purchaseReceiveItemsRepo.saveAndFlush(table);
                     listItems.add(val);
                     mapsStock.put(keyMaps,table);

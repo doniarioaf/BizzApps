@@ -37,6 +37,24 @@ public class PurchaseReceiveDataDetail {
     private String flightno;
     private String smu;
     private String notes2;
+    private Double kurs;
+    private Double selisih;
+
+    public Double getKurs() {
+        return kurs;
+    }
+
+    public void setKurs(Double kurs) {
+        this.kurs = kurs;
+    }
+
+    public Double getSelisih() {
+        return selisih;
+    }
+
+    public void setSelisih(Double selisih) {
+        this.selisih = selisih;
+    }
 
     public Double getSetor_pinjaman() {
         return setor_pinjaman;

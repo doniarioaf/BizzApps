@@ -14,6 +14,7 @@ public class QueryPrintDataPurchaseReceiveItems implements RowMapper<PrintDataPu
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.idpurchasereceive as idpurchasereceive, data.idproduct as idproduct, data.idcategoryproduct as idcategoryproduct, ");
         sqlBuilder.append("data.qty as qty, data.qtybonus as qtybonus,data.qtynota as qtynota,data.price as price, data.subtotalprice as subtotalprice, data.type as type, ");
+        sqlBuilder.append("data.hargajual_terakhir as hargajual_terakhir, data.hargajual as hargajual,data.totalusd as totalusd,data.totalrupiah as totalrupiah, data.idpackinglist_acuan_hargajual_terakhir as idpackinglist_acuan_hargajual_terakhir, data.weight_udang as weight_udang, ");
         sqlBuilder.append("prod.nama as prodnama, ");
         sqlBuilder.append("cprod.nama as cprodnama, cprod.size as cprodsize, cprod.weightfromingram as cprodweightfromingram, cprod.weighttoingram as cprodweighttoingram ");
         sqlBuilder.append("from purchasereceive_item as data ");
@@ -44,6 +45,13 @@ public class QueryPrintDataPurchaseReceiveItems implements RowMapper<PrintDataPu
         final Long cprodweightfromingram = rs.getLong("cprodweightfromingram");
         final Long cprodweighttoingram = rs.getLong("cprodweighttoingram");
 
+        final Double hargajual_terakhir = rs.getDouble("hargajual_terakhir");
+        final Double hargajual = rs.getDouble("hargajual");
+        final Double totalusd = rs.getDouble("totalusd");
+        final Double totalrupiah = rs.getDouble("totalrupiah");
+        final Long idpackinglist_acuan_hargajual_terakhir = rs.getLong("idpackinglist_acuan_hargajual_terakhir");
+        final Double weight_udang = rs.getDouble("weight_udang");
+
         PrintDataPurchaseReceiveItems data = new PrintDataPurchaseReceiveItems();
         data.setIdpurchasereceive(idpurchasereceive);
         data.setIdproduct(idproduct);
@@ -59,6 +67,12 @@ public class QueryPrintDataPurchaseReceiveItems implements RowMapper<PrintDataPu
         data.setQtynota(qtynota);
         data.setPrice(price);
         data.setSubtotalprice(subtotalprice);
+        data.setHargajual_terakhir(hargajual_terakhir);
+        data.setHargajual(hargajual);
+        data.setTotalusd(totalusd);
+        data.setTotalrupiah(totalrupiah);
+        data.setIdpackinglist_acuan_hargajual_terakhir(idpackinglist_acuan_hargajual_terakhir);
+        data.setWeight_udang(weight_udang);
         return data;
     }
 }

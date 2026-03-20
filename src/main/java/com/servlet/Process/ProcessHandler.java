@@ -1460,7 +1460,11 @@ public class ProcessHandler implements ProcessService{
 					val.setData(purchaseReceiveService.catatDownload(id,auth.getIdcompany(), auth.getIdbranch(),auth.getId()));
 				}else if(type.equals("GETITEMDRAFT")) {
 					long id = (long) param.get("iddraft");
-					val.setData(draftPurchaseReceiveService.getListItemsByIDForPR(id));
+					HashMap<String, Object> map = new HashMap<>();
+					map.put("items",draftPurchaseReceiveService.getListItemsByIDForPR(id));
+					map.put("lastpricesell",purchaseReceiveService.listLastPriceSell(auth.getIdcompany(), auth.getIdbranch()));
+//					val.setData(draftPurchaseReceiveService.getListItemsByIDForPR(id));
+					val.setData(map);
 				}
 			}else if(codepermission.equals(ConstansPermission.READ_DEPOSIT)) {
 				HashMap<String, Object> param = (HashMap<String, Object>) data;
