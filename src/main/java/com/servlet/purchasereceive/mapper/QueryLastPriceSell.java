@@ -26,7 +26,7 @@ public class QueryLastPriceSell implements RowMapper<QueryLastPriceSellData> {
                 "        pl.\"date\", " +
                 "        pli.idpackinglist, " +
                 "        ROW_NUMBER() OVER ( " +
-                "            PARTITION BY pli.idproduct, pli.idcategoryproduct " +
+                "            PARTITION BY pli.idproduct, mps.categoryproductid " +
                 "            ORDER BY pl.\"date\" DESC, pli.idpackinglist DESC " +
                 "        ) AS rn " +
                 "    FROM packinglist_item pli " +
