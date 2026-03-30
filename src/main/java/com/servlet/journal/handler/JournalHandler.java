@@ -531,6 +531,8 @@ public class JournalHandler implements JournalService {
                 detailrepo.deleteDetailByListSourceNumber(listSourceNumber);
                 repo.deleteByListSourceNumber(listSourceNumber);
             }
+
+            detailrepo.deleteDetailDoubleSourceNumberData();
         }catch (Exception e){
             e.printStackTrace();
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
@@ -540,6 +542,8 @@ public class JournalHandler implements JournalService {
 //        String compBranch = val.getIdcompany()+"-"+ val.getIdbranch();
         if(validations.size() == 0){
             historyAppsService.saveHistory(idcompany, idbranch, iduser, "INTEGRASI",namaMenu,payload.toString(),"","",ts);
+        }else{
+            historyAppsService.saveHistory(idcompany, idbranch, iduser, "INTEGRASI-ERROR",namaMenu,payload.toString()+" Error : "+validations.toString(),"","",ts);
         }
         ReturnData data = new ReturnData();
         data.setId(0L);

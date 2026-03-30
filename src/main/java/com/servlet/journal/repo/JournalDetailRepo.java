@@ -47,4 +47,9 @@ public interface JournalDetailRepo extends JpaRepository<JournalDetail, JournalD
     @Modifying
     @Query(value ="delete from journal_detail where concat(idvendor,sourcenumber) IN (:idvendorsourcenumber) ",nativeQuery = true)
     void deleteDetailByListIdVendorAndSourceNumber(@Param("idvendorsourcenumber") List<String> idvendorsourcenumber);
+
+    @Transactional
+    @Modifying
+    @Query(value ="DELETE FROM journal_detail jd WHERE EXISTS ( SELECT 1 FROM journal_detail jd2  WHERE jd.sourcenumber = jd2.sourcenumber AND jd.idvendor = jd2.idvendor  AND jd.journalid < jd2.journalid) ",nativeQuery = true)
+    void deleteDetailDoubleSourceNumberData();
 }
