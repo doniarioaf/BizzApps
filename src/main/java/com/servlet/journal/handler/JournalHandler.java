@@ -172,85 +172,60 @@ public class JournalHandler implements JournalService {
                 detailrepo.saveAndFlush(detailCredit);
 
             }else if(param.getSourcetype().equals(SourceTypeEnum.TRANSAKSI_PRC.getSourceType())){
-//                flag = true;
                 if(param.getAmountPemakaianDeposit().doubleValue() > 0){
-//                    JournalDetail pemakaianDepositDebit1 = new JournalDetail();
-//                    JournalDetailPK pemakaianDepositDebit1PK = new JournalDetailPK();
-//                    pemakaianDepositDebit1PK.setJournalid(idjournal);
-//                    pemakaianDepositDebit1PK.setAccountcode(AccountCOAEnum.HUTANGUSAHA_DEPOSIT_LIABILITY.getAccCode());
-//                    pemakaianDepositDebit1.setJournalDetailPK(pemakaianDepositDebit1PK);
-//                    pemakaianDepositDebit1.setDebit(param.getAmountPemakaianDeposit());
-//                    pemakaianDepositDebit1.setCredit(0.0);
-//                    pemakaianDepositDebit1.setDescription(param.getDescriptionDetailDeposit());
+                    createPemakaianDeposit(idjournal,ts,param);
+
+//                    JournalDetail pemakaianDepositDebit2 = new JournalDetail();
+//                    JournalDetailPK pemakaianDepositDebit2PK = new JournalDetailPK();
+//                    pemakaianDepositDebit2PK.setJournalid(idjournal);
+//                    pemakaianDepositDebit2PK.setAccountcode(AccountCOAEnum.DEPOSITVENDOR_ASSET.getAccCode());
+//                    pemakaianDepositDebit2.setJournalDetailPK(pemakaianDepositDebit2PK);
+//                    pemakaianDepositDebit2.setDebit(param.getAmountPemakaianDeposit());
+//                    pemakaianDepositDebit2.setCredit(0.0);
+//                    pemakaianDepositDebit2.setDescription(param.getDescriptionDetailDeposit());
 //
-//                    pemakaianDepositDebit1.setIdvendor(param.getIdvendor());
-//                    pemakaianDepositDebit1.setSourcenumber(param.getSourcenumber());
-//                    pemakaianDepositDebit1.setTransaksitime(ts);
-//                    pemakaianDepositDebit1.setIdcompany(param.getIdcompany());
-//                    pemakaianDepositDebit1.setIdbranch(param.getIdbranch());
-
-                    JournalDetail pemakaianDepositDebit2 = new JournalDetail();
-                    JournalDetailPK pemakaianDepositDebit2PK = new JournalDetailPK();
-                    pemakaianDepositDebit2PK.setJournalid(idjournal);
-                    pemakaianDepositDebit2PK.setAccountcode(AccountCOAEnum.DEPOSITVENDOR_ASSET.getAccCode());
-                    pemakaianDepositDebit2.setJournalDetailPK(pemakaianDepositDebit2PK);
-                    pemakaianDepositDebit2.setDebit(param.getAmountPemakaianDeposit());
-                    pemakaianDepositDebit2.setCredit(0.0);
-                    pemakaianDepositDebit2.setDescription(param.getDescriptionDetailDeposit());
-
-                    pemakaianDepositDebit2.setIdvendor(param.getIdvendor());
-                    pemakaianDepositDebit2.setSourcenumber(param.getSourcenumber());
-                    if(param.getTransaksitime() != null){
-                        pemakaianDepositDebit2.setTransaksitime(param.getTransaksitime());
-                    }else{
-                        pemakaianDepositDebit2.setTransaksitime(ts);
-                    }
-                    pemakaianDepositDebit2.setIdcompany(param.getIdcompany());
-                    pemakaianDepositDebit2.setIdbranch(param.getIdbranch());
-                    pemakaianDepositDebit2.setSourcedocumentdate(param.getSourcedocumentdate());
-
-//                    detailrepo.saveAndFlush(pemakaianDepositDebit1);
-                    detailrepo.saveAndFlush(pemakaianDepositDebit2);
+//                    pemakaianDepositDebit2.setIdvendor(param.getIdvendor());
+//                    pemakaianDepositDebit2.setSourcenumber(param.getSourcenumber());
+//                    if(param.getTransaksitime() != null){
+//                        pemakaianDepositDebit2.setTransaksitime(param.getTransaksitime());
+//                    }else{
+//                        pemakaianDepositDebit2.setTransaksitime(ts);
+//                    }
+//                    pemakaianDepositDebit2.setIdcompany(param.getIdcompany());
+//                    pemakaianDepositDebit2.setIdbranch(param.getIdbranch());
+//                    pemakaianDepositDebit2.setSourcedocumentdate(param.getSourcedocumentdate());
+//
+//                    detailrepo.saveAndFlush(pemakaianDepositDebit2);
                 }
-
+//                if(param.getSourcenumber().equals("PRC-2000523")){
+//                    System.out.println("getAmountPembayaranPinjaman "+param.getAmountPembayaranPinjaman().doubleValue());
+//                }
                 if(param.getAmountPembayaranPinjaman().doubleValue() > 0){
-//                    JournalDetail pembayaranPinjamanDebit1 = new JournalDetail();
-//                    JournalDetailPK pembayaranPinjamanDebit1tPK = new JournalDetailPK();
-//                    pembayaranPinjamanDebit1tPK.setJournalid(idjournal);
-//                    pembayaranPinjamanDebit1tPK.setAccountcode(AccountCOAEnum.HUTANGUSAHA_PINJAMAN_LIABILITY.getAccCode());
-//                    pembayaranPinjamanDebit1.setJournalDetailPK(pembayaranPinjamanDebit1tPK);
-//                    pembayaranPinjamanDebit1.setDebit(param.getAmountPembayaranPinjaman());
-//                    pembayaranPinjamanDebit1.setCredit(0.0);
-//                    pembayaranPinjamanDebit1.setDescription(param.getDescriptionDetailPinjaman());
+                    createPembayaranPinjaman(idjournal,ts,param);
+//                    JournalDetail pembayaranPinjamanDebit2 = new JournalDetail();
+//                    JournalDetailPK pembayaranPinjamanDebit2PK = new JournalDetailPK();
+//                    pembayaranPinjamanDebit2PK.setJournalid(idjournal);
+//                    pembayaranPinjamanDebit2PK.setAccountcode(AccountCOAEnum.PINJAMANVENDOR_LIABILITY.getAccCode());
+//                    pembayaranPinjamanDebit2.setJournalDetailPK(pembayaranPinjamanDebit2PK);
+//                    pembayaranPinjamanDebit2.setDebit(param.getAmountPembayaranPinjaman());
+//                    pembayaranPinjamanDebit2.setCredit(0.0);
+//                    pembayaranPinjamanDebit2.setDescription(param.getDescriptionDetailPinjaman());
 //
-//                    pembayaranPinjamanDebit1.setIdvendor(param.getIdvendor());
-//                    pembayaranPinjamanDebit1.setSourcenumber(param.getSourcenumber());
-//                    pembayaranPinjamanDebit1.setTransaksitime(ts);
-//                    pembayaranPinjamanDebit1.setIdcompany(param.getIdcompany());
-//                    pembayaranPinjamanDebit1.setIdbranch(param.getIdbranch());
-
-                    JournalDetail pembayaranPinjamanDebit2 = new JournalDetail();
-                    JournalDetailPK pembayaranPinjamanDebit2PK = new JournalDetailPK();
-                    pembayaranPinjamanDebit2PK.setJournalid(idjournal);
-                    pembayaranPinjamanDebit2PK.setAccountcode(AccountCOAEnum.PINJAMANVENDOR_LIABILITY.getAccCode());
-                    pembayaranPinjamanDebit2.setJournalDetailPK(pembayaranPinjamanDebit2PK);
-                    pembayaranPinjamanDebit2.setDebit(param.getAmountPembayaranPinjaman());
-                    pembayaranPinjamanDebit2.setCredit(0.0);
-                    pembayaranPinjamanDebit2.setDescription(param.getDescriptionDetailPinjaman());
-
-                    pembayaranPinjamanDebit2.setIdvendor(param.getIdvendor());
-                    pembayaranPinjamanDebit2.setSourcenumber(param.getSourcenumber());
-                    if(param.getTransaksitime() != null){
-                        pembayaranPinjamanDebit2.setTransaksitime(param.getTransaksitime());
-                    }else{
-                        pembayaranPinjamanDebit2.setTransaksitime(ts);
-                    }
-                    pembayaranPinjamanDebit2.setIdcompany(param.getIdcompany());
-                    pembayaranPinjamanDebit2.setIdbranch(param.getIdbranch());
-                    pembayaranPinjamanDebit2.setSourcedocumentdate(param.getSourcedocumentdate());
-
-//                    detailrepo.saveAndFlush(pembayaranPinjamanDebit1);
-                    detailrepo.saveAndFlush(pembayaranPinjamanDebit2);
+//                    pembayaranPinjamanDebit2.setIdvendor(param.getIdvendor());
+//                    pembayaranPinjamanDebit2.setSourcenumber(param.getSourcenumber());
+//                    if(param.getTransaksitime() != null){
+//                        pembayaranPinjamanDebit2.setTransaksitime(param.getTransaksitime());
+//                    }else{
+//                        pembayaranPinjamanDebit2.setTransaksitime(ts);
+//                    }
+//                    pembayaranPinjamanDebit2.setIdcompany(param.getIdcompany());
+//                    pembayaranPinjamanDebit2.setIdbranch(param.getIdbranch());
+//                    pembayaranPinjamanDebit2.setSourcedocumentdate(param.getSourcedocumentdate());
+//
+//                    detailrepo.saveAndFlush(pembayaranPinjamanDebit2);
+//                    if(param.getSourcenumber().equals("PRC-2000523")){
+//                        System.out.println("getAmountPembayaranPinjaman Masuk "+param.getAmountPembayaranPinjaman().doubleValue());
+//                    }
                 }
 
 
@@ -457,6 +432,11 @@ public class JournalHandler implements JournalService {
 
             if(listPurchaseReceive != null && listPurchaseReceive.size() > 0){
                 for(PurchaseReceive val : listPurchaseReceive){
+//                    if(val.getNodocument().equals("PRC-2000523")){
+//                        System.out.println("val.getSetor() "+val.getSetor());
+//                        System.out.println("val.getSetor_pinjaman() "+val.getSetor_pinjaman());
+//                        System.out.println("val.isIsdelete() "+val.isIsdelete());
+//                    }
                     if(val.isIsdelete()){
                         listSourceNumber.add(val.getNodocument());
                         repo.deleteBySourceNumber(val.getNodocument());
@@ -466,6 +446,9 @@ public class JournalHandler implements JournalService {
 
                         List<JournalDetail> listDetail = detailrepo.fingBySourceNumber(val.getIdcompany(),val.getIdbranch(),val.getNodocument());
                         PostingJournalParam param = new PostingJournalParam();
+//                        if(val.getNodocument().equals("PRC-2000523")){
+//                            System.out.println("listDetail.size() "+listDetail.size());
+//                        }
                         if(listDetail != null && listDetail.size() > 0){
                             param.setIdcompany(val.getIdcompany());
                             param.setIdbranch(val.getIdbranch());
@@ -567,11 +550,6 @@ public class JournalHandler implements JournalService {
                 for(JournalDetail val : listDetail){
                     JournalDetail table = val;
                     if(param.getSourcetype().equals(SourceTypeEnum.TOPUP_DEPOSIT.getSourceType())){
-//                        if(val.getJournalDetailPK().getAccountcode().equals(AccountCOAEnum.KAS_ASSET.getAccCode())){
-//                            table.setDebit(param.getAmount());
-//                        }else if(val.getJournalDetailPK().getAccountcode().equals(AccountCOAEnum.DEPOSITVENDOR_ASSET.getAccCode())){
-//                            table.setCredit(param.getAmount());
-//                        }
                         if(val.getJournalDetailPK().getAccountcode().equals(AccountCOAEnum.DEPOSITVENDOR_ASSET.getAccCode())){
                             //Karena input top up bisa deposit bisa minus, jika minus dimasukan ke debit, karena di analogikan sebgai pengurangan saldo
                             if(param.getAmount() >= 0){
@@ -584,11 +562,7 @@ public class JournalHandler implements JournalService {
                         }
                         table.setDescription(param.getDescriptionDetail());
                     }else if(param.getSourcetype().equals(SourceTypeEnum.TOPUP_PINJAMAN.getSourceType())){
-//                        if(val.getJournalDetailPK().getAccountcode().equals(AccountCOAEnum.KAS_ASSET.getAccCode())){
-//                            table.setDebit(param.getAmount());
-//                        }else if(val.getJournalDetailPK().getAccountcode().equals(AccountCOAEnum.PINJAMANVENDOR_LIABILITY.getAccCode())){
-//                            table.setCredit(param.getAmount());
-//                        }
+
                         if(val.getJournalDetailPK().getAccountcode().equals(AccountCOAEnum.PINJAMANVENDOR_LIABILITY.getAccCode())){
 //                            table.setCredit(param.getAmount());
 
@@ -604,28 +578,37 @@ public class JournalHandler implements JournalService {
                         table.setDescription(param.getDescriptionDetail());
                     }else if(param.getSourcetype().equals(SourceTypeEnum.TRANSAKSI_PRC.getSourceType())){
                         if(param.getAmountPemakaianDeposit().doubleValue() > 0){
-//                            if(val.getJournalDetailPK().getAccountcode().equals(AccountCOAEnum.HUTANGUSAHA_DEPOSIT_LIABILITY.getAccCode())){
-//                                table.setDebit(param.getAmountPemakaianDeposit());
-//                            }else if(val.getJournalDetailPK().getAccountcode().equals(AccountCOAEnum.DEPOSITVENDOR_ASSET.getAccCode())){
-//                                table.setDebit(param.getAmountPemakaianDeposit());
-//                            }
 
                             if(val.getJournalDetailPK().getAccountcode().equals(AccountCOAEnum.DEPOSITVENDOR_ASSET.getAccCode())){
                                 table.setDebit(param.getAmountPemakaianDeposit());
+                                table.setDescription(param.getDescriptionDetailDeposit());
+                            }else{
+                                //kenapa jika size == 1 , di create. karena ketika size , tapi pemakaian deposit lebih besar dari 0,
+                                //bisa dipastikan itu tidak ada di journalDetail, sehingga perlu di create.
+                                if(listDetail.size() == 1){
+                                    Long currDateLong = new java.util.Date().getTime();
+                                    Timestamp ts = new Timestamp(currDateLong);
+                                    createPemakaianDeposit(val.getJournalDetailPK().getJournalid(),ts,param);
+                                }
                             }
-                            table.setDescription(param.getDescriptionDetailDeposit());
+
                         }
 
                         if(param.getAmountPembayaranPinjaman().doubleValue() > 0){
-//                            if(val.getJournalDetailPK().getAccountcode().equals(AccountCOAEnum.HUTANGUSAHA_PINJAMAN_LIABILITY.getAccCode())){
-//                                table.setDebit(param.getAmountPembayaranPinjaman());
-//                            }else if(val.getJournalDetailPK().getAccountcode().equals(AccountCOAEnum.PINJAMANVENDOR_LIABILITY.getAccCode())){
-//                                table.setDebit(param.getAmountPembayaranPinjaman());
-//                            }
+
                             if(val.getJournalDetailPK().getAccountcode().equals(AccountCOAEnum.PINJAMANVENDOR_LIABILITY.getAccCode())){
                                 table.setDebit(param.getAmountPembayaranPinjaman());
+                                table.setDescription(param.getDescriptionDetailPinjaman());
+                            }else{
+                                //kenapa jika size == 1 , di create. karena ketika size , tapi pembayaran pinjaman lebih besar dari 0,
+                                //bisa dipastikan itu tidak ada di journalDetail, sehingga perlu di create.
+                                if(listDetail.size() == 1) {
+                                    Long currDateLong = new java.util.Date().getTime();
+                                    Timestamp ts = new Timestamp(currDateLong);
+                                    createPembayaranPinjaman(val.getJournalDetailPK().getJournalid(), ts, param);
+                                }
                             }
-                            table.setDescription(param.getDescriptionDetailPinjaman());
+
                         }
                     }
                     table.setTransaksitime(param.getTransaksitime());
@@ -702,5 +685,54 @@ public class JournalHandler implements JournalService {
         temp.setIdvendor(0L);
         temp.setSaldo(0.0);
         return temp;
+    }
+
+    private void createPemakaianDeposit(Long idjournal,Timestamp ts, PostingJournalParam param){
+        JournalDetail pemakaianDepositDebit2 = new JournalDetail();
+        JournalDetailPK pemakaianDepositDebit2PK = new JournalDetailPK();
+        pemakaianDepositDebit2PK.setJournalid(idjournal);
+        pemakaianDepositDebit2PK.setAccountcode(AccountCOAEnum.DEPOSITVENDOR_ASSET.getAccCode());
+        pemakaianDepositDebit2.setJournalDetailPK(pemakaianDepositDebit2PK);
+        pemakaianDepositDebit2.setDebit(param.getAmountPemakaianDeposit());
+        pemakaianDepositDebit2.setCredit(0.0);
+        pemakaianDepositDebit2.setDescription(param.getDescriptionDetailDeposit());
+
+        pemakaianDepositDebit2.setIdvendor(param.getIdvendor());
+        pemakaianDepositDebit2.setSourcenumber(param.getSourcenumber());
+        if(param.getTransaksitime() != null){
+            pemakaianDepositDebit2.setTransaksitime(param.getTransaksitime());
+        }else{
+            pemakaianDepositDebit2.setTransaksitime(ts);
+        }
+        pemakaianDepositDebit2.setIdcompany(param.getIdcompany());
+        pemakaianDepositDebit2.setIdbranch(param.getIdbranch());
+        pemakaianDepositDebit2.setSourcedocumentdate(param.getSourcedocumentdate());
+
+        detailrepo.saveAndFlush(pemakaianDepositDebit2);
+    }
+
+    private void createPembayaranPinjaman(Long idjournal,Timestamp ts, PostingJournalParam param){
+        JournalDetail pembayaranPinjamanDebit2 = new JournalDetail();
+        JournalDetailPK pembayaranPinjamanDebit2PK = new JournalDetailPK();
+        pembayaranPinjamanDebit2PK.setJournalid(idjournal);
+        pembayaranPinjamanDebit2PK.setAccountcode(AccountCOAEnum.PINJAMANVENDOR_LIABILITY.getAccCode());
+        pembayaranPinjamanDebit2.setJournalDetailPK(pembayaranPinjamanDebit2PK);
+        pembayaranPinjamanDebit2.setDebit(param.getAmountPembayaranPinjaman());
+        pembayaranPinjamanDebit2.setCredit(0.0);
+        pembayaranPinjamanDebit2.setDescription(param.getDescriptionDetailPinjaman());
+
+        pembayaranPinjamanDebit2.setIdvendor(param.getIdvendor());
+        pembayaranPinjamanDebit2.setSourcenumber(param.getSourcenumber());
+        if(param.getTransaksitime() != null){
+            pembayaranPinjamanDebit2.setTransaksitime(param.getTransaksitime());
+        }else{
+            pembayaranPinjamanDebit2.setTransaksitime(ts);
+        }
+        pembayaranPinjamanDebit2.setIdcompany(param.getIdcompany());
+        pembayaranPinjamanDebit2.setIdbranch(param.getIdbranch());
+        pembayaranPinjamanDebit2.setSourcedocumentdate(param.getSourcedocumentdate());
+
+//                    detailrepo.saveAndFlush(pembayaranPinjamanDebit1);
+        detailrepo.saveAndFlush(pembayaranPinjamanDebit2);
     }
 }

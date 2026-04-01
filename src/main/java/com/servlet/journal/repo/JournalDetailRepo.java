@@ -38,6 +38,13 @@ public interface JournalDetailRepo extends JpaRepository<JournalDetail, JournalD
 
     @Transactional
     @Query(
+            value = "SELECT * FROM journal_detail WHERE idcompany =:idcompany and idbranch =:idbranch and LOWER(TRIM(sourcenumber)) = LOWER(TRIM(:sourcenumber)) AND accountcode =:accountcode " ,
+            nativeQuery = true
+    )
+    List<JournalDetail> fingBySourceNumberAndAccCode(@Param("idcompany") Long idcompany,@Param("idbranch") Long idbranch,@Param("sourcenumber") String sourcenumber, @Param("accountcode") String accountcode);
+
+    @Transactional
+    @Query(
             value = "SELECT * FROM journal_detail WHERE idcompany =:idcompany and idbranch =:idbranch and idvendor =:idvendor and LOWER(TRIM(sourcenumber)) = LOWER(TRIM(:sourcenumber)) " ,
             nativeQuery = true
     )
@@ -50,6 +57,6 @@ public interface JournalDetailRepo extends JpaRepository<JournalDetail, JournalD
 
     @Transactional
     @Modifying
-    @Query(value ="DELETE FROM journal_detail jd WHERE EXISTS ( SELECT 1 FROM journal_detail jd2  WHERE jd.sourcenumber = jd2.sourcenumber AND jd.idvendor = jd2.idvendor  AND jd.journalid < jd2.journalid) ",nativeQuery = true)
+    @Query(value ="DELETE FROM journal_detail jd WHERE EXISTS ( SELECT 1 FROM journal_detail jd2  WHERE jd.accountcode = jd2.accountcode AND jd.sourcenumber = jd2.sourcenumber AND jd.idvendor = jd2.idvendor  AND jd.journalid < jd2.journalid) ",nativeQuery = true)
     void deleteDetailDoubleSourceNumberData();
 }
