@@ -2237,11 +2237,31 @@ public class ReportHandler implements ReportService {
             stockUdangMati = stockUdangMati.longValue() + stockUdangMatiCPL.longValue();
             stockUdangMatiByIDcategory.put(cp.getId(),stockUdangMati);
 
-            ParamCalculateQtyPR paramUdangMasuk = new ParamCalculateQtyPR();
-            paramUdangMasuk.setDateFrom(param.getDate());
-            paramUdangMasuk.setDateThru(param.getDate());
-            paramUdangMasuk.setIdcategoryproduct(cp.getId());
-            Long stockUdangMasuk = purchaseReceiveService.calculateQtyPr(idcompany,idbranch,paramUdangMasuk);
+//            ParamCalculateQtyPR paramUdangMasuk = new ParamCalculateQtyPR();
+//            paramUdangMasuk.setDateFrom(param.getDate());
+//            paramUdangMasuk.setDateThru(param.getDate());
+//            paramUdangMasuk.setIdcategoryproduct(cp.getId());
+//            Long stockUdangMasuk = purchaseReceiveService.calculateQtyPr(idcompany,idbranch,paramUdangMasuk);
+            ParamCalculateQtyDPR paramPRUdangMasuk = new ParamCalculateQtyDPR();
+            paramPRUdangMasuk.setDateFrom(param.getDate());
+            paramPRUdangMasuk.setDateThru(param.getDate());
+            paramPRUdangMasuk.setIdcategoryproduct(cp.getId());
+
+            ParamCalculateQtySA paramSAUdangMasuk = new ParamCalculateQtySA();
+            paramSAUdangMasuk.setDateFrom(param.getDate());
+            paramSAUdangMasuk.setDateThru(param.getDate());
+            paramSAUdangMasuk.setIdcategoryproduct(cp.getId());
+
+            ParamCalculateQtyCPL paramCPLUdangMasuk = new ParamCalculateQtyCPL();
+            paramCPLUdangMasuk.setDateFrom(param.getDate());
+            paramCPLUdangMasuk.setDateThru(param.getDate());
+            paramCPLUdangMasuk.setIdcategoryproduct(cp.getId());
+
+            ParamCalculateQty paramQtyUdangMasuk = new ParamCalculateQty();
+            paramQtyUdangMasuk.setParamCalculateQtyDPR(paramPRUdangMasuk);
+            paramQtyUdangMasuk.setParamCalculateQtySA(paramSAUdangMasuk);
+            paramQtyUdangMasuk.setParamCalculateQtyCPL(paramCPLUdangMasuk);
+            Long stockUdangMasuk = stockItemService.calculateQtyUdangMasuk(idcompany,idbranch,paramQtyUdangMasuk);
             stockUdangMasukByIDcategory.put(cp.getId(),stockUdangMasuk);
         }
         Long grandTotalStockKolamTerakhir = 0L;

@@ -111,14 +111,16 @@ public class StockItemHandler implements StockItemService {
 
     @Override
     public Long calculateQty(Long idcompany, Long idbranch, ParamCalculateQty param) {
-        Long qtyMasuk1 = draftPurchaseReceiveService.calculateQtyDpr(idcompany,idbranch, param.getParamCalculateQtyDPR());
+//        Long qtyMasuk1 = draftPurchaseReceiveService.calculateQtyDpr(idcompany,idbranch, param.getParamCalculateQtyDPR());
 //        Long qtyMasuk1 = purchaseReceiveService.calculateQtyPr(idcompany,idbranch, param.getParamCalculateQtyPR());
 //        System.out.println("qtyMasuk1 "+qtyMasuk1);
         //Type udah hidup
-        Long qtyMasuk2 = stockAdjusmentService.calculateQtySA(idcompany,idbranch,"H", param.getParamCalculateQtySA());
+//        Long qtyMasuk2 = stockAdjusmentService.calculateQtySA(idcompany,idbranch,"H", param.getParamCalculateQtySA());
 
-        Long qtyMasuk3 = cancelPackingListService.calculateQtyCPL(idcompany,idbranch, param.getParamCalculateQtyCPL());
+//        Long qtyMasuk3 = cancelPackingListService.calculateQtyCPL(idcompany,idbranch, param.getParamCalculateQtyCPL());
 //        System.out.println("qtyMasuk2 "+qtyMasuk2);
+        Long qtyMasuk = calculateQtyUdangMasuk(idcompany, idbranch, param);
+
         Long qtyKeluar1 = packingListService.calculateQtyPL(idcompany,idbranch, param.getParamCalculateQtyPL());
 //        System.out.println("qtyKeluar1 "+qtyKeluar1);
         //Type udah hidup
@@ -131,7 +133,7 @@ public class StockItemHandler implements StockItemService {
 
 //        System.out.println("qtyKeluar2 "+qtyKeluar2);
 //        Long qtyKeluar3 = cancelPackingListService.calculateQtyCPL(idcompany,idbranch, param.getParamCalculateQtyCPL());
-//        if(param.getParamCalculateQtyCPL().getIdcategoryproduct() == 7 ){
+//        if(param.getParamCalculateQtyCPL().getIdcategoryproduct() == 10 ){
 //            System.out.println("param.getParamCalculateQtyPL() "+param.getParamCalculateQtyPL().toString());
 //            System.out.println("qtyMasuk1 "+qtyMasuk1);
 //            System.out.println("qtyMasuk2 "+qtyMasuk2);
@@ -139,9 +141,29 @@ public class StockItemHandler implements StockItemService {
 //            System.out.println("qtyKeluar1 "+qtyKeluar1);
 //            System.out.println("qtyKeluar2 "+qtyKeluar2);
 //            System.out.println("qtyKeluar2 "+qtyKeluar3);
-
+//
 //        }
-        Long hasil = (qtyMasuk1.longValue() + qtyMasuk2.longValue() + qtyMasuk3.longValue()) - (qtyKeluar1.longValue() + qtyKeluar2.longValue() + qtyKeluar3.longValue());
+        Long hasil = qtyMasuk - (qtyKeluar1.longValue() + qtyKeluar2.longValue() + qtyKeluar3.longValue());
+
+//        System.out.println("hasil "+hasil);
+
+        return hasil;
+    }
+
+    @Override
+    public Long calculateQtyUdangMasuk(Long idcompany, Long idbranch, ParamCalculateQty param) {
+        Long qtyMasuk1 = draftPurchaseReceiveService.calculateQtyDpr(idcompany,idbranch, param.getParamCalculateQtyDPR());
+//        Long qtyMasuk1 = purchaseReceiveService.calculateQtyPr(idcompany,idbranch, param.getParamCalculateQtyPR());
+//        System.out.println("qtyMasuk1 "+qtyMasuk1);
+        //Type udah hidup
+        Long qtyMasuk2 = stockAdjusmentService.calculateQtySA(idcompany,idbranch,"H", param.getParamCalculateQtySA());
+
+        Long qtyMasuk3 = cancelPackingListService.calculateQtyCPL(idcompany,idbranch, param.getParamCalculateQtyCPL());
+
+//        System.out.println("qtyKeluar2 "+qtyKeluar2);
+//        Long qtyKeluar3 = cancelPackingListService.calculateQtyCPL(idcompany,idbranch, param.getParamCalculateQtyCPL());
+
+        Long hasil = qtyMasuk1.longValue() + qtyMasuk2.longValue() + qtyMasuk3.longValue();
 
 //        System.out.println("hasil "+hasil);
 
