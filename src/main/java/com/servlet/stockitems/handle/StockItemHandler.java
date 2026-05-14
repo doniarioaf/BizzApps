@@ -157,16 +157,23 @@ public class StockItemHandler implements StockItemService {
 //        System.out.println("qtyMasuk1 "+qtyMasuk1);
         //Type udah hidup
         Long qtyMasuk2 = stockAdjusmentService.calculateQtySA(idcompany,idbranch,"H", param.getParamCalculateQtySA());
-
+//        System.out.println("qtyMasuk2 "+qtyMasuk2);
         Long qtyMasuk3 = cancelPackingListService.calculateQtyCPL(idcompany,idbranch, param.getParamCalculateQtyCPL());
-
+//        System.out.println("qtyMasuk3 "+qtyMasuk3);
 //        System.out.println("qtyKeluar2 "+qtyKeluar2);
 //        Long qtyKeluar3 = cancelPackingListService.calculateQtyCPL(idcompany,idbranch, param.getParamCalculateQtyCPL());
 
         Long hasil = qtyMasuk1.longValue() + qtyMasuk2.longValue() + qtyMasuk3.longValue();
 
-//        System.out.println("hasil "+hasil);
 
+//        if(param.getParamCalculateQtyCPL().getIdcategoryproduct() == 10 || param.getParamCalculateQtyCPL().getIdcategoryproduct() == 5 || param.getParamCalculateQtyCPL().getIdcategoryproduct() == 1
+//            || param.getParamCalculateQtyCPL().getIdcategoryproduct() == 13 || param.getParamCalculateQtyCPL().getIdcategoryproduct() == 11){
+//            System.out.println("qtyMasuk1 "+qtyMasuk1);
+//            System.out.println("qtyMasuk2 "+qtyMasuk2);
+//            System.out.println("qtyMasuk3 "+qtyMasuk3);
+//            System.out.println("hasil "+hasil);
+//
+//        }
         return hasil;
     }
 }

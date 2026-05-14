@@ -2096,8 +2096,6 @@ public class ReportHandler implements ReportService {
         ReportWorkBookExcel data = new ReportWorkBookExcel();
         XSSFWorkbook workbook = new XSSFWorkbook();
 
-        //kalau ada perubahan perhitungan atau tambah kolom, sesuaikan pdf nya di service printStockUdangHidupMati di StockAdjusmentHandler
-
         XSSFDataFormat format = workbook.createDataFormat();
 
         XSSFSheet sheet = workbook.createSheet("Laporan Stock Udang Hidup & Mati");
@@ -2106,13 +2104,15 @@ public class ReportHandler implements ReportService {
 
         String namaCabang = "";
         Branch branch = branchService.getBranchByID(idbranch);
-        if(branch != null){
+        if (branch != null) {
             namaCabang = branch.getNama();
         }
+
         int fontHeight = 12;
         CellStyle style = workbook.createCellStyle();
         CellStyle styleBold = workbook.createCellStyle();
         CellStyle styleAmount = workbook.createCellStyle();
+
         XSSFFont font = workbook.createFont();
         font.setBold(false);
         font.setFontHeight(fontHeight);
@@ -2126,73 +2126,64 @@ public class ReportHandler implements ReportService {
 
         int rowcount = 2;
         Row row = sheet.createRow(rowcount);
-        createCell(row, 0, "Laporan Stock Udang Hidup & Mati", style, sheet,columns);
+        createCell(row, 0, "Laporan Stock Udang Hidup & Mati", style, sheet, columns);
 
         String dateFrom = "";
         try {
             dateFrom = GlobalFunc.getDateLongToString(param.getDate(), "dd-MMMM-yyyy");
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
+        rowcount++;
+        row = sheet.createRow(rowcount);
+        createCell(row, 0, "Tanggal", style, sheet, columns);
+        createCell(row, 1, dateFrom, style, sheet, columns);
 
         rowcount++;
         row = sheet.createRow(rowcount);
-        createCell(row, 0, "Tanggal", style, sheet,columns);
-        createCell(row, 1, dateFrom, style, sheet,columns);
-
-        rowcount++;
-        row = sheet.createRow(rowcount);
-        createCell(row, 0, "Cabang", style, sheet,columns);
-        createCell(row, 1, namaCabang, style, sheet,columns);
+        createCell(row, 0, "Cabang", style, sheet, columns);
+        createCell(row, 1, namaCabang, style, sheet, columns);
 
         int colomcount = 0;
         rowcount++;
         rowcount++;
         row = sheet.createRow(rowcount);
-        createCell(row, colomcount, "UKURAN", style, sheet,columns);
-
+        createCell(row, colomcount, "UKURAN", style, sheet, columns);
         colomcount++;
-        createCell(row, colomcount, "GRAM", style, sheet,columns);
-
+        createCell(row, colomcount, "GRAM", style, sheet, columns);
         colomcount++;
-        createCell(row, colomcount, "PATOKAN PER KOLI", style, sheet,columns);
-
+        createCell(row, colomcount, "PATOKAN PER KOLI", style, sheet, columns);
         colomcount++;
-        createCell(row, colomcount, "STOK KOLAM TERAKHIR", style, sheet,columns);
-
+        createCell(row, colomcount, "STOK KOLAM TERAKHIR", style, sheet, columns);
         colomcount++;
-        createCell(row, colomcount, "UDANG MATI", style, sheet,columns);
-
+        createCell(row, colomcount, "UDANG MATI", style, sheet, columns);
         colomcount++;
-        createCell(row, colomcount, "UDANG MASUK", style, sheet,columns);
-
+        createCell(row, colomcount, "UDANG MASUK", style, sheet, columns);
         colomcount++;
-        createCell(row, colomcount, "TOTAL EKOR", style, sheet,columns);
+        createCell(row, colomcount, "TOTAL EKOR", style, sheet, columns);
         colomcount++;
-        createCell(row, colomcount, "TOTAL KOLI", style, sheet,columns);
+        createCell(row, colomcount, "TOTAL KOLI", style, sheet, columns);
 
-
-        //caraStock by CP
         Long dateMinus1 = 0L;
         try {
-            dateMinus1 = GlobalFunc.addDays(param.getDate(),-1);
+            dateMinus1 = GlobalFunc.addDays(param.getDate(), -1);
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
-        List<CategoryProductList> listCP = categoryProductService.getDataForTemplate(idcompany,idbranch,null);
-        HashMap<Long,Long> stockKolamTerakhirByIDcategory = new HashMap<>();
-        HashMap<Long,Long> stockUdangMatiByIDcategory = new HashMap<>();
-        HashMap<Long,Long> stockUdangMasukByIDcategory = new HashMap<>();
-        HashMap<Long,CategoryProductList> cpByIDcategory = new HashMap<>();
+        List<CategoryProductList> listCP = categoryProductService.getDataForTemplate(idcompany, idbranch, null);
+        HashMap<Long, Long> stockKolamTerakhirByIDcategory = new HashMap<>();
+        HashMap<Long, Long> stockUdangMatiByIDcategory     = new HashMap<>();
+        HashMap<Long, Long> stockUdangMasukByIDcategory    = new HashMap<>();
+        HashMap<Long, CategoryProductList> cpByIDcategory  = new HashMap<>();
 
-        //56169461 = 01-Jan-70
         Long satuJan70 = 56169461L;
-        for(CategoryProductList cp : listCP){
+
+        for (CategoryProductList cp : listCP) {
             cpByIDcategory.put(cp.getId(), cp);
+
+            // --- Stok kolam terakhir (s.d. hari kemarin) ---
             ParamCalculateQtyDPR paramPR = new ParamCalculateQtyDPR();
             paramPR.setDateFrom(satuJan70);
             paramPR.setDateThru(dateMinus1);
@@ -2218,30 +2209,28 @@ public class ReportHandler implements ReportService {
             paramQty.setParamCalculateQtySA(paramSA);
             paramQty.setParamCalculateQtyPL(paramPL);
             paramQty.setParamCalculateQtyCPL(paramCPL);
-            Long stockKolamTerakhir = stockItemService.calculateQty(idcompany,idbranch,paramQty);
-            stockKolamTerakhirByIDcategory.put(cp.getId(),stockKolamTerakhir);
+            Long stockKolamTerakhir = stockItemService.calculateQty(idcompany, idbranch, paramQty);
+            stockKolamTerakhirByIDcategory.put(cp.getId(), stockKolamTerakhir != null ? stockKolamTerakhir : 0L);
 
+            // --- Udang mati hari ini (SA type "M" + CPL type "M") ---
             ParamCalculateQtySA paramSAUdangMati = new ParamCalculateQtySA();
             paramSAUdangMati.setDateFrom(param.getDate());
             paramSAUdangMati.setDateThru(param.getDate());
             paramSAUdangMati.setIdcategoryproduct(cp.getId());
-            Long stockUdangMati = stockAdjusmentService.calculateQtySA(idcompany,idbranch,"M",paramSAUdangMati);
+            Long stockUdangMati = stockAdjusmentService.calculateQtySA(idcompany, idbranch, "M", paramSAUdangMati);
+            stockUdangMati = stockUdangMati != null ? stockUdangMati : 0L;
 
             ParamCalculateQtyCPL paramCalculateQtyCPL = new ParamCalculateQtyCPL();
             paramCalculateQtyCPL.setDateFrom(param.getDate());
             paramCalculateQtyCPL.setDateThru(param.getDate());
             paramCalculateQtyCPL.setIdcategoryproduct(cp.getId());
             paramCalculateQtyCPL.setType("M");
-            Long stockUdangMatiCPL = cancelPackingListService.calculateQtyCPL(idcompany,idbranch,paramCalculateQtyCPL);
+            Long stockUdangMatiCPL = cancelPackingListService.calculateQtyCPL(idcompany, idbranch, paramCalculateQtyCPL);
+            stockUdangMatiCPL = stockUdangMatiCPL != null ? stockUdangMatiCPL : 0L;
 
-            stockUdangMati = stockUdangMati.longValue() + stockUdangMatiCPL.longValue();
-            stockUdangMatiByIDcategory.put(cp.getId(),stockUdangMati);
+            stockUdangMatiByIDcategory.put(cp.getId(), stockUdangMati + stockUdangMatiCPL);
 
-//            ParamCalculateQtyPR paramUdangMasuk = new ParamCalculateQtyPR();
-//            paramUdangMasuk.setDateFrom(param.getDate());
-//            paramUdangMasuk.setDateThru(param.getDate());
-//            paramUdangMasuk.setIdcategoryproduct(cp.getId());
-//            Long stockUdangMasuk = purchaseReceiveService.calculateQtyPr(idcompany,idbranch,paramUdangMasuk);
+            // --- Udang masuk hari ini (DPR + SA + CPL) ---
             ParamCalculateQtyDPR paramPRUdangMasuk = new ParamCalculateQtyDPR();
             paramPRUdangMasuk.setDateFrom(param.getDate());
             paramPRUdangMasuk.setDateThru(param.getDate());
@@ -2261,206 +2250,170 @@ public class ReportHandler implements ReportService {
             paramQtyUdangMasuk.setParamCalculateQtyDPR(paramPRUdangMasuk);
             paramQtyUdangMasuk.setParamCalculateQtySA(paramSAUdangMasuk);
             paramQtyUdangMasuk.setParamCalculateQtyCPL(paramCPLUdangMasuk);
-            Long stockUdangMasuk = stockItemService.calculateQtyUdangMasuk(idcompany,idbranch,paramQtyUdangMasuk);
-            stockUdangMasukByIDcategory.put(cp.getId(),stockUdangMasuk);
+            // PL tidak di-set karena source udang masuk hanya DPR + SA + CPL
+            Long stockUdangMasuk = stockItemService.calculateQtyUdangMasuk(idcompany, idbranch, paramQtyUdangMasuk);
+            stockUdangMasukByIDcategory.put(cp.getId(), stockUdangMasuk != null ? stockUdangMasuk : 0L);
         }
-        Long grandTotalStockKolamTerakhir = 0L;
-        Long grandTotalUdangMati = 0L;
-        Long grandTotalUdangMasuk = 0L;
-        Long grandTotalTotalEkor = 0L;
-        Long grandTotalTotalKoli = 0L;
 
-        List<MappingStockList> listMapping = mappingStockService.getListAll(idcompany,idbranch);
+        Long grandTotalStockKolamTerakhir = 0L;
+        Long grandTotalUdangMati          = 0L;
+        Long grandTotalUdangMasuk         = 0L;
+        Long grandTotalTotalEkor          = 0L;
+        Long grandTotalTotalKoli          = 0L;
+
+        List<MappingStockList> listMapping = mappingStockService.getListAll(idcompany, idbranch);
 
         HashMap<Long, Long> calculateStockByIdCPMappingStockKolamTerakhir = new HashMap<>();
-        HashMap<Long, Long> calculateStockByIdCPMappingStockUdangMati = new HashMap<>();
-        HashMap<Long, Long> calculateStockByIdCPMappingStockUdangMasuk = new HashMap<>();
-        if(listMapping != null && listMapping.size() > 0){
-            for(MappingStockList mapp : listMapping){
-                Long stockKolamTerakhir1 = stockKolamTerakhirByIDcategory.get(mapp.getCategoryproductid());
-                if(stockKolamTerakhir1 == null){
-                    stockKolamTerakhir1 = 0L;
-                }
-                Long stockKolamTerakhir2 = stockKolamTerakhirByIDcategory.get(mapp.getCategoryproductidmapping());
-                if(stockKolamTerakhir2 == null){
-                    stockKolamTerakhir2 = 0L;
-                }
-                Long stockKolamTerakhir = stockKolamTerakhir1.longValue() +  stockKolamTerakhir2.longValue();
-//                if(mapp.getCategoryproductidmapping() == 24){
-//                    System.out.println("mapp.getCategoryproductid() "+mapp.getCategoryproductid());
-//                    System.out.println("mapp.getCategoryproductidmapping() "+mapp.getCategoryproductidmapping());
-//                    System.out.println("stockKolamTerakhir1 "+stockKolamTerakhir1);
-//                    System.out.println("stockKolamTerakhir2 "+stockKolamTerakhir2);
-//                }
-                Long stockUdangMati1 = stockUdangMatiByIDcategory.get(mapp.getCategoryproductid());
-                if(stockUdangMati1 == null){
-                    stockUdangMati1 = 0L;
-                }
-                Long stockUdangMati2 = stockUdangMatiByIDcategory.get(mapp.getCategoryproductidmapping());
-                if(stockUdangMati2 == null){
-                    stockUdangMati2 = 0L;
-                }
-                Long stockUdangMati = stockUdangMati1.longValue() +  stockUdangMati2.longValue();
+        HashMap<Long, Long> calculateStockByIdCPMappingStockUdangMati     = new HashMap<>();
+        HashMap<Long, Long> calculateStockByIdCPMappingStockUdangMasuk    = new HashMap<>();
 
-                Long stockUdangMasuk1 = stockUdangMasukByIDcategory.get(mapp.getCategoryproductid());
-                if(stockUdangMasuk1 == null){
-                    stockUdangMasuk1 = 0L;
+        if (listMapping != null && !listMapping.isEmpty()) {
+            for (MappingStockList mapp : listMapping) {
+                Long mappingKey = mapp.getCategoryproductidmapping();
+
+                long sk1 = stockKolamTerakhirByIDcategory.getOrDefault(mapp.getCategoryproductid(), 0L);
+                long sk2 = stockKolamTerakhirByIDcategory.getOrDefault(mappingKey, 0L);
+
+                long sm1 = stockUdangMatiByIDcategory.getOrDefault(mapp.getCategoryproductid(), 0L);
+                long sm2 = stockUdangMatiByIDcategory.getOrDefault(mappingKey, 0L);
+
+                long su1 = stockUdangMasukByIDcategory.getOrDefault(mapp.getCategoryproductid(), 0L);
+                long su2 = stockUdangMasukByIDcategory.getOrDefault(mappingKey, 0L);
+
+                if (calculateStockByIdCPMappingStockKolamTerakhir.containsKey(mappingKey)) {
+                    // FIX double counting: iterasi berikutnya hanya tambah nilai dari id sumber (sk1/sm1/su1)
+                    // nilai dari mappingKey (sk2/sm2/su2) sudah dihitung di iterasi pertama
+                    calculateStockByIdCPMappingStockKolamTerakhir.merge(mappingKey, sk1, Long::sum);
+                    calculateStockByIdCPMappingStockUdangMati.merge(mappingKey, sm1, Long::sum);
+                    calculateStockByIdCPMappingStockUdangMasuk.merge(mappingKey, su1, Long::sum);
+                } else {
+                    // Iterasi pertama: simpan sk1+sk2, sm1+sm2, su1+su2
+                    calculateStockByIdCPMappingStockKolamTerakhir.put(mappingKey, sk1 + sk2);
+                    calculateStockByIdCPMappingStockUdangMati.put(mappingKey, sm1 + sm2);
+                    calculateStockByIdCPMappingStockUdangMasuk.put(mappingKey, su1 + su2);
                 }
-                Long stockUdangMasuk2 = stockUdangMasukByIDcategory.get(mapp.getCategoryproductidmapping());
-                if(stockUdangMasuk2 == null){
-                    stockUdangMasuk2 = 0L;
-                }
-                Long stockUdangMasuk = stockUdangMasuk1.longValue() +  stockUdangMasuk2.longValue();
-
-
-                if(calculateStockByIdCPMappingStockKolamTerakhir.get(mapp.getCategoryproductidmapping()) != null){
-                    Long tempStockKolamTerakhir = stockKolamTerakhir.longValue() + calculateStockByIdCPMappingStockKolamTerakhir.get(mapp.getCategoryproductidmapping()).longValue();
-                    calculateStockByIdCPMappingStockKolamTerakhir.put(mapp.getCategoryproductidmapping(),tempStockKolamTerakhir);
-
-                    Long tempStockUdangMati = stockUdangMati.longValue() + calculateStockByIdCPMappingStockUdangMati.get(mapp.getCategoryproductidmapping()).longValue();
-                    calculateStockByIdCPMappingStockUdangMati.put(mapp.getCategoryproductidmapping(),tempStockUdangMati);
-
-                    Long tempStockUdangMasuk = stockUdangMasuk.longValue() + calculateStockByIdCPMappingStockUdangMasuk.get(mapp.getCategoryproductidmapping()).longValue();
-                    calculateStockByIdCPMappingStockUdangMasuk.put(mapp.getCategoryproductidmapping(),tempStockUdangMasuk);
-                }else{
-                    calculateStockByIdCPMappingStockKolamTerakhir.put(mapp.getCategoryproductidmapping(),stockKolamTerakhir);
-                    calculateStockByIdCPMappingStockUdangMati.put(mapp.getCategoryproductidmapping(),stockUdangMati);
-                    calculateStockByIdCPMappingStockUdangMasuk.put(mapp.getCategoryproductidmapping(),stockUdangMasuk);
-                }
-//                if(mapp.getCategoryproductidmapping() == 24){
-//                    System.out.println("stockKolamTerakhir "+stockKolamTerakhir);
-//                    System.out.println("calculateStockByIdCPMappingStockKolamTerakhir "+calculateStockByIdCPMappingStockKolamTerakhir.get(mapp.getCategoryproductidmapping()));
-//                }
             }
         }
-        HashMap<Long,Long> done = new HashMap<>();
-        HashMap<Long,Long> cekIDCPMappingKembar = new HashMap<>();
-        if(listMapping != null && listMapping.size() > 0){
-            for(MappingStockList mapp : listMapping){
-                done.put(mapp.getCategoryproductid(),mapp.getCategoryproductidmapping());
-                done.put(mapp.getCategoryproductidmapping(),mapp.getCategoryproductidmapping());
-                CategoryProductList cp = cpByIDcategory.get(mapp.getCategoryproductidmapping());
-                if(cp != null){
-                    if(cekIDCPMappingKembar.get(mapp.getCategoryproductidmapping()) != null){
-                        continue;
-                    }
-                    cekIDCPMappingKembar.put(mapp.getCategoryproductidmapping(),mapp.getCategoryproductidmapping());
 
-                    Long stockKolamTerakhir = calculateStockByIdCPMappingStockKolamTerakhir.get(mapp.getCategoryproductidmapping()).longValue();
-                    grandTotalStockKolamTerakhir += stockKolamTerakhir.longValue();
+        HashMap<Long, Long> done                 = new HashMap<>();
+        HashMap<Long, Long> cekIDCPMappingKembar = new HashMap<>();
 
-                    Long stockUdangMati = calculateStockByIdCPMappingStockUdangMati.get(mapp.getCategoryproductidmapping()).longValue();
-                    grandTotalUdangMati += stockUdangMati.longValue();
+        if (listMapping != null && !listMapping.isEmpty()) {
+            for (MappingStockList mapp : listMapping) {
+                done.put(mapp.getCategoryproductid(), mapp.getCategoryproductidmapping());
+                done.put(mapp.getCategoryproductidmapping(), mapp.getCategoryproductidmapping());
 
-                    Long stockUdangMasuk = calculateStockByIdCPMappingStockUdangMasuk.get(mapp.getCategoryproductidmapping()).longValue();
-                    grandTotalUdangMasuk += stockUdangMasuk.longValue();
+                Long mappingKey = mapp.getCategoryproductidmapping();
 
-                    Long totalEkor = stockKolamTerakhir.longValue() + stockUdangMati.longValue() + stockUdangMasuk.longValue();
-                    grandTotalTotalEkor += totalEkor.longValue();
-
-                    Double totalKoli = 0.0;
-                    if(cp.getJumlahitemsperkoli() != null && cp.getJumlahitemsperkoli().intValue() > 0){
-                        totalKoli = totalEkor.doubleValue() / cp.getJumlahitemsperkoli().doubleValue();
-                    }
-                    BigDecimal bgKoli = new BigDecimal(totalKoli).setScale(0,RoundingMode.UP);
-                    grandTotalTotalKoli += bgKoli.longValue();
-
-                    colomcount = 0;
-                    rowcount++;
-                    row = sheet.createRow(rowcount);
-                    createCell(row, colomcount, cp.getSize(), style, sheet,columns);
-
-                    colomcount++;
-                    createCell(row, colomcount, cp.getWeightfromingram()+" - "+cp.getWeighttoingram(), style, sheet,columns);
-
-                    colomcount++;
-                    createCell(row, colomcount, cp.getJumlahitemsperkoli(), style, sheet,columns);
-
-
-                    colomcount++;
-                    createCell(row, colomcount, stockKolamTerakhir, style, sheet,columns);
-
-                    colomcount++;
-                    createCell(row, colomcount, stockUdangMati, style, sheet,columns);
-
-
-                    colomcount++;
-                    createCell(row, colomcount, stockUdangMasuk, style, sheet,columns);
-
-                    colomcount++;
-                    createCell(row, colomcount, totalEkor, style, sheet,columns);
-
-                    colomcount++;
-                    createCell(row, colomcount, bgKoli.longValue(), style, sheet,columns);
+                // Skip duplikat sebelum akumulasi grand total
+                if (cekIDCPMappingKembar.containsKey(mappingKey)) {
+                    continue;
                 }
+                cekIDCPMappingKembar.put(mappingKey, mappingKey);
 
+                CategoryProductList cp = cpByIDcategory.get(mappingKey);
+                if (cp == null) continue;
+
+                long stockKolamTerakhir = calculateStockByIdCPMappingStockKolamTerakhir.getOrDefault(mappingKey, 0L);
+                long stockUdangMati     = calculateStockByIdCPMappingStockUdangMati.getOrDefault(mappingKey, 0L);
+                long stockUdangMasuk    = calculateStockByIdCPMappingStockUdangMasuk.getOrDefault(mappingKey, 0L);
+
+                grandTotalStockKolamTerakhir += stockKolamTerakhir;
+                grandTotalUdangMati          += stockUdangMati;
+                grandTotalUdangMasuk         += stockUdangMasuk;
+
+                // FIX: udangMati ditambah, bukan ditambahkan
+                long totalEkor = stockKolamTerakhir + stockUdangMasuk + stockUdangMati;
+                grandTotalTotalEkor += totalEkor;
+
+                long totalKoli = 0L;
+                if (cp.getJumlahitemsperkoli() != null && cp.getJumlahitemsperkoli().intValue() > 0) {
+                    Double koli = totalEkor / cp.getJumlahitemsperkoli().doubleValue();
+                    totalKoli = new BigDecimal(koli).setScale(0, RoundingMode.UP).longValue();
+                }
+                grandTotalTotalKoli += totalKoli;
+
+                colomcount = 0;
+                rowcount++;
+                row = sheet.createRow(rowcount);
+                createCell(row, colomcount, cp.getSize(), style, sheet, columns);
+                colomcount++;
+                createCell(row, colomcount, cp.getWeightfromingram() + " - " + cp.getWeighttoingram(), style, sheet, columns);
+                colomcount++;
+                createCell(row, colomcount, cp.getJumlahitemsperkoli(), style, sheet, columns);
+                colomcount++;
+                createCell(row, colomcount, stockKolamTerakhir, style, sheet, columns);
+                colomcount++;
+                createCell(row, colomcount, stockUdangMati, style, sheet, columns);
+                colomcount++;
+                createCell(row, colomcount, stockUdangMasuk, style, sheet, columns);
+                colomcount++;
+                createCell(row, colomcount, totalEkor, style, sheet, columns);
+                colomcount++;
+                createCell(row, colomcount, totalKoli, style, sheet, columns);
             }
         }
-        for(CategoryProductList cp : listCP){
-            if(done.get(cp.getId().longValue()) != null){
-                continue;
+
+        // Category product yang tidak masuk mapping
+        for (CategoryProductList cp : listCP) {
+            if (done.containsKey(cp.getId())) continue;
+
+            long stockKolamTerakhir = stockKolamTerakhirByIDcategory.getOrDefault(cp.getId(), 0L);
+            long stockUdangMati     = stockUdangMatiByIDcategory.getOrDefault(cp.getId(), 0L);
+            long stockUdangMasuk    = stockUdangMasukByIDcategory.getOrDefault(cp.getId(), 0L);
+
+            grandTotalStockKolamTerakhir += stockKolamTerakhir;
+            grandTotalUdangMati          += stockUdangMati;
+            grandTotalUdangMasuk         += stockUdangMasuk;
+
+            // FIX: udangMati dikurangi, bukan ditambahkan
+            long totalEkor = stockKolamTerakhir + stockUdangMasuk - stockUdangMati;
+            grandTotalTotalEkor += totalEkor;
+
+            long totalKoli = 0L;
+            if (cp.getJumlahitemsperkoli() != null && cp.getJumlahitemsperkoli().intValue() > 0) {
+                Double koli = totalEkor / cp.getJumlahitemsperkoli().doubleValue();
+                totalKoli = new BigDecimal(koli).setScale(0, RoundingMode.UP).longValue();
             }
+            grandTotalTotalKoli += totalKoli;
+
             colomcount = 0;
             rowcount++;
             row = sheet.createRow(rowcount);
-            createCell(row, colomcount, cp.getSize(), style, sheet,columns);
-
+            createCell(row, colomcount, cp.getSize(), style, sheet, columns);
             colomcount++;
-            createCell(row, colomcount, cp.getWeightfromingram()+" - "+cp.getWeighttoingram(), style, sheet,columns);
-
+            createCell(row, colomcount, cp.getWeightfromingram() + " - " + cp.getWeighttoingram(), style, sheet, columns);
             colomcount++;
-            createCell(row, colomcount, cp.getJumlahitemsperkoli(), style, sheet,columns);
-
-            Long stockKolamTerakhir = stockKolamTerakhirByIDcategory.get(cp.getId());
-            grandTotalStockKolamTerakhir += stockKolamTerakhir.longValue();
+            createCell(row, colomcount, cp.getJumlahitemsperkoli(), style, sheet, columns);
             colomcount++;
-            createCell(row, colomcount, stockKolamTerakhir, style, sheet,columns);
-
-            Long stockUdangMati = stockUdangMatiByIDcategory.get(cp.getId());
-            grandTotalUdangMati += stockUdangMati.longValue();
+            createCell(row, colomcount, stockKolamTerakhir, style, sheet, columns);
             colomcount++;
-            createCell(row, colomcount, stockUdangMati, style, sheet,columns);
-
-            Long stockUdangMasuk = stockUdangMasukByIDcategory.get(cp.getId());
-            grandTotalUdangMasuk += stockUdangMasuk.longValue();
+            createCell(row, colomcount, stockUdangMati, style, sheet, columns);
             colomcount++;
-            createCell(row, colomcount, stockUdangMasuk, style, sheet,columns);
-
-            Long totalEkor = stockKolamTerakhir.longValue() + stockUdangMati.longValue() + stockUdangMasuk.longValue();
-            grandTotalTotalEkor += totalEkor.longValue();
+            createCell(row, colomcount, stockUdangMasuk, style, sheet, columns);
             colomcount++;
-            createCell(row, colomcount, totalEkor, style, sheet,columns);
-
-            Double totalKoli = 0.0;
-            if(cp.getJumlahitemsperkoli() != null && cp.getJumlahitemsperkoli().intValue() > 0){
-                totalKoli = totalEkor.doubleValue() / cp.getJumlahitemsperkoli().doubleValue();
-            }
-            BigDecimal bgKoli = new BigDecimal(totalKoli).setScale(0,RoundingMode.UP);
-            grandTotalTotalKoli += bgKoli.longValue();
+            createCell(row, colomcount, totalEkor, style, sheet, columns);
             colomcount++;
-            createCell(row, colomcount, bgKoli.longValue(), style, sheet,columns);
+            createCell(row, colomcount, totalKoli, style, sheet, columns);
         }
+
+        // Baris grand total
         colomcount = 0;
         rowcount++;
         row = sheet.createRow(rowcount);
-        createCell(row, colomcount, "TOTAL", style, sheet,columns);
-
+        createCell(row, colomcount, "TOTAL", style, sheet, columns);
         colomcount++;
         colomcount++;
         colomcount++;
-        createCell(row, colomcount, grandTotalStockKolamTerakhir, style, sheet,columns);
-
+        createCell(row, colomcount, grandTotalStockKolamTerakhir, style, sheet, columns);
         colomcount++;
-        createCell(row, colomcount, grandTotalUdangMati, style, sheet,columns);
-
+        createCell(row, colomcount, grandTotalUdangMati, style, sheet, columns);
         colomcount++;
-        createCell(row, colomcount, grandTotalUdangMasuk, style, sheet,columns);
-
+        createCell(row, colomcount, grandTotalUdangMasuk, style, sheet, columns);
         colomcount++;
-        createCell(row, colomcount, grandTotalTotalEkor, style, sheet,columns);
-
+        createCell(row, colomcount, grandTotalTotalEkor, style, sheet, columns);
         colomcount++;
-        createCell(row, colomcount, grandTotalTotalKoli, style, sheet,columns);
+        createCell(row, colomcount, grandTotalTotalKoli, style, sheet, columns);
 
         data.setWorkbook(workbook);
         return data;
