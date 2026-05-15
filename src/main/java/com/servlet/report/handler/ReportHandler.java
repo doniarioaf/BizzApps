@@ -2322,8 +2322,8 @@ public class ReportHandler implements ReportService {
                 grandTotalUdangMati          += stockUdangMati;
                 grandTotalUdangMasuk         += stockUdangMasuk;
 
-                // FIX: udangMati ditambah, bukan ditambahkan
-                long totalEkor = stockKolamTerakhir + stockUdangMasuk + stockUdangMati;
+                // FIX: udangMati dikurang, bukan ditambahkan
+                long totalEkor = stockKolamTerakhir + stockUdangMasuk - stockUdangMati;
                 grandTotalTotalEkor += totalEkor;
 
                 long totalKoli = 0L;

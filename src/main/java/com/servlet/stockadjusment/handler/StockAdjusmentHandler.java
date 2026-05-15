@@ -531,7 +531,7 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
                 grandTotalUdangMati          += stockUdangMati;
                 grandTotalUdangMasuk         += stockUdangMasuk;
 
-                long totalEkor = stockKolamTerakhir + stockUdangMasuk + stockUdangMati;
+                long totalEkor = stockKolamTerakhir + stockUdangMasuk - stockUdangMati;
                 grandTotalTotalEkor += totalEkor;
 
                 long totalKoli = 0L;
