@@ -13,7 +13,8 @@ public class QueryPrintDataPurchaseReceiveItems implements RowMapper<PrintDataPu
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.idpurchasereceive as idpurchasereceive, data.idproduct as idproduct, data.idcategoryproduct as idcategoryproduct, ");
-        sqlBuilder.append("data.qty as qty, data.qtybonus as qtybonus,data.price as price, data.subtotalprice as subtotalprice, data.type as type, ");
+        sqlBuilder.append("data.qty as qty, data.qtybonus as qtybonus,data.qtynota as qtynota,data.price as price, data.subtotalprice as subtotalprice, data.type as type, ");
+        sqlBuilder.append("data.hargajual_terakhir as hargajual_terakhir, data.hargajual as hargajual,data.totalusd as totalusd,data.totalrupiah as totalrupiah, data.idpackinglist_acuan_hargajual_terakhir as idpackinglist_acuan_hargajual_terakhir, data.weight_udang as weight_udang, ");
         sqlBuilder.append("prod.nama as prodnama, ");
         sqlBuilder.append("cprod.nama as cprodnama, cprod.size as cprodsize, cprod.weightfromingram as cprodweightfromingram, cprod.weighttoingram as cprodweighttoingram ");
         sqlBuilder.append("from purchasereceive_item as data ");
@@ -34,6 +35,7 @@ public class QueryPrintDataPurchaseReceiveItems implements RowMapper<PrintDataPu
         final Long idcategoryproduct = rs.getLong("idcategoryproduct");
         final Long qty = rs.getLong("qty");
         final Long qtybonus = rs.getLong("qtybonus");
+        final Long qtynota = rs.getLong("qtynota");
         final Double price = rs.getDouble("price");
         final Double subtotalprice = rs.getDouble("subtotalprice");
         final String type = rs.getString("type");
@@ -42,6 +44,13 @@ public class QueryPrintDataPurchaseReceiveItems implements RowMapper<PrintDataPu
         final String cprodsize = rs.getString("cprodsize");
         final Long cprodweightfromingram = rs.getLong("cprodweightfromingram");
         final Long cprodweighttoingram = rs.getLong("cprodweighttoingram");
+
+        final Double hargajual_terakhir = rs.getDouble("hargajual_terakhir");
+        final Double hargajual = rs.getDouble("hargajual");
+        final Double totalusd = rs.getDouble("totalusd");
+        final Double totalrupiah = rs.getDouble("totalrupiah");
+        final Long idpackinglist_acuan_hargajual_terakhir = rs.getLong("idpackinglist_acuan_hargajual_terakhir");
+        final Double weight_udang = rs.getDouble("weight_udang");
 
         PrintDataPurchaseReceiveItems data = new PrintDataPurchaseReceiveItems();
         data.setIdpurchasereceive(idpurchasereceive);
@@ -55,8 +64,15 @@ public class QueryPrintDataPurchaseReceiveItems implements RowMapper<PrintDataPu
         data.setType(type);
         data.setQty(qty);
         data.setQtybonus(qtybonus);
+        data.setQtynota(qtynota);
         data.setPrice(price);
         data.setSubtotalprice(subtotalprice);
+        data.setHargajual_terakhir(hargajual_terakhir);
+        data.setHargajual(hargajual);
+        data.setTotalusd(totalusd);
+        data.setTotalrupiah(totalrupiah);
+        data.setIdpackinglist_acuan_hargajual_terakhir(idpackinglist_acuan_hargajual_terakhir);
+        data.setWeight_udang(weight_udang);
         return data;
     }
 }

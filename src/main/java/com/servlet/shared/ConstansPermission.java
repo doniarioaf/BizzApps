@@ -22,6 +22,7 @@ public class ConstansPermission {
 	public static final String CREATE_USER = "CREATE_USER";
 	public static final String EDIT_USER = "EDIT_USER";
 	public static final String DELETE_USER = "DELETE_USER";
+	public static final String EDIT_CHANGE_PASSWORD_USER = "EDIT_CHANGE_PASSWORD_USER";
 	
 	public static final String READ_USER_MOBILE = "READ_USER_MOBILE";
 	public static final String CREATE_USER_MOBILE = "CREATE_USER_MOBILE";
@@ -117,8 +118,24 @@ public class ConstansPermission {
 	public static final String READ_REPORT_PENJUALAN = "READ_REPORT_PENJUALAN";
 	public static final String READ_REPORT_PELUNASAN_PIUTANG = "READ_REPORT_PELUNASAN_PIUTANG";
 	public static final String READ_REPORT_KARTUDEPOSIT = "READ_REPORT_KARTUDEPOSIT";
+	public static final String READ_REPORT_KARTUPINJAMAN = "READ_REPORT_KARTUPINJAMAN";
 	public static final String READ_REPORT_KARTUSTOCK = "READ_REPORT_KARTUSTOCK";
 	public static final String READ_BANK = "READ_BANK";
 	public static final String CREATE_BANK = "CREATE_BANK";
-	
+	public static final String READ_KOMISI = "READ_KOMISI";
+	public static final String CREATE_KOMISI = "CREATE_KOMISI";
+	public static final String EDIT_KOMISI = "EDIT_KOMISI";
+	public static final String DELETE_KOMISI = "DELETE_KOMISI";
+	public static final String READ_REPORT_KOMISI = "READ_REPORT_KOMISI";
+
+	public static final String READ_PINJAMAN = "READ_PINJAMAN";
+	public static final String CREATE_PINJAMAN = "CREATE_PINJAMAN";
+	public static final String EDIT_PINJAMAN = "EDIT_PINJAMAN";
+	public static final String DELETE_PINJAMAN = "DELETE_PINJAMAN";
+
+	public static final String CREATE_CANCELPACKINGLIST = "CREATE_CANCELPACKINGLIST";
+	public static final String READ_CANCELPACKINGLIST = "READ_CANCELPACKINGLIST";
+	public static final String EDIT_CANCELPACKINGLIST = "EDIT_CANCELPACKINGLIST";
+	public static final String READ_REPORT_CANCELPACKINGLIST = "READ_REPORT_CANCELPACKINGLIST";
+	public static final String CREATE_INTEGRASI = "CREATE_INTEGRASI";
 }

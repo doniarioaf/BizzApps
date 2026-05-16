@@ -240,6 +240,19 @@ public class PelunasanPiutangHandler implements PelunasanPiutangService {
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataReportPelunasanPiutang(), queryParameters);
     }
 
+    @Override
+    public PelunasanPiutangItemJoinHeader getPelunasanPiutangItemByIdInvoice(Long idcompany, Long idbranch, Long idinvoice) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPelunasanPiutangItemJoinHeader().schema());
+        sqlBuilder.append(" where data.idinvoice = ?  ");
+        sqlBuilder.append(" and pelunasan.idcompany = "+idcompany+" and pelunasan.idbranch = "+idbranch+" and pelunasan.isdelete = false  ");
+        final Object[] queryParameters = new Object[] {idinvoice};
+        List<PelunasanPiutangItemJoinHeader> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPelunasanPiutangItemJoinHeader(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return null;
+    }
+
     private List<PelunasanPiutangItemDetail> getListItem(Long idpelunasanpiutang){
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPelunasanPiutangItemDetail().schema());
         sqlBuilder.append(" where data.idpelunasanpiutang = ?  ");

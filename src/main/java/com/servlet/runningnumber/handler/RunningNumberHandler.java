@@ -29,6 +29,8 @@ public class RunningNumberHandler implements RunningNumberService{
 		pk.setIdcompany(idcompany);
 		pk.setIdbranch(idbranch);
 		pk.setCode(code);
+		pk.setYear(0);
+		pk.setMonth(0);
 		
 		Optional<RunningNumber> tableOpt = repository.findById(pk);
 		if(tableOpt.isPresent()) {
@@ -37,15 +39,47 @@ public class RunningNumberHandler implements RunningNumberService{
 			int runningNumber = table.getValue().intValue();
 			table.setValue(table.getValue().longValue() + 1);
 			repository.saveAndFlush(table);
-			return generateDocNumber(code,idbranch,runningNumber,currDate);
+			return generateDocNumber(code,idbranch,runningNumber,currDate,0,0);
 			}catch (Exception e) {
 				return "";
 			}
 		}
 		return "";
 	}
-	
-	private String generateDocNumber(String code,Long idbranch,int number,Timestamp currDate) {
+
+	@Override
+	public String getDocNumberWithYearMonth(Long idcompany, Long idbranch, String code, Timestamp currDate, Integer year, Integer month) {
+		// TODO Auto-generated method stub
+		RunningNumberPK pk = new RunningNumberPK();
+		pk.setIdcompany(idcompany);
+		pk.setIdbranch(idbranch);
+		pk.setCode(code);
+		pk.setYear(year.intValue());
+		pk.setMonth(month.intValue());
+
+		Optional<RunningNumber> tableOpt = repository.findById(pk);
+		if(tableOpt.isPresent()) {
+			try {
+				RunningNumber table = tableOpt.get();
+				int runningNumber = table.getValue().intValue();
+				table.setValue(table.getValue().longValue() + 1);
+				repository.saveAndFlush(table);
+				return generateDocNumber(code,idbranch,runningNumber,currDate,year,month);
+			}catch (Exception e) {
+				return "";
+			}
+		}else{
+			int runningNumber = 1;
+			RunningNumber table = new RunningNumber();
+			table.setRunningNumberPK(pk);
+			table.setValue(2L);
+			repository.saveAndFlush(table);
+			return generateDocNumber(code,idbranch,runningNumber,currDate,year,month);
+		}
+//		return "";
+	}
+
+	private String generateDocNumber(String code,Long idbranch,int number,Timestamp currDate, int year, int month) {
 		String runningNumber = "";
 		if(number > 0 && number < 10) {
 			runningNumber = "00000"+number;
@@ -67,7 +101,18 @@ public class RunningNumberHandler implements RunningNumberService{
 		if(!runningNumber.equals("")) {
 //			String s = new SimpleDateFormat("yyMMdd").format(currDate);
 			valNumber = code+"-"+idbranch+runningNumber;//+"-"+s;
+			if(code.equals(ConstantCodeDocument.DOC_INVOICE)){
+				String bulan = "";
+				if(month > 9){
+					bulan = month+"";
+				}else{
+					bulan = "0"+month;
+				}
+				String yearStr = String.valueOf(year).substring(2,4);
+				valNumber = code+"-"+bulan+"-"+yearStr+"/"+idbranch+runningNumber;
+			}
 		}
+
 		return valNumber;
 	}
 
@@ -78,6 +123,8 @@ public class RunningNumberHandler implements RunningNumberService{
 		pk.setIdcompany(idcompany);
 		pk.setIdbranch(idbranch);
 		pk.setCode(code);
+		pk.setYear(0);
+		pk.setMonth(0);
 		
 		Optional<RunningNumber> tableOpt = repository.findById(pk);
 		if(tableOpt.isPresent()) {
@@ -98,22 +145,55 @@ public class RunningNumberHandler implements RunningNumberService{
 	}
 
 	@Override
+	public String rollBackDocNumberWithYearMonth(Long idcompany,Long idbranch, String code,Integer year, Integer month) {
+		// TODO Auto-generated method stub
+		RunningNumberPK pk = new RunningNumberPK();
+		pk.setIdcompany(idcompany);
+		pk.setIdbranch(idbranch);
+		pk.setCode(code);
+		pk.setYear(year.intValue());
+		pk.setMonth(month.intValue());
+
+		Optional<RunningNumber> tableOpt = repository.findById(pk);
+		if(tableOpt.isPresent()) {
+			try {
+				RunningNumber table = tableOpt.get();
+				int runningNumber = table.getValue().intValue();
+				table.setValue(table.getValue().longValue() - 1);
+				repository.saveAndFlush(table);
+				return "RollBack";
+			}catch (Exception e) {
+				return "";
+			}
+
+
+
+		}
+		return "";
+	}
+
+	@Override
 	public ReturnData saveList(Long idcompany,Long idbranch) {
 		List<String> arr = new ArrayList<>();
 		arr.add(ConstantCodeDocument.DOC_PURCHASERECEIVE);
 		arr.add(ConstantCodeDocument.DOC_DRAFTPURCHASERECEIVE);
 		arr.add(ConstantCodeDocument.DOC_STOCKADJUSMENT);
 		arr.add(ConstantCodeDocument.DOC_PACKINGLIST);
-		arr.add(ConstantCodeDocument.DOC_INVOICE);
+//		arr.add(ConstantCodeDocument.DOC_INVOICE); //jangan dibuka remarknya
 		arr.add(ConstantCodeDocument.DOC_PELUNASANHUTANG);
 		arr.add(ConstantCodeDocument.DOC_PELUNASANPIUTANG);
 		arr.add(ConstantCodeDocument.DOC_DEPOSIT);
+		arr.add(ConstantCodeDocument.DOC_KOMISI);
+		arr.add(ConstantCodeDocument.DOC_PINJAMAN);
+		arr.add(ConstantCodeDocument.DOC_CANCELPACKINGLIST);
 		List<RunningNumber> list = new ArrayList<>();
 		for(String code : arr){
 			RunningNumberPK pk = new RunningNumberPK();
 			pk.setIdcompany(idcompany);
 			pk.setIdbranch(idbranch);
 			pk.setCode(code);
+			pk.setYear(0);
+			pk.setMonth(0);
 			RunningNumber table = new RunningNumber();
 			table.setRunningNumberPK(pk);
 			table.setValue(1L);

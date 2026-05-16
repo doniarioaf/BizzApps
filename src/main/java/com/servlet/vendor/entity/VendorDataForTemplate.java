@@ -10,6 +10,15 @@ public class VendorDataForTemplate {
     private String accountnamebank;
     private Double pricebox;
     private Double priceongkos;
+    private Long idarea;
+
+    public Long getIdarea() {
+        return idarea;
+    }
+
+    public void setIdarea(Long idarea) {
+        this.idarea = idarea;
+    }
 
     public Double getPricebox() {
         return pricebox;

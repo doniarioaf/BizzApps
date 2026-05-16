@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class GlobalFunc {
@@ -109,5 +110,85 @@ public class GlobalFunc {
 		value = value * factor;
 		long tmp = Math.round(value);
 		return (double) tmp / factor;
+	}
+
+	public static double jumlahDesimal(double value, int places) {
+		String strvalue  = String.valueOf(value);
+		if(strvalue.contains(".")){
+			String[] arrSplit = strvalue.split("\\.");
+			String number = arrSplit[0];
+			String desimal = arrSplit[1];
+			if(desimal.length() > places){
+				desimal = desimal.substring(0, places);
+			}
+			double finalValue = Double.valueOf(number+"."+desimal);
+			return finalValue;
+		}
+		return value;
+
+	}
+
+	public static Double pembulatanNilai(Double nilai, boolean isdown, int numberdesimal){
+		double pembagian = 10;
+		if(numberdesimal == 2){
+			pembagian = 100;
+		}else if(numberdesimal == 3){
+			pembagian = 1000;
+		}
+
+		String[] splitComma = String.valueOf(nilai).split("\\.");
+		String valNilai = String.valueOf(nilai);
+		if(splitComma.length > numberdesimal){
+			int start = 0;
+			int end = numberdesimal+1;
+			String desimal = splitComma[1] != null?new String(splitComma[1]).substring(start,end):"0";
+			valNilai = splitComma[0]+"."+desimal;
+		}
+//        if(isdown){
+//            return Math.floor(Double.valueOf(valNilai) * pembagian) / pembagian;
+//        }
+//        return Math.ceil(Double.valueOf(valNilai) * pembagian) / pembagian;
+
+		return Math.round(Double.valueOf(valNilai) * pembagian) / pembagian;
+
+	}
+
+	public static Double convertGramToKG(Double nilaigr){
+		if(nilaigr != null){
+			return nilaigr / 1000;
+		}
+		return 0.0;
+	}
+
+	public static HashMap<String,Integer> getMonthYearDate(Long time){
+		HashMap<String,Integer> hash = new HashMap<>();
+		if(time != null){
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(time);
+			hash.put("year",cal.get(Calendar.YEAR));
+			//0 = januari, 1 = februari dst.., jadi jika ingin sesuai bulan kalender month di plus 1
+			hash.put("month",cal.get(Calendar.MONTH) + 1);
+			hash.put("date",cal.get(Calendar.DATE));
+			return hash;
+		}
+		return null;
+	}
+
+	public static Timestamp getTimeForCalcSaldo(Timestamp date){
+		//untuk tsCd ini sengaja, soalnya pas query di sql, walaupun sama, tapi ga ke detect
+		//jadi solusinya di tambahin sedikit, sekitar beberapa 1 detik, biar sedikit lebih gede
+		Timestamp tsCd = date;
+
+		// ambil millisecond
+		int ms = tsCd.getNanos() / 1000000;
+
+		// reset ke detik
+		tsCd.setNanos(0);
+
+		// jika ada ms → naikkan, 1 detik = 1000
+		if (ms > 0) {
+			tsCd.setTime(tsCd.getTime() + 1000);
+		}
+		return tsCd;
 	}
 }

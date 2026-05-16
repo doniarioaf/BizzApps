@@ -12,9 +12,18 @@ public class ReportKartuStock implements Comparable<ReportKartuStock>{
 //    private String sizeCategoryProduct;
     private Date date;
     private Long qty;
+    //khusus cancel Packinglist
+    //untuk Qty packing list yang dicancel
+    private Long qtypackinglistcancel;
     private String nodocument;
+    private String vendorName;
+    private String vendorAlias;
+    private String customerName;
+    private String customerAlias;
     private String keterangan;
     private String type;
+
+    private Long idpackinglist; //khusus yang mempunyai idpackinglist saja
 
     @Override
     public String toString() {
@@ -27,6 +36,54 @@ public class ReportKartuStock implements Comparable<ReportKartuStock>{
                 ", keterangan='" + keterangan + '\'' +
                 ", type='" + type + '\'' +
                 '}';
+    }
+
+    public Long getQtypackinglistcancel() {
+        return qtypackinglistcancel;
+    }
+
+    public void setQtypackinglistcancel(Long qtypackinglistcancel) {
+        this.qtypackinglistcancel = qtypackinglistcancel;
+    }
+
+    public Long getIdpackinglist() {
+        return idpackinglist;
+    }
+
+    public void setIdpackinglist(Long idpackinglist) {
+        this.idpackinglist = idpackinglist;
+    }
+
+    public String getVendorName() {
+        return vendorName;
+    }
+
+    public void setVendorName(String vendorName) {
+        this.vendorName = vendorName;
+    }
+
+    public String getVendorAlias() {
+        return vendorAlias;
+    }
+
+    public void setVendorAlias(String vendorAlias) {
+        this.vendorAlias = vendorAlias;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getCustomerAlias() {
+        return customerAlias;
+    }
+
+    public void setCustomerAlias(String customerAlias) {
+        this.customerAlias = customerAlias;
     }
 
     public String getType() {

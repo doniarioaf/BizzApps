@@ -15,7 +15,7 @@ public class QueryPelunasanPiutangList implements RowMapper<PelunasanPiutangList
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("distinct(data.id) as id, data.nodocument as nodocument, data.date as date, data.kurs as kurs, ");
         sqlBuilder.append("inv.id as invid, inv.nodocument as invnodocument, inv.kurs as invkurs, inv.amount as invamount , ");
-        sqlBuilder.append("cust.nama as custNama, cust.alias as custAlias ");
+        sqlBuilder.append("cust.nama as custNama, cust.alias as custAlias, pl.nodocument as nodocumentpl ");
         sqlBuilder.append("from pelunasanpiutang as data ");
         sqlBuilder.append("left join pelunasanpiutang_item as items on items.idinvoice = (select item.idinvoice from pelunasanpiutang_item as item where item.idpelunasanpiutang =data.id ORDER BY item.idinvoice desc LIMIT 1) ");
 //        sqlBuilder.append("left join (select item.idpelunasanpiutang, item.idinvoice FROM pelunasanpiutang_item as item ORDER BY item.idinvoice desc LIMIT 1) as items on items.idpelunasanpiutang = data.id ");
@@ -44,6 +44,8 @@ public class QueryPelunasanPiutangList implements RowMapper<PelunasanPiutangList
         final Double invamount = rs.getDouble("invamount");
         final String custNama = rs.getString("custNama");
         final String custAlias = rs.getString("custAlias");
+        final String nodocumentpl = rs.getString("nodocumentpl");
+
         PelunasanPiutangList data = new PelunasanPiutangList();
         data.setId(id);
         data.setNodocument(nodocument);
@@ -56,6 +58,7 @@ public class QueryPelunasanPiutangList implements RowMapper<PelunasanPiutangList
         data.setAmountInvoice(invamount);
         data.setCustomerName(custNama);
         data.setCustomerAlias(custAlias);
+        data.setNoDocumentPL(nodocumentpl);
         return data;
     }
 }

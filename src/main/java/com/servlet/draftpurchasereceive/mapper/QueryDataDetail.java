@@ -38,7 +38,7 @@ public class QueryDataDetail implements RowMapper<DraftPurchaseReceiveDetailData
         final Time arriveltime = rs.getTime("arriveltime");
         final Time receivetime = rs.getTime("receivetime");
         final Long totalekor = rs.getLong("totalekor");
-        final Long totalkg = rs.getLong("totalkg");
+        final Double totalkg = rs.getDouble("totalkg");
         final Double persentase = rs.getDouble("persentase");
         final Long idvendor = rs.getLong("idvendor");
         final String venNama = rs.getString("venNama");

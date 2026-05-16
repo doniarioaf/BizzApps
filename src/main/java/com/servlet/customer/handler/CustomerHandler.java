@@ -78,6 +78,7 @@ public class CustomerHandler implements CustomerService {
             customer.setGrupcode(grup.trim().replaceAll(" ","").toUpperCase());
             customer.setPhonenumber(body.getPhonenumber());
             customer.setAttention(body.getAttention());
+            customer.setCity(body.getCity());
             customer.setIsdelete(false);
             customer.setCreateddate(ts);
             customer.setCreatedby(iduser);
@@ -118,6 +119,7 @@ public class CustomerHandler implements CustomerService {
             customer.setGrupcode(grup.trim().replaceAll(" ","").toUpperCase());
             customer.setPhonenumber(body.getPhonenumber());
             customer.setAttention(body.getAttention());
+            customer.setCity(body.getCity());
             customer.setModifieddate(ts);
             customer.setModifiedby(iduser);
             idsave = repo.saveAndFlush(customer).getId();

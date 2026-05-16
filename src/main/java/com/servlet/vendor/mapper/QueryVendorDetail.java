@@ -16,9 +16,11 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         sqlBuilder.append("data.id as id, data.nama as nama, data.alias as alias,data.type as type, ");
         sqlBuilder.append("data.bank as bank, data.accountnobank as accountnobank, data.accountnamebank as accountnamebank, ");
         sqlBuilder.append("data.pricebox as pricebox, data.priceongkos as priceongkos, data.isparent as isparent, data.idvendorparent as idvendorparent, ");
-        sqlBuilder.append("data.packing as packing, data.kurir as kurir, ");
-        sqlBuilder.append("data.komisi as komisi, data.profit as profit,data.value1 as value1, ");
+        sqlBuilder.append("data.packing as packing, data.kurir as kurir,data.address1 as address1, data.address2 as address2, data.npwp as npwp,data.phone as phone, ");
+        sqlBuilder.append("data.komisi as komisi, data.profit as profit,data.value1 as value1,data.limittransaction as limittransaction, ");
         sqlBuilder.append("ven.nama as vennama, ven.alias as venalias, ");
+        sqlBuilder.append("area.id as idarea, area.nama as areaname, ");
+        sqlBuilder.append("data.idvendorbroker as idvendorbroker, venbroker.nama as venbrokernama, venbroker.alias as venbrokeralias, ");
         sqlBuilder.append("data.createddate as createddate, data.modifieddate as modifieddate, data.deletedate as deletedate, ");
         sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama, userdelete.nama as deletenama ");
         sqlBuilder.append("from m_vendor as data ");
@@ -26,6 +28,8 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         sqlBuilder.append("left join m_user_apps as usermodified on usermodified.id = data.modifiedby ");
         sqlBuilder.append("left join m_user_apps as userdelete on userdelete.id = data.deleteby ");
         sqlBuilder.append("left join m_vendor as ven on ven.id = data.idvendorparent ");
+        sqlBuilder.append("left join m_vendor as venbroker on venbroker.id = data.idvendorbroker ");
+        sqlBuilder.append("left join m_area as area on area.id = data.idarea ");
 
         this.schemaSql = sqlBuilder.toString();
     }
@@ -60,6 +64,17 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         final Long idvendorparent = rs.getLong("idvendorparent");
         final String vennama = rs.getString("vennama");
         final String venalias = rs.getString("venalias");
+        final Long idvendorbroker = rs.getLong("idvendorbroker");
+        final String venbrokernama = rs.getString("venbrokernama");
+        final String venbrokeralias = rs.getString("venbrokeralias");
+        final Long idarea = rs.getLong("idarea");
+        final String areaname = rs.getString("areaname");
+        final String address1 = rs.getString("address1");
+        final String address2 = rs.getString("address2");
+        final String npwp = rs.getString("npwp");
+        final String phone = rs.getString("phone");
+        final Boolean limittransaction = rs.getBoolean("limittransaction");
+
 
         VendorData data = new VendorData();
         data.setId(id);
@@ -86,6 +101,16 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         data.setIdvendorparent(idvendorparent);
         data.setVendorParentName(vennama);
         data.setVendorParentAlias(venalias);
+        data.setIdvendorbroker(idvendorbroker);
+        data.setVendorBrokerName(venbrokernama);
+        data.setVendorBrokerAlias(venbrokeralias);
+        data.setIdarea(idarea);
+        data.setAreaName(areaname);
+        data.setAddress1(address1);
+        data.setAddress2(address2);
+        data.setNpwp(npwp);
+        data.setPhone(phone);
+        data.setLimittransaction(limittransaction);
         return data;
     }
 }

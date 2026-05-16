@@ -14,7 +14,7 @@ public class QueryPrintDataPurchaseReceiveCharge implements RowMapper<PrintDataP
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.idpurchasereceive as idpurchasereceive, data.idcharge as idcharge, ");
         sqlBuilder.append("data.qty as qty, data.price as price, data.subtotalprice as subtotalprice, ");
-        sqlBuilder.append("charge.nama as chargenama ");
+        sqlBuilder.append("data.chargenamecustom as chargenamecustom, charge.nama as chargenama ");
         sqlBuilder.append("from purchasereceive_charge as data ");
         sqlBuilder.append("left join m_charge as charge on charge.id = data.idcharge ");
 
@@ -33,10 +33,15 @@ public class QueryPrintDataPurchaseReceiveCharge implements RowMapper<PrintDataP
         final Double price = rs.getDouble("price");
         final Double subtotalprice = rs.getDouble("subtotalprice");
         final String chargenama = rs.getString("chargenama");
+        final String chargenamecustom = rs.getString("chargenamecustom");
+
         PrintDataPurchaseReceiveCharge data = new PrintDataPurchaseReceiveCharge();
         data.setIdpurchasereceive(idpurchasereceive);
         data.setIdcharge(idcharge);
         data.setChargename(chargenama);
+        if(chargenamecustom != null){
+            data.setChargenamecustom(chargenamecustom);
+        }
         data.setQty(qty);
         data.setPrice(price);
         data.setSubtotalprice(subtotalprice);

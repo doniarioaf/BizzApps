@@ -26,6 +26,8 @@ public class Deposit implements Serializable {
     private Timestamp modifieddate;
     private Long deleteby;
     private Timestamp deletedate;
+    private Boolean isactive;
+    private String catatan;
 
     @Override
     public String toString() {
@@ -35,7 +37,16 @@ public class Deposit implements Serializable {
                 ", idvendor=" + idvendor +
                 ", amount=" + amount +
                 ", depositdate=" + depositdate +
+                ", catatan=" + catatan +
                 '}';
+    }
+
+    public Boolean getIsactive() {
+        return isactive;
+    }
+
+    public void setIsactive(Boolean isactive) {
+        this.isactive = isactive;
     }
 
     public String getNodocument() {
@@ -148,5 +159,13 @@ public class Deposit implements Serializable {
 
     public void setDeletedate(Timestamp deletedate) {
         this.deletedate = deletedate;
+    }
+
+    public String getCatatan() {
+        return catatan;
+    }
+
+    public void setCatatan(String catatan) {
+        this.catatan = catatan;
     }
 }

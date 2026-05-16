@@ -4,13 +4,22 @@ import com.servlet.area.service.AreaService;
 import com.servlet.categoryproduct.entity.ParamTemplate;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.charge.service.ChargeService;
-import com.servlet.deposit.entity.BodyDeposit;
-import com.servlet.deposit.entity.ReportKartuDeposit;
+import com.servlet.chartofaccount.AccountCOAEnum;
+import com.servlet.deposit.entity.*;
 import com.servlet.deposit.service.DepositService;
 import com.servlet.draftpurchasereceive.entity.ParamGetDataDraftPR;
+import com.servlet.draftpurchasereceive.entity.ParamSearchDraftPurchaseReceive;
 import com.servlet.draftpurchasereceive.service.DraftPurchaseReceiveService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.inventori.service.InventoriService;
+import com.servlet.journal.entity.PostingJournalParam;
+import com.servlet.journal.entity.SaldoJournal;
+import com.servlet.journal.entity.SaldoJournalParam;
+import com.servlet.journal.entity.SourceTypeEnum;
+import com.servlet.journal.service.JournalService;
+import com.servlet.komisi.entity.KomisiItemJoinHeader;
+import com.servlet.komisi.entity.ParamKomisi;
+import com.servlet.komisi.service.KomisiService;
 import com.servlet.mappingstock.entity.MappingStockCategoryID;
 import com.servlet.mappingstock.service.MappingStockService;
 import com.servlet.parameterclient.entity.ValueParameter;
@@ -19,21 +28,17 @@ import com.servlet.pelunasanhutang.entity.FilterParamPelunasanHutang;
 import com.servlet.pelunasanhutang.entity.PelunasanHutangDataNotJoin;
 import com.servlet.pelunasanhutang.entity.ReportPelunasanHutangDocumentHutang;
 import com.servlet.pelunasanhutang.service.PelunasanHutangService;
+import com.servlet.pinjaman.entity.ReportKartuPinjaman;
+import com.servlet.pinjaman.service.PinjamanService;
 import com.servlet.pricelist.service.PriceService;
 import com.servlet.product.service.ProductService;
 import com.servlet.purchasereceive.entity.*;
 import com.servlet.purchasereceive.mapper.*;
-import com.servlet.purchasereceive.repo.PurchaseReceiveChargeRepo;
-import com.servlet.purchasereceive.repo.PurchaseReceiveInventoriRepo;
-import com.servlet.purchasereceive.repo.PurchaseReceiveItemsRepo;
-import com.servlet.purchasereceive.repo.PurchaseReceiveRepo;
+import com.servlet.purchasereceive.repo.*;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
 import com.servlet.report.entity.ParamReportPembelian;
 import com.servlet.runningnumber.service.RunningNumberService;
-import com.servlet.shared.ConstansCodeMessage;
-import com.servlet.shared.ConstantCodeDocument;
-import com.servlet.shared.ReturnData;
-import com.servlet.shared.ValidationDataMessage;
+import com.servlet.shared.*;
 import com.servlet.stockitems.entity.ReportKartuStock;
 import com.servlet.stockitems.service.StockItemService;
 import com.servlet.user.entity.UserListData;
@@ -63,6 +68,8 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     private PurchaseReceiveChargeRepo purchaseReceiveChargeRepo;
     @Autowired
     private PurchaseReceiveInventoriRepo purchaseReceiveInventoriRepo;
+    @Autowired
+    private PurchaseReceiveDepositRepo purchaseReceiveDepositRepo;
 
     @Autowired
     private VendorService vendorService;
@@ -102,6 +109,15 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     private PelunasanHutangService pelunasanHutangService;
     @Autowired
     private AreaService areaService;
+    @Autowired
+    private KomisiService komisiService;
+
+    @Autowired
+    private PinjamanService pinjamanService;
+
+    @Autowired
+    private JournalService journalService;
+
     protected final String namaMenu = "PURCHASE_RECEIVE";
 
     @Override
@@ -123,6 +139,19 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     }
 
     @Override
+    public PurchaseReceiveAllTabData getListAllTab(Long idcompany, Long idbranch, Long from, Long to) {
+        PurchaseReceiveAllTabData data = new PurchaseReceiveAllTabData();
+        data.setListPr(getListAll(idcompany,idbranch,from,to));
+
+        ParamSearchDraftPurchaseReceive paramDpr = new ParamSearchDraftPurchaseReceive();
+        paramDpr.setFrom(from);
+        paramDpr.setTo(to);
+        paramDpr.setOnlyShowNotInLinkedPR(true);
+        data.setListDpr(draftPurchaseReceiveService.getList(idcompany,idbranch,paramDpr));
+        return data;
+    }
+
+    @Override
     public PurchaseReceiveDataDetail getDetail(Long idcompany, Long idbranch, Long id) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataDetail().schema());
         sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
@@ -133,7 +162,43 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             data.setItems(getPrintDataItems(id));
             data.setCharges(getPrintDataCharge(id));
             data.setInventori(getPrintDataItemsInventori(id));
-            data.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch,data.getIdvendor()));
+
+            //untuk tsCd ini sengaja, soalnya pas query di sql, walaupun sama, tapi ga ke detect
+            //jadi solusinya di tambahin sedikit, sekitar beberapa 1 detik, biar sedikit lebih gede
+//            Timestamp tsCd = data.getCreateddate();
+//
+//            // ambil millisecond
+//            int ms = tsCd.getNanos() / 1000000;
+//
+//            // reset ke detik
+//            tsCd.setNanos(0);
+//
+//            // jika ada ms → naikkan, 1 detik = 1000
+//            if (ms > 0) {
+//                tsCd.setTime(tsCd.getTime() + 1000);
+//            }
+            Timestamp tsCd = GlobalFunc.getTimeForCalcSaldo(data.getCreateddate());
+
+            SaldoJournalParam paramDeposit = new SaldoJournalParam();
+            paramDeposit.setIdcompany(idcompany);
+            paramDeposit.setIdbranch(idbranch);
+            paramDeposit.setIdvendor(data.getIdvendor());
+            paramDeposit.setAccountCode(AccountCOAEnum.DEPOSITVENDOR_ASSET.getAccCode());
+            paramDeposit.setTransaksiTime(tsCd.toString());
+            SaldoJournal saldoDeposit = journalService.calculateSaldo(paramDeposit);
+
+            SaldoJournalParam paramPinjaman = new SaldoJournalParam();
+            paramPinjaman.setIdcompany(idcompany);
+            paramPinjaman.setIdbranch(idbranch);
+            paramPinjaman.setIdvendor(data.getIdvendor());
+            paramPinjaman.setAccountCode(AccountCOAEnum.PINJAMANVENDOR_LIABILITY.getAccCode());
+            paramPinjaman.setTransaksiTime(tsCd.toString());
+            SaldoJournal saldoPinjaman = journalService.calculateSaldo(paramPinjaman);
+
+//            data.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch,data.getIdvendor()));
+//            data.setSisaPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch, data.getIdvendor(),null));
+            data.setSisaDeposit(saldoDeposit.getSaldo());
+            data.setSisaPinjaman(saldoPinjaman.getSaldo());
             return data;
         }
         return null;
@@ -166,18 +231,14 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     public ReturnData save(Long idcompany, Long idbranch, Long iduser, BodyPurchaseReceive body) {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
-        Timestamp ts = new Timestamp(new java.util.Date().getTime());
-        String docNumber = runningNumberService.getDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_PURCHASERECEIVE, ts);
-        if(docNumber.equals("")) {
-            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_GENERATE_DOC_NUMBER,"Gagal Generate Document Number");
-            validations.add(msg);
-        }
+
         long iddeposit = 0;
         if(body.getTambahdeposit() != null && body.getTambahdeposit().doubleValue() > 0){
+            Timestamp depoDate = new Timestamp(new java.util.Date().getTime());
             BodyDeposit bodyDep = new BodyDeposit();
             bodyDep.setIdvendor(body.getIdvendor());
             bodyDep.setAmount(body.getTambahdeposit());
-            bodyDep.setDepositdate(ts.getTime());
+            bodyDep.setDepositdate(depoDate.getTime());
             ReturnData retDeposit = depositService.save(idcompany,idbranch,iduser,bodyDep);
             if(retDeposit.getValidations().size() > 0){
                 validations.add(retDeposit.getValidations().get(0));
@@ -187,6 +248,12 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
 
         }
 
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        String docNumber = runningNumberService.getDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_PURCHASERECEIVE, ts);
+        if(docNumber.equals("")) {
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_GENERATE_DOC_NUMBER,"Gagal Generate Document Number");
+            validations.add(msg);
+        }
         if(validations.size() == 0) {
             try {
                 PurchaseReceive table = new PurchaseReceive();
@@ -202,7 +269,8 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                 table.setAccountnamebank(body.getAccountnamebank());
                 table.setTotalprice(body.getTotalprice());
                 table.setSetor(body.getSetor());
-                table.setOutstanding(body.getTotalprice().doubleValue() - body.getSetor().doubleValue());
+                table.setSetor_pinjaman(body.getSetor_pinjaman());
+                table.setOutstanding(body.getTotalprice().doubleValue() - body.getSetor().doubleValue() - body.getSetor_pinjaman().doubleValue());
                 table.setIsdefaultvaluesetor(body.isIsdefaultvaluesetor());
                 table.setIddeposit(iddeposit);
                 table.setIddraftpurchasereceive(body.getIddraftpurchasereceive());
@@ -210,15 +278,42 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                 table.setFlightno(body.getFlightno());
                 table.setSmu(body.getSmu());
                 table.setNotes2(body.getNotes2());
+                table.setKurs(body.getKurs());
+                table.setSelisih(body.getSelisih());
                 table.setCreateddate(ts);
                 table.setCreatedby(iduser);
                 idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
+
+
                 HashMap<Object, Object> mapsItems = setItems(idcompany,idbranch,body.getCharges(), body.getItems(),body.getInventori(), idsave);
                 List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
+
+                PostingJournalParam paramPosting = new PostingJournalParam();
+                paramPosting.setIdcompany(idcompany);
+                paramPosting.setIdbranch(idbranch);
+                paramPosting.setAmountPemakaianDeposit(table.getSetor());
+                paramPosting.setDescriptionDetailDeposit("");
+                paramPosting.setAmountPembayaranPinjaman(table.getSetor_pinjaman());
+                paramPosting.setDescriptionDetailPinjaman("");
+                paramPosting.setIdvendor(table.getIdvendor());
+                paramPosting.setSourcenumber(docNumber);
+                paramPosting.setSourcedocumentdate(table.getTransactiondate());
+                paramPosting.setSourcetype(SourceTypeEnum.TRANSAKSI_PRC.getSourceType());
+                paramPosting.setTransaksitime(ts);
+                paramPosting.setDescription("");
+                paramPosting.setCreatedby(iduser);
+                List<ValidationDataMessage> validationsPosting = journalService.postingJournal(paramPosting);
+                //sengaja set ke validationsItems, karena jika gagal posting, rollback
+                validationsItems.addAll(validationsPosting);
+
                 if(validationsItems.size() == 0){
+                    HashMap<Object, Object> mapsItemsDeposit = setItemsDeposit(idcompany,idbranch,iduser,idsave, body.getIdvendor());
+                    List<ValidationDataMessage> validationsItemsDeposit = (List<ValidationDataMessage>) mapsItemsDeposit.get("validations");
+                    String dataItemsDeposit = (String) mapsItemsDeposit.get("dataItems");
+
                     String data = table.toString();
                     String dataItems = (String) mapsItems.get("dataItems");
-                    String mixData = "header = "+data+" | Items = "+dataItems;
+                    String mixData = "header = "+data+" | Items = "+dataItems+" | Deposit = "+dataItemsDeposit;
                     historyAppsService.saveHistory(idcompany,idbranch,iduser,"ADD",namaMenu,mixData,"","",ts);
                 }else{
 
@@ -230,10 +325,17 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                     runningNumberService.rollBackDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_PURCHASERECEIVE);
                     validations.add(validationsItems.get(0));
                 }
+
+
+
             } catch (Exception e) {
                 runningNumberService.rollBackDocNumber(idcompany, idbranch, ConstantCodeDocument.DOC_PURCHASERECEIVE);
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
                 validations.add(msg);
+            }
+        }else{
+            if(iddeposit > 0){
+                depositService.deleteRollBack(iddeposit);
             }
         }
         ReturnData data = new ReturnData();
@@ -254,8 +356,16 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             validations.add(msg);
         }
         if(validations.size() == 0) {
+            KomisiItemJoinHeader komisiitems = komisiService.getDetailItemByIdPR(idcompany,idbranch,id);
+            if(komisiitems != null){
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_KOMISI,"document ini terpasang pada document komisi ("+komisiitems.getNodocument()+") ");
+                validations.add(msg);
+            }
+        }
+        if(validations.size() == 0) {
             try {
                 PurchaseReceive table = purchaseReceiveRepo.getById(id);
+                final PurchaseReceive befTable = table;
                 if (table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue() && !table.isIsdelete()) {
                     List<PurchaseReceiveItemsNotJoin> listItems = getDataItemsNotJoin(id);
                     List<PurchaseReceiveChargeNotJoin> listItemsCharge = getDataItemsChargeNotJoin(id);
@@ -279,32 +389,60 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                     table.setAccountnamebank(body.getAccountnamebank());
                     table.setTotalprice(body.getTotalprice());
                     table.setSetor(body.getSetor());
+                    table.setSetor_pinjaman(body.getSetor_pinjaman());
                     table.setIsdefaultvaluesetor(body.isIsdefaultvaluesetor());
                     table.setIdarea(body.getIdarea());
-                    table.setOutstanding(body.getTotalprice().doubleValue() - body.getSetor().doubleValue());
+                    table.setOutstanding(body.getTotalprice().doubleValue() - body.getSetor().doubleValue() - body.getSetor_pinjaman().doubleValue());
                     table.setFlightno(body.getFlightno());
                     table.setSmu(body.getSmu());
                     table.setNotes2(body.getNotes2());
+                    table.setKurs(body.getKurs());
+                    table.setSelisih(body.getSelisih());
                     table.setModifiedby(iduser);
                     table.setModifieddate(ts);
                     idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
 
-                    kurangiStockItems(idcompany, idbranch, id);
+                    if(validations.size() == 0){
+                        PostingJournalParam paramPosting = new PostingJournalParam();
+                        paramPosting.setIdcompany(table.getIdcompany());
+                        paramPosting.setIdbranch(table.getIdbranch());
+                        paramPosting.setAmountPemakaianDeposit(table.getSetor());
+                        paramPosting.setDescriptionDetailDeposit("");
+                        paramPosting.setAmountPembayaranPinjaman(table.getSetor_pinjaman());
+                        paramPosting.setDescriptionDetailPinjaman("");
+                        paramPosting.setIdvendor(table.getIdvendor());
+                        paramPosting.setSourcenumber(table.getNodocument());
+                        paramPosting.setSourcedocumentdate(table.getTransactiondate());
+                        paramPosting.setSourcetype(SourceTypeEnum.TRANSAKSI_PRC.getSourceType());
+                        paramPosting.setTransaksitime(table.getCreateddate());
+                        paramPosting.setDescription("");
+                        paramPosting.setCreatedby(iduser);
 
-                    purchaseReceiveItemsRepo.deleteAllDetailByIdPurchaseReceive(idsave);
-                    purchaseReceiveChargeRepo.deleteAllDetailByIdPurchaseReceive(idsave);
-                    purchaseReceiveInventoriRepo.deleteAllDetailByIdPurchaseReceiveInventory(idsave);
-
-                    HashMap<Object, Object> mapsItems = setItems(idcompany, idbranch, body.getCharges(), body.getItems(), body.getInventori(), idsave);
-                    List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
-                    if (validationsItems.size() == 0) {
-                        String data = table.toString();
-                        String dataItems = (String) mapsItems.get("dataItems");
-                        String mixData = "header = " + data + " | Items = " + dataItems;
-                        historyAppsService.saveHistory(idcompany, idbranch, iduser, "EDIT", namaMenu, "", mixData, mixDataBefore, ts);
-                    } else {
-                        validations.add(validationsItems.get(0));
+                        List<ValidationDataMessage> validationsPosting = journalService.updateJournalDetail(paramPosting);
+                        validations.addAll(validationsPosting);
+                        if(validationsPosting.size() > 0){
+                            purchaseReceiveRepo.saveAndFlush(befTable);
+                        }
                     }
+                    if(validations.size() == 0){
+                        kurangiStockItems(idcompany, idbranch, id);
+
+                        purchaseReceiveItemsRepo.deleteAllDetailByIdPurchaseReceive(idsave);
+                        purchaseReceiveChargeRepo.deleteAllDetailByIdPurchaseReceive(idsave);
+                        purchaseReceiveInventoriRepo.deleteAllDetailByIdPurchaseReceiveInventory(idsave);
+
+                        HashMap<Object, Object> mapsItems = setItems(idcompany, idbranch, body.getCharges(), body.getItems(), body.getInventori(), idsave);
+                        List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
+                        if (validationsItems.size() == 0) {
+                            String data = table.toString();
+                            String dataItems = (String) mapsItems.get("dataItems");
+                            String mixData = "header = " + data + " | Items = " + dataItems;
+                            historyAppsService.saveHistory(idcompany, idbranch, iduser, "EDIT", namaMenu, "", mixData, mixDataBefore, ts);
+                        } else {
+                            validations.add(validationsItems.get(0));
+                        }
+                    }
+
                 }
             } catch (Exception e) {
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
@@ -324,20 +462,39 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
-        try {
-            PurchaseReceive table = purchaseReceiveRepo.getById(id);
-            if(table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue() && !table.isIsdelete()) {
-                table.setIsdelete(true);
-                table.setDeleteby(iduser);
-                table.setDeletedate(ts);
-                idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
 
-                kurangiStockItems(idcompany, idbranch, id);
-                historyAppsService.saveHistory(table.getIdcompany(), table.getIdbranch(), iduser, "DELETE", namaMenu, table.toString(), "", "", ts);
-            }
-        }catch (Exception e) {
-            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+        List<PelunasanHutangDataNotJoin> list = pelunasanHutangService.getDataByIdPr(idcompany,idbranch,id);
+        if(list != null && list.size() > 0){
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_PELUNASANHUTANG,"document ini terpasang pada pelunasan hutang ("+list.get(0).getNodocument()+")");
             validations.add(msg);
+        }
+        if(validations.size() == 0) {
+            KomisiItemJoinHeader komisiitems = komisiService.getDetailItemByIdPR(idcompany,idbranch,id);
+            if(komisiitems != null){
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_KOMISI,"document ini terpasang pada document komisi ("+komisiitems.getNodocument()+") ");
+                validations.add(msg);
+            }
+        }
+        if(validations.size() == 0) {
+            try {
+                PurchaseReceive table = purchaseReceiveRepo.getById(id);
+                if (table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue() && !table.isIsdelete()) {
+                    table.setIsdelete(true);
+                    table.setDeleteby(iduser);
+                    table.setDeletedate(ts);
+                    idsave = purchaseReceiveRepo.saveAndFlush(table).getId();
+
+                    journalService.deleteJournalBySourceNumber(table.getNodocument());
+
+                    aktivasiDeposit(idcompany,idbranch,iduser,id);
+
+                    kurangiStockItems(idcompany, idbranch, id);
+                    historyAppsService.saveHistory(table.getIdcompany(), table.getIdbranch(), iduser, "DELETE", namaMenu, table.toString(), "", "", ts);
+                }
+            } catch (Exception e) {
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
         }
 
         ReturnData data = new ReturnData();
@@ -372,9 +529,29 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         SearchDataTemplateByVendor data = new SearchDataTemplateByVendor();
         ParamTemplate paramCategoryProduct = new ParamTemplate();
         paramCategoryProduct.setMenu("PURCHASE_RECEIVE");
+        paramCategoryProduct.setForcategory("VENDOR");
         paramCategoryProduct.setIdvendor(idvendor);
         data.setCategoryproductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,paramCategoryProduct));
-        data.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch,idvendor));
+
+        SaldoJournalParam paramDeposit = new SaldoJournalParam();
+        paramDeposit.setIdcompany(idcompany);
+        paramDeposit.setIdbranch(idbranch);
+        paramDeposit.setIdvendor(idvendor);
+        paramDeposit.setAccountCode(AccountCOAEnum.DEPOSITVENDOR_ASSET.getAccCode());
+        SaldoJournal saldoDeposit = journalService.calculateSaldo(paramDeposit);
+
+        SaldoJournalParam paramPinjaman = new SaldoJournalParam();
+        paramPinjaman.setIdcompany(idcompany);
+        paramPinjaman.setIdbranch(idbranch);
+        paramPinjaman.setIdvendor(idvendor);
+        paramPinjaman.setAccountCode(AccountCOAEnum.PINJAMANVENDOR_LIABILITY.getAccCode());
+        SaldoJournal saldoPinjaman = journalService.calculateSaldo(paramPinjaman);
+
+//        data.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch,idvendor));
+//        data.setSisaPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch,idvendor,null));
+
+        data.setSisaDeposit(saldoDeposit.getSaldo());
+        data.setSisaPinjaman(saldoPinjaman.getSaldo());
 
         ParamGetDataDraftPR paramDraftPR = new ParamGetDataDraftPR();
         paramDraftPR.setIdvendor(idvendor);
@@ -393,8 +570,30 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         if(listidvendor != null && !listidvendor.equals("")){
             sqlBuilder.append(" and data.idvendor in ("+listidvendor+") ");
         }
+
         final Object[] queryParameters = new Object[] {idcompany};
         List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateAmountSetor(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return 0.0;
+    }
+
+    @Override
+    public Double calculateSetorPinjamanByIdVendor(Long idcompany, Long idbranch, Long idvendor,String listidvendor, Date date) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountSetorPinjaman().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.isdelete = false ");
+        if(idvendor != null){
+            sqlBuilder.append(" and data.idvendor = "+idvendor+" ");
+        }
+        if(listidvendor != null && !listidvendor.equals("")){
+            sqlBuilder.append(" and data.idvendor in ("+listidvendor+") ");
+        }
+        if(date != null){
+            sqlBuilder.append(" and data.transactiondate < '"+date+"' ");
+        }
+        final Object[] queryParameters = new Object[] {idcompany};
+        List<Double> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateAmountSetorPinjaman(), queryParameters);
         if(list != null && list.size() > 0){
             return list.get(0);
         }
@@ -408,11 +607,12 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
         List<PrintDataPurchaseReceive> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPrintPurchaseReceive(), queryParameters);
         if(list != null && list.size() > 0){
-            if(printtype.equals("SUPPLIER")){
+            if(printtype.equals("SUPPLIER") || printtype.equals("PAJAK")){
                 return getPrintDataNotaSupplier(id,iduser,idcompany,idbranch,list.get(0));
-            }else if(printtype.equals("INTERNAL") || printtype.equals("PAJAK")){
-                return getPrintDataNotaInternalAndPajak(id,iduser,idcompany,idbranch,list.get(0),printtype);
             }
+//            else if(printtype.equals("INTERNAL") || printtype.equals("PAJAK")){
+//                return getPrintDataNotaInternalAndPajak(id,iduser,idcompany,idbranch,list.get(0),printtype);
+//            }
         }
         return null;
     }
@@ -490,13 +690,86 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         ValueParameter param = parameterClientService.getValueByParamName(idcompany,idbranch,"COMPANYNAME","TEXT");
 
         PrintDataPurchaseReceive print = value;
-        print.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch, print.getIdvendor()));
+        List<PurchaseReceiveDepositData> listdeposit = getListPurchaseReceiveDepositByIdPR(id);
+        List<Long> listIdDeposit = new ArrayList<>();
+        if(listdeposit != null && listdeposit.size() > 0){
+            for(PurchaseReceiveDepositData depo : listdeposit){
+                listIdDeposit.add(depo.getIddeposit());
+            }
+        }
+        String iddeposits = "";
+        if(listIdDeposit.size() > 0){
+            iddeposits = listIdDeposit.toString().replaceAll("\\[","");
+            iddeposits = iddeposits.replaceAll("\\]","");
+        }
+//        print.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch, print.getIdvendor()));
         print.setItems(getPrintDataItems(id));
+        print.setDeposits(listdeposit);
         print.setCharges(getPrintDataCharge(id));
         print.setCompanyName(param.getStrValue());
         print.setInventori(getPrintDataItemsInventori(id));
-        print.setSaldoDepositBeforeNotaSubmit(depositService.calculateSaldoDepositByIdVendorAndBeforeDateCreated(idcompany,idbranch, print.getIdvendor(),print.getCreateddate().getTime()));
-        print.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADNOTA",namaMenu));
+
+        /*
+            kenapa saldo dp minus, itu karena Summary(Deposit)  - Summary(Deposit yang terpakai di PRC),
+            yang hitung Summary(Deposit). untuk Tambah DP itu dikecualikan atau tidak terhitung,
+            makanya jadi minus tuh si Saldo DP. karena si tambahDP itu, hitungnya di depan,
+         */
+//        ParamCalculateDeposit paramCalcDeposit = new ParamCalculateDeposit();
+//        paramCalcDeposit.setDate(print.getTransactiondate().getTime());
+//        paramCalcDeposit.setIdvendor(print.getIdvendor());
+//        paramCalcDeposit.setListNotSUMIdDeposit(iddeposits);
+//        Double sd = depositService.calculateSaldoDepositForPrinted(idcompany,idbranch, paramCalcDeposit);
+//        print.setSaldoDepositBeforeNotaSubmit(sd);
+        /*
+        ========================
+         */
+
+
+//        print.setSaldoPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch,print.getIdvendor(),null));
+
+        //untuk tsCd ini sengaja, soalnya pas query di sql, walaupun sama, tapi ga ke detect
+        //jadi solusinya di tambahin sedikit, sekitar beberapa 1 detik, biar sedikit lebih gede
+        Timestamp tsCd = print.getCreateddate();
+
+        // ambil millisecond
+        int ms = tsCd.getNanos() / 1000000;
+
+        // reset ke detik
+        tsCd.setNanos(0);
+
+        // jika ada ms → naikkan, 1 detik = 1000
+        if (ms > 0) {
+            tsCd.setTime(tsCd.getTime() + 1000);
+        }
+
+        SaldoJournalParam paramDeposit = new SaldoJournalParam();
+        paramDeposit.setIdcompany(idcompany);
+        paramDeposit.setIdbranch(idbranch);
+        paramDeposit.setIdvendor(print.getIdvendor());
+        paramDeposit.setAccountCode(AccountCOAEnum.DEPOSITVENDOR_ASSET.getAccCode());
+        paramDeposit.setTransaksiTime(tsCd.toString());
+        SaldoJournal saldoDeposit = journalService.calculateSaldo(paramDeposit);
+        Double sisaDeposit = saldoDeposit.getSaldo();
+//        if(listdeposit != null && listdeposit.size() > 0){
+//            for(PurchaseReceiveDepositData depo : listdeposit){
+//                sisaDeposit = sisaDeposit - depo.getAmount();
+//            }
+//        }
+        print.setSisaDeposit(sisaDeposit);
+        print.setSaldoDepositBeforeNotaSubmit(sisaDeposit);
+
+        SaldoJournalParam paramPinjaman = new SaldoJournalParam();
+        paramPinjaman.setIdcompany(idcompany);
+        paramPinjaman.setIdbranch(idbranch);
+        paramPinjaman.setIdvendor(print.getIdvendor());
+        paramPinjaman.setAccountCode(AccountCOAEnum.PINJAMANVENDOR_LIABILITY.getAccCode());
+        paramPinjaman.setTransaksiTime(tsCd.toString());
+        SaldoJournal saldoPinjaman = journalService.calculateSaldo(paramPinjaman);
+        print.setSaldoPinjaman(saldoPinjaman.getSaldo());
+
+        HashMap mapParamPrint = new HashMap();
+        mapParamPrint.put("nodocument",value.getNodocument());
+        print.setCountPrint(historyAppsService.countByActionAndMenuParam(idcompany,idbranch,"DOWNLOADNOTA",namaMenu,mapParamPrint));
         print.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
         UserListData user = userAppsService.getUserByID(iduser);
         String namaUser  = "";
@@ -504,15 +777,16 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             namaUser = user.getNama();
         }
         print.setNamaUser(namaUser);
-        catatDownload(id,idcompany,idbranch,iduser);
+//        catatDownload(id,idcompany,idbranch,iduser);
         return print;
     }
 
     @Override
     public Double calculateSetorByIdVendorAndCreatedDate(Long idcompany, Long idbranch, Long idvendor, Long date,String listidvendor) {
-        Timestamp dt = new Timestamp(date);
+//        Timestamp dt = new Timestamp(date);
+        Date dt = new Date(date);
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountSetor().schema());
-        sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false and data.createddate < '"+dt+"' ");
+        sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false and data.transactiondate < '"+dt+"' ");
         if(idvendor != null){
             sqlBuilder.append(" and data.idvendor = "+idvendor+"  ");
         }
@@ -786,6 +1060,27 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     }
 
     @Override
+    public List<ReportKartuPinjaman> getListPrReportKartuPinjaman(Long idcompany, Long idbranch, FilterParamPurchaseReceive param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPRReportKartuPinjaman().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        if(param.getFrom() != null){
+            Date dt = new Date(param.getFrom());
+            sqlBuilder.append(" and data.transactiondate >= '"+dt.toString()+"'");
+        }
+        if(param.getTo() != null){
+            Date dt = new Date(param.getTo());
+            sqlBuilder.append(" and data.transactiondate <= '"+dt.toString()+"'");
+        }
+
+        if(param.getListIdVendor() != null && !param.getListIdVendor().equals("")){
+            sqlBuilder.append(" and data.idvendor in ("+param.getListIdVendor()+") ");
+        }
+
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPRReportKartuPinjaman(), queryParameters);
+    }
+
+    @Override
     public PurchaseReceiveItemsNotJoin getItemInLastDocumentPR(Long idcompany, Long idbranch, Long idproduct, Long idcategoryproduct) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryItemsNotJoin().schema());
         sqlBuilder.append(" where data.idproduct = ? and data.idcategoryproduct = ?  ");
@@ -820,10 +1115,148 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             sqlBuilder.append(" and data.idcategoryproduct in ("+param.getListIdCategoryProduct()+") ");
         }
 
+        if(param.getType() != null && !param.getType().equals("")){
+            sqlBuilder.append(" and data.type = '"+param.getType()+"' ");
+        }
+
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPRReportKartuStock(), queryParameters);
     }
 
+    @Override
+    public List<PurchaseReceiveDataKomisi> getListKomisi(Long idcompany, Long idbranch, ParamKomisi param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPurchaseReceiveKomisi(param.getIdbox()).schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        if(param.getFrom() != null){
+            Date dt = new Date(param.getFrom());
+            sqlBuilder.append(" and data.transactiondate >= '"+dt.toString()+"'");
+        }
+        if(param.getTo() != null){
+            Date dt = new Date(param.getTo());
+            sqlBuilder.append(" and data.transactiondate <= '"+dt.toString()+"'");
+        }
+
+        if(param.getListIdVendor() != null && !param.getListIdVendor().equals("")){
+            sqlBuilder.append(" and ven.idvendorbroker in ("+param.getListIdVendor()+") ");
+        }
+
+        if(param.getListidpurchaisereceive() != null && !param.getListidpurchaisereceive().equals("")){
+            sqlBuilder.append(" and data.id in ("+param.getListidpurchaisereceive()+") ");
+        }
+        if(param.getMenu() != null && !param.getMenu().equals("")){
+            if(param.getMenu().equals("DETAILITEMKOMISI")){
+                if(param.getIdkomisi() != null){
+                    sqlBuilder.append(" and data.id in (select ki.idpurchasereceive from komisi_item as ki where ki.idkomisi = "+param.getIdkomisi()+"  ) ");
+                }
+
+            }
+        }else{
+            sqlBuilder.append(" and data.id not in (select ki.idpurchasereceive from komisi_item as ki left join komisi as k on k.id = ki.idkomisi where k.idcompany = "+idcompany+" and k.idbranch = "+idbranch+" and k.isdelete = false  ) ");
+            sqlBuilder.append(" and ven.idvendorbroker notnull ");
+        }
+
+        sqlBuilder.append(" order by data.transactiondate ");
+
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPurchaseReceiveKomisi(param.getIdbox()), queryParameters);
+    }
+
+    @Override
+    public List<PurchaseReceiveGetPrice> getListPurchaseReceiveGetPrice(Long idcompany, Long idbranch, ParamGetPrice param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPurchaseReceiveGetPrice().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false and item.type = 'H' ");
+        sqlBuilder.append(" and item.idproduct = "+param.getIdproduct()+" and (item.idcategoryproduct = "+param.getIdproductcategory() +" or item.idcategoryproduct in (select ms.categoryproductid from mapping_stock as ms where ms.categoryproductidmapping = "+param.getIdproductcategory()+" ) )");
+        sqlBuilder.append(" order by data.id desc ");
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        List<PurchaseReceiveGetPrice> templist = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPurchaseReceiveGetPrice(), queryParameters);
+        List<PurchaseReceiveGetPrice> list = new ArrayList<>();
+        if(templist != null && templist.size() > 0){
+            int limitdoc = 3;
+            if(param.getLimitdoc() != null){
+                if(param.getLimitdoc().intValue() > 0){
+                    limitdoc = param.getLimitdoc().intValue();
+                }
+            }
+            HashMap<Long,List<PurchaseReceiveGetPrice>> grupByIDPR = new HashMap<>();
+            for(PurchaseReceiveGetPrice data : templist){
+                List<PurchaseReceiveGetPrice> temp = grupByIDPR.get(data.getId());
+                if(temp == null){
+                    temp = new ArrayList<>();
+                    temp.add(data);
+                    grupByIDPR.put(data.getId(),temp);
+                }else{
+                    List<PurchaseReceiveGetPrice> temp1 = new ArrayList<>();
+                    temp1 = temp;
+                    temp1.add(data);
+                    grupByIDPR.put(data.getId(),temp1);
+                }
+                if(grupByIDPR.size() == limitdoc){
+                    break;
+                }
+            }
+
+            for (HashMap.Entry<Long, List<PurchaseReceiveGetPrice>> entry : grupByIDPR.entrySet()) {
+                list.addAll(entry.getValue());
+            }
+            return list;
+        }
+        return templist;
+    }
+
+    @Override
+    public PurchaseReceiveDataDetail getDetailLastDocumentByVendor(Long idcompany, Long idbranch, Long idvendor) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataDetail().schema());
+        sqlBuilder.append(" where data.idvendor = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false ");
+        sqlBuilder.append(" order by data.id desc ");
+        final Object[] queryParameters = new Object[] {idvendor,idcompany,idbranch};
+        List<PurchaseReceiveDataDetail> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataDetail(), queryParameters);
+        if(list != null && list.size() > 0){
+            PurchaseReceiveDataDetail data = list.get(0);
+            data.setItems(getPrintDataItems(data.getId()));
+//            data.setCharges(getPrintDataCharge(id));
+//            data.setInventori(getPrintDataItemsInventori(id));
+//            data.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch,data.getIdvendor()));
+//            data.setSisaPinjaman(pinjamanService.calculateSisaPinjamanByIdVendor(idcompany,idbranch, data.getIdvendor(),null));
+            return data;
+        }
+        return null;
+    }
+
+    @Override
+    public List<Long> checkIdCP(Long idcompany, Long idbranch, Long idcategoryProduct) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCheckIdCategoryProduct().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and items.idcategoryproduct = ? and data.isdelete = false  ");
+        final Object[] queryParameters = new Object[] {idcompany,idbranch,idcategoryProduct};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCheckIdCategoryProduct(), queryParameters);
+    }
+
+    @Override
+    public List<QueryLastPriceSellData> listLastPriceSell(Long idcompany, Long idbranch) {
+        String idCustomer = "0";
+        //paramBranch mengecek, idcustomer sesuai branch, karena pada parameter tidak ada branch;
+        ValueParameter paramBranch = parameterClientService.getValueByParamName(idcompany,idbranch,"CUSTOMER_HARGAJUAL_NB_"+idbranch,"TEXT");
+        if(!paramBranch.getStrValue().equals("")){
+            idCustomer = paramBranch.getStrValue();
+        }else{
+            ValueParameter param = parameterClientService.getValueByParamName(idcompany,idbranch,"CUSTOMER_HARGAJUAL_NB","TEXT");
+            if(!param.getStrValue().equals("")){
+                idCustomer = param.getStrValue();
+            }
+        }
+        Long idCust = Long.parseLong(idCustomer);
+
+        final StringBuilder sqlBuilder = new StringBuilder(new QueryLastPriceSell(idcompany,idbranch,idCust).schema());
+        final Object[] queryParameters = new Object[] {};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryLastPriceSell(idcompany,idbranch,idCust), queryParameters);
+    }
+
+    private List<Long> getListIdDeposit(Long idpurchasereceive){
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataPurchaseReceiveDeposit().schema());
+        sqlBuilder.append(" where data.idpurchasereceive = ?  ");
+
+        final Object[] queryParameters = new Object[] {idpurchasereceive};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataPurchaseReceiveDeposit(), queryParameters);
+    }
     private List<PrintDataPurchaseReceiveInventori> getPrintDataItemsInventori(Long idpurchasereceive){
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPrintDataPurchaseReceiveInventori().schema());
         sqlBuilder.append(" where data.idpurchasereceive = ?  ");
@@ -835,7 +1268,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
     private List<PrintDataPurchaseReceiveItems> getPrintDataItems(Long idpurchasereceive){
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPrintDataPurchaseReceiveItems().schema());
         sqlBuilder.append(" where data.idpurchasereceive = ?  ");
-        sqlBuilder.append(" order by  cprod.weightfromingram desc ");
+        sqlBuilder.append(" order by  cprod.sequence ");
         //cprod
         final Object[] queryParameters = new Object[] {idpurchasereceive};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPrintDataPurchaseReceiveItems(), queryParameters);
@@ -873,6 +1306,14 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPrintDataPurchaseReceiveCharge(), queryParameters);
     }
 
+    private List<PurchaseReceiveDepositData> getListPurchaseReceiveDepositByIdPR(Long idpurchasereceive){
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPurchaseReceiveDepositData().schema());
+        sqlBuilder.append(" where data.idpurchasereceive = ?  ");
+
+        final Object[] queryParameters = new Object[] {idpurchasereceive};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPurchaseReceiveDepositData(), queryParameters);
+    }
+
     private HashMap<Object,Object> kurangiStockItems(Long idcompany, Long idbranch, Long idpurchasereceive){
         List<ValidationDataMessage> validations = new ArrayList<>();
         HashMap<Object,Object> maps = new HashMap<>();
@@ -890,6 +1331,51 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         maps.put("validations",validations);
         return maps;
     }
+    private HashMap<Object,Object> setItemsDeposit(Long idcompany, Long idbranch,Long iduser,Long idpr,Long idvendor){
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        HashMap<Object,Object> maps = new HashMap<>();
+        Long idparent = vendorService.getIdParent(idcompany,idbranch,idvendor);
+        ParamList paramDeposit = new ParamList();
+        paramDeposit.setIdvendor(idparent);
+        List<DepositDataNotJoin> listDeposit = depositService.getListDepositActive(idcompany,idbranch,paramDeposit);
+        List<String> listDepo = new ArrayList<>();
+        if(listDeposit != null && listDeposit.size() > 0){
+            for(DepositDataNotJoin depo : listDeposit){
+                depositService.updateStatusDeposit(depo.getId(), idcompany,idbranch,iduser,false);
+                listDepo.add(depo.getId().toString());
+
+                PurchaseReceiveDepositPK pkDepo = new PurchaseReceiveDepositPK();
+                pkDepo.setIdpurchasereceive(idpr);
+                pkDepo.setIddeposit(depo.getId());
+                PurchaseReceiveDeposit table = new PurchaseReceiveDeposit();
+                table.setPurchaseReceiveDepositPK(pkDepo);
+                purchaseReceiveDepositRepo.saveAndFlush(table);
+            }
+        }
+        String dataItems = listDepo.toString();
+        maps.put("validations",validations);
+        maps.put("dataItems",dataItems);
+        return maps;
+    }
+
+    private HashMap<Object,Object> aktivasiDeposit(Long idcompany, Long idbranch,Long iduser,Long idpr){
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        HashMap<Object,Object> maps = new HashMap<>();
+        List<Long> listDeposit = getListIdDeposit(idpr);
+        List<String> listDepo = new ArrayList<>();
+        if(listDeposit != null && listDeposit.size() > 0){
+            for(Long iddeposit : listDeposit){
+                if(iddeposit.longValue() > 0){
+                    depositService.updateStatusDeposit(iddeposit, idcompany,idbranch,iduser,true);
+                }
+            }
+        }
+        String dataItems = listDepo.toString();
+        maps.put("validations",validations);
+        maps.put("dataItems",dataItems);
+        return maps;
+    }
+
     private HashMap<Object,Object> setItems(Long idcompany, Long idbranch,BodyPurchaseReceiveCharge[] charges, BodyPurchaseReceiveItems[] items,BodyPurchaseReceiveInventori[] inventori, Long idpurchasereceive){
         List<ValidationDataMessage> validations = new ArrayList<>();
         HashMap<Object,Object> maps = new HashMap<>();
@@ -911,8 +1397,15 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                     table.setPurchaseReceiveItemsPK(itemsPK);
                     table.setQty(val.getQty());
                     table.setQtybonus(val.getQtybonus());
+                    table.setQtynota(val.getQtynota());
                     table.setPrice(val.getPrice());
                     table.setSubtotalprice(val.getSubtotalprice());
+                    table.setHargajual_terakhir(val.getHargajual_terakhir());
+                    table.setHargajual(val.getHargajual());
+                    table.setTotalusd(val.getTotalusd());
+                    table.setTotalrupiah(val.getTotalrupiah());
+                    table.setIdpackinglist_acuan_hargajual_terakhir(val.getIdpackinglist_acuan_hargajual_terakhir());
+                    table.setWeight_udang(val.getWeight_udang());
                     purchaseReceiveItemsRepo.saveAndFlush(table);
                     listItems.add(val);
                     mapsStock.put(keyMaps,table);
@@ -930,6 +1423,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
                     table.setQty(val.getQty());
                     table.setPrice(val.getPrice());
                     table.setSubtotalprice(val.getSubtotalprice());
+                    table.setChargenamecustom(val.getChargenamecustom());
                     purchaseReceiveChargeRepo.saveAndFlush(table);
                     listCharge.add(val);
 

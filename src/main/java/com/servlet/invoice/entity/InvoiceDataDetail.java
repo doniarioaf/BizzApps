@@ -9,6 +9,7 @@ public class InvoiceDataDetail {
     private Long id;
     private String nodocument;
     private Date date;
+    private Date packinglistdate;
     private Double kurs;
     private Long idpackinglist;
     private PackingListDataDetail packinglist;
@@ -17,6 +18,23 @@ public class InvoiceDataDetail {
     private Timestamp createddate;
     private String modifiedbyName;
     private Timestamp modifieddate;
+    private Boolean ispackinglistupdate;
+
+    public Boolean getIspackinglistupdate() {
+        return ispackinglistupdate;
+    }
+
+    public void setIspackinglistupdate(Boolean ispackinglistupdate) {
+        this.ispackinglistupdate = ispackinglistupdate;
+    }
+
+    public Date getPackinglistdate() {
+        return packinglistdate;
+    }
+
+    public void setPackinglistdate(Date packinglistdate) {
+        this.packinglistdate = packinglistdate;
+    }
 
     public Long getId() {
         return id;

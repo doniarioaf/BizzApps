@@ -1,5 +1,8 @@
 package com.servlet.packinglist.handler;
 
+import com.servlet.cancelpackinglist.entity.BodyCancelPackingList;
+import com.servlet.cancelpackinglist.entity.QueryNotJoinCancelPackingListData;
+import com.servlet.cancelpackinglist.service.CancelPackingListService;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.customer.service.CustomerService;
 import com.servlet.draftpurchasereceive.entity.BodyDraftPurchaseReceiveItems;
@@ -16,19 +19,23 @@ import com.servlet.packinglist.repo.PakcingListRepo;
 import com.servlet.packinglist.service.PackingListService;
 import com.servlet.parameterclient.entity.ValueParameter;
 import com.servlet.parameterclient.service.ParameterClientService;
+import com.servlet.pelunasanpiutang.entity.PelunasanPiutangItemJoinHeader;
+import com.servlet.pelunasanpiutang.service.PelunasanPiutangService;
+import com.servlet.pricelist.entity.PriceListDetail;
+import com.servlet.pricelist.entity.PriceListItemData;
+import com.servlet.pricelist.service.PriceService;
 import com.servlet.product.service.ProductService;
 import com.servlet.purchasereceive.entity.PurchaseReceiveItems;
 import com.servlet.purchasereceive.entity.PurchaseReceiveItemsNotJoin;
 import com.servlet.purchasereceive.mapper.QueryCalculateQty;
 import com.servlet.runningnumber.service.RunningNumberService;
-import com.servlet.shared.ConstansCodeMessage;
-import com.servlet.shared.ConstantCodeDocument;
-import com.servlet.shared.ReturnData;
-import com.servlet.shared.ValidationDataMessage;
+import com.servlet.shared.*;
 import com.servlet.stockitems.entity.ReportKartuStock;
 import com.servlet.stockitems.service.StockItemService;
 import com.servlet.user.entity.UserListData;
 import com.servlet.user.service.UserAppsService;
+import com.servlet.vendor.entity.ParamVendor;
+import com.servlet.vendor.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -77,13 +84,24 @@ public class PackingListHandler implements PackingListService {
     private InvoiceService invoiceService;
 
     @Autowired
+    private PriceService priceService;
+    @Autowired
+    private VendorService vendorService;
+
+    @Autowired
     private UserAppsService userAppsService;
+
+    @Autowired
+    private PelunasanPiutangService pelunasanPiutangService;
+
+    @Autowired
+    private CancelPackingListService cancelPackingListService;
 
     protected final String namaMenu = "PackingList";
     @Override
     public List<PackingListDataList> getList(Long idcompany, Long idbranch, ParamSearchPackingList param) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataList().schema());
-        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false and data.id not in (select cancel.idpackinglist from cancel_packinglist as cancel where cancel.idcompany = "+idcompany+" and cancel.idbranch = "+idbranch+" and cancel.isdelete = false)  ");
         if(param.getFrom() != null){
             Date dt = new Date(param.getFrom());
             sqlBuilder.append(" and data.date >= '"+dt.toString()+"'");
@@ -99,10 +117,13 @@ public class PackingListHandler implements PackingListService {
 
     @Override
     public PackingListTemplate getTemplate(Long idcompany, Long idbranch) {
+        ParamVendor paramVendor = new ParamVendor();
+        paramVendor.setVendorTypes("'UPI'");
         PackingListTemplate data = new PackingListTemplate();
         data.setProductOpt(productService.getListAll(idcompany,idbranch));
         data.setCategoryProductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,null));
         data.setCustomerOpt(customerService.getListAll(idcompany,idbranch));
+        data.setVendorOpt(vendorService.getListDropdown(idcompany,idbranch,paramVendor));
         return data;
     }
 
@@ -116,6 +137,7 @@ public class PackingListHandler implements PackingListService {
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_GENERATE_DOC_NUMBER,"Gagal Generate Document Number");
             validations.add(msg);
         }
+
         if(validations.size() == 0) {
             try{
                 PackingList table = new PackingList();
@@ -131,7 +153,9 @@ public class PackingListHandler implements PackingListService {
                 table.setNetto(body.getNetto());
                 table.setKoli(body.getKoli());
                 table.setIdpricelist(body.getIdpricelist());
+                table.setIdvendor(body.getIdvendor());
                 table.setIsdelete(false);
+                table.setIsalreadyupdateprice(true);
                 table.setCreatedby(iduser);
                 table.setCreateddate(ts);
                 idsave = repo.saveAndFlush(table).getId();
@@ -169,7 +193,7 @@ public class PackingListHandler implements PackingListService {
     @Override
     public PackingListDataDetail getDetail(Long id, Long idcompany, Long idbranch) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataDetail().schema());
-        sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  and data.id not in (select cancel.idpackinglist from cancel_packinglist as cancel where cancel.idcompany = "+idcompany+" and cancel.idbranch = "+idbranch+" and cancel.isdelete = false) ");
         final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
         List<PackingListDataDetail> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataDetail(), queryParameters);
         if(list != null && list.size() > 0){
@@ -188,9 +212,22 @@ public class PackingListHandler implements PackingListService {
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
         InvoiceDataList inv = invoiceService.getDataByIdPackingList(idcompany,idbranch,id);
         if(inv != null){
-            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_INVOICE,"packinglist ini terpasang pada invoice ("+inv.getNodocument()+")");
-            validations.add(msg);
+            PelunasanPiutangItemJoinHeader pp = pelunasanPiutangService.getPelunasanPiutangItemByIdInvoice(idcompany,idbranch,inv.getId());
+            if(pp != null){
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_PELUNASANPIUTANG,"Packinglist ini terpasang pada Pelunasan Piutang ("+pp.getNodocument()+")");
+                validations.add(msg);
+            }
+//            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_INVOICE,"packinglist ini terpasang pada invoice ("+inv.getNodocument()+")");
+//            validations.add(msg);
         }
+        if(validations.size() == 0){
+            List<QueryNotJoinCancelPackingListData> cancelData = cancelPackingListService.getDataByIdPackingList(idcompany,idbranch,id);
+            if(cancelData != null && cancelData.size() > 0){
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_CANCEL,"Document ini sudah di Cancel");
+                validations.add(msg);
+            }
+        }
+
         if(validations.size() == 0) {
             try{
                 PackingList table = repo.getById(id);
@@ -200,6 +237,7 @@ public class PackingListHandler implements PackingListService {
                     table.setDate(new Date(body.getDate()));
                     table.setIdcustomer(body.getIdcustomer());
                     table.setCity(body.getCity());
+                    table.setIdvendor(body.getIdvendor());
                     table.setAttention(body.getAttention());
                     table.setFlightnumber(body.getFlightnumber());
                     table.setAwbnumber(body.getAwbnumber());
@@ -222,9 +260,13 @@ public class PackingListHandler implements PackingListService {
                     } else {
                         validations.add(validationsItems.get(0));
                     }
+                    if(inv != null) {
+                        invoiceService.updateChangeDataPackingList(inv.getId(), true);
+                    }
                 }
 
             }catch (Exception e) {
+                e.printStackTrace();
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
                 validations.add(msg);
             }
@@ -249,6 +291,13 @@ public class PackingListHandler implements PackingListService {
         if(inv != null){
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_INSTALLED_INVOICE,"packinglist ini terpasang pada invoice ("+inv.getNodocument()+")");
             validations.add(msg);
+        }
+        if(validations.size() == 0){
+            List<QueryNotJoinCancelPackingListData> cancelData = cancelPackingListService.getDataByIdPackingList(idcompany,idbranch,id);
+            if(cancelData != null && cancelData.size() > 0){
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_CANCEL,"Document ini sudah di Cancel");
+                validations.add(msg);
+            }
         }
         if(validations.size() == 0) {
             try{
@@ -294,10 +343,61 @@ public class PackingListHandler implements PackingListService {
 
     @Override
     public PrintPackingList getPrintData(Long id, Long idcompany, Long idbranch,Long iduser,ParamPrint paramPrint) {
+//        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataPrint().schema());
+//        sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+//        final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
+        List<QueryNotJoinCancelPackingListData> cancelData = cancelPackingListService.getDataByIdPackingList(idcompany,idbranch,id);
+
+        if(cancelData != null && cancelData.size() > 0){
+            return null;
+        }
+//        List<PrintPackingList> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataPrint(), queryParameters);
+        PrintPackingList data = printPLData(id,idcompany,idbranch);
+        if(data != null){
+//            ValueParameter param = parameterClientService.getValueByParamName(idcompany,idbranch,"COMPANYNAME","TEXT");
+//            ValueParameter paramAddress1 = parameterClientService.getValueByParamName(idcompany,idbranch,"ADDRESS1","TEXT");
+//            ValueParameter paramAddress2 = parameterClientService.getValueByParamName(idcompany,idbranch,"ADDRESS2","TEXT");
+//            ValueParameter paramAddress3 = parameterClientService.getValueByParamName(idcompany,idbranch,"ADDRESS3","TEXT");
+
+//            PrintPackingList data = list.get(0);
+//            data.setItems(getListItems(data.getId()));
+//            data.setCompanyName(param.getStrValue());
+//            data.setAddress1(paramAddress1.getStrValue());
+//            data.setAddress2(paramAddress2.getStrValue());
+//            data.setAddress3(paramAddress3.getStrValue());
+
+            HashMap mapParamPrint = new HashMap();
+            mapParamPrint.put("data-id",data.getId());
+            data.setCountPrint(historyAppsService.countByActionAndMenuParam(idcompany,idbranch,"DOWNLOADPDF",namaMenu,mapParamPrint));
+//            data.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADPDF",namaMenu));
+            data.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
+            if(iduser != null) {
+                UserListData user = userAppsService.getUserByID(iduser);
+                String namaUser = "";
+                if (user != null) {
+                    namaUser = user.getNama();
+                }
+                data.setNamaUser(namaUser);
+            }
+//            if(paramPrint != null){
+//                if(paramPrint.getNamaMenu() != null){
+//                    if(paramPrint.getNamaMenu().equals("PRINT")){
+//                        catatDownload(id,idcompany,idbranch,iduser);
+//                    }
+//                }
+//            }
+            return data;
+        }
+        return null;
+    }
+
+    @Override
+    public PrintPackingList printPLData(Long id, Long idcompany, Long idbranch) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataPrint().schema());
         sqlBuilder.append(" where data.id = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
         final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
         List<PrintPackingList> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataPrint(), queryParameters);
+
         if(list != null && list.size() > 0){
             ValueParameter param = parameterClientService.getValueByParamName(idcompany,idbranch,"COMPANYNAME","TEXT");
             ValueParameter paramAddress1 = parameterClientService.getValueByParamName(idcompany,idbranch,"ADDRESS1","TEXT");
@@ -310,23 +410,6 @@ public class PackingListHandler implements PackingListService {
             data.setAddress1(paramAddress1.getStrValue());
             data.setAddress2(paramAddress2.getStrValue());
             data.setAddress3(paramAddress3.getStrValue());
-            data.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADPDF",namaMenu));
-            data.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
-            if(iduser != null) {
-                UserListData user = userAppsService.getUserByID(iduser);
-                String namaUser = "";
-                if (user != null) {
-                    namaUser = user.getNama();
-                }
-                data.setNamaUser(namaUser);
-            }
-            if(paramPrint != null){
-                if(paramPrint.getNamaMenu() != null){
-                    if(paramPrint.getNamaMenu().equals("PRINT")){
-                        catatDownload(id,idcompany,idbranch,iduser);
-                    }
-                }
-            }
             return data;
         }
         return null;
@@ -335,6 +418,7 @@ public class PackingListHandler implements PackingListService {
     @Override
     public Long calculateQtyPL(Long idcompany, Long idbranch, ParamCalculateQtyPL param) {
         String selectidPr = " select pr.id from packinglist as pr where pr.idcompany = "+idcompany+" and pr.idbranch = "+idbranch+" and pr.isdelete = false ";
+        String selectidCancelPl = " select cpl.idpackinglist from cancel_packinglist as cpl where cpl.idcompany = "+idcompany+" and cpl.idbranch = "+idbranch+" and cpl.isdelete = false ";
         if(param.getDateFrom() != null){
             Date dt = new Date(param.getDateFrom());
             selectidPr += " and pr.date >= '"+dt.toString()+"' ";
@@ -344,7 +428,7 @@ public class PackingListHandler implements PackingListService {
             selectidPr += " and pr.date <= '"+dt.toString()+"' ";
         }
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateQtyPL().schema());
-        sqlBuilder.append(" where data.idpackinglist in ("+selectidPr+") ");
+        sqlBuilder.append(" where data.idpackinglist in ("+selectidPr+") and data.idpackinglist not in ("+selectidCancelPl+") ");
         if(param.getIdcategoryproduct() != null){
             sqlBuilder.append(" and data.idcategoryproduct = "+param.getIdcategoryproduct()+" ");
         }
@@ -359,6 +443,22 @@ public class PackingListHandler implements PackingListService {
             sqlBuilder.append(" and data.idproduct in ("+param.getListidproduct()+") ");
         }
 
+        final Object[] queryParameters = new Object[] {};
+        List<Long> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateQtyPL(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return 0L;
+    }
+
+    @Override
+    public Long calculateQtyPLByIdPackingList(Long idcompany, Long idbranch, ParamCalculateQtyPL param) {
+        //query disini jangan dikasih query not in ke cancel packing list okee
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateQtyPL().schema());
+        sqlBuilder.append(" where ");
+        sqlBuilder.append(" data.idcategoryproduct = "+param.getIdcategoryproduct()+" ");
+        sqlBuilder.append(" and data.idproduct = "+param.getIdproduct()+" ");
+        sqlBuilder.append(" and data.idpackinglist = "+param.getIdpackinglist()+" ");
         final Object[] queryParameters = new Object[] {};
         List<Long> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCalculateQtyPL(), queryParameters);
         if(list != null && list.size() > 0){
@@ -405,8 +505,214 @@ public class PackingListHandler implements PackingListService {
         if(param.getListIdCategoryProduct() != null && !param.getListIdCategoryProduct().equals("")){
             sqlBuilder.append(" and data.idcategoryproduct in ("+param.getListIdCategoryProduct()+") ");
         }
+        sqlBuilder.append(" GROUP BY data.idpackinglist,pl.nodocument,pl.date,cus.nama, cus.alias, data.idproduct, data.idcategoryproduct ");
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPackingListReportKartuStock(), queryParameters);
+    }
+
+    @Override
+    public ReturnData updateColumsIsAlreadyUpdatePriceToFalse(Long idcompany, Long idbranch, Long idcustomer, Long idpricelist) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        try {
+            repo.updateColumsIsAlreadyUpdatePriceToFalse(idcompany,idbranch,idcustomer, idpricelist);
+        }catch (Exception e) {
+            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+            validations.add(msg);
+        }
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public ReturnData updatePrice(Long id, Long idcompany, Long idbranch, Long iduser) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        if(validations.size() == 0){
+            List<QueryNotJoinCancelPackingListData> cancelData = cancelPackingListService.getDataByIdPackingList(idcompany,idbranch,id);
+            if(cancelData != null && cancelData.size() > 0){
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_CANCEL,"Document ini sudah di Cancel");
+                validations.add(msg);
+            }
+        }
+        if(validations.size() == 0) {
+            try{
+                PackingList table = repo.getById(id);
+                if(table.getIsalreadyupdateprice()){
+                    ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_UPDATE_PRICE,"packinglist ini sudah menggunakan Price List terbaru");
+                    validations.add(msg);
+                }
+                PriceListDetail priceDet = priceService.getDetail(table.getIdpricelist(), idcompany,idbranch);
+                if(validations.size() == 0 && priceDet != null) {
+                    List<PackingListItemData> listItemsDB = getListItemsNotJoin(id);
+                    if (table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue() && !table.isIsdelete()) {
+                        String mixDataBef =  "Header = "+table.toString() +" | Items = " + listItemsDB.toString();
+
+                        if(priceDet.getItems() != null && priceDet.getItems().size() > 0) {
+                            HashMap<String, PriceListItemData> mappingPrice = new HashMap<>();
+                            for(PriceListItemData itemPrice : priceDet.getItems()){
+                                String keyPrice = itemPrice.getIdproduct()+"-"+itemPrice.getCategoryproductid();
+                                mappingPrice.put(keyPrice,itemPrice);
+                            }
+
+                            Double netto = 0.0;
+                            List<PackingListItem> packingListItem = new ArrayList<>();
+                            for(PackingListItemData item : listItemsDB){
+                                String key = item.getIdproduct()+"-"+item.getIdcategoryproduct();
+                                PriceListItemData itemPrice = mappingPrice.get(key);
+                                if(itemPrice != null){
+
+                                    PackingListItemPK packingListItemPK = new PackingListItemPK();
+                                    packingListItemPK.setIdpackinglist(id);
+                                    packingListItemPK.setIdproduct(item.getIdproduct());
+                                    packingListItemPK.setIdcategoryproduct(item.getIdcategoryproduct());
+                                    packingListItemPK.setBox(item.getBox());
+                                    packingListItemPK.setNoseq(item.getNoseq());
+                                    PackingListItem tableitem = itemRepo.getById(packingListItemPK);
+                                    Double price = itemPrice.getAmount();
+//                                    Double totalPrice = item.getQty() * price;
+
+                                    tableitem.setPrice(price);
+//                                    tableitem.setTotalprice(totalPrice);
+
+                                    //allowance
+                                    int places = 2;
+
+                                    Double allowance = itemPrice.getAllowance();
+                                    String[] arrSplit = allowance.toString().split("\\.");
+                                    String number = arrSplit[0];
+                                    String desimal = arrSplit[1];
+                                    if(desimal.length() > places){
+                                        desimal = desimal.substring(0, places);
+                                        allowance = Double.parseDouble(number+"."+desimal);
+                                    }
+
+                                    Double allowancePer100 = allowance / 100.00;
+                                    String[] arrSplitPer100 = allowancePer100.toString().split("\\.");
+                                    String numberPer100 = arrSplitPer100[0];
+                                    String desimalPer100 = arrSplitPer100[1];
+                                    if(desimalPer100.length() > places){
+                                        desimalPer100 = desimalPer100.substring(0, places);
+                                        allowancePer100 = Double.parseDouble(numberPer100+"."+desimalPer100);
+                                    }
+
+                                    Double brutoweight = item.getBrutoweight();
+                                    String[] arrSplitBW = brutoweight.toString().split("\\.");
+                                    String numberBW = arrSplitBW[0];
+                                    String desimalBW = arrSplitBW[1];
+                                    if(desimalBW.length() > places){
+                                        desimalBW = desimalBW.substring(0, places);
+
+                                        brutoweight = Double.parseDouble(numberBW+"."+desimalBW);
+                                    }
+
+                                    Double nettoItem = brutoweight - (brutoweight * allowancePer100);
+                                    nettoItem = GlobalFunc.pembulatanNilai(nettoItem,false,1);
+
+                                    Double valKg = GlobalFunc.convertGramToKG(nettoItem);
+                                    valKg = GlobalFunc.pembulatanNilai(valKg,false,1);
+
+                                    Double subtotalPrice = valKg * price;
+
+
+                                    netto = netto + nettoItem;
+
+                                    tableitem.setTotalprice(GlobalFunc.jumlahDesimal(subtotalPrice,1));
+                                    tableitem.setAllowance(allowance);
+                                    tableitem.setNettoweight(GlobalFunc.jumlahDesimal(nettoItem,1));
+
+                                    itemRepo.saveAndFlush(tableitem);
+
+                                    packingListItem.add(tableitem);
+                                }
+                            }
+
+                            String[] arrSplitNetto = netto.toString().split("\\.");
+                            String numberNetto = arrSplitNetto[0];
+                            String desimalNetto = arrSplitNetto[1];
+                            if(desimalNetto.length() > 1){
+                                desimalNetto = desimalNetto.substring(0, 1);
+                                netto = Double.parseDouble(numberNetto+"."+desimalNetto);
+                            }
+                            table.setNetto(netto);
+                            table.setIsalreadyupdateprice(true);
+                            table.setUpdatepricedate(ts);
+                            table.setUpdatepriceby(iduser);
+                            repo.saveAndFlush(table);
+
+                            String mixData = "Header = "+table.toString()+" | Items = "+packingListItem.toString();
+                            historyAppsService.saveHistory(idcompany, idbranch, iduser, "EDIT_PRICELIST", namaMenu, "", mixData, mixDataBef, ts);
+                        }
+                    }
+                }
+
+            }catch (Exception e) {
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
+        }
+
+        if(validations.size() > 0){
+            historyAppsService.saveHistory(idcompany,idbranch,iduser,"EDIT_ERROR",namaMenu,validations.get(0).getMessage(),"","",ts);
+        }
+        ReturnData data = new ReturnData();
+        data.setId(id);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public ReturnData cancelPackingList(Long idcompany, Long idbranch, Long iduser, Long idpackinglist) {
+//        List<ValidationDataMessage> validations = new ArrayList<>();
+//        long idsave = 0;
+//        if(validations.size() == 0){
+//            List<QueryNotJoinCancelPackingListData> cancelData = cancelPackingListService.getDataByIdPackingList(idcompany,idbranch,idpackinglist);
+//            if(cancelData != null && cancelData.size() > 0){
+//                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.THIS_ID_ALREADY_CANCEL,"Document ini sudah di Cancel");
+//                validations.add(msg);
+//            }
+//        }
+//        if(validations.size() == 0) {
+//            try{
+//                PackingList table = repo.getById(idpackinglist);
+//                BodyCancelPackingList bodyCancel = new BodyCancelPackingList();
+//                bodyCancel.setIdpackinglist(idpackinglist);
+//                bodyCancel.setDatecancel(new java.util.Date().getTime());
+//                ReturnData dataCancel = cancelPackingListService.cancelPackingList(idcompany,idbranch,iduser,bodyCancel);
+//                if(dataCancel.isSuccess()){
+//
+//                }else{
+//                    return dataCancel;
+//                }
+//            }catch (Exception e) {
+//                e.printStackTrace();
+//                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+//                validations.add(msg);
+//            }
+//        }
+//        ReturnData data = new ReturnData();
+//        data.setId(idsave);
+//        data.setSuccess(validations.size() > 0?false:true);
+//        data.setValidations(validations);
+        return null;
+    }
+
+    @Override
+    public List<PackingListDataItemDetail> getListItemsByIdPackingList(Long idpackinglist) {
+        return getListItems(idpackinglist);
+    }
+
+    @Override
+    public List<Long> checkIdCP(Long idcompany, Long idbranch, Long idcategoryProduct) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCheckIdCategoryProduct().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and items.idcategoryproduct = ? and data.isdelete = false  ");
+        final Object[] queryParameters = new Object[] {idcompany,idbranch,idcategoryProduct};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCheckIdCategoryProduct(), queryParameters);
     }
 
     private HashMap<Object,Object> tambahStockItems(Long idcompany, Long idbranch, Long idpackinglist){
@@ -430,8 +736,10 @@ public class PackingListHandler implements PackingListService {
     private List<PackingListDataItemDetail> getListItems(Long idpackinglist){
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryItemDataDetail().schema());
         sqlBuilder.append(" where data.idpackinglist = ? ");
-        sqlBuilder.append(" order by data.box ");
-
+        //kenapa ditambah order by noseq, karena hasil keluarannya ingin sesuai dengan apa yang di input
+        //dan karena ini join harus memakai noseq jika tidak, list tidak sesuai
+        sqlBuilder.append(" order by data.noseq ");
+//        sqlBuilder.append(" order by data.box ");
         final Object[] queryParameters = new Object[] {idpackinglist};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryItemDataDetail(), queryParameters);
     }
@@ -467,6 +775,7 @@ public class PackingListHandler implements PackingListService {
                     table.setNettoweight(val.getNettoweight());
                     table.setPrice(val.getPrice());
                     table.setTotalprice(val.getTotalprice());
+                    table.setCheck(val.getCheck());
                     itemRepo.saveAndFlush(table);
                     listitem.add(val);
                     mapsStock.put(keyMaps,table);

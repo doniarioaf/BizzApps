@@ -14,7 +14,7 @@ public class QueryStockAdjusmentReportKartuStock implements RowMapper<ReportKart
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.idproduct as idproduct, data.idcategoryproduct as idcategoryproduct, ");
-        sqlBuilder.append("data.qty as qty, data.type as type, sa.nodocument as nodocument, sa.date as date, sa.note as note ");
+        sqlBuilder.append("sum(data.qty) as qty, data.type as type, sa.nodocument as nodocument, sa.date as date, sa.note as note ");
         sqlBuilder.append("from stock_adjusment_item as data ");
         sqlBuilder.append("left join stock_adjusment as sa on data.idstockadjusment = sa.id ");
 

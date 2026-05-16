@@ -7,6 +7,15 @@ public class ParamCalculateQtyPL {
     private Long dateThru;
     private String listidcategoryproduct;
     private String listidproduct;
+    private Long idpackinglist;
+
+    public Long getIdpackinglist() {
+        return idpackinglist;
+    }
+
+    public void setIdpackinglist(Long idpackinglist) {
+        this.idpackinglist = idpackinglist;
+    }
 
     public Long getIdproduct() {
         return idproduct;
@@ -54,5 +63,18 @@ public class ParamCalculateQtyPL {
 
     public void setDateThru(Long dateThru) {
         this.dateThru = dateThru;
+    }
+
+    @Override
+    public String toString() {
+        return "ParamCalculateQtyPL{" +
+                "idcategoryproduct=" + idcategoryproduct +
+                ", idproduct=" + idproduct +
+                ", dateFrom=" + dateFrom +
+                ", dateThru=" + dateThru +
+                ", listidcategoryproduct='" + listidcategoryproduct + '\'' +
+                ", listidproduct='" + listidproduct + '\'' +
+                ", idpackinglist=" + idpackinglist +
+                '}';
     }
 }

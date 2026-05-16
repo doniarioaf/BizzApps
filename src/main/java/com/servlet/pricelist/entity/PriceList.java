@@ -25,6 +25,7 @@ public class PriceList implements Serializable {
     private Timestamp modifieddate;
     private Long deleteby;
     private Timestamp deletedate;
+    private Long idcustomer;
 
     @Override
     public String toString() {
@@ -33,7 +34,16 @@ public class PriceList implements Serializable {
                 ", pricedate=" + pricedate +
                 ", pricedatethru=" + pricedatethru +
                 ", notes=" + notes +
+                ", idcustomer=" + idcustomer +
                 '}';
+    }
+
+    public Long getIdcustomer() {
+        return idcustomer;
+    }
+
+    public void setIdcustomer(Long idcustomer) {
+        this.idcustomer = idcustomer;
     }
 
     public Date getPricedatethru() {

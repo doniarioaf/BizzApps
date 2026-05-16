@@ -17,8 +17,8 @@ public class QueryDataDetail implements RowMapper<PurchaseReceiveDataDetail> {
         sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.idvendor as idvendor, ");
         sqlBuilder.append("data.transactiondate as transactiondate, data.koli as koli, data.notes as notes, ");
         sqlBuilder.append("data.bank as bank, data.accountnobank as accountnobank, data.accountnamebank as accountnamebank, ");
-        sqlBuilder.append("data.totalprice as totalprice, data.setor as setor, data.iddeposit as iddeposit,data.isdefaultvaluesetor as isdefaultvaluesetor, data.outstanding as outstanding, ");
-        sqlBuilder.append("data.flightno as flightno, data.smu as smu, data.notes2 as notes2, ");
+        sqlBuilder.append("data.totalprice as totalprice, data.setor as setor, data.setor_pinjaman as setor_pinjaman, data.iddeposit as iddeposit,data.isdefaultvaluesetor as isdefaultvaluesetor, data.outstanding as outstanding, ");
+        sqlBuilder.append("data.flightno as flightno, data.smu as smu, data.notes2 as notes2, data.kurs as kurs, data.selisih as selisih, ");
         sqlBuilder.append("ven.nama as vennama, ven.alias as venalias, ");
         sqlBuilder.append("data.idarea as idarea, area.nama as areanama, area.alias as areaalias, ");
         sqlBuilder.append("data.iddraftpurchasereceive as iddraftpurchasereceive ,dpr.nodocument as nodocumentdraft, dpr.smu as smudraft, ");
@@ -52,6 +52,7 @@ public class QueryDataDetail implements RowMapper<PurchaseReceiveDataDetail> {
         final String accountnamebank = rs.getString("accountnamebank");
         final Double totalprice = rs.getDouble("totalprice");
         final Double setor = rs.getDouble("setor");
+        final Double setor_pinjaman = rs.getDouble("setor_pinjaman");
         final Long iddeposit = rs.getLong("iddeposit");
         final String vennama = rs.getString("vennama");
         final String venalias = rs.getString("venalias");
@@ -72,6 +73,9 @@ public class QueryDataDetail implements RowMapper<PurchaseReceiveDataDetail> {
         final String smu = rs.getString("smu");
         final String notes2 = rs.getString("notes2");
 
+        final Double kurs = rs.getDouble("kurs");
+        final Double selisih = rs.getDouble("selisih");
+
         PurchaseReceiveDataDetail data = new PurchaseReceiveDataDetail();
         data.setId(id);
         data.setNodocument(nodocument);
@@ -86,6 +90,7 @@ public class QueryDataDetail implements RowMapper<PurchaseReceiveDataDetail> {
         data.setAccountnamebank(accountnamebank);
         data.setTotalprice(totalprice);
         data.setSetor(setor);
+        data.setSetor_pinjaman(setor_pinjaman);
         data.setIddeposit(iddeposit);
         data.setIsdefaultvaluesetor(isdefaultvaluesetor);
         data.setIddraftpurchasereceive(iddraftpurchasereceive);
@@ -102,6 +107,8 @@ public class QueryDataDetail implements RowMapper<PurchaseReceiveDataDetail> {
         data.setFlightno(flightno);
         data.setSmu(smu);
         data.setNotes2(notes2);
+        data.setKurs(kurs);
+        data.setSelisih(selisih);
         return data;
     }
 }

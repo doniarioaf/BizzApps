@@ -1,10 +1,12 @@
 package com.servlet.deposit.service;
 
+import com.servlet.common.entity.PagingData;
 import com.servlet.deposit.entity.*;
 import com.servlet.filedocument.entity.FileDocumentData;
 import com.servlet.shared.ReturnData;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.Date;
 import java.util.List;
 
 public interface DepositService {
@@ -18,9 +20,13 @@ public interface DepositService {
     ReturnData delete(Long id,Long idcompany, Long idbranch, Long iduser);
     DepositTemplate getTemplate(Long idcompany, Long idbranch);
     ReturnData deleteRollBack(Long id);
-    Double calculateSaldoDepositByIdVendorAndBeforeDateCreated(Long idcompany, Long idbranch, Long idvendor,Long date);
+    Double calculateSaldoDepositByIdVendorAndBeforeDateCreated(Long idcompany, Long idbranch, ParamCalculateDeposit param);
+    Double calculateSaldoDepositForPrinted(Long idcompany, Long idbranch, ParamCalculateDeposit param);
     Double calculateSaldoDepositByIdVendorAndBeforeDate(Long idcompany, Long idbranch, Long idvendor,Long date);
     List<ReportKartuDeposit> getListReportKartuDeposit(Long idcompany, Long idbranch, ParamList param);
     ReturnData uploadFileDoc(Long id, MultipartFile file, Long idcompany, Long idbranch, Long iduser);
     FileDocumentData downloadFile(Long id, Long idcompany, Long idbranch);
+    List<DepositDataNotJoin> getListDepositActive(Long idcompany, Long idbranch, ParamList param);
+    ReturnData updateStatusDeposit(Long id,Long idcompany, Long idbranch, Long iduser,Boolean status);
+    PagingData getListVendorSisaDeposit(Long idcompany, Long idbranch, Integer Limit, Integer Offset, String search);
 }

@@ -31,6 +31,10 @@ public class PackingList implements Serializable {
     private Long deleteby;
     private Timestamp deletedate;
     private Long idpricelist;
+    private Boolean isalreadyupdateprice;
+    private Timestamp updatepricedate;
+    private Long updatepriceby;
+    private Long idvendor;
 
     @Override
     public String toString() {
@@ -45,7 +49,40 @@ public class PackingList implements Serializable {
                 ", netto=" + netto +
                 ", koli=" + koli +
                 ", idpricelist=" + idpricelist +
+                ", idvendor=" + idvendor +
                 '}';
+    }
+
+    public Long getIdvendor() {
+        return idvendor;
+    }
+
+    public void setIdvendor(Long idvendor) {
+        this.idvendor = idvendor;
+    }
+
+    public Timestamp getUpdatepricedate() {
+        return updatepricedate;
+    }
+
+    public void setUpdatepricedate(Timestamp updatepricedate) {
+        this.updatepricedate = updatepricedate;
+    }
+
+    public Long getUpdatepriceby() {
+        return updatepriceby;
+    }
+
+    public void setUpdatepriceby(Long updatepriceby) {
+        this.updatepriceby = updatepriceby;
+    }
+
+    public Boolean getIsalreadyupdateprice() {
+        return isalreadyupdateprice;
+    }
+
+    public void setIsalreadyupdateprice(Boolean isalreadyupdateprice) {
+        this.isalreadyupdateprice = isalreadyupdateprice;
     }
 
     public Long getIdpricelist() {

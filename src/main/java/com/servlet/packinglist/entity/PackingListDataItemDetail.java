@@ -8,6 +8,7 @@ public class PackingListDataItemDetail {
     private String categoryProductSize;
     private Long categoryProductFromGr;
     private Long categoryProductThruGr;
+    private Long categoryJumlahitemsperkoli;
     private Long qty;
     private Double brutoweight;
     private Double allowance;
@@ -15,6 +16,23 @@ public class PackingListDataItemDetail {
     private Double price;
     private Double totalprice;
     private String box;
+    private Boolean check;
+
+    public Boolean getCheck() {
+        return check;
+    }
+
+    public void setCheck(Boolean check) {
+        this.check = check;
+    }
+
+    public Long getCategoryJumlahitemsperkoli() {
+        return categoryJumlahitemsperkoli;
+    }
+
+    public void setCategoryJumlahitemsperkoli(Long categoryJumlahitemsperkoli) {
+        this.categoryJumlahitemsperkoli = categoryJumlahitemsperkoli;
+    }
 
     public Long getCategoryProductFromGr() {
         return categoryProductFromGr;

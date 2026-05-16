@@ -6,6 +6,24 @@ public class BodyCategoryProduct {
     private int weightfromingram;
     private int weighttoingram;
     private int jumlahitemsperkoli;
+    private String forcategory;
+    private int sequence;
+
+    public int getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(int sequence) {
+        this.sequence = sequence;
+    }
+
+    public String getForcategory() {
+        return forcategory;
+    }
+
+    public void setForcategory(String forcategory) {
+        this.forcategory = forcategory;
+    }
 
     public int getWeightfromingram() {
         return weightfromingram;

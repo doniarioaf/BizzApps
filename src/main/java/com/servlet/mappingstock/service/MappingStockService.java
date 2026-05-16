@@ -15,4 +15,5 @@ public interface MappingStockService {
     MappingStockCategoryID getDetailMapping(Long id, Long idcompany, Long idbranch);
     String getSelectidCategory(Long idcompany, Long idbranch);
     List<Long> getCategoryProducts(Long idcompany, Long idbranch, ParamSearchMappingStock param);
+    List<Long> checkIdCP(Long idcompany, Long idbranch, Long idcategoryProduct);
 }

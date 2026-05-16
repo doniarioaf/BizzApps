@@ -7,7 +7,7 @@ public class BodyDraftPurchaseReceive {
     private String receivetime;
     private String smu;
     private Long totalekor;
-    private Long totalkg;
+    private Double totalkg;
     private Double persentase;
     private BodyDraftPurchaseReceiveItems[] items;
 
@@ -112,11 +112,11 @@ public class BodyDraftPurchaseReceive {
         this.totalekor = totalekor;
     }
 
-    public Long getTotalkg() {
+    public Double getTotalkg() {
         return totalkg;
     }
 
-    public void setTotalkg(Long totalkg) {
+    public void setTotalkg(Double totalkg) {
         this.totalkg = totalkg;
     }
 }

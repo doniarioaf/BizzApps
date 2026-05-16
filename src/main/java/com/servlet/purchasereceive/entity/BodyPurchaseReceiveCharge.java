@@ -2,6 +2,7 @@ package com.servlet.purchasereceive.entity;
 
 public class BodyPurchaseReceiveCharge {
     private long idcharge;
+    private String chargenamecustom;
     private long qty;
     private Double price;
     private Double subtotalprice;
@@ -13,7 +14,16 @@ public class BodyPurchaseReceiveCharge {
                 ", qty=" + qty +
                 ", price=" + price +
                 ", subtotalprice=" + subtotalprice +
+                ", chargenamecustom=" + chargenamecustom +
                 '}';
+    }
+
+    public String getChargenamecustom() {
+        return chargenamecustom;
+    }
+
+    public void setChargenamecustom(String chargenamecustom) {
+        this.chargenamecustom = chargenamecustom;
     }
 
     public long getIdcharge() {

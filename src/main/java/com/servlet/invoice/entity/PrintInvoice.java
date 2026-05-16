@@ -5,6 +5,7 @@ import com.servlet.packinglist.entity.PackingListDataDetail;
 import java.sql.Date;
 
 public class PrintInvoice {
+    private String countryOfOrigin;
     private String companyName;
     private String address1;
     private String address2;
@@ -23,6 +24,14 @@ public class PrintInvoice {
     private Long countPrint;
     private Long countEdit;
     private String namaUser;
+
+    public String getCountryOfOrigin() {
+        return countryOfOrigin;
+    }
+
+    public void setCountryOfOrigin(String countryOfOrigin) {
+        this.countryOfOrigin = countryOfOrigin;
+    }
 
     public Long getCountPrint() {
         return countPrint;

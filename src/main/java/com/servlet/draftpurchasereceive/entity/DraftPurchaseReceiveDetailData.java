@@ -19,7 +19,7 @@ public class DraftPurchaseReceiveDetailData {
     private String notes1;
     private String notes2;
     private Long totalekor;
-    private Long totalkg;
+    private Double totalkg;
     private Double persentase;
     private Long createdby;
     private String createdbyName;
@@ -152,11 +152,11 @@ public class DraftPurchaseReceiveDetailData {
         this.totalekor = totalekor;
     }
 
-    public Long getTotalkg() {
+    public Double getTotalkg() {
         return totalkg;
     }
 
-    public void setTotalkg(Long totalkg) {
+    public void setTotalkg(Double totalkg) {
         this.totalkg = totalkg;
     }
 

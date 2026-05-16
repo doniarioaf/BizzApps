@@ -5,7 +5,7 @@ public class DraftPurchaseReceiveItemNotJoin {
     private Long idproduct;
     private Long idcategoryproduct;
     private Long ekor;
-    private Long kilo;
+    private Double kilo;
     private String type;
 
     @Override
@@ -52,11 +52,11 @@ public class DraftPurchaseReceiveItemNotJoin {
         this.ekor = ekor;
     }
 
-    public Long getKilo() {
+    public Double getKilo() {
         return kilo;
     }
 
-    public void setKilo(Long kilo) {
+    public void setKilo(Double kilo) {
         this.kilo = kilo;
     }
 

@@ -1,5 +1,7 @@
 package com.servlet.report.api;
 
+import com.servlet.cancelpackinglist.entity.ParamReportCancelPackingList;
+import com.servlet.pinjaman.entity.ParamReportKartuPinjaman;
 import com.servlet.report.entity.*;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
@@ -43,10 +45,22 @@ public class ReportAPI {
 
     }
 
+    @GetMapping("/reportstockudanghidupmati/pdf")
+    ResponseEntity<Response> getReportStockUdangHidupMatiPDF(@RequestParam("from") Long date,@RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        ParamReportStockUdangHidupMati body = new ParamReportStockUdangHidupMati();
+        body.setDate(date);
+        param.put("type", "REPORTUDANGHIDUPMATI_PDF");
+        param.put("body", body);
+        Response response = securityService.response(ConstansPermission.READ_REPORT_STOCKUDANGHIDUPMATI,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
     @GetMapping("/reportrekapbarangmasuk")
-    ResponseEntity<Response> getReportRekapanBarangMasuk(@RequestParam("from") Long date, HttpServletResponse response, @RequestHeader(ConstansKey.AUTH) String authorization) throws IOException{
+    ResponseEntity<Response> getReportRekapanBarangMasuk(@RequestParam("from") Long date,@RequestParam("shownol") String shownol, HttpServletResponse response, @RequestHeader(ConstansKey.AUTH) String authorization) throws IOException{
         ParamReportRekapStock body = new ParamReportRekapStock();
         body.setDate(date);
+        body.setShowNol(shownol);
         HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("type", "REPORTREKAPANBARANGMASUK");
         param.put("body", body);
@@ -246,6 +260,36 @@ public class ReportAPI {
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
+	@GetMapping("/reportkartupinjaman")
+	ResponseEntity<Response> getReportKartuPinjaman(@RequestParam("shownol") String shownol, @RequestParam("idvendors") String idvendors, @RequestParam("from") Long from,@RequestParam("to") Long to, HttpServletResponse response, @RequestHeader(ConstansKey.AUTH) String authorization) throws IOException{
+		ParamReportKartuPinjaman body = new ParamReportKartuPinjaman();
+		body.setFrom(from);
+		body.setTo(to);
+		body.setShowNol(shownol);
+		body.setIdvendors(idvendors);
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "REPORTKARTUPINJAMAN");
+		param.put("body", body);
+		Response response1 = securityService.response(ConstansPermission.READ_REPORT_KARTUPINJAMAN,param,authorization);
+		if(response1.getHttpcode() == HttpStatus.OK.value()) {
+			XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+			export(response, workbook);
+
+			return ResponseEntity.ok().build();
+		}else{
+			return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
+		}
+
+	}
+
+	@GetMapping("/reportkartupinjaman/template")
+	ResponseEntity<Response> getReportKartuPinjamanTemplate(@RequestHeader(ConstansKey.AUTH) String authorization) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+		param.put("type", "REPORTKARTUPINJAMAN_TEMPLATE");
+		Response response = securityService.response(ConstansPermission.READ_REPORT_KARTUPINJAMAN,param,authorization);
+		return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+	}
+
     @GetMapping("/reportkartustock")
     ResponseEntity<Response> getReportKartuStock( @RequestParam("idproducts") String idproducts,@RequestParam("idcategoryproducts") String idcategoryproducts, @RequestParam("from") Long from,@RequestParam("to") Long to, HttpServletResponse response, @RequestHeader(ConstansKey.AUTH) String authorization) throws IOException{
         ParamReportKartuStock body = new ParamReportKartuStock();
@@ -276,6 +320,54 @@ public class ReportAPI {
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
+    @GetMapping("/reportkomisi")
+    ResponseEntity<Response> getReportKomisi( @RequestParam("idvendorbrokers") String idvendorbrokers, @RequestParam("from") Long from,@RequestParam("to") Long to, HttpServletResponse response, @RequestHeader(ConstansKey.AUTH) String authorization) throws IOException{
+        ParamReportKomisi body = new ParamReportKomisi();
+        body.setFrom(from);
+        body.setTo(to);
+        body.setListIdvendorbroker(idvendorbrokers);
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "REPORTKOMISI");
+        param.put("body", body);
+        Response response1 = securityService.response(ConstansPermission.READ_REPORT_KOMISI,param,authorization);
+        if(response1.getHttpcode() == HttpStatus.OK.value()) {
+            XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+            export(response, workbook);
+
+            return ResponseEntity.ok().build();
+        }else{
+            return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
+        }
+
+    }
+
+    @GetMapping("/reportkomisi/template")
+    ResponseEntity<Response> getReportKomisi(@RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "REPORTKOMISI_TEMPLATE");
+        Response response = securityService.response(ConstansPermission.READ_REPORT_KOMISI,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @GetMapping("/reportcpl")
+    ResponseEntity<Response> getReportCancelPackingList(  @RequestParam("from") Long from,@RequestParam("to") Long to, HttpServletResponse response, @RequestHeader(ConstansKey.AUTH) String authorization) throws IOException{
+        ParamReportCancelPackingList body = new ParamReportCancelPackingList();
+        body.setFrom(from);
+        body.setTo(to);
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "REPORTCPL");
+        param.put("body", body);
+        Response response1 = securityService.response(ConstansPermission.READ_REPORT_CANCELPACKINGLIST,param,authorization);
+        if(response1.getHttpcode() == HttpStatus.OK.value()) {
+            XSSFWorkbook workbook = (XSSFWorkbook) response1.getData();
+            export(response, workbook);
+
+            return ResponseEntity.ok().build();
+        }else{
+            return ResponseEntity.status(response1.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response1);
+        }
+
+    }
     private void export(HttpServletResponse response, XSSFWorkbook workbook) throws IOException {
         ServletOutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);

@@ -5,12 +5,39 @@ import java.sql.Date;
 public class InvoiceDataPelunasanPiutang {
     private Long id;
     private String nodocument;
+    private String nodocumentPL;
     private String customerName;
     private String customerAlias;
+    private String vendorName;
+    private String vendorAlias;
     private Date date;
     private Double kurs;
     private Double outstanding;
     private Double amount;
+
+    public String getVendorName() {
+        return vendorName;
+    }
+
+    public void setVendorName(String vendorName) {
+        this.vendorName = vendorName;
+    }
+
+    public String getVendorAlias() {
+        return vendorAlias;
+    }
+
+    public void setVendorAlias(String vendorAlias) {
+        this.vendorAlias = vendorAlias;
+    }
+
+    public String getNodocumentPL() {
+        return nodocumentPL;
+    }
+
+    public void setNodocumentPL(String nodocumentPL) {
+        this.nodocumentPL = nodocumentPL;
+    }
 
     public Long getId() {
         return id;

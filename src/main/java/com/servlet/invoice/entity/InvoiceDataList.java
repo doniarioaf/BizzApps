@@ -6,11 +6,20 @@ public class InvoiceDataList {
     private Long id;
     private String nodocument;
     private Date date;
+    private Date packingListdate;
     private Double kurs;
     private Long idpackinglist;
     private String nodocumentPackingList;
     private String custNama;
     private String custAlias;
+
+    public Date getPackingListdate() {
+        return packingListdate;
+    }
+
+    public void setPackingListdate(Date packingListdate) {
+        this.packingListdate = packingListdate;
+    }
 
     public String getCustNama() {
         return custNama;

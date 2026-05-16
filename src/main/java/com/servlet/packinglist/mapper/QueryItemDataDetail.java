@@ -14,9 +14,9 @@ public class QueryItemDataDetail implements RowMapper<PackingListDataItemDetail>
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.idproduct as idproduct, data.idcategoryproduct as idcategoryproduct, ");
         sqlBuilder.append("data.qty as qty,data.price as price, data.brutoweight as brutoweight ,data.totalprice as totalprice, ");
-        sqlBuilder.append("data.allowance as allowance,data.nettoweight as nettoweight, data.box as box, ");
+        sqlBuilder.append("data.allowance as allowance,data.nettoweight as nettoweight, data.box as box, data.is_checked as is_checked, ");
         sqlBuilder.append("prod.nama as prodnama, ");
-        sqlBuilder.append("cprod.nama as cprodnama, cprod.size as cprodsize, cprod.weightfromingram as cprodweightfromingram, cprod.weighttoingram as cprodweighttoingram ");
+        sqlBuilder.append("cprod.nama as cprodnama, cprod.size as cprodsize, cprod.weightfromingram as cprodweightfromingram, cprod.weighttoingram as cprodweighttoingram, cprod.jumlahitemsperkoli as cprodjumlahitemsperkoli ");
         sqlBuilder.append("from packinglist_item as data ");
         sqlBuilder.append("left join m_product as prod on prod.id = data.idproduct ");
         sqlBuilder.append("left join m_category_product as cprod on cprod.id = data.idcategoryproduct ");
@@ -44,6 +44,9 @@ public class QueryItemDataDetail implements RowMapper<PackingListDataItemDetail>
         final String cprodsize = rs.getString("cprodsize");
         final Long cprodweightfromingram = rs.getLong("cprodweightfromingram");
         final Long cprodweighttoingram = rs.getLong("cprodweighttoingram");
+        final Long cprodjumlahitemsperkoli = rs.getLong("cprodjumlahitemsperkoli");
+        final Boolean check = rs.getBoolean("is_checked");
+
         PackingListDataItemDetail data = new PackingListDataItemDetail();
         data.setIdproduct(idproduct);
         data.setProductName(prodnama);
@@ -60,6 +63,8 @@ public class QueryItemDataDetail implements RowMapper<PackingListDataItemDetail>
         data.setCategoryProductSize(cprodsize);
         data.setCategoryProductFromGr(cprodweightfromingram);
         data.setCategoryProductThruGr(cprodweighttoingram);
+        data.setCategoryJumlahitemsperkoli(cprodjumlahitemsperkoli);
+        data.setCheck(check);
         return data;
     }
 }

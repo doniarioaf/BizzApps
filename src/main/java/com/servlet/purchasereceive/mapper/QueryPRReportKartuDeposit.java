@@ -13,8 +13,10 @@ public class QueryPRReportKartuDeposit implements RowMapper<ReportKartuDeposit> 
     public QueryPRReportKartuDeposit() {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
-        sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.transactiondate as transactiondate, data.setor as setor, data.idvendor as idvendor ");
+        sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.transactiondate as transactiondate, data.setor as setor, data.idvendor as idvendor, ");
+        sqlBuilder.append("ven.idvendorparent as idvendorparent, ven.nama as vennama, ven.alias as venalias  ");
         sqlBuilder.append("from purchasereceive as data ");
+        sqlBuilder.append("left join m_vendor as ven on ven.id = data.idvendor ");
 
         this.schemaSql = sqlBuilder.toString();
     }
@@ -30,12 +32,20 @@ public class QueryPRReportKartuDeposit implements RowMapper<ReportKartuDeposit> 
         final String nodocument = rs.getString("nodocument");
         final Date transactiondate = rs.getDate("transactiondate");
         final Double setor = rs.getDouble("setor");
+        final Long idvendorparent = rs.getLong("idvendorparent");
+        final String vennama = rs.getString("vennama");
+        final String venalias = rs.getString("venalias");
+
         ReportKartuDeposit data = new ReportKartuDeposit();
         data.setId(id);
         data.setIdvendor(idvendor);
+        data.setVendorName(vennama);
+        data.setVendorAlias(venalias);
+        data.setIdvendorParent(idvendorparent != null?idvendorparent:0L);
         data.setDocumentNumber(nodocument);
         data.setDate(transactiondate);
         data.setAmount(setor);
+
         data.setType("PURCHASERECEIVE");
 
         return data;

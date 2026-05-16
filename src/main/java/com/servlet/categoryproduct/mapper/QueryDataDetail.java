@@ -14,7 +14,7 @@ public class QueryDataDetail implements RowMapper<CategoryProductDetail> {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.id as id, data.nama as nama, data.size as size,data.weightfromingram as weightfromingram, ");
-        sqlBuilder.append("data.weighttoingram as weighttoingram, data.jumlahitemsperkoli as jumlahitemsperkoli, ");
+        sqlBuilder.append("data.weighttoingram as weighttoingram, data.jumlahitemsperkoli as jumlahitemsperkoli, data.forcategory as forcategory, data.sequence as sequence, ");
         sqlBuilder.append("data.createddate as createddate, data.modifieddate as modifieddate, ");
         sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama ");
         sqlBuilder.append("from m_category_product as data ");
@@ -40,6 +40,10 @@ public class QueryDataDetail implements RowMapper<CategoryProductDetail> {
         final Timestamp modifieddate = rs.getTimestamp("modifieddate");
         final String createdname = rs.getString("createdname");
         final String modifiednama = rs.getString("modifiednama");
+        final String forcategory = rs.getString("forcategory");
+        final Integer sequence = rs.getInt("sequence");
+
+
 
         CategoryProductDetail data = new CategoryProductDetail();
         data.setId(id);
@@ -52,6 +56,8 @@ public class QueryDataDetail implements RowMapper<CategoryProductDetail> {
         data.setModifieddate(modifieddate);
         data.setCreatedbyName(createdname);
         data.setModifiedbyName(modifiednama);
+        data.setForcategory(forcategory);
+        data.setSequence(sequence);
 
         return data;
     }

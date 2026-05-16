@@ -31,6 +31,7 @@ public class Customer implements Serializable {
     private String grupcode;
     private String phonenumber;
     private String attention;
+    private String city;
 
     /**
      * jika ada penambahan, tambahkan pada toString. wajib!!
@@ -51,7 +52,16 @@ public class Customer implements Serializable {
                 ", grupcode='" + grupcode + '\'' +
                 ", phonenumber='" + phonenumber + '\'' +
                 ", attention='" + attention + '\'' +
+                ", city='" + city + '\'' +
                 '}';
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public String getGrup() {

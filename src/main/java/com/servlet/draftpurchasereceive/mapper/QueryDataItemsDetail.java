@@ -14,9 +14,11 @@ public class QueryDataItemsDetail implements RowMapper<DraftPurchaseReceiveItems
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.idproduct as idproduct, data.idcategoryproduct as idcategoryproduct, data.ekor as ekor, data.kilo as kilo, ");
         sqlBuilder.append("data.boxsequence as boxsequence, data.type as type, ");
-        sqlBuilder.append("cp.nama as cpnama, cp.size as cpsize, cp.weightfromingram as cpweightfromingram, cp.weighttoingram as cpweighttoingram ");
+        sqlBuilder.append("cp.nama as cpnama, cp.size as cpsize, cp.weightfromingram as cpweightfromingram, cp.weighttoingram as cpweighttoingram, ");
+        sqlBuilder.append("prod.nama as prodname ");
         sqlBuilder.append("from draft_purchasereceive_items as data ");
         sqlBuilder.append("left join m_category_product as cp on cp.id = data.idcategoryproduct ");
+        sqlBuilder.append("left join m_product as prod on prod.id = data.idproduct ");
 
 
         this.schemaSql = sqlBuilder.toString();
@@ -29,9 +31,10 @@ public class QueryDataItemsDetail implements RowMapper<DraftPurchaseReceiveItems
     @Override
     public DraftPurchaseReceiveItemsDetailData mapRow(ResultSet rs, int rowNum) throws SQLException {
         final Long idproduct = rs.getLong("idproduct");
+        final String prodname = rs.getString("prodname");
         final Long idcategoryproduct = rs.getLong("idcategoryproduct");
         final Long ekor = rs.getLong("ekor");
-        final Long kilo = rs.getLong("kilo");
+        final Double kilo = rs.getDouble("kilo");
         final Long boxsequence = rs.getLong("boxsequence");
         final String type = rs.getString("type");
         final String cpnama = rs.getString("cpnama");
@@ -42,6 +45,7 @@ public class QueryDataItemsDetail implements RowMapper<DraftPurchaseReceiveItems
         DraftPurchaseReceiveItemsDetailData data = new DraftPurchaseReceiveItemsDetailData();
         data.setBoxsequence(boxsequence);
         data.setIdproduct(idproduct);
+        data.setProductName(prodname);
         data.setIdcategoryproduct(idcategoryproduct);
         data.setNamacategoryproduct(cpnama);
         data.setSizecategoryproduct(cpsize);

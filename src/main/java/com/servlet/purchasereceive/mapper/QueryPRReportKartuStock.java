@@ -14,9 +14,11 @@ public class QueryPRReportKartuStock implements RowMapper<ReportKartuStock> {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.idcategoryproduct as idcategoryproduct, data.idproduct as idproduct, data.qty as qty, ");
-        sqlBuilder.append("pr.nodocument as nodocument, pr.transactiondate as transactiondate, pr.notes as notes ");
+        sqlBuilder.append("pr.nodocument as nodocument, pr.transactiondate as transactiondate, pr.notes as notes, ");
+        sqlBuilder.append("ven.nama as vennama, ven.alias as venalias  ");
         sqlBuilder.append("from purchasereceive_item as data ");
         sqlBuilder.append("left join purchasereceive as pr on pr.id = data.idpurchasereceive ");
+        sqlBuilder.append("left join m_vendor as ven on ven.id = pr.idvendor ");
 
         this.schemaSql = sqlBuilder.toString();
     }
@@ -33,6 +35,8 @@ public class QueryPRReportKartuStock implements RowMapper<ReportKartuStock> {
         final String nodocument = rs.getString("nodocument");
         final Date transactiondate = rs.getDate("transactiondate");
         final String notes = rs.getString("notes");
+        final String vennama = rs.getString("vennama");
+        final String venalias = rs.getString("venalias");
         ReportKartuStock data = new ReportKartuStock();
         data.setIdproduct(idproduct);
         data.setIdcategoryproduct(idcategoryproduct);
@@ -40,6 +44,8 @@ public class QueryPRReportKartuStock implements RowMapper<ReportKartuStock> {
         data.setQty(qty);
         data.setNodocument(nodocument);
         data.setKeterangan(notes);
+        data.setVendorName(vennama);
+        data.setVendorAlias(venalias);
         data.setType("PR");
 
         return data;

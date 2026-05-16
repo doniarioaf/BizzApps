@@ -1,10 +1,9 @@
 package com.servlet.vendor.handler;
 
+import com.servlet.area.service.AreaService;
+import com.servlet.categoryproduct.entity.ParamTemplate;
 import com.servlet.categoryproduct.service.CategoryProductService;
 import com.servlet.historyapps.service.HistoryAppsService;
-import com.servlet.pricelist.entity.PriceListItemData;
-import com.servlet.product.entity.Product;
-import com.servlet.product.mapper.QueryProductList;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
@@ -18,10 +17,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class VendorHandler implements VendorService {
@@ -36,6 +32,9 @@ public class VendorHandler implements VendorService {
 
     @Autowired
     private CategoryProductService categoryProductService;
+
+    @Autowired
+    private AreaService areaService;
 
     @Autowired
     private HistoryAppsService historyAppsService;
@@ -72,7 +71,7 @@ public class VendorHandler implements VendorService {
         List<ValidationDataMessage> validations = new ArrayList<>();
         long idsave = 0;
         Timestamp ts = new Timestamp(new Date().getTime());
-        if(!body.getIsparent()) {
+        if(!body.getIsparent() && !body.getType().equals("BROKER")) {
             ListVendorData ven = checkVendorIsParent(idcompany,idbranch, body.getIdvendorparent());
             if(ven == null){
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_PARENT, "Vendor Bukan Parent");
@@ -103,6 +102,15 @@ public class VendorHandler implements VendorService {
                 } else {
                     vendor.setIdvendorparent(body.getIdvendorparent());
                 }
+                if(body.getType().equals("UDANG")){
+                    vendor.setIdvendorbroker(body.getIdvendorbroker());
+                }
+                vendor.setIdarea(body.getIdarea());
+                vendor.setAddress1(body.getAddress1());
+                vendor.setAddress2(body.getAddress2());
+                vendor.setNpwp(body.getNpwp());
+                vendor.setPhone(body.getPhone());
+                vendor.setLimittransaction(body.getLimittransaction().equals("Y")?true:false);
                 vendor.setIsdelete(false);
                 vendor.setCreateddate(ts);
                 vendor.setCreatedby(iduser);
@@ -123,6 +131,7 @@ public class VendorHandler implements VendorService {
 
             } catch (Exception e) {
                 // TODO: handle exception
+                e.printStackTrace();
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
                 validations.add(msg);
             }
@@ -140,7 +149,7 @@ public class VendorHandler implements VendorService {
 
         long idsave = 0;
         Timestamp ts = new Timestamp(new Date().getTime());
-        if(!body.getIsparent()) {
+        if(!body.getIsparent() && !body.getType().equals("BROKER")) {
             ListVendorData ven = checkVendorIsParent(idcompany,idbranch, body.getIdvendorparent());
             if(ven == null){
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_PARENT, "Vendor Bukan Parent");
@@ -169,6 +178,17 @@ public class VendorHandler implements VendorService {
                 } else {
                     vendor.setIdvendorparent(body.getIdvendorparent());
                 }
+                if(body.getType().equals("UDANG")){
+                    vendor.setIdvendorbroker(body.getIdvendorbroker());
+                }else{
+                    vendor.setIdvendorbroker(null);
+                }
+                vendor.setIdarea(body.getIdarea());
+                vendor.setAddress1(body.getAddress1());
+                vendor.setAddress2(body.getAddress2());
+                vendor.setNpwp(body.getNpwp());
+                vendor.setPhone(body.getPhone());
+                vendor.setLimittransaction(body.getLimittransaction().equals("Y")?true:false);
                 vendor.setModifieddate(ts);
                 vendor.setModifiedby(iduser);
                 idsave = repo.saveAndFlush(vendor).getId();
@@ -197,6 +217,7 @@ public class VendorHandler implements VendorService {
                 }
             } catch (Exception e) {
                 // TODO: handle exception
+                e.printStackTrace();
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
                 validations.add(msg);
             }
@@ -221,6 +242,7 @@ public class VendorHandler implements VendorService {
             idsave = repo.saveAndFlush(vendor).getId();
         }catch (Exception e){
             // TODO: handle exception
+            e.printStackTrace();
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
             validations.add(msg);
         }
@@ -234,10 +256,18 @@ public class VendorHandler implements VendorService {
     @Override
     public VendorTemplate getTemplate(Long idcompany, Long idbranch) {
         VendorTemplate template = new VendorTemplate();
-        template.setCategoryProductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,null));
+        ParamTemplate cpParam = new ParamTemplate();
+        cpParam.setForcategory("VENDOR");
+        template.setCategoryProductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,cpParam));
         ParamVendor pv = new ParamVendor();
         pv.setOnlyParent("Y");
         template.setVendorParentOpt(getListDropdown(idcompany,idbranch,pv));
+
+        ParamVendor pvbroker = new ParamVendor();
+        pvbroker.setVendorTypes("'BROKER'");
+        template.setVendorBrokerOpt(getListDropdown(idcompany,idbranch,pvbroker));
+
+        template.setAreaOpt(areaService.getList(idcompany,idbranch));
         return template;
     }
 
@@ -305,6 +335,32 @@ public class VendorHandler implements VendorService {
         sqlBuilder.append(" where data.idvendorparent = ? and data.idcompany = ?  and data.isdelete = false ");
         final Object[] queryParameters = new Object[] {idvendor,idcompany};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryGetId(), queryParameters);
+    }
+
+    @Override
+    public List<Long> getListSubIdParentByListIdParent(Long idcompany, Long idbranch, String listidvendorparents) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryGetId().schema());
+        sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false ");
+        sqlBuilder.append(" and data.idvendorparent in ("+listidvendorparents+") ");
+        final Object[] queryParameters = new Object[] {idcompany};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryGetId(), queryParameters);
+    }
+
+    @Override
+    public List<Long> checkIdCP(Long idcompany, Long idbranch, Long idcategoryProduct) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCheckIdCategoryProduct().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and items.idcategoryproduct = ? and data.isdelete = false  ");
+        final Object[] queryParameters = new Object[] {idcompany,idbranch,idcategoryProduct};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCheckIdCategoryProduct(), queryParameters);
+    }
+
+    @Override
+    public Boolean isLimitTransaksi(Long id) {
+        Vendor ven = repo.getById(id);
+        if(ven != null){
+            return ven.getLimittransaction();
+        }
+        return false;
     }
 
 

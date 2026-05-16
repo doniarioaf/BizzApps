@@ -14,7 +14,7 @@ public class QueryDataPriceItem implements RowMapper<PriceListItemData> {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.categoryproductid as categoryproductid, data.amount as amount, data.allowance as allowance, cp.nama as categoryproductnama,cp.size as categoryproductsize, ");
-        sqlBuilder.append("data.idproduct as idproduct, mp.nama as productnama ");
+        sqlBuilder.append("data.idproduct as idproduct, mp.nama as productnama, cp.jumlahitemsperkoli as jumlahitemsperkoli ");
         sqlBuilder.append("from pricelistitem as data ");
         sqlBuilder.append("left join m_category_product as cp on cp.id = data.categoryproductid ");
         sqlBuilder.append("left join m_product as mp on mp.id = data.idproduct ");
@@ -35,6 +35,8 @@ public class QueryDataPriceItem implements RowMapper<PriceListItemData> {
         final Double allowance = rs.getDouble("allowance");
         final String categoryproductnama = rs.getString("categoryproductnama");
         final String categoryproductsize = rs.getString("categoryproductsize");
+        final Long jumlahitemsperkoli = rs.getLong("jumlahitemsperkoli");
+
 
         PriceListItemData data = new PriceListItemData();
         data.setIdproduct(idproduct);
@@ -44,6 +46,7 @@ public class QueryDataPriceItem implements RowMapper<PriceListItemData> {
         data.setCategoryproductSize(categoryproductsize);
         data.setAmount(amount);
         data.setAllowance(allowance);
+        data.setJumlahitemsperkoli(jumlahitemsperkoli);
         return data;
     }
 }

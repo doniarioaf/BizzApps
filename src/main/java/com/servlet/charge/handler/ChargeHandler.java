@@ -22,4 +22,16 @@ public class ChargeHandler implements ChargeService {
         final Object[] queryParameters = new Object[] {idcompany};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataList(), queryParameters);
     }
+
+    @Override
+    public ChargeList getChargeByName(Long idcompany, Long idbranch, String name) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataList().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.nama = ?  and data.isdelete = false ");
+        final Object[] queryParameters = new Object[] {idcompany,name};
+        List<ChargeList> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataList(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return null;
+    }
 }

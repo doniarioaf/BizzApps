@@ -11,35 +11,102 @@ public class PrintDataPurchaseReceive {
     private Long idvendor;
     private String vendorNama;
     private String vendorAlias;
+    private String vendorBank;
+    private String vendorAccNo;
+    private String vendorAccNameBank;
     private Date transactiondate;
     private String koli;
     private String notes;
+    private String notes2;
     private String bank;
     private String accountnobank;
     private String accountnamebank;
     private Double totalprice;
     private Double setor;
+    private Double setorPinjaman;
     private Long iddeposit;
     private Double depositAmount;
     private Double sisaDeposit;
+    private Double nilaitransfer; //nilai transfer, totalinvoice - setor/deposit;
     private Long countPrint;
     private Long countEdit;
     private String namaUser;
-
-    /**
-     * saldoDepositBeforeNotaSubmit didapat sebelum nota ini dibuat,
-     * jadi di table deposit cari berdasarkan idvendor dan tanggalnya harus dibawah tanggal created nota ini.
-     * jika sudah dapat angka nya, baru dikurang dengan totalprice nota. caranya sama cari berdasarkan vendor dan tanggal nya harus dibawah tanggal created nota ini.
-     */
     private Double saldoDepositBeforeNotaSubmit;
+    private Double saldoPinjaman;
     private Timestamp createddate;
     private List<PrintDataPurchaseReceiveItems> items;
     private List<PrintDataPurchaseReceiveCharge> charges;
     private List<PrintDataPurchaseReceiveInventori> inventori;
+    private List<PurchaseReceiveDepositData> deposits;
 
     private String noSMU;
+    private String flightno;
     private String namaArea;
     private String aliasArea;
+
+    public Double getNilaitransfer() {
+        return nilaitransfer;
+    }
+
+    public void setNilaitransfer(Double nilaitransfer) {
+        this.nilaitransfer = nilaitransfer;
+    }
+
+    public Double getSaldoPinjaman() {
+        return saldoPinjaman;
+    }
+
+    public void setSaldoPinjaman(Double saldoPinjaman) {
+        this.saldoPinjaman = saldoPinjaman;
+    }
+
+    public String getVendorBank() {
+        return vendorBank;
+    }
+
+    public void setVendorBank(String vendorBank) {
+        this.vendorBank = vendorBank;
+    }
+
+    public String getVendorAccNo() {
+        return vendorAccNo;
+    }
+
+    public void setVendorAccNo(String vendorAccNo) {
+        this.vendorAccNo = vendorAccNo;
+    }
+
+    public String getVendorAccNameBank() {
+        return vendorAccNameBank;
+    }
+
+    public void setVendorAccNameBank(String vendorAccNameBank) {
+        this.vendorAccNameBank = vendorAccNameBank;
+    }
+
+    public String getFlightno() {
+        return flightno;
+    }
+
+    public void setFlightno(String flightno) {
+        this.flightno = flightno;
+    }
+
+    public List<PurchaseReceiveDepositData> getDeposits() {
+        return deposits;
+    }
+
+    public void setDeposits(List<PurchaseReceiveDepositData> deposits) {
+        this.deposits = deposits;
+    }
+
+    public String getNotes2() {
+        return notes2;
+    }
+
+    public void setNotes2(String notes2) {
+        this.notes2 = notes2;
+    }
 
     public String getNoSMU() {
         return noSMU;
@@ -263,5 +330,13 @@ public class PrintDataPurchaseReceive {
 
     public void setCharges(List<PrintDataPurchaseReceiveCharge> charges) {
         this.charges = charges;
+    }
+
+    public Double getSetorPinjaman() {
+        return setorPinjaman;
+    }
+
+    public void setSetorPinjaman(Double setorPinjaman) {
+        this.setorPinjaman = setorPinjaman;
     }
 }

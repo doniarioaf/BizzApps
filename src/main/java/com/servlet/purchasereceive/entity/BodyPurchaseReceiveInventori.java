@@ -1,7 +1,7 @@
 package com.servlet.purchasereceive.entity;
 
 public class BodyPurchaseReceiveInventori {
-    private long idinventori;
+    private Long idinventori;
     private Long qty;
     private Double price;
     private Double subtotalprice;

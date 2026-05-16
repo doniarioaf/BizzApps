@@ -2,6 +2,7 @@ package com.servlet.deposit.api;
 
 import com.servlet.deposit.entity.BodyDeposit;
 import com.servlet.deposit.entity.ParamList;
+import com.servlet.deposit.entity.PayloadSisaDepositVendor;
 import com.servlet.inventori.entity.BodyInventori;
 import com.servlet.security.service.SecurityService;
 import com.servlet.shared.ConstansKey;
@@ -28,6 +29,15 @@ public class DepositAPI {
         HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("type", "ALL");
         param.put("param", paramlist);
+        Response response = securityService.response(ConstansPermission.READ_DEPOSIT,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @PostMapping("/listSisaDepositVendor")
+    ResponseEntity<Response> getListSisaDepositVendor(@RequestBody @Validated PayloadSisaDepositVendor payload, @RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "SisaDepositVendor");
+        param.put("payload", payload);
         Response response = securityService.response(ConstansPermission.READ_DEPOSIT,param,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }

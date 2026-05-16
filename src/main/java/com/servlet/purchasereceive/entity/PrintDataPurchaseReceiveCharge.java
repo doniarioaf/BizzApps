@@ -4,9 +4,18 @@ public class PrintDataPurchaseReceiveCharge {
     private long idpurchasereceive;
     private long idcharge;
     private String chargename;
+    private String chargenamecustom;
     private Long qty;
     private Double price;
     private Double subtotalprice;
+
+    public String getChargenamecustom() {
+        return chargenamecustom;
+    }
+
+    public void setChargenamecustom(String chargenamecustom) {
+        this.chargenamecustom = chargenamecustom;
+    }
 
     public long getIdpurchasereceive() {
         return idpurchasereceive;

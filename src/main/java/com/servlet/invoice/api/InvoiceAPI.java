@@ -90,6 +90,17 @@ public class InvoiceAPI {
     ResponseEntity<Response> updateObject(@PathVariable long id, @RequestBody @Validated BodyInvoice body, @RequestHeader(ConstansKey.AUTH) String authorization) {
         HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("id", id);
+        param.put("type", "EDIT");
+        param.put("body", body);
+        Response response = securityService.response(ConstansPermission.EDIT_INVOICE,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @PutMapping("/recalculate/{id}")
+    ResponseEntity<Response> updateRecalculateObject(@PathVariable long id, @RequestBody @Validated BodyInvoice body, @RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("id", id);
+        param.put("type", "RECALCULTE");
         param.put("body", body);
         Response response = securityService.response(ConstansPermission.EDIT_INVOICE,param,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);

@@ -6,6 +6,33 @@ public class PriceListData {
     private Long id;
     private Date pricedate;
     private Date pricedatethru;
+    private Long idcustomer;
+    private String customerName;
+    private String customerAlias;
+
+    public Long getIdcustomer() {
+        return idcustomer;
+    }
+
+    public void setIdcustomer(Long idcustomer) {
+        this.idcustomer = idcustomer;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getCustomerAlias() {
+        return customerAlias;
+    }
+
+    public void setCustomerAlias(String customerAlias) {
+        this.customerAlias = customerAlias;
+    }
 
     public Date getPricedatethru() {
         return pricedatethru;

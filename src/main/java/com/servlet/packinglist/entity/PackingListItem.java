@@ -19,6 +19,27 @@ public class PackingListItem implements Serializable {
     private Double nettoweight;
     private Double price;
     private Double totalprice;
+    private Boolean is_checked;
+
+    @Override
+    public String toString() {
+        return "PackingListItem{" +
+                "brutoweight=" + brutoweight +
+                ", allowance=" + allowance +
+                ", nettoweight=" + nettoweight +
+                ", price=" + price +
+                ", totalprice=" + totalprice +
+                ", check=" + is_checked +
+                '}';
+    }
+
+    public Boolean getCheck() {
+        return is_checked;
+    }
+
+    public void setCheck(Boolean check) {
+        this.is_checked = check;
+    }
 
     public PackingListItemPK getPackingListItemPK() {
         return packingListItemPK;

@@ -5,9 +5,16 @@ public class BodyPurchaseReceiveItems {
     private long idcategoryproduct;
     private long qty;
     private long qtybonus;
+    private Long qtynota;
     private Double price;
     private Double subtotalprice;
     private String type;
+    private Double hargajual_terakhir;
+    private Double hargajual;
+    private Double totalusd;
+    private Double totalrupiah;
+    private Long idpackinglist_acuan_hargajual_terakhir; //idpackinglist yang sudah menjadi invoice
+    private Double weight_udang;
 
     @Override
     public String toString() {
@@ -16,10 +23,73 @@ public class BodyPurchaseReceiveItems {
                 ", idcategoryproduct=" + idcategoryproduct +
                 ", qty=" + qty +
                 ", qtybonus=" + qtybonus +
+                ", qtynota=" + qtynota +
                 ", price=" + price +
                 ", subtotalprice=" + subtotalprice +
+                ", hargajual_terakhir=" + hargajual_terakhir +
+                ", hargajual=" + hargajual +
+                ", totalusd=" + totalusd +
+                ", totalrupiah=" + totalrupiah +
+                ", weight_udang=" + weight_udang +
+                ", idpackinglist_acuan_hargajual_terakhir=" + idpackinglist_acuan_hargajual_terakhir +
                 ", type='" + type + '\'' +
                 '}';
+    }
+
+    public Double getWeight_udang() {
+        return weight_udang;
+    }
+
+    public void setWeight_udang(Double weight_udang) {
+        this.weight_udang = weight_udang;
+    }
+
+    public Double getHargajual_terakhir() {
+        return hargajual_terakhir;
+    }
+
+    public void setHargajual_terakhir(Double hargajual_terakhir) {
+        this.hargajual_terakhir = hargajual_terakhir;
+    }
+
+    public Double getHargajual() {
+        return hargajual;
+    }
+
+    public void setHargajual(Double hargajual) {
+        this.hargajual = hargajual;
+    }
+
+    public Double getTotalusd() {
+        return totalusd;
+    }
+
+    public void setTotalusd(Double totalusd) {
+        this.totalusd = totalusd;
+    }
+
+    public Double getTotalrupiah() {
+        return totalrupiah;
+    }
+
+    public void setTotalrupiah(Double totalrupiah) {
+        this.totalrupiah = totalrupiah;
+    }
+
+    public Long getIdpackinglist_acuan_hargajual_terakhir() {
+        return idpackinglist_acuan_hargajual_terakhir;
+    }
+
+    public void setIdpackinglist_acuan_hargajual_terakhir(Long idpackinglist_acuan_hargajual_terakhir) {
+        this.idpackinglist_acuan_hargajual_terakhir = idpackinglist_acuan_hargajual_terakhir;
+    }
+
+    public Long getQtynota() {
+        return qtynota;
+    }
+
+    public void setQtynota(Long qtynota) {
+        this.qtynota = qtynota;
     }
 
     public String getType() {

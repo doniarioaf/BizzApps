@@ -10,6 +10,15 @@ public class PackingListDataList {
     private String customerNama;
     private String customerAlias;
     private String city;
+    private Boolean isalreadyupdateprice;
+
+    public Boolean getIsalreadyupdateprice() {
+        return isalreadyupdateprice;
+    }
+
+    public void setIsalreadyupdateprice(Boolean isalreadyupdateprice) {
+        this.isalreadyupdateprice = isalreadyupdateprice;
+    }
 
     public Long getId() {
         return id;

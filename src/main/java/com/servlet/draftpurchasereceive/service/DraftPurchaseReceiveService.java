@@ -2,6 +2,7 @@ package com.servlet.draftpurchasereceive.service;
 
 import com.servlet.draftpurchasereceive.entity.*;
 import com.servlet.shared.ReturnData;
+import com.servlet.stockitems.entity.ReportKartuStock;
 
 import java.util.List;
 
@@ -18,4 +19,9 @@ public interface DraftPurchaseReceiveService {
     List<DraftPurchaseReceiveItemsDetailData> getListItemsByID(Long iddraftpurchasereceive);
     List<DraftPurchaseReceiveItemsDetailData> getListItemsByIDForPR(Long iddraftpurchasereceive);
     List<DraftPurchaseReceiveList> getListNotLinksInPR(Long idcompany, Long idbranch, ParamSearchDraftPurchaseReceive param);
+    PrintDataDraftPR printDataDraftPR(Long idcompany, Long idbranch, Long iduser, Long id);
+    Long calculateQtyDpr(Long idcompany, Long idbranch,ParamCalculateQtyDPR param);
+    List<ReportKartuStock> getListDprReportKartuStock(Long idcompany, Long idbranch,ParamSearchDraftPurchaseReceive param);
+    List<Long> checkIdCP(Long idcompany, Long idbranch, Long idcategoryProduct);
+    ReturnData catatDownload(Long id,Long idcompany, Long idbranch, Long iduser);
 }

@@ -2,15 +2,11 @@ package com.servlet.pelunasanhutang.handler;
 
 import com.servlet.cargo.entity.ParamCargoSearch;
 import com.servlet.cargo.service.CargoService;
-import com.servlet.draftpurchasereceive.entity.BodyDraftPurchaseReceiveItems;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.pelunasanhutang.entity.*;
 import com.servlet.pelunasanhutang.mapper.*;
 import com.servlet.pelunasanhutang.repo.PelunasanHutangRepo;
 import com.servlet.pelunasanhutang.service.PelunasanHutangService;
-import com.servlet.pelunasanpiutang.entity.BodyPelunasanPiutangItem;
-import com.servlet.pelunasanpiutang.entity.PelunasanPiutangItem;
-import com.servlet.pelunasanpiutang.entity.PelunasanPiutangItemPK;
 import com.servlet.purchasereceive.service.PurchaseReceiveService;
 import com.servlet.runningnumber.service.RunningNumberService;
 import com.servlet.shared.ConstansCodeMessage;

@@ -23,8 +23,10 @@ public class PurchaseReceiveDataDetail {
     private Double totalprice;
     private boolean isdefaultvaluesetor;
     private Double setor;
+    private Double setor_pinjaman;
     private Long iddeposit;
     private Double sisaDeposit;
+    private Double sisaPinjaman;
     private Long iddraftpurchasereceive;
     private String nodocumentDraft;
     private String noSmuDraft;
@@ -35,6 +37,40 @@ public class PurchaseReceiveDataDetail {
     private String flightno;
     private String smu;
     private String notes2;
+    private Double kurs;
+    private Double selisih;
+
+    public Double getKurs() {
+        return kurs;
+    }
+
+    public void setKurs(Double kurs) {
+        this.kurs = kurs;
+    }
+
+    public Double getSelisih() {
+        return selisih;
+    }
+
+    public void setSelisih(Double selisih) {
+        this.selisih = selisih;
+    }
+
+    public Double getSetor_pinjaman() {
+        return setor_pinjaman;
+    }
+
+    public void setSetor_pinjaman(Double setor_pinjaman) {
+        this.setor_pinjaman = setor_pinjaman;
+    }
+
+    public Double getSisaPinjaman() {
+        return sisaPinjaman;
+    }
+
+    public void setSisaPinjaman(Double sisaPinjaman) {
+        this.sisaPinjaman = sisaPinjaman;
+    }
 
     public String getFlightno() {
         return flightno;

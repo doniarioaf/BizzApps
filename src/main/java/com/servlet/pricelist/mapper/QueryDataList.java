@@ -13,8 +13,10 @@ public class QueryDataList implements RowMapper<PriceListData> {
     public QueryDataList() {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
-        sqlBuilder.append("data.id as id, data.pricedate as pricedate,data.pricedatethru as pricedatethru ");
+        sqlBuilder.append("data.id as id, data.pricedate as pricedate,data.pricedatethru as pricedatethru, ");
+        sqlBuilder.append("data.idcustomer as idcustomer, cust.nama as custnama, cust.alias as custalias ");
         sqlBuilder.append("from pricelist as data ");
+        sqlBuilder.append("left join m_customer as cust on cust.id = data.idcustomer ");
 
         this.schemaSql = sqlBuilder.toString();
     }
@@ -27,11 +29,17 @@ public class QueryDataList implements RowMapper<PriceListData> {
         final Long id = rs.getLong("id");
         final Date pricedate = rs.getDate("pricedate");
         final Date pricedatethru = rs.getDate("pricedatethru");
+        final Long idcustomer = rs.getLong("idcustomer");
+        final String custnama = rs.getString("custnama");
+        final String custalias = rs.getString("custalias");
 
         PriceListData data = new PriceListData();
         data.setId(id);
         data.setPricedate(pricedate);
         data.setPricedatethru(pricedatethru);
+        data.setIdcustomer(idcustomer);
+        data.setCustomerName(custnama);
+        data.setCustomerAlias(custalias);
         return data;
     }
 }

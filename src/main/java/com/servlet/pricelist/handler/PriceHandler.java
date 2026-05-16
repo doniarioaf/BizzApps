@@ -2,8 +2,11 @@ package com.servlet.pricelist.handler;
 
 import com.servlet.categoryproduct.entity.ParamTemplate;
 import com.servlet.categoryproduct.service.CategoryProductService;
+import com.servlet.customer.service.CustomerService;
 import com.servlet.historyapps.service.HistoryAppsService;
+import com.servlet.packinglist.service.PackingListService;
 import com.servlet.pricelist.entity.*;
+import com.servlet.pricelist.mapper.QueryCheckIdCategoryProduct;
 import com.servlet.pricelist.mapper.QueryDataDetail;
 import com.servlet.pricelist.mapper.QueryDataList;
 import com.servlet.pricelist.mapper.QueryDataPriceItem;
@@ -42,6 +45,12 @@ public class PriceHandler implements PriceService {
     private HistoryAppsService historyAppsService;
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private PackingListService packingListService;
+
+    @Autowired
+    private CustomerService customerService;
     protected final String namaMenu = "PriceList";
 
     @Override
@@ -76,10 +85,12 @@ public class PriceHandler implements PriceService {
     public PriceListTemplate getTemplateData(Long idcompany, Long idbranch) {
         ParamTemplate paramCP = new ParamTemplate();
         paramCP.setShowOnlyCpMapping(true);
+        paramCP.setForcategory("CUSTOMER");
 
         PriceListTemplate data = new PriceListTemplate();
         data.setProductOpt(productService.getListAll(idcompany,idbranch));
         data.setCategoryProductOpt(categoryProductService.getDataForTemplate(idcompany,idbranch,paramCP));
+        data.setCustopt(customerService.getListAll(idcompany,idbranch));
 
         //priicelistudang harian ketika membuat dokumen baru , akan mengambil data dari dokumen terakhir dan diisi langsung seperti dokumen terakhir baru diedit oleh user lalu  disave
         data.setItems(getItemFromLastPriceListDoc(idcompany,idbranch));
@@ -103,10 +114,11 @@ public class PriceHandler implements PriceService {
                 table.setPricedate(new Date(body.getPricedate()));
                 table.setPricedatethru(new Date(body.getPricedatethru()));
                 table.setNotes(body.getNotes());
+                table.setIdcustomer(body.getIdcustomer());
                 table.setCreateddate(ts);
                 table.setCreatedby(iduser);
                 idsave = priceListRepo.saveAndFlush(table).getId();
-                HashMap<Object,Object> mapsItems = setItems(body.getItems(), idsave);
+                HashMap<Object,Object> mapsItems = setItems(body.getItems(), idsave,null);
                 List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
 
                 if(validationsItems.size() == 0){
@@ -142,6 +154,7 @@ public class PriceHandler implements PriceService {
             PriceList table = priceListRepo.getById(id);
             if(table.getIdcompany().longValue() == idcompany.longValue() && table.getIdbranch().longValue() == idbranch.longValue() && !table.isIsdelete()){
                 table.setNotes(body.getNotes());
+//                table.setIdcustomer(body.getIdcustomer());
                 table.setModifieddate(ts);
                 table.setModifiedby(iduser);
                 idsave = priceListRepo.saveAndFlush(table).getId();
@@ -152,10 +165,17 @@ public class PriceHandler implements PriceService {
                 String mixDataBefore = "header = "+dataBefore+" | Items = "+dataItemsBefore;
 
                 priceListItemRepo.deleteAllDetailByPriceListID(idsave);
-                HashMap<Object,Object> mapsItems = setItems(body.getItems(), idsave);
+                HashMap<Object,Object> mapsItems = setItems(body.getItems(), idsave, listItems);
                 List<ValidationDataMessage> validationsItems = (List<ValidationDataMessage>) mapsItems.get("validations");
 
                 if(validationsItems.size() == 0){
+
+                    //jika ada perubahan data price maka flag pada kolom packinglist akan berubah menjadi false, yang artinya perlu melakukan / klik refresh harga pada menu packing list
+                    boolean updateprice = (Boolean) mapsItems.get("updateprice");
+                    if(updateprice){
+                        packingListService.updateColumsIsAlreadyUpdatePriceToFalse(idcompany,idbranch,table.getIdcustomer(), table.getId());
+                    }
+
                     String data = table.toString();
                     String dataItems = (String) mapsItems.get("dataItems");
                     String mixData = "header = "+data+" | Items = "+dataItems;
@@ -170,6 +190,7 @@ public class PriceHandler implements PriceService {
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
             validations.add(msg);
         }
+
         ReturnData data = new ReturnData();
         data.setId(idsave);
         data.setSuccess(validations.size() > 0?false:true);
@@ -218,16 +239,16 @@ public class PriceHandler implements PriceService {
     }
 
     @Override
-    public PriceItemsDataForTemplate getDataPriceByDate(Long idcompany, Long idbranch, Long priceDate) {
+    public PriceItemsDataForTemplate getDataPriceByDate(Long idcompany, Long idbranch, Long priceDate, Long idcustomer) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataList().schema());
-        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
+        sqlBuilder.append(" where data.idcustomer = ? and data.idcompany = ? and data.idbranch = ? and data.isdelete = false  ");
 
         if(priceDate != null && priceDate.longValue() != 0){
             Date dt = new Date(priceDate.longValue());
             sqlBuilder.append(" and data.pricedate <= '"+dt.toString()+"' and data.pricedatethru >= '"+dt.toString()+"' ");
             sqlBuilder.append(" order by id desc limit 1 ");
 
-            final Object[] queryParameters = new Object[] {idcompany,idbranch};
+            final Object[] queryParameters = new Object[] {idcustomer,idcompany,idbranch};
             List<PriceListData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataList(), queryParameters);
             if(list != null && list.size() > 0){
                 PriceListData data = list.get(0);
@@ -244,18 +265,28 @@ public class PriceHandler implements PriceService {
 
     }
 
+    @Override
+    public List<Long> checkIdCP(Long idcompany, Long idbranch, Long idcategoryProduct) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCheckIdCategoryProduct().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and items.categoryproductid = ? and data.isdelete = false  ");
+        final Object[] queryParameters = new Object[] {idcompany,idbranch,idcategoryProduct};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryCheckIdCategoryProduct(), queryParameters);
+    }
+
     private List<PriceListItemData> getPriceListItems(Long idpricelist){
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataPriceItem().schema());
         sqlBuilder.append(" where data.pricelistid = ? ");
+        sqlBuilder.append(" order by cp.sequence ");
         final Object[] queryParameters = new Object[] {idpricelist};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataPriceItem(), queryParameters);
     }
 
-    private HashMap<Object,Object> setItems(BodyPriceItem[] items,long idpricelist){
+    private HashMap<Object,Object> setItems(BodyPriceItem[] items,long idpricelist, List<PriceListItemData> listExistingInDB){
         List<ValidationDataMessage> validations = new ArrayList<>();
         HashMap<Object,Object> maps = new HashMap<>();
         String dataItems = "";
         List<BodyPriceItem> listitems = new ArrayList<>();
+        HashMap<String,PriceListItem> mappingPriceItem = new HashMap<>();
         try {
             if (items.length > 0) {
                 for (BodyPriceItem val : items) {
@@ -269,6 +300,9 @@ public class PriceHandler implements PriceService {
                     item.setAllowance(val.getAllowance());
                     priceListItemRepo.saveAndFlush(item);
                     listitems.add(val);
+
+                    String key = val.getIdproduct()+"-"+val.getCategoryproductid();
+                    mappingPriceItem.put(key,item);
                 }
                 dataItems = listitems.toString();
             }
@@ -277,8 +311,28 @@ public class PriceHandler implements PriceService {
             ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR,"Kesalahan Pada Server");
             validations.add(msg);
         }
+        boolean flagUpdatePrice = false;
+        if(listExistingInDB != null){
+            if(listExistingInDB.size() > 0){
+                for(PriceListItemData item : listExistingInDB){
+                    String key = item.getIdproduct()+"-"+item.getCategoryproductid();
+                    PriceListItem itemPL = mappingPriceItem.get(key);
+                    if(itemPL != null){
+                        if(item.getAmount().doubleValue() != itemPL.getAmount().doubleValue()){
+                            flagUpdatePrice = true;
+                            break;
+                        }else if(item.getAllowance().doubleValue() != itemPL.getAllowance().doubleValue()){
+                            flagUpdatePrice = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         maps.put("validations",validations);
         maps.put("dataItems",dataItems);
+        maps.put("updateprice",flagUpdatePrice);
         return maps;
     }
 }
