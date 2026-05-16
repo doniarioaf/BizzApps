@@ -16,10 +16,12 @@ public class QueryInvoiceReportPiutang implements RowMapper<InvoiceDataReportPiu
         sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.date as date, data.kurs as kurs, ");
         sqlBuilder.append("data.outstanding as outstanding, data.amount as amount, ");
         sqlBuilder.append("pl.idcustomer as idcustomer, pl.flightnumber as flightnumber,pl.awbnumber as awbnumber,pl.koli as koli, ");
-        sqlBuilder.append(" cust.nama as custNama, cust.alias as custAlias, cust.grup as custGrup ");
+        sqlBuilder.append(" cust.nama as custNama, cust.alias as custAlias, cust.grup as custGrup, ");
+        sqlBuilder.append(" ven.nama as venNama, ven.alias as venAlias,pl.netto as netto ");
         sqlBuilder.append("from invoice as data ");
         sqlBuilder.append("left join packinglist as pl on pl.id = data.idpackinglist ");
         sqlBuilder.append("left join m_customer as cust on cust.id = pl.idcustomer ");
+        sqlBuilder.append("left join m_vendor as ven on ven.id = pl.idvendor ");
 
 
         this.schemaSql = sqlBuilder.toString();
@@ -39,9 +41,12 @@ public class QueryInvoiceReportPiutang implements RowMapper<InvoiceDataReportPiu
         final String custNama = rs.getString("custNama");
         final String custAlias = rs.getString("custAlias");
         final String custGrup = rs.getString("custGrup");
-        final String flightnumber = rs.getString("custGrup");
-        final String awbnumber = rs.getString("custGrup");
+        final String flightnumber = rs.getString("flightnumber");
+        final String awbnumber = rs.getString("awbnumber");
         final Long koli = rs.getLong("koli");
+        final String venNama = rs.getString("venNama");
+        final String venAlias = rs.getString("venAlias");
+        final Double netto = rs.getDouble("netto");
 
         final Double outstanding = rs.getDouble("outstanding");
         final Double amount = rs.getDouble("amount");
@@ -59,6 +64,9 @@ public class QueryInvoiceReportPiutang implements RowMapper<InvoiceDataReportPiu
         data.setInvoiceAmount(amount);
         data.setKurs(kurs);
         data.setOutstanding(outstanding);
+        data.setVendorName(venNama);
+        data.setVendorAlias(venAlias);
+        data.setNetto(netto);
         return data;
     }
 }

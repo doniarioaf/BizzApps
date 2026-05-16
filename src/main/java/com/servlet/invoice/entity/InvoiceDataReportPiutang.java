@@ -16,6 +16,33 @@ public class InvoiceDataReportPiutang {
     private Double invoiceAmount;
     private Double kurs;
     private Double outstanding;
+    private String vendorName;
+    private String vendorAlias;
+    private Double netto;
+
+    public String getVendorName() {
+        return vendorName;
+    }
+
+    public void setVendorName(String vendorName) {
+        this.vendorName = vendorName;
+    }
+
+    public String getVendorAlias() {
+        return vendorAlias;
+    }
+
+    public void setVendorAlias(String vendorAlias) {
+        this.vendorAlias = vendorAlias;
+    }
+
+    public Double getNetto() {
+        return netto;
+    }
+
+    public void setNetto(Double netto) {
+        this.netto = netto;
+    }
 
     public String getCustomerAlias() {
         return customerAlias;

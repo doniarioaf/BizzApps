@@ -1381,7 +1381,7 @@ public class ReportHandler implements ReportService {
         styleAmount.setBorderRight(BorderStyle.MEDIUM);
         Double valnetto = 0.0;//convertkg(invoice.getPackinglist().getNetto());
         for(PackingListDataItemDetail item : invoice.getPackinglist().getItems()){
-            valnetto += convertkg(item.getNettoweight());
+            valnetto += item.getNettoweight() != null?item.getNettoweight():0;//convertkg(item.getNettoweight());
         }
         if(GlobalFunc.checkIsDecimal(valnetto)) {
             styleAmount.setDataFormat(format.getFormat("#,###"));
@@ -1489,7 +1489,7 @@ public class ReportHandler implements ReportService {
             styleAmount.setBorderBottom(BorderStyle.MEDIUM);
             styleAmount.setBorderLeft(BorderStyle.MEDIUM);
             styleAmount.setBorderRight(BorderStyle.MEDIUM);
-            Double valnettowight = convertkg(item.getNettoweight());
+            Double valnettowight = item.getNettoweight();//convertkg(item.getNettoweight());
             if(GlobalFunc.checkIsDecimal(valnettowight)) {
                 styleAmount.setDataFormat(format.getFormat("#,###"));
             }else {
@@ -1567,7 +1567,7 @@ public class ReportHandler implements ReportService {
         CellUtil.setVerticalAlignment(totalWeight, VerticalAlignment.CENTER);
         CellUtil.setAlignment(totalWeight, HorizontalAlignment.CENTER);
 
-        Cell totalNoOfBox = createCell(row, 6, invoice.getPackinglist().getItems().size(), style, sheet,columns);
+        Cell totalNoOfBox = createCell(row, 6, getMaxNoOfBox(invoice.getPackinglist().getItems()), style, sheet,columns);
         CellUtil.setVerticalAlignment(totalNoOfBox, VerticalAlignment.CENTER);
         CellUtil.setAlignment(totalNoOfBox, HorizontalAlignment.CENTER);
 
@@ -1652,7 +1652,7 @@ public class ReportHandler implements ReportService {
         styleAmount.setBorderRight(BorderStyle.MEDIUM);
         styleAmount.setLeftBorderColor(IndexedColors.WHITE.getIndex());
         Double totalPriceInIDR = totalPrice * invoice.getKurs();
-        totalPriceInIDR = GlobalFunc.jumlahDesimal(totalPriceInIDR.doubleValue(),2);
+//        totalPriceInIDR = GlobalFunc.jumlahDesimal(totalPriceInIDR.doubleValue(),2);
 
         if(GlobalFunc.checkIsDecimal(totalPriceInIDR)) {
             styleAmount.setDataFormat(format.getFormat("#,###.0"));
@@ -3624,6 +3624,7 @@ public class ReportHandler implements ReportService {
         XSSFSheet sheet = workbook.createSheet("Laporan Piutang");
         sheet.setDefaultColumnWidth(1000);
         List<Integer> columns = getWidthColumns(15);
+        columns.set(6,15000); //Vendor UPI
 
         String namaCabang = "";
         Branch branch = branchService.getBranchByID(idbranch);
@@ -3755,6 +3756,12 @@ public class ReportHandler implements ReportService {
         createCell(row, colomcount, "AWB", style, sheet,columns);
 
         colomcount++;
+        createCell(row, colomcount, "Vendor UPI", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Netto Weight (Kg)", style, sheet,columns);
+
+        colomcount++;
         createCell(row, colomcount, "Koli", style, sheet,columns);
 
         colomcount++;
@@ -3811,6 +3818,12 @@ public class ReportHandler implements ReportService {
                 colomcount++;
                 createCell(row, colomcount, inv.getAwb(), style, sheet, columns);
 
+                colomcount++;
+                createCell(row, colomcount, inv.getVendorName()+" / "+inv.getVendorAlias(), style, sheet, columns);
+
+                colomcount++;
+                createCell(row, colomcount, inv.getNetto(), style, sheet, columns);
+
                 totalKoli = totalKoli + inv.getKoli().longValue();
                 colomcount++;
                 createCell(row, colomcount, inv.getKoli(), style, sheet, columns);
@@ -3851,6 +3864,12 @@ public class ReportHandler implements ReportService {
             rowcount++;
             row = sheet.createRow(rowcount);
             createCell(row, colomcount, "Total", style, sheet, columns);
+
+            colomcount++;
+            createCell(row, colomcount, "", style, sheet, columns);
+
+            colomcount++;
+            createCell(row, colomcount, "", style, sheet, columns);
 
             colomcount++;
             createCell(row, colomcount, "", style, sheet, columns);
@@ -6597,5 +6616,20 @@ public class ReportHandler implements ReportService {
         cell.setCellStyle(style);
 
         return cell;
+    }
+
+    private int getMaxNoOfBox(List<PackingListDataItemDetail> items){
+       int noOfBox = 0;
+       if(items != null && items.size() > 0){
+           for(PackingListDataItemDetail item : items){
+                if(item.getBox() != null && !item.getBox().equals("")){
+                    int box = Integer.valueOf(item.getBox());
+                    if(box > noOfBox){
+                        noOfBox = box;
+                    }
+                }
+           }
+       }
+       return noOfBox;
     }
 }
