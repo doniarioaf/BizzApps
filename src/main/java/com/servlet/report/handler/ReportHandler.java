@@ -224,7 +224,7 @@ public class ReportHandler implements ReportService {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            createCell(row, 6, "Edit : "+countEdit+", Dicetak Oleh : "+namaUser+", "+transDate, style, sheet,columns);
+            createCell(row, 0, "Edit : "+countEdit+", Dicetak Oleh : "+namaUser+", "+transDate, style, sheet,columns);
 
             rowcount = 2;
             row = sheet.createRow(rowcount);
@@ -325,7 +325,7 @@ public class ReportHandler implements ReportService {
             }catch (ParseException e){
                 e.printStackTrace();
             }
-            Cell namacust = createCell(row, 0, "P.LIST EXPORT "+print.getCustomerName()+" "+ tanggal, style, sheet,columns);
+            Cell namacust = createCell(row, 0, "P.LIST EXPORT  "+ tanggal, style, sheet,columns);
             CellUtil.setVerticalAlignment(namacust, VerticalAlignment.CENTER);
             CellUtil.setAlignment(namacust, HorizontalAlignment.CENTER);
             RegionUtil.setBorderRight(BorderStyle.THIN, namaCustRangeAddress, sheet);
@@ -2173,6 +2173,7 @@ public class ReportHandler implements ReportService {
         }
 
         List<CategoryProductList> listCP = categoryProductService.getDataForTemplate(idcompany, idbranch, null);
+        HashMap<Long, Long> stockTotalEkorByIDcategory = new HashMap<>();
         HashMap<Long, Long> stockKolamTerakhirByIDcategory = new HashMap<>();
         HashMap<Long, Long> stockUdangMatiByIDcategory     = new HashMap<>();
         HashMap<Long, Long> stockUdangMasukByIDcategory    = new HashMap<>();
@@ -2253,6 +2254,35 @@ public class ReportHandler implements ReportService {
             // PL tidak di-set karena source udang masuk hanya DPR + SA + CPL
             Long stockUdangMasuk = stockItemService.calculateQtyUdangMasuk(idcompany, idbranch, paramQtyUdangMasuk);
             stockUdangMasukByIDcategory.put(cp.getId(), stockUdangMasuk != null ? stockUdangMasuk : 0L);
+
+            // --- Total Ekor = Stok Hari Itu sesuai tanggal ---
+            ParamCalculateQtyDPR paramPR_TotalEkor = new ParamCalculateQtyDPR();
+            paramPR_TotalEkor.setDateFrom(satuJan70);
+            paramPR_TotalEkor.setDateThru(param.getDate());
+            paramPR_TotalEkor.setIdcategoryproduct(cp.getId());
+
+            ParamCalculateQtySA paramSA_TotalEkor = new ParamCalculateQtySA();
+            paramSA_TotalEkor.setDateFrom(satuJan70);
+            paramSA_TotalEkor.setDateThru(param.getDate());
+            paramSA_TotalEkor.setIdcategoryproduct(cp.getId());
+
+            ParamCalculateQtyPL paramPL_TotalEkor = new ParamCalculateQtyPL();
+            paramPL_TotalEkor.setDateFrom(satuJan70);
+            paramPL_TotalEkor.setDateThru(param.getDate());
+            paramPL_TotalEkor.setIdcategoryproduct(cp.getId());
+
+            ParamCalculateQtyCPL paramCPL_TotalEkor = new ParamCalculateQtyCPL();
+            paramCPL_TotalEkor.setDateFrom(satuJan70);
+            paramCPL_TotalEkor.setDateThru(param.getDate());
+            paramCPL_TotalEkor.setIdcategoryproduct(cp.getId());
+
+            ParamCalculateQty paramQty_TotalEKor = new ParamCalculateQty();
+            paramQty_TotalEKor.setParamCalculateQtyDPR(paramPR_TotalEkor);
+            paramQty_TotalEKor.setParamCalculateQtySA(paramSA_TotalEkor);
+            paramQty_TotalEKor.setParamCalculateQtyPL(paramPL_TotalEkor);
+            paramQty_TotalEKor.setParamCalculateQtyCPL(paramCPL_TotalEkor);
+            Long stockTotalEkor = stockItemService.calculateQty(idcompany, idbranch, paramQty_TotalEKor);
+            stockTotalEkorByIDcategory.put(cp.getId(), stockTotalEkor != null ? stockTotalEkor : 0L);
         }
 
         Long grandTotalStockKolamTerakhir = 0L;
@@ -2266,6 +2296,7 @@ public class ReportHandler implements ReportService {
         HashMap<Long, Long> calculateStockByIdCPMappingStockKolamTerakhir = new HashMap<>();
         HashMap<Long, Long> calculateStockByIdCPMappingStockUdangMati     = new HashMap<>();
         HashMap<Long, Long> calculateStockByIdCPMappingStockUdangMasuk    = new HashMap<>();
+        HashMap<Long, Long> calculateStockByIdCPMappingTotalEkor = new HashMap<>();
 
         if (listMapping != null && !listMapping.isEmpty()) {
             for (MappingStockList mapp : listMapping) {
@@ -2280,17 +2311,22 @@ public class ReportHandler implements ReportService {
                 long su1 = stockUdangMasukByIDcategory.getOrDefault(mapp.getCategoryproductid(), 0L);
                 long su2 = stockUdangMasukByIDcategory.getOrDefault(mappingKey, 0L);
 
+                long s_te1 = stockTotalEkorByIDcategory.getOrDefault(mapp.getCategoryproductid(), 0L);
+                long s_te2 = stockTotalEkorByIDcategory.getOrDefault(mappingKey, 0L);
+
                 if (calculateStockByIdCPMappingStockKolamTerakhir.containsKey(mappingKey)) {
                     // FIX double counting: iterasi berikutnya hanya tambah nilai dari id sumber (sk1/sm1/su1)
                     // nilai dari mappingKey (sk2/sm2/su2) sudah dihitung di iterasi pertama
                     calculateStockByIdCPMappingStockKolamTerakhir.merge(mappingKey, sk1, Long::sum);
                     calculateStockByIdCPMappingStockUdangMati.merge(mappingKey, sm1, Long::sum);
                     calculateStockByIdCPMappingStockUdangMasuk.merge(mappingKey, su1, Long::sum);
+                    calculateStockByIdCPMappingTotalEkor.merge(mappingKey, s_te1, Long::sum);
                 } else {
                     // Iterasi pertama: simpan sk1+sk2, sm1+sm2, su1+su2
                     calculateStockByIdCPMappingStockKolamTerakhir.put(mappingKey, sk1 + sk2);
                     calculateStockByIdCPMappingStockUdangMati.put(mappingKey, sm1 + sm2);
                     calculateStockByIdCPMappingStockUdangMasuk.put(mappingKey, su1 + su2);
+                    calculateStockByIdCPMappingTotalEkor.put(mappingKey, s_te1 + s_te2);
                 }
             }
         }
@@ -2317,14 +2353,17 @@ public class ReportHandler implements ReportService {
                 long stockKolamTerakhir = calculateStockByIdCPMappingStockKolamTerakhir.getOrDefault(mappingKey, 0L);
                 long stockUdangMati     = calculateStockByIdCPMappingStockUdangMati.getOrDefault(mappingKey, 0L);
                 long stockUdangMasuk    = calculateStockByIdCPMappingStockUdangMasuk.getOrDefault(mappingKey, 0L);
+                long stockTotalEkor    = calculateStockByIdCPMappingTotalEkor.getOrDefault(mappingKey, 0L);
 
                 grandTotalStockKolamTerakhir += stockKolamTerakhir;
                 grandTotalUdangMati          += stockUdangMati;
                 grandTotalUdangMasuk         += stockUdangMasuk;
+                grandTotalTotalEkor         += stockTotalEkor;
 
+                long totalEkor = stockTotalEkor;
                 // FIX: udangMati dikurang, bukan ditambahkan
-                long totalEkor = stockKolamTerakhir + stockUdangMasuk - stockUdangMati;
-                grandTotalTotalEkor += totalEkor;
+//                long totalEkor = stockKolamTerakhir + stockUdangMasuk - stockUdangMati;
+//                grandTotalTotalEkor += totalEkor;
 
                 long totalKoli = 0L;
                 if (cp.getJumlahitemsperkoli() != null && cp.getJumlahitemsperkoli().intValue() > 0) {
@@ -2361,14 +2400,18 @@ public class ReportHandler implements ReportService {
             long stockKolamTerakhir = stockKolamTerakhirByIDcategory.getOrDefault(cp.getId(), 0L);
             long stockUdangMati     = stockUdangMatiByIDcategory.getOrDefault(cp.getId(), 0L);
             long stockUdangMasuk    = stockUdangMasukByIDcategory.getOrDefault(cp.getId(), 0L);
+            long stockTotalEkor    = stockTotalEkorByIDcategory.getOrDefault(cp.getId(), 0L);
 
             grandTotalStockKolamTerakhir += stockKolamTerakhir;
             grandTotalUdangMati          += stockUdangMati;
             grandTotalUdangMasuk         += stockUdangMasuk;
+            grandTotalTotalEkor         += stockTotalEkor;
+
+            long totalEkor = stockTotalEkor;
 
             // FIX: udangMati dikurangi, bukan ditambahkan
-            long totalEkor = stockKolamTerakhir + stockUdangMasuk - stockUdangMati;
-            grandTotalTotalEkor += totalEkor;
+//            long totalEkor = stockKolamTerakhir + stockUdangMasuk - stockUdangMati;
+//            grandTotalTotalEkor += totalEkor;
 
             long totalKoli = 0L;
             if (cp.getJumlahitemsperkoli() != null && cp.getJumlahitemsperkoli().intValue() > 0) {

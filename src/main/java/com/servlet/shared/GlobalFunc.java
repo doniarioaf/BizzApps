@@ -1,5 +1,7 @@
 package com.servlet.shared;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -129,28 +131,40 @@ public class GlobalFunc {
 	}
 
 	public static Double pembulatanNilai(Double nilai, boolean isdown, int numberdesimal){
-		double pembagian = 10;
-		if(numberdesimal == 2){
-			pembagian = 100;
-		}else if(numberdesimal == 3){
-			pembagian = 1000;
-		}
+		//contoh hasil
+//		2.3445445  → desimal 1 → 2.3
+//		2.3999999  → desimal 1 → 2.3  (tidak dibulatkan ke 2.4)
+//		2.3445445  → desimal 2 → 2.34
+//		1.005      → desimal 2 → 1.00
+		if (nilai == null) return 0.0;
+		if (numberdesimal < 0) return nilai;
 
-		String[] splitComma = String.valueOf(nilai).split("\\.");
-		String valNilai = String.valueOf(nilai);
-		if(splitComma.length > numberdesimal){
-			int start = 0;
-			int end = numberdesimal+1;
-			String desimal = splitComma[1] != null?new String(splitComma[1]).substring(start,end):"0";
-			valNilai = splitComma[0]+"."+desimal;
-		}
-//        if(isdown){
-//            return Math.floor(Double.valueOf(valNilai) * pembagian) / pembagian;
-//        }
-//        return Math.ceil(Double.valueOf(valNilai) * pembagian) / pembagian;
+		BigDecimal bd = new BigDecimal(Double.toString(nilai));
+		bd = bd.setScale(numberdesimal, RoundingMode.DOWN);
+		return bd.doubleValue();
 
-		return Math.round(Double.valueOf(valNilai) * pembagian) / pembagian;
-
+//		double pembagian = 10;
+//		if(numberdesimal == 2){
+//			pembagian = 100;
+//		}else if(numberdesimal == 3){
+//			pembagian = 1000;
+//		}
+//
+//		String[] splitComma = String.valueOf(nilai).split("\\.");
+//		String valNilai = String.valueOf(nilai);
+//		if(splitComma.length > numberdesimal){
+//			int start = 0;
+//			int end = numberdesimal+1;
+//			String desimal = splitComma[1] != null?new String(splitComma[1]).substring(start,end):"0";
+//			valNilai = splitComma[0]+"."+desimal;
+//		}
+////        if(isdown){
+////            return Math.floor(Double.valueOf(valNilai) * pembagian) / pembagian;
+////        }
+////        return Math.ceil(Double.valueOf(valNilai) * pembagian) / pembagian;
+//
+//		return Math.round(Double.valueOf(valNilai) * pembagian) / pembagian;
+//
 	}
 
 	public static Double convertGramToKG(Double nilaigr){
