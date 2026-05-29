@@ -61,10 +61,14 @@ public class HistoryAppsHandler implements HistoryAppsService {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculteCountRow().schema());
         sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ?  and data.action = ? and data.menu = ? ");
         if(param != null){
-            if(param.get("nodocument") != null){
-                sqlBuilder.append(" and data.data like '%nodocument=''"+param.get("nodocument")+"''%' ");
-            }else if(param.get("data-id") != null){
-                sqlBuilder.append(" and data.data = '"+param.get("data-id")+"' ");
+            if(action.equals("EDIT")){
+                sqlBuilder.append(" and data.databefore like '%id="+param.get("data-id")+"%' ");
+            }else {
+                if (param.get("nodocument") != null) {
+                    sqlBuilder.append(" and data.data like '%nodocument=''" + param.get("nodocument") + "''%' ");
+                } else if (param.get("data-id") != null) {
+                    sqlBuilder.append(" and data.data = '" + param.get("data-id") + "' ");
+                }
             }
         }
         final Object[] queryParameters = new Object[] {idcompany,idbranch,action, menu};

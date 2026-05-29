@@ -9,7 +9,7 @@ public class PrintDataStockAdjusmentHidupDanMati {
     private Long udangmati;
     private Long udangmasuk;
     private Long totalekor;
-    private Long totalkoli;
+    private Double totalkoli;
 
     public String getCabang() {
         return cabang;
@@ -75,11 +75,11 @@ public class PrintDataStockAdjusmentHidupDanMati {
         this.totalekor = totalekor;
     }
 
-    public Long getTotalkoli() {
+    public Double getTotalkoli() {
         return totalkoli;
     }
 
-    public void setTotalkoli(Long totalkoli) {
+    public void setTotalkoli(Double totalkoli) {
         this.totalkoli = totalkoli;
     }
 }

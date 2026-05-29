@@ -499,7 +499,7 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
         Long grandTotalUdangMati          = 0L;
         Long grandTotalUdangMasuk         = 0L;
         Long grandTotalTotalEkor          = 0L;
-        Long grandTotalTotalKoli          = 0L;
+        Double grandTotalTotalKoli          = 0.00;
 
         List<MappingStockList> listMapping = mappingStockService.getListAll(idcompany, idbranch);
 
@@ -575,10 +575,13 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
 //                long totalEkor = stockKolamTerakhir + stockUdangMasuk - stockUdangMati;
 //                grandTotalTotalEkor += totalEkor;
 
-                long totalKoli = 0L;
+                Double totalKoli = 0.00;
                 if (cp.getJumlahitemsperkoli() != null && cp.getJumlahitemsperkoli().intValue() > 0) {
-                    Double koli = totalEkor / cp.getJumlahitemsperkoli().doubleValue();
-                    totalKoli = new BigDecimal(koli).setScale(0, RoundingMode.UP).longValue();
+                    Double koli = Math.abs(totalEkor) / cp.getJumlahitemsperkoli().doubleValue();
+                    if(koli.doubleValue() > 0 && koli.doubleValue() < 1){
+                        koli = 1.0;
+                    }
+                    totalKoli = new BigDecimal(koli).setScale(2, RoundingMode.DOWN).doubleValue();
                 }
                 grandTotalTotalKoli += totalKoli;
 
@@ -614,10 +617,13 @@ public class StockAdjusmentHandler implements StockAdjusmentService {
 //            long totalEkor = stockKolamTerakhir + stockUdangMasuk - stockUdangMati;
 //            grandTotalTotalEkor += totalEkor;
 
-            long totalKoli = 0L;
+            Double totalKoli = 0.00;
             if (cp.getJumlahitemsperkoli() != null && cp.getJumlahitemsperkoli().intValue() > 0) {
-                Double koli = totalEkor / cp.getJumlahitemsperkoli().doubleValue();
-                totalKoli = new BigDecimal(koli).setScale(0, RoundingMode.UP).longValue();
+                Double koli = Math.abs(totalEkor) / cp.getJumlahitemsperkoli().doubleValue();
+                if(koli.doubleValue() > 0 && koli.doubleValue() < 1){
+                    koli = 1.0;
+                }
+                totalKoli = new BigDecimal(koli).setScale(2, RoundingMode.DOWN).doubleValue();
             }
             grandTotalTotalKoli += totalKoli;
 

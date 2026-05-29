@@ -209,8 +209,9 @@ public class ReportHandler implements ReportService {
 
             int rowcount = 0;
             Row row = sheet.createRow(rowcount);
-
-            Long countEdit = historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT","PackingList");
+            HashMap mapParamPrint = new HashMap();
+            mapParamPrint.put("data-id",print.getId());
+            Long countEdit = historyAppsService.countByActionAndMenuParam(idcompany,idbranch,"EDIT","PackingList",mapParamPrint);
             UserListData user = userAppsService.getUserByID(iduser);
             String namaUser = "";
             if (user != null) {
@@ -2289,7 +2290,7 @@ public class ReportHandler implements ReportService {
         Long grandTotalUdangMati          = 0L;
         Long grandTotalUdangMasuk         = 0L;
         Long grandTotalTotalEkor          = 0L;
-        Long grandTotalTotalKoli          = 0L;
+        Double grandTotalTotalKoli          = 0.00;
 
         List<MappingStockList> listMapping = mappingStockService.getListAll(idcompany, idbranch);
 
@@ -2365,10 +2366,13 @@ public class ReportHandler implements ReportService {
 //                long totalEkor = stockKolamTerakhir + stockUdangMasuk - stockUdangMati;
 //                grandTotalTotalEkor += totalEkor;
 
-                long totalKoli = 0L;
+                Double totalKoli = 0.00;
                 if (cp.getJumlahitemsperkoli() != null && cp.getJumlahitemsperkoli().intValue() > 0) {
-                    Double koli = totalEkor / cp.getJumlahitemsperkoli().doubleValue();
-                    totalKoli = new BigDecimal(koli).setScale(0, RoundingMode.UP).longValue();
+                    Double koli = Math.abs(totalEkor) / cp.getJumlahitemsperkoli().doubleValue();
+                    if(koli.doubleValue() > 0 && koli.doubleValue() < 1){
+                        koli = 1.00;
+                    }
+                    totalKoli = new BigDecimal(koli).setScale(2, RoundingMode.DOWN).doubleValue();
                 }
                 grandTotalTotalKoli += totalKoli;
 
@@ -2388,8 +2392,15 @@ public class ReportHandler implements ReportService {
                 createCell(row, colomcount, stockUdangMasuk, style, sheet, columns);
                 colomcount++;
                 createCell(row, colomcount, totalEkor, style, sheet, columns);
+
+                styleAmount = workbook.createCellStyle();
+                if(GlobalFunc.checkIsDecimal(totalKoli)) {
+                    styleAmount.setDataFormat(format.getFormat("#,###"));
+                }else {
+                    styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                }
                 colomcount++;
-                createCell(row, colomcount, totalKoli, style, sheet, columns);
+                createCell(row, colomcount, totalKoli, styleAmount, sheet, columns);
             }
         }
 
@@ -2413,10 +2424,13 @@ public class ReportHandler implements ReportService {
 //            long totalEkor = stockKolamTerakhir + stockUdangMasuk - stockUdangMati;
 //            grandTotalTotalEkor += totalEkor;
 
-            long totalKoli = 0L;
+            Double totalKoli = 0.00;
             if (cp.getJumlahitemsperkoli() != null && cp.getJumlahitemsperkoli().intValue() > 0) {
-                Double koli = totalEkor / cp.getJumlahitemsperkoli().doubleValue();
-                totalKoli = new BigDecimal(koli).setScale(0, RoundingMode.UP).longValue();
+                Double koli = Math.abs(totalEkor) / cp.getJumlahitemsperkoli().doubleValue();
+                if(koli.doubleValue() > 0 && koli.doubleValue() < 1){
+                    koli = 1.0;
+                }
+                totalKoli = new BigDecimal(koli).setScale(2, RoundingMode.DOWN).doubleValue();
             }
             grandTotalTotalKoli += totalKoli;
 
@@ -2436,8 +2450,15 @@ public class ReportHandler implements ReportService {
             createCell(row, colomcount, stockUdangMasuk, style, sheet, columns);
             colomcount++;
             createCell(row, colomcount, totalEkor, style, sheet, columns);
+
+            styleAmount = workbook.createCellStyle();
+            if(GlobalFunc.checkIsDecimal(totalKoli)) {
+                styleAmount.setDataFormat(format.getFormat("#,###"));
+            }else {
+                styleAmount.setDataFormat(format.getFormat("#,###.##"));
+            }
             colomcount++;
-            createCell(row, colomcount, totalKoli, style, sheet, columns);
+            createCell(row, colomcount, totalKoli, styleAmount, sheet, columns);
         }
 
         // Baris grand total
@@ -2455,8 +2476,15 @@ public class ReportHandler implements ReportService {
         createCell(row, colomcount, grandTotalUdangMasuk, style, sheet, columns);
         colomcount++;
         createCell(row, colomcount, grandTotalTotalEkor, style, sheet, columns);
+
+        styleAmount = workbook.createCellStyle();
+        if(GlobalFunc.checkIsDecimal(grandTotalTotalKoli)) {
+            styleAmount.setDataFormat(format.getFormat("#,###"));
+        }else {
+            styleAmount.setDataFormat(format.getFormat("#,###.##"));
+        }
         colomcount++;
-        createCell(row, colomcount, grandTotalTotalKoli, style, sheet, columns);
+        createCell(row, colomcount, grandTotalTotalKoli, styleAmount, sheet, columns);
 
         data.setWorkbook(workbook);
         return data;

@@ -370,7 +370,7 @@ public class PackingListHandler implements PackingListService {
             mapParamPrint.put("data-id",data.getId());
             data.setCountPrint(historyAppsService.countByActionAndMenuParam(idcompany,idbranch,"DOWNLOADPDF",namaMenu,mapParamPrint));
 //            data.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADPDF",namaMenu));
-            data.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
+            data.setCountEdit(historyAppsService.countByActionAndMenuParam(idcompany,idbranch,"EDIT",namaMenu,mapParamPrint));
             if(iduser != null) {
                 UserListData user = userAppsService.getUserByID(iduser);
                 String namaUser = "";
