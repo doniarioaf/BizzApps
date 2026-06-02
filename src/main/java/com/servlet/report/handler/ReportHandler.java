@@ -210,8 +210,8 @@ public class ReportHandler implements ReportService {
             int rowcount = 0;
             Row row = sheet.createRow(rowcount);
             HashMap mapParamPrint = new HashMap();
-            mapParamPrint.put("data-id",print.getId());
-            Long countEdit = historyAppsService.countByActionAndMenuParam(idcompany,idbranch,"EDIT","PackingList",mapParamPrint);
+            mapParamPrint.put("data-id", print.getId());
+            Long countEdit = historyAppsService.countByActionAndMenuParam(idcompany, idbranch, "EDIT", "PackingList", mapParamPrint);
             UserListData user = userAppsService.getUserByID(iduser);
             String namaUser = "";
             if (user != null) {
@@ -225,14 +225,14 @@ public class ReportHandler implements ReportService {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            createCell(row, 0, "Edit : "+countEdit+", Dicetak Oleh : "+namaUser+", "+transDate, style, sheet,columns);
+            createCell(row, 0, "Edit : " + countEdit + ", Dicetak Oleh : " + namaUser + ", " + transDate, style, sheet, columns);
 
             rowcount = 2;
             row = sheet.createRow(rowcount);
 
             CellRangeAddress companyNameCellRangeAddress = new CellRangeAddress(2, 2, 0, 5);
             sheet.addMergedRegion(companyNameCellRangeAddress);
-            Cell compnayname = createCell(row, 0, print.getCompanyName(), styleBold, sheet,columns);
+            Cell compnayname = createCell(row, 0, print.getCompanyName(), styleBold, sheet, columns);
             CellUtil.setVerticalAlignment(compnayname, VerticalAlignment.CENTER);
             CellUtil.setAlignment(compnayname, HorizontalAlignment.CENTER);
             RegionUtil.setBorderRight(BorderStyle.THIN, companyNameCellRangeAddress, sheet);
@@ -242,7 +242,7 @@ public class ReportHandler implements ReportService {
             row = sheet.createRow(rowcount);
             CellRangeAddress address1CellRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 5);
             sheet.addMergedRegion(address1CellRangeAddress);
-            Cell addrees1 = createCell(row, 0, print.getAddress1(), style, sheet,columns);
+            Cell addrees1 = createCell(row, 0, print.getAddress1(), style, sheet, columns);
             CellUtil.setVerticalAlignment(addrees1, VerticalAlignment.CENTER);
             CellUtil.setAlignment(addrees1, HorizontalAlignment.CENTER);
             RegionUtil.setBorderRight(BorderStyle.THIN, address1CellRangeAddress, sheet);
@@ -252,7 +252,7 @@ public class ReportHandler implements ReportService {
             row = sheet.createRow(rowcount);
             CellRangeAddress address2CellRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 5);
             sheet.addMergedRegion(address2CellRangeAddress);
-            Cell addrees2 = createCell(row, 0, print.getAddress2(), style, sheet,columns);
+            Cell addrees2 = createCell(row, 0, print.getAddress2(), style, sheet, columns);
             CellUtil.setVerticalAlignment(addrees2, VerticalAlignment.CENTER);
             CellUtil.setAlignment(addrees2, HorizontalAlignment.CENTER);
             RegionUtil.setBorderRight(BorderStyle.THIN, address2CellRangeAddress, sheet);
@@ -262,7 +262,7 @@ public class ReportHandler implements ReportService {
             row = sheet.createRow(rowcount);
             CellRangeAddress address3CellRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 5);
             sheet.addMergedRegion(address3CellRangeAddress);
-            Cell addrees3 = createCell(row, 0, print.getAddress3(), style, sheet,columns);
+            Cell addrees3 = createCell(row, 0, print.getAddress3(), style, sheet, columns);
             CellUtil.setVerticalAlignment(addrees3, VerticalAlignment.CENTER);
             CellUtil.setAlignment(addrees3, HorizontalAlignment.CENTER);
             RegionUtil.setBorderRight(BorderStyle.THIN, address3CellRangeAddress, sheet);
@@ -271,46 +271,46 @@ public class ReportHandler implements ReportService {
             rowcount++;
             rowcount++;
             row = sheet.createRow(rowcount);
-            createCell(row, 0, "No.PackingList", style, sheet,columns);
-            createCell(row, 1, print.getNodocument(), style, sheet,columns);
+            createCell(row, 0, "No.PackingList", style, sheet, columns);
+            createCell(row, 1, print.getNodocument(), style, sheet, columns);
 
-            createCell(row, 5, "Fligh No", style, sheet,columns);
-            createCell(row, 6, print.getFlightnumber(), style, sheet,columns);
-
-            rowcount++;
-            row = sheet.createRow(rowcount);
-            createCell(row, 0, "To", style, sheet,columns);
-            createCell(row, 1, print.getCustomerName(), style, sheet,columns);
-
-            createCell(row, 5, "AWB", style, sheet,columns);
-            createCell(row, 6, print.getAwbnumber(), style, sheet,columns);
+            createCell(row, 5, "Fligh No", style, sheet, columns);
+            createCell(row, 6, print.getFlightnumber(), style, sheet, columns);
 
             rowcount++;
             row = sheet.createRow(rowcount);
-            createCell(row, 0, "ATTN", style, sheet,columns);
-            createCell(row, 1, print.getAttention(), style, sheet,columns);
+            createCell(row, 0, "To", style, sheet, columns);
+            createCell(row, 1, print.getCustomerName(), style, sheet, columns);
+
+            createCell(row, 5, "AWB", style, sheet, columns);
+            createCell(row, 6, print.getAwbnumber(), style, sheet, columns);
+
+            rowcount++;
+            row = sheet.createRow(rowcount);
+            createCell(row, 0, "ATTN", style, sheet, columns);
+            createCell(row, 1, print.getAttention(), style, sheet, columns);
 
             Double totalNettoHeader = 0.0;
-            for(PackingListDataItemDetail item : print.getItems()){
+            for (PackingListDataItemDetail item : print.getItems()) {
 //                totalNettoHeader += convertkg(item.getNettoweight());
                 totalNettoHeader += item.getNettoweight();
             }
 
-            createCell(row, 5, "Netto", style, sheet,columns);
-            createCell(row, 6, totalNettoHeader , style, sheet,columns);
+            createCell(row, 5, "Netto", style, sheet, columns);
+            createCell(row, 6, totalNettoHeader, style, sheet, columns);
 
             rowcount++;
             row = sheet.createRow(rowcount);
 
-            createCell(row, 5, "Collie", style, sheet,columns);
-            createCell(row, 6, print.getKoli(), style, sheet,columns);
+            createCell(row, 5, "Collie", style, sheet, columns);
+            createCell(row, 6, print.getKoli(), style, sheet, columns);
 
             rowcount++;
             rowcount++;
             row = sheet.createRow(rowcount);
-            CellRangeAddress aliasCustRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 5);
+            CellRangeAddress aliasCustRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 6);
             sheet.addMergedRegion(aliasCustRangeAddress);
-            Cell aliascust = createCell(row, 0, print.getCustomerAlias(), style, sheet,columns);
+            Cell aliascust = createCell(row, 0, print.getCustomerAlias(), style, sheet, columns);
             CellUtil.setVerticalAlignment(aliascust, VerticalAlignment.CENTER);
             CellUtil.setAlignment(aliascust, HorizontalAlignment.CENTER);
             RegionUtil.setBorderRight(BorderStyle.THIN, aliasCustRangeAddress, sheet);
@@ -318,15 +318,15 @@ public class ReportHandler implements ReportService {
 
             rowcount++;
             row = sheet.createRow(rowcount);
-            CellRangeAddress namaCustRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 5);
+            CellRangeAddress namaCustRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 6);
             sheet.addMergedRegion(namaCustRangeAddress);
             String tanggal = "";
-            try{
+            try {
                 tanggal = GlobalFunc.getDateLongToString(print.getDate().getTime(), "dd-MMMM-yyyy");
-            }catch (ParseException e){
+            } catch (ParseException e) {
                 e.printStackTrace();
             }
-            Cell namacust = createCell(row, 0, "P.LIST EXPORT  "+ tanggal, style, sheet,columns);
+            Cell namacust = createCell(row, 0, "P.LIST EXPORT  " + tanggal, style, sheet, columns);
             CellUtil.setVerticalAlignment(namacust, VerticalAlignment.CENTER);
             CellUtil.setAlignment(namacust, HorizontalAlignment.CENTER);
             RegionUtil.setBorderRight(BorderStyle.THIN, namaCustRangeAddress, sheet);
@@ -336,30 +336,30 @@ public class ReportHandler implements ReportService {
             rowcount++;
             row = sheet.createRow(rowcount);
             int colomcount = 0;
-            createCell(row, colomcount, "BOX", borderStyle, sheet,columns);
+            createCell(row, colomcount, "BOX", borderStyle, sheet, columns);
 
             colomcount++;
-            createCell(row, colomcount, "SIZE", borderStyle, sheet,columns);
+            createCell(row, colomcount, "SIZE", borderStyle, sheet, columns);
 
             colomcount++;
-            createCell(row, colomcount, "GRAM", borderStyle, sheet,columns);
+            createCell(row, colomcount, "GRAM", borderStyle, sheet, columns);
 
             colomcount++;
-            createCell(row, colomcount, "PIECES", borderStyle, sheet,columns);
+            createCell(row, colomcount, "PIECES", borderStyle, sheet, columns);
 
             colomcount++;
-            createCell(row, colomcount, "WEIGHT(KG)", borderStyle, sheet,columns);
+            createCell(row, colomcount, "WEIGHT(KG)", borderStyle, sheet, columns);
 
             colomcount++;
-            createCell(row, colomcount, "PRICE", borderStyle, sheet,columns);
+            createCell(row, colomcount, "PRICE", borderStyle, sheet, columns);
 
             colomcount++;
-            createCell(row, colomcount, "TOTAL", borderStyle, sheet,columns);
+            createCell(row, colomcount, "TOTAL", borderStyle, sheet, columns);
 
             int totalqty = 0;
             double totalweight = 0;
             double totalprice = 0;
-            for(PackingListDataItemDetail item : print.getItems()){
+            for (PackingListDataItemDetail item : print.getItems()) {
                 totalqty += item.getQty().intValue();
                 totalweight += item.getNettoweight().doubleValue();
                 totalprice += item.getTotalprice().doubleValue();
@@ -367,49 +367,79 @@ public class ReportHandler implements ReportService {
                 rowcount++;
                 row = sheet.createRow(rowcount);
                 colomcount = 0;
-                createCell(row, colomcount, item.getBox(), borderStyle, sheet,columns);
+                createCell(row, colomcount, item.getBox(), borderStyle, sheet, columns);
 
                 colomcount++;
-                createCell(row, colomcount, item.getCategoryProductSize(), borderStyle, sheet,columns);
+                createCell(row, colomcount, item.getCategoryProductSize(), borderStyle, sheet, columns);
 
                 colomcount++;
-                createCell(row, colomcount, item.getCategoryProductFromGr()+"-"+item.getCategoryProductThruGr(), borderStyle, sheet,columns);
+                createCell(row, colomcount, item.getCategoryProductFromGr() + "-" + item.getCategoryProductThruGr(), borderStyle, sheet, columns);
 
                 colomcount++;
-                createCell(row, colomcount, item.getQty(), borderStyle, sheet,columns);
+                createCell(row, colomcount, item.getQty(), borderStyle, sheet, columns);
 
                 colomcount++;
 //                createCell(row, colomcount, convertkg(item.getNettoweight()), style, sheet,columns);
-                createCell(row, colomcount, item.getNettoweight(), borderStyle, sheet,columns);
+                createCell(row, colomcount, item.getNettoweight(), borderStyle, sheet, columns);
 
                 colomcount++;
-                createCell(row, colomcount, item.getPrice(), borderStyle, sheet,columns);
+                createCell(row, colomcount, item.getPrice(), borderStyle, sheet, columns);
 
                 colomcount++;
-                createCell(row, colomcount, item.getTotalprice(), borderStyle, sheet,columns);
+                createCell(row, colomcount, item.getTotalprice(), borderStyle, sheet, columns);
             }
 
             rowcount++;
             row = sheet.createRow(rowcount);
             colomcount = 0;
-            createCell(row, colomcount, "", borderStyle, sheet,columns);
+            createCell(row, colomcount, "", borderStyle, sheet, columns);
             colomcount++;
-            createCell(row, colomcount, "", borderStyle, sheet,columns);
+            createCell(row, colomcount, "", borderStyle, sheet, columns);
             colomcount++;
-            createCell(row, colomcount, "", borderStyle, sheet,columns);
+            createCell(row, colomcount, "", borderStyle, sheet, columns);
             colomcount++;
-            createCell(row, colomcount, totalqty, borderStyle, sheet,columns);
+            createCell(row, colomcount, totalqty, borderStyle, sheet, columns);
 
             colomcount++;
 //            createCell(row, colomcount, totalweight, style, sheet,columns);
-            createCell(row, colomcount, totalNettoHeader, borderStyle, sheet,columns);
+            createCell(row, colomcount, totalNettoHeader, borderStyle, sheet, columns);
 
             colomcount++;
-            createCell(row, colomcount, "", borderStyle, sheet,columns);
+            createCell(row, colomcount, "", borderStyle, sheet, columns);
 
             colomcount++;
-            createCell(row, colomcount, totalprice, borderStyle, sheet,columns);
+            createCell(row, colomcount, totalprice, borderStyle, sheet, columns);
 
+
+            // 1. Set print area mencakup semua kolom A sampai G
+            int lastRow = rowcount + 1; // sesuaikan dengan rowcount terakhir
+            String printArea = "A1:G" + lastRow;
+            workbook.setPrintArea(
+                    workbook.getSheetIndex(sheet),  // sheet index
+                    0,   // first col (A)
+                    6,   // last col (G)
+                    0,   // first row
+                    rowcount  // last row
+            );
+
+            // 2. Set page setup: landscape agar semua 7 kolom muat
+            sheet.getPrintSetup().setLandscape(true);
+
+            // 3. Fit to 1 halaman lebar (semua kolom masuk ke 1 halaman)
+            sheet.getPrintSetup().setFitWidth((short) 1);
+            sheet.getPrintSetup().setFitHeight((short) 0); // 0 = bebas tingginya
+            sheet.setAutobreaks(true);
+            sheet.getFitToPage(); // aktifkan fit to page
+            sheet.setFitToPage(true);
+
+            // 4. Set paper size ke A4
+            sheet.getPrintSetup().setPaperSize(PrintSetup.A4_PAPERSIZE);
+
+            // 5. Set margin (opsional, untuk memperluas area cetak)
+            sheet.setMargin(Sheet.LeftMargin, 0.5);
+            sheet.setMargin(Sheet.RightMargin, 0.5);
+            sheet.setMargin(Sheet.TopMargin, 0.75);
+            sheet.setMargin(Sheet.BottomMargin, 0.75);
         }
         data.setWorkbook(workbook);
         return data;
@@ -551,7 +581,7 @@ public class ReportHandler implements ReportService {
             rowcount++;
             rowcount++;
             row = sheet.createRow(rowcount);
-            CellRangeAddress aliasCustRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 5);
+            CellRangeAddress aliasCustRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 6);
             sheet.addMergedRegion(aliasCustRangeAddress);
             Cell aliascust = createCell(row, 0, print.getCustomerAlias(), style, sheet,columns);
             CellUtil.setVerticalAlignment(aliascust, VerticalAlignment.CENTER);
@@ -561,7 +591,7 @@ public class ReportHandler implements ReportService {
 
             rowcount++;
             row = sheet.createRow(rowcount);
-            CellRangeAddress namaCustRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 5);
+            CellRangeAddress namaCustRangeAddress = new CellRangeAddress(rowcount, rowcount, 0, 6);
             sheet.addMergedRegion(namaCustRangeAddress);
             String tanggal = "";
             try{

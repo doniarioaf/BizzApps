@@ -6,6 +6,7 @@ public class PackingListDataList {
     private Long id;
     private String nodocument;
     private Date date;
+    private Date datestock;
     private Long idcustomer;
     private String customerNama;
     private String customerAlias;
@@ -14,6 +15,14 @@ public class PackingListDataList {
 
     public Boolean getIsalreadyupdateprice() {
         return isalreadyupdateprice;
+    }
+
+    public Date getDatestock() {
+        return datestock;
+    }
+
+    public void setDatestock(Date datestock) {
+        this.datestock = datestock;
     }
 
     public void setIsalreadyupdateprice(Boolean isalreadyupdateprice) {

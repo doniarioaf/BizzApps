@@ -8,6 +8,7 @@ public class PackingListDataDetail {
     private Long id;
     private String nodocument;
     private Date date;
+    private Date datestock;
     private Long idcustomer;
     private String customerPhone;
     private String customerName;
@@ -34,6 +35,14 @@ public class PackingListDataDetail {
     private String vendorAddress2;
     private String vendorPhone;
     private String vendorNpwp;
+
+    public Date getDatestock() {
+        return datestock;
+    }
+
+    public void setDatestock(Date datestock) {
+        this.datestock = datestock;
+    }
 
     public String getCodeGrupcustomer() {
         return codeGrupcustomer;
