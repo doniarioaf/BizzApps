@@ -274,7 +274,7 @@ public class ReportHandler implements ReportService {
             createCell(row, 0, "No.PackingList", style, sheet, columns);
             createCell(row, 1, print.getNodocument(), style, sheet, columns);
 
-            createCell(row, 5, "Fligh No", style, sheet, columns);
+            createCell(row, 5, "Flight No", style, sheet, columns);
             createCell(row, 6, print.getFlightnumber(), style, sheet, columns);
 
             rowcount++;
@@ -547,7 +547,7 @@ public class ReportHandler implements ReportService {
             createCell(row, 0, "PL No / CPL No", style, sheet,columns);
             createCell(row, 1, print.getNodocument()+" / "+printCPL.getNodocumentCPL(), style, sheet,columns);
 
-            createCell(row, 5, "Fligh No", style, sheet,columns);
+            createCell(row, 5, "Flight No", style, sheet,columns);
             createCell(row, 6, print.getFlightnumber(), style, sheet,columns);
 
             rowcount++;
