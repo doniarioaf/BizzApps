@@ -15,6 +15,24 @@ public class KomisiDetail {
     private Timestamp createddate;
     private String modifiedbyName;
     private Timestamp modifieddate;
+    private Double additional_commission;
+    private String description;
+
+    public Double getAdditional_commission() {
+        return additional_commission;
+    }
+
+    public void setAdditional_commission(Double additional_commission) {
+        this.additional_commission = additional_commission;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     private List<PurchaseReceiveDataKomisi> items;
 

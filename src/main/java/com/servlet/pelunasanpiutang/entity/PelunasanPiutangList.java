@@ -7,6 +7,7 @@ public class PelunasanPiutangList {
     private String nodocument;
     private Date date;
     private Double kurs;
+    private Double totalpembayaran;
 
     private Long idinvoice;
     private String nodocumentInvoice;
@@ -15,6 +16,14 @@ public class PelunasanPiutangList {
     private String customerName;
     private String customerAlias;
     private String noDocumentPL;
+
+    public Double getTotalpembayaran() {
+        return totalpembayaran;
+    }
+
+    public void setTotalpembayaran(Double totalpembayaran) {
+        this.totalpembayaran = totalpembayaran;
+    }
 
     public String getNoDocumentPL() {
         return noDocumentPL;

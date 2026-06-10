@@ -24,6 +24,8 @@ public class Komisi implements Serializable {
     private Timestamp modifieddate;
     private Long deleteby;
     private Timestamp deletedate;
+    private Double additional_commission;
+    private String description;
 
     @Override
     public String toString() {
@@ -31,8 +33,26 @@ public class Komisi implements Serializable {
                 "id=" + id +
                 ", nodocument='" + nodocument + '\'' +
                 ", date=" + date +
+                ", additional_commission=" + additional_commission +
+                ", description=" + description +
                 ", note='" + note + '\'' +
                 '}';
+    }
+
+    public Double getAdditional_commission() {
+        return additional_commission;
+    }
+
+    public void setAdditional_commission(Double additional_commission) {
+        this.additional_commission = additional_commission;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Long getId() {

@@ -12,6 +12,15 @@ public class PackingListDataList {
     private String customerAlias;
     private String city;
     private Boolean isalreadyupdateprice;
+    private String isallchecked;
+
+    public String getIsallchecked() {
+        return isallchecked;
+    }
+
+    public void setIsallchecked(String isallchecked) {
+        this.isallchecked = isallchecked;
+    }
 
     public Boolean getIsalreadyupdateprice() {
         return isalreadyupdateprice;

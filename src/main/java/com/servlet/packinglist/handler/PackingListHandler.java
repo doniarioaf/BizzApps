@@ -116,6 +116,23 @@ public class PackingListHandler implements PackingListService {
     }
 
     @Override
+    public List<PackingListDataList> getListChecked(Long idcompany, Long idbranch, ParamSearchPackingList param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataListV2().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false and data.id not in (select cancel.idpackinglist from cancel_packinglist as cancel where cancel.idcompany = "+idcompany+" and cancel.idbranch = "+idbranch+" and cancel.isdelete = false)  ");
+        if(param.getFrom() != null){
+            Date dt = new Date(param.getFrom());
+            sqlBuilder.append(" and data.date >= '"+dt.toString()+"'");
+        }
+        if(param.getTo() != null){
+            Date dt = new Date(param.getTo());
+            sqlBuilder.append(" and data.date <= '"+dt.toString()+"'");
+        }
+        sqlBuilder.append(" order by data.id desc ");
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataListV2(), queryParameters);
+    }
+
+    @Override
     public PackingListTemplate getTemplate(Long idcompany, Long idbranch) {
         ParamVendor paramVendor = new ParamVendor();
         paramVendor.setVendorTypes("'UPI'");

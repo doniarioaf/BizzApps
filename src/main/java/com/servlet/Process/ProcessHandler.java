@@ -1570,7 +1570,7 @@ public class ProcessHandler implements ProcessService{
 				String type = (String) param.get("type");
 				ParamSearchPackingList paramsearch = (ParamSearchPackingList) param.get("paramsearch");
 				if(type.equals("ALL")) {
-					val.setData(packingListService.getList(auth.getIdcompany(), auth.getIdbranch(),paramsearch));
+					val.setData(packingListService.getListChecked(auth.getIdcompany(), auth.getIdbranch(),paramsearch));
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
 					val.setData(packingListService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));

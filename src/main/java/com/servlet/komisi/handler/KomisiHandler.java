@@ -116,6 +116,8 @@ public class KomisiHandler implements KomisiService {
                 table.setNodocument(docNumber);
                 table.setDate(new Date(body.getDate()));
                 table.setNote(body.getNote());
+                table.setAdditional_commission(body.getAdditional_commission());
+                table.setDescription(body.getDescription());
                 table.setIsdelete(false);
                 table.setCreatedby(iduser);
                 table.setCreateddate(ts);
@@ -163,6 +165,8 @@ public class KomisiHandler implements KomisiService {
 
                     table.setDate(new Date(body.getDate()));
                     table.setNote(body.getNote());
+                    table.setAdditional_commission(body.getAdditional_commission());
+                    table.setDescription(body.getDescription());
                     table.setModifiedby(iduser);
                     table.setModifieddate(ts);
                     idsave = repo.saveAndFlush(table).getId();
