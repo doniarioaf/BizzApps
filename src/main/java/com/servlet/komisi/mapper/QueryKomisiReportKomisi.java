@@ -14,7 +14,7 @@ public class QueryKomisiReportKomisi implements RowMapper<KomisiDataReportKomisi
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.idpurchasereceive as idpurchasereceive, data.koli as koli, data.komisiperkoli as komisiperkoli, data.subtotalkomisi as subtotalkomisi, ");
-        sqlBuilder.append("komisi.id as id, komisi.nodocument as nodocument, komisi.date as date, ");
+        sqlBuilder.append("komisi.id as id, komisi.nodocument as nodocument, komisi.date as date, komisi.additional_commission as additional_commission,komisi.description as description, ");
         sqlBuilder.append("ven.id as venId,ven.nama as venNama, ven.alias as venAlias, ven.idvendorbroker as venIdvendorbroker, ");
         sqlBuilder.append("pr.nodocument as prnodocument ");
         sqlBuilder.append("from komisi_item as data ");
@@ -43,7 +43,8 @@ public class QueryKomisiReportKomisi implements RowMapper<KomisiDataReportKomisi
         final Long venIdvendorbroker = rs.getLong("venIdvendorbroker");
         final Long venId = rs.getLong("venId");
         final String prnodocument = rs.getString("prnodocument");
-
+        final String description = rs.getString("description");
+        final Double additional_commission = rs.getDouble("additional_commission");
 
         KomisiDataReportKomisi data = new KomisiDataReportKomisi();
         data.setIdvendorbroker(venIdvendorbroker);
@@ -51,10 +52,13 @@ public class QueryKomisiReportKomisi implements RowMapper<KomisiDataReportKomisi
         data.setVendorname(venNama);
         data.setVendoralias(venAlias);
         data.setNodocumentPR(prnodocument);
+        data.setNodocumentKomisi(nodocument);
         data.setDate(date);
         data.setKoli(koli);
         data.setKomisiperkoli(komisiperkoli);
         data.setSubtotalkomisi(subtotalkomisi);
+        data.setDescription(description);
+        data.setAdditional_commission(additional_commission);
 
         return data;
     }

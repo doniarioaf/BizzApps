@@ -5938,10 +5938,13 @@ public class ReportHandler implements ReportService {
         }
         List<String> list = new ArrayList<>();
         List<VendorDataForTemplate> getListVendor = vendorService.getListDropdown(idcompany,idbranch,paramvendor);
+        HashMap<Long,VendorDataForTemplate> mappingVendor =  new HashMap<>();
+
         List<String> idvendors = new ArrayList<>();
         for(VendorDataForTemplate ven : getListVendor){
             list.add(ven.getAlias());
             idvendors.add(ven.getId().toString());
+            mappingVendor.put(ven.getId(), ven);
         }
         String listIdVendor = idvendors.toString().replaceAll("\\[","");
         listIdVendor = listIdVendor.replaceAll("\\]","");
@@ -6010,6 +6013,9 @@ public class ReportHandler implements ReportService {
         createCell(row, colomcount, "No Document", style, sheet,columns);
 
         colomcount++;
+        createCell(row, colomcount, "No Document Komisi", style, sheet,columns);
+
+        colomcount++;
         createCell(row, colomcount, "Tanggal", style, sheet,columns);
 
         colomcount++;
@@ -6021,6 +6027,15 @@ public class ReportHandler implements ReportService {
         colomcount++;
         createCell(row, colomcount, "Subtotal Komisi", style, sheet,columns);
 
+        colomcount++;
+        createCell(row, colomcount, "Komisi Tambahan", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Total Komisi", style, sheet,columns);
+
+        colomcount++;
+        createCell(row, colomcount, "Keterangan", style, sheet,columns);
+
         ParamKomisiReportKomisi paramKomisi = new ParamKomisiReportKomisi();
         paramKomisi.setFrom(param.getFrom());
         paramKomisi.setTo(param.getTo());
@@ -6029,39 +6044,64 @@ public class ReportHandler implements ReportService {
         }
         List<KomisiDataReportKomisi> listkomisi = komisiService.getListReportKomisi(idcompany,idbranch,paramKomisi);
         HashMap<Long,List<KomisiDataReportKomisi>> grupByIdVendorBroker = new HashMap<>();
+        HashMap<String,List<KomisiDataReportKomisi>> grupByNoDocKomisi = new HashMap<>();
         if(listkomisi != null && listkomisi.size() > 0){
+//            jika ingin di grup lagi berdasrakan vendorbroker buka lagi aja ini, karena yang baru mau req per nodocKomisi
+//            for(KomisiDataReportKomisi kom : listkomisi){
+//                if(grupByIdVendorBroker.get(kom.getIdvendorbroker()) == null){
+//                    List<KomisiDataReportKomisi> temp = new ArrayList<>();
+//                    temp.add(kom);
+//                    grupByIdVendorBroker.put(kom.getIdvendorbroker(),temp);
+//                }else{
+//                    List<KomisiDataReportKomisi> temp = new ArrayList<>();
+//                    temp = grupByIdVendorBroker.get(kom.getIdvendorbroker());
+//                    temp.add(kom);
+//                    grupByIdVendorBroker.put(kom.getIdvendorbroker(),temp);
+//                }
+//            }
+
             for(KomisiDataReportKomisi kom : listkomisi){
-                if(grupByIdVendorBroker.get(kom.getIdvendorbroker()) == null){
+                if(grupByNoDocKomisi.get(kom.getNodocumentKomisi()) == null){
                     List<KomisiDataReportKomisi> temp = new ArrayList<>();
                     temp.add(kom);
-                    grupByIdVendorBroker.put(kom.getIdvendorbroker(),temp);
+                    grupByNoDocKomisi.put(kom.getNodocumentKomisi(),temp);
                 }else{
                     List<KomisiDataReportKomisi> temp = new ArrayList<>();
-                    temp = grupByIdVendorBroker.get(kom.getIdvendorbroker());
+                    temp = grupByNoDocKomisi.get(kom.getNodocumentKomisi());
                     temp.add(kom);
-                    grupByIdVendorBroker.put(kom.getIdvendorbroker(),temp);
+                    grupByNoDocKomisi.put(kom.getNodocumentKomisi(),temp);
                 }
             }
 
-            for(VendorDataForTemplate ven : getListVendor){
-                List<KomisiDataReportKomisi> listKomPerVendor = grupByIdVendorBroker.get(ven.getId());
+//            for(VendorDataForTemplate ven : getListVendor){
+//                List<KomisiDataReportKomisi> listKomPerVendor = grupByIdVendorBroker.get(ven.getId());
+            for (Map.Entry<String, List<KomisiDataReportKomisi>> entry : grupByNoDocKomisi.entrySet()) {
+                List<KomisiDataReportKomisi> listKomPerVendor = entry.getValue();
                 if(listKomPerVendor != null){
                     int no = 1;
                     double totalSubTotalKomisi = 0.0;
+                    Double tambahanKomisi = 0.0;
+                    String description = "";
                     for(KomisiDataReportKomisi kom : listKomPerVendor){
+                        tambahanKomisi = kom.getAdditional_commission() != null?kom.getAdditional_commission():0.0;
+                        description = kom.getDescription();
+                        String vendorBrocker = mappingVendor.get(kom.getIdvendorbroker()) != null?mappingVendor.get(kom.getIdvendorbroker()).getAlias():"";
                         colomcount = 0;
                         rowcount++;
                         row = sheet.createRow(rowcount);
                         createCell(row, colomcount, no, style, sheet,columns);
 
                         colomcount++;
-                        createCell(row, colomcount, ven.getAlias(), style, sheet,columns);
+                        createCell(row, colomcount, vendorBrocker, style, sheet,columns);
 
                         colomcount++;
                         createCell(row, colomcount, kom.getVendoralias(), style, sheet,columns);
 
                         colomcount++;
                         createCell(row, colomcount, kom.getNodocumentPR(), style, sheet,columns);
+
+                        colomcount++;
+                        createCell(row, colomcount, kom.getNodocumentKomisi(), style, sheet,columns);
 
                         String transDate = "";
                         try {
@@ -6105,6 +6145,16 @@ public class ReportHandler implements ReportService {
                             createCell(row, colomcount, 0, style, sheet,columns);
                         }
                         totalSubTotalKomisi += kom.getSubtotalkomisi().doubleValue();
+
+                        colomcount++;
+                        createCell(row, colomcount, "", style, sheet,columns);
+
+                        colomcount++;
+                        createCell(row, colomcount, "", style, sheet,columns);
+
+                        colomcount++;
+                        createCell(row, colomcount, "", style, sheet,columns);
+
                         no++;
                     }
 
@@ -6131,6 +6181,9 @@ public class ReportHandler implements ReportService {
                     colomcount++;
                     createCell(row, colomcount, "", style, sheet,columns);
 
+                    colomcount++;
+                    createCell(row, colomcount, "", style, sheet,columns);
+
                     if(totalSubTotalKomisi > 1){
                         styleAmount = workbook.createCellStyle();
                         if(GlobalFunc.checkIsDecimal(totalSubTotalKomisi)) {
@@ -6140,10 +6193,41 @@ public class ReportHandler implements ReportService {
                         }
                         colomcount++;
                         createCell(row, colomcount, totalSubTotalKomisi, styleAmount, sheet,columns);
+
+                        styleAmount = workbook.createCellStyle();
+                        if(GlobalFunc.checkIsDecimal(tambahanKomisi)) {
+                            styleAmount.setDataFormat(format.getFormat("#,###"));
+                        }else {
+                            styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                        }
+                        colomcount++;
+                        createCell(row, colomcount, tambahanKomisi, styleAmount, sheet,columns);
+
+                        Double TotalKomisi = totalSubTotalKomisi + tambahanKomisi;
+                        styleAmount = workbook.createCellStyle();
+                        if(GlobalFunc.checkIsDecimal(TotalKomisi)) {
+                            styleAmount.setDataFormat(format.getFormat("#,###"));
+                        }else {
+                            styleAmount.setDataFormat(format.getFormat("#,###.##"));
+                        }
+                        colomcount++;
+                        createCell(row, colomcount, TotalKomisi, styleAmount, sheet,columns);
+
+                        colomcount++;
+                        createCell(row, colomcount, description, style, sheet,columns);
+
                     }else{
                         colomcount++;
                         createCell(row, colomcount, 0, style, sheet,columns);
+                        colomcount++;
+                        createCell(row, colomcount, 0, style, sheet,columns);
+                        colomcount++;
+                        createCell(row, colomcount, 0, style, sheet,columns);
+                        colomcount++;
+                        createCell(row, colomcount, "", style, sheet,columns);
                     }
+                    tambahanKomisi = 0.0;
+                    description = "";
                     rowcount++;
 
                 }
