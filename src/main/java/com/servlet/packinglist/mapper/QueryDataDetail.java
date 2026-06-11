@@ -14,7 +14,7 @@ public class QueryDataDetail implements RowMapper<PackingListDataDetail> {
     public QueryDataDetail() {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
-        sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.date as date, data.idcustomer as idcustomer, ");
+        sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.date as date,data.date_stock as datestock, data.idcustomer as idcustomer, ");
         sqlBuilder.append("data.city as city, data.attention as attention, data.flightnumber as flightnumber, data.awbnumber as awbnumber,  ");
         sqlBuilder.append("data.netto as netto, data.koli as koli, data.idpricelist as idpricelist, data.isalreadyupdateprice as isalreadyupdateprice, ");
         sqlBuilder.append("data.idvendor as idvendor, ven.nama as venNama, ven.alias as venAlias, ven.address1 as venaddress1, ven.address2 as venaddress2, ven.npwp as vennpwp, ven.phone as venphone, ");
@@ -40,6 +40,8 @@ public class QueryDataDetail implements RowMapper<PackingListDataDetail> {
         final Long id = rs.getLong("id");
         final String nodocument = rs.getString("nodocument");
         final Date date = rs.getDate("date");
+        final Date datestock = rs.getDate("datestock");
+
         final Long idcustomer = rs.getLong("idcustomer");
         final String cusNama = rs.getString("cusNama");
         final String cusAlias = rs.getString("cusAlias");
@@ -71,6 +73,7 @@ public class QueryDataDetail implements RowMapper<PackingListDataDetail> {
         data.setId(id);
         data.setNodocument(nodocument);
         data.setDate(date);
+        data.setDatestock(datestock);
         data.setIdcustomer(idcustomer);
         data.setCity(city);
         data.setAttention(cusattention);

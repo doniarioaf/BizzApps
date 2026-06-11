@@ -116,6 +116,23 @@ public class PackingListHandler implements PackingListService {
     }
 
     @Override
+    public List<PackingListDataList> getListChecked(Long idcompany, Long idbranch, ParamSearchPackingList param) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataListV2().schema());
+        sqlBuilder.append(" where data.idcompany = ? and data.idbranch = ? and data.isdelete = false and data.id not in (select cancel.idpackinglist from cancel_packinglist as cancel where cancel.idcompany = "+idcompany+" and cancel.idbranch = "+idbranch+" and cancel.isdelete = false)  ");
+        if(param.getFrom() != null){
+            Date dt = new Date(param.getFrom());
+            sqlBuilder.append(" and data.date >= '"+dt.toString()+"'");
+        }
+        if(param.getTo() != null){
+            Date dt = new Date(param.getTo());
+            sqlBuilder.append(" and data.date <= '"+dt.toString()+"'");
+        }
+        sqlBuilder.append(" order by data.id desc ");
+        final Object[] queryParameters = new Object[] {idcompany,idbranch};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryDataListV2(), queryParameters);
+    }
+
+    @Override
     public PackingListTemplate getTemplate(Long idcompany, Long idbranch) {
         ParamVendor paramVendor = new ParamVendor();
         paramVendor.setVendorTypes("'UPI'");
@@ -145,6 +162,7 @@ public class PackingListHandler implements PackingListService {
                 table.setIdbranch(idbranch);
                 table.setNodocument(docNumber);
                 table.setDate(new Date(body.getDate()));
+                table.setDate_stock(new Date(body.getDatestock()));
                 table.setIdcustomer(body.getIdcustomer());
                 table.setCity(body.getCity());
                 table.setAttention(body.getAttention());
@@ -235,6 +253,7 @@ public class PackingListHandler implements PackingListService {
                     String mixDataBef = "header = " + table.toString() + " | Items = " + getListItemsNotJoin(id).toString();
 
                     table.setDate(new Date(body.getDate()));
+                    table.setDate_stock(new Date(body.getDatestock()));
                     table.setIdcustomer(body.getIdcustomer());
                     table.setCity(body.getCity());
                     table.setIdvendor(body.getIdvendor());
@@ -370,7 +389,7 @@ public class PackingListHandler implements PackingListService {
             mapParamPrint.put("data-id",data.getId());
             data.setCountPrint(historyAppsService.countByActionAndMenuParam(idcompany,idbranch,"DOWNLOADPDF",namaMenu,mapParamPrint));
 //            data.setCountPrint(historyAppsService.countByActionAndMenu(idcompany,idbranch,"DOWNLOADPDF",namaMenu));
-            data.setCountEdit(historyAppsService.countByActionAndMenu(idcompany,idbranch,"EDIT",namaMenu));
+            data.setCountEdit(historyAppsService.countByActionAndMenuParam(idcompany,idbranch,"EDIT",namaMenu,mapParamPrint));
             if(iduser != null) {
                 UserListData user = userAppsService.getUserByID(iduser);
                 String namaUser = "";
@@ -421,11 +440,11 @@ public class PackingListHandler implements PackingListService {
         String selectidCancelPl = " select cpl.idpackinglist from cancel_packinglist as cpl where cpl.idcompany = "+idcompany+" and cpl.idbranch = "+idbranch+" and cpl.isdelete = false ";
         if(param.getDateFrom() != null){
             Date dt = new Date(param.getDateFrom());
-            selectidPr += " and pr.date >= '"+dt.toString()+"' ";
+            selectidPr += " and pr.date_stock >= '"+dt.toString()+"' ";
         }
         if(param.getDateThru() != null){
             Date dt = new Date(param.getDateThru());
-            selectidPr += " and pr.date <= '"+dt.toString()+"' ";
+            selectidPr += " and pr.date_stock <= '"+dt.toString()+"' ";
         }
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateQtyPL().schema());
         sqlBuilder.append(" where data.idpackinglist in ("+selectidPr+") and data.idpackinglist not in ("+selectidCancelPl+") ");
@@ -493,11 +512,11 @@ public class PackingListHandler implements PackingListService {
         sqlBuilder.append(" where pl.idcompany = ? and pl.idbranch = ? and pl.isdelete = false  ");
         if(param.getFrom() != null){
             Date dt = new Date(param.getFrom());
-            sqlBuilder.append(" and pl.date >= '"+dt.toString()+"'");
+            sqlBuilder.append(" and pl.date_stock >= '"+dt.toString()+"'");
         }
         if(param.getTo() != null){
             Date dt = new Date(param.getTo());
-            sqlBuilder.append(" and pl.date <= '"+dt.toString()+"'");
+            sqlBuilder.append(" and pl.date_stock <= '"+dt.toString()+"'");
         }
         if(param.getListIdProduct() != null && !param.getListIdProduct().equals("")){
             sqlBuilder.append(" and data.idproduct in ("+param.getListIdProduct()+") ");
@@ -505,7 +524,7 @@ public class PackingListHandler implements PackingListService {
         if(param.getListIdCategoryProduct() != null && !param.getListIdCategoryProduct().equals("")){
             sqlBuilder.append(" and data.idcategoryproduct in ("+param.getListIdCategoryProduct()+") ");
         }
-        sqlBuilder.append(" GROUP BY data.idpackinglist,pl.nodocument,pl.date,cus.nama, cus.alias, data.idproduct, data.idcategoryproduct ");
+        sqlBuilder.append(" GROUP BY data.idpackinglist,pl.nodocument,pl.date_stock,cus.nama, cus.alias, data.idproduct, data.idcategoryproduct ");
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPackingListReportKartuStock(), queryParameters);
     }
@@ -651,6 +670,7 @@ public class PackingListHandler implements PackingListService {
                 }
 
             }catch (Exception e) {
+                e.printStackTrace();
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
                 validations.add(msg);
             }

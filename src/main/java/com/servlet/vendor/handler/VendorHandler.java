@@ -61,6 +61,9 @@ public class VendorHandler implements VendorService {
         if(list != null && list.size() > 0){
             VendorData ven = list.get(0);
             ven.setItems(getListItems(id));
+            if(ven.getIsparent()){
+                ven.setListSubParent(getListSubParent(idcompany,idbranch,id));
+            }
             return ven;
         }
         return null;
@@ -148,6 +151,8 @@ public class VendorHandler implements VendorService {
         List<ValidationDataMessage> validations = new ArrayList<>();
 
         long idsave = 0;
+        Vendor vendor = repo.getById(id);
+
         Timestamp ts = new Timestamp(new Date().getTime());
         if(!body.getIsparent() && !body.getType().equals("BROKER")) {
             ListVendorData ven = checkVendorIsParent(idcompany,idbranch, body.getIdvendorparent());
@@ -156,9 +161,25 @@ public class VendorHandler implements VendorService {
                 validations.add(msg);
             }
         }
+        if(vendor.getIsparent()){
+            if(!body.getIsparent()){
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_CHANGE_PARENT, "Tidak bisa diubah menjadi non parent");
+                validations.add(msg);
+            }
+        }else if(body.getIsparent()){
+            if(vendor.getIdvendorparent() != null){
+                Vendor vendorParent = repo.getById(vendor.getIdvendorparent());
+                String namaParent = "Lain";
+                if(vendorParent != null){
+                    namaParent = vendorParent.getNama()+" ("+vendorParent.getAlias()+")";
+                }
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_CHANGE_PARENT, "Tidak bisa ubah menjadi parent, vendor ini masih terhubung dengan vendor "+namaParent);
+                validations.add(msg);
+            }
+        }
         if(validations.size() == 0) {
             try {
-                Vendor vendor = repo.getById(id);
+
                 vendor.setNama(body.getNama());
                 vendor.setAlias(body.getAlias());
                 vendor.setType(body.getType());
@@ -397,5 +418,12 @@ public class VendorHandler implements VendorService {
         sqlBuilder.append(" where data.idvendor = ? ");
         final Object[] queryParameters = new Object[] {idvendor};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryVendorCategoryProductNotInclude(), queryParameters);
+    }
+
+    public List<ListVendorData> getListSubParent(Long idcompany, Long idbranch,Long idparent) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryListVendor().schema());
+        sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false and data.isparent = false and data.idvendorparent = ? ");
+        final Object[] queryParameters = new Object[] {idcompany,idparent};
+        return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryListVendor(), queryParameters);
     }
 }

@@ -3,6 +3,7 @@ package com.servlet.packinglist.entity;
 
 public class BodyPackingList {
     private Long date;
+    private Long datestock;
     private Long idcustomer;
     private String city;
     private String attention;
@@ -13,6 +14,14 @@ public class BodyPackingList {
     private Long idpricelist;
     private BodyPackingListItem[] items;
     private Long idvendor;
+
+    public Long getDatestock() {
+        return datestock;
+    }
+
+    public void setDatestock(Long datestock) {
+        this.datestock = datestock;
+    }
 
     public Long getIdvendor() {
         return idvendor;

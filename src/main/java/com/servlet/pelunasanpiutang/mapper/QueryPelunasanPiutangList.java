@@ -13,7 +13,7 @@ public class QueryPelunasanPiutangList implements RowMapper<PelunasanPiutangList
     public QueryPelunasanPiutangList() {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
-        sqlBuilder.append("distinct(data.id) as id, data.nodocument as nodocument, data.date as date, data.kurs as kurs, ");
+        sqlBuilder.append("distinct(data.id) as id, data.nodocument as nodocument, data.date as date, data.kurs as kurs, data.totalpembayaran as totalpembayaran, ");
         sqlBuilder.append("inv.id as invid, inv.nodocument as invnodocument, inv.kurs as invkurs, inv.amount as invamount , ");
         sqlBuilder.append("cust.nama as custNama, cust.alias as custAlias, pl.nodocument as nodocumentpl ");
         sqlBuilder.append("from pelunasanpiutang as data ");
@@ -37,6 +37,8 @@ public class QueryPelunasanPiutangList implements RowMapper<PelunasanPiutangList
         final String nodocument = rs.getString("nodocument");
         final Date date = rs.getDate("date");
         final Double kurs = rs.getDouble("kurs");
+        final Double totalpembayaran = rs.getDouble("totalpembayaran");
+
 
         final Long invid = rs.getLong("invid");
         final String invnodocument = rs.getString("invnodocument");
@@ -51,6 +53,7 @@ public class QueryPelunasanPiutangList implements RowMapper<PelunasanPiutangList
         data.setNodocument(nodocument);
         data.setDate(date);
         data.setKurs(kurs);
+        data.setTotalpembayaran(totalpembayaran);
 
         data.setIdinvoice(invid);
         data.setNodocumentInvoice(invnodocument);

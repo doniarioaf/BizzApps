@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -73,6 +75,7 @@ public class PelunasanPiutangHandler implements PelunasanPiutangService {
                 table.setNodocument(docNumber);
                 table.setDate(new Date(body.getDate()));
                 table.setKurs(body.getKurs());
+                table.setTotalpembayaran(calculateTotalPembayaran(body.getItems()).doubleValue());
                 table.setIsdelete(false);
                 table.setCreateddate(ts);
                 table.setCreatedby(iduser);
@@ -118,6 +121,7 @@ public class PelunasanPiutangHandler implements PelunasanPiutangService {
 
                 table.setDate(new Date(body.getDate()));
                 table.setKurs(body.getKurs());
+                table.setTotalpembayaran(calculateTotalPembayaran(body.getItems()).doubleValue());
                 table.setModifieddate(ts);
                 table.setModifiedby(iduser);
                 idsave = repo.saveAndFlush(table).getId();
@@ -253,6 +257,16 @@ public class PelunasanPiutangHandler implements PelunasanPiutangService {
         return null;
     }
 
+    private BigDecimal calculateTotalPembayaran(BodyPelunasanPiutangItem[] items){
+        BigDecimal total = BigDecimal.ZERO;
+        if(items != null && items.length > 0){
+            for(BodyPelunasanPiutangItem val:items){
+                BigDecimal pembayaran = val.getPembayaran() != null?BigDecimal.valueOf(val.getPembayaran().doubleValue()).setScale(2, RoundingMode.DOWN):BigDecimal.ZERO;
+                total = total.add(pembayaran);
+            }
+        }
+        return total;
+    }
     private List<PelunasanPiutangItemDetail> getListItem(Long idpelunasanpiutang){
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryPelunasanPiutangItemDetail().schema());
         sqlBuilder.append(" where data.idpelunasanpiutang = ?  ");

@@ -8,10 +8,37 @@ public class KomisiDataReportKomisi {
     private String vendorname;
     private String vendoralias;
     private String nodocumentPR;
+    private String nodocumentKomisi;
     private Date date;
     private Long koli;
     private Double komisiperkoli;
     private Double subtotalkomisi;
+    private Double additional_commission;
+    private String description;
+
+    public Double getAdditional_commission() {
+        return additional_commission;
+    }
+
+    public void setAdditional_commission(Double additional_commission) {
+        this.additional_commission = additional_commission;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getNodocumentKomisi() {
+        return nodocumentKomisi;
+    }
+
+    public void setNodocumentKomisi(String nodocumentKomisi) {
+        this.nodocumentKomisi = nodocumentKomisi;
+    }
 
     public Long getIdvendor() {
         return idvendor;

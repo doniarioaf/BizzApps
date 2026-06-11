@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface PackingListService {
     List<PackingListDataList> getList(Long idcompany, Long idbranch, ParamSearchPackingList param);
+    List<PackingListDataList> getListChecked(Long idcompany, Long idbranch, ParamSearchPackingList param);
     PackingListTemplate getTemplate(Long idcompany, Long idbranch);
     ReturnData save(Long idcompany, Long idbranch, Long iduser, BodyPackingList body);
     PackingListDataDetail getDetail(Long id,Long idcompany, Long idbranch);

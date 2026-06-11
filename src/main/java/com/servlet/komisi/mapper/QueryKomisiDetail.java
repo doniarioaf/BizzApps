@@ -14,7 +14,7 @@ public class QueryKomisiDetail implements RowMapper<KomisiDetail> {
     public QueryKomisiDetail() {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
-        sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.date as date, data.note as note, ");
+        sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.date as date, data.note as note, data.additional_commission as additional_commission,data.description as description, ");
         sqlBuilder.append("data.createddate as createddate, data.modifieddate as modifieddate, ");
         sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama ");
         sqlBuilder.append("from komisi as data ");
@@ -34,15 +34,23 @@ public class QueryKomisiDetail implements RowMapper<KomisiDetail> {
         final String nodocument = rs.getString("nodocument");
         final Date date = rs.getDate("date");
         final String note = rs.getString("note");
+        final Double additional_commission = rs.getDouble("additional_commission");
+        final String description = rs.getString("description");
+
+
         final Timestamp createddate = rs.getTimestamp("createddate");
         final Timestamp modifieddate = rs.getTimestamp("modifieddate");
         final String createdname = rs.getString("createdname");
         final String modifiednama = rs.getString("modifiednama");
+
+
         KomisiDetail data = new KomisiDetail();
         data.setId(id);
         data.setNodocument(nodocument);
         data.setDate(date);
         data.setNote(note);
+        data.setAdditional_commission(additional_commission);
+        data.setDescription(description);
         data.setCreateddate(createddate);
         data.setModifieddate(modifieddate);
         data.setCreatedbyName(createdname);

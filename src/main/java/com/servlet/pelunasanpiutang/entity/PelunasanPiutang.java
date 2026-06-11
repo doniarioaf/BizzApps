@@ -25,6 +25,7 @@ public class PelunasanPiutang implements Serializable {
     private Timestamp modifieddate;
     private Long deleteby;
     private Timestamp deletedate;
+    private Double totalpembayaran;
 
     @Override
     public String toString() {
@@ -33,7 +34,16 @@ public class PelunasanPiutang implements Serializable {
                 ", nodocument='" + nodocument + '\'' +
                 ", date=" + date +
                 ", kurs=" + kurs +
+                ", totalpembayaran=" + totalpembayaran +
                 '}';
+    }
+
+    public Double getTotalpembayaran() {
+        return totalpembayaran;
+    }
+
+    public void setTotalpembayaran(Double totalpembayaran) {
+        this.totalpembayaran = totalpembayaran;
     }
 
     public Long getId() {

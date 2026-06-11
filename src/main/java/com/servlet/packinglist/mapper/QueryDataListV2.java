@@ -7,21 +7,39 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class QueryDataList implements RowMapper<PackingListDataList> {
+public class QueryDataListV2 implements RowMapper<PackingListDataList> {
     private String schemaSql;
 
-    public QueryDataList() {
+    public QueryDataListV2() {
         // TODO Auto-generated constructor stub
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.date as date,data.date_stock as date_stock, data.idcustomer as idcustomer, data.isalreadyupdateprice as isalreadyupdateprice, ");
-        sqlBuilder.append("data.city as city, cus.nama as cusNama, cus.alias as cusAlias ");
+        sqlBuilder.append("data.city as city, cus.nama as cusNama, cus.alias as cusAlias, ");
+        sqlBuilder.append(" CASE " +
+                "        WHEN NOT EXISTS (" +
+                "            SELECT 1 FROM packinglist_item AS item " +
+                "            WHERE item.idpackinglist = data.id " +
+                "            AND item.is_checked = false " +
+                "        ) THEN 'Y' " +
+                "        ELSE 'N' " +
+                "    END AS isAllChecked  ");
         sqlBuilder.append("from packinglist as data ");
         sqlBuilder.append("left join m_customer as cus on cus.id = data.idcustomer ");
 
 
         this.schemaSql = sqlBuilder.toString();
     }
-
+//    CASE
+//    WHEN NOT EXISTS (
+//            SELECT 1 FROM packinglist_item AS item
+//            WHERE item.idpackinglist = data.id
+//            AND item.is_checked = false
+//    ) THEN 'Y'
+//    ELSE 'N'
+//    END AS isAllChecked
+//    artinya "Cek apakah ada item yang is_checked = false untuk packinglist ini?"
+    //Kalau TIDAK ADA → 'Y'
+    //Kalau ADA → 'N'
     public String schema() {
         return this.schemaSql;
     }
@@ -37,6 +55,8 @@ public class QueryDataList implements RowMapper<PackingListDataList> {
         final String cusAlias = rs.getString("cusAlias");
         final String city = rs.getString("city");
         final Boolean isalreadyupdateprice = rs.getBoolean("isalreadyupdateprice");
+        final String isAllChecked = rs.getString("isAllChecked");
+
 
         PackingListDataList data = new PackingListDataList();
         data.setId(id);
@@ -48,6 +68,7 @@ public class QueryDataList implements RowMapper<PackingListDataList> {
         data.setCustomerAlias(cusAlias);
         data.setCity(city);
         data.setIsalreadyupdateprice(isalreadyupdateprice);
+        data.setIsallchecked(isAllChecked);
         return data;
     }
 }

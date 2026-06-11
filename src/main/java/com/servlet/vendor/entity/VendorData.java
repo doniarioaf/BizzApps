@@ -38,6 +38,15 @@ public class VendorData {
     private String npwp;
     private String phone;
     private Boolean limittransaction;
+    private List<ListVendorData> listSubParent;
+
+    public List<ListVendorData> getListSubParent() {
+        return listSubParent;
+    }
+
+    public void setListSubParent(List<ListVendorData> listSubParent) {
+        this.listSubParent = listSubParent;
+    }
 
     public Boolean getLimittransaction() {
         return limittransaction;

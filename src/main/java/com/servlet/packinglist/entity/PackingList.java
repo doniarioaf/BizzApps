@@ -16,6 +16,7 @@ public class PackingList implements Serializable {
     private Long idbranch;
     private String nodocument;
     private Date date;
+    private Date date_stock;
     private Long idcustomer;
     private String city;
     private String attention;
@@ -41,6 +42,7 @@ public class PackingList implements Serializable {
         return "PackingList{" +
                 "id=" + id +
                 ", date=" + date +
+                ", date_stock=" + date_stock +
                 ", idcustomer=" + idcustomer +
                 ", city='" + city + '\'' +
                 ", attention='" + attention + '\'' +
@@ -51,6 +53,14 @@ public class PackingList implements Serializable {
                 ", idpricelist=" + idpricelist +
                 ", idvendor=" + idvendor +
                 '}';
+    }
+
+    public Date getDate_stock() {
+        return date_stock;
+    }
+
+    public void setDate_stock(Date date_stock) {
+        this.date_stock = date_stock;
     }
 
     public Long getIdvendor() {

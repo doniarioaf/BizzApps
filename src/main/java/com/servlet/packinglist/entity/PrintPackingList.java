@@ -11,6 +11,7 @@ public class PrintPackingList {
     private Long id;
     private String nodocument;
     private Date date;
+    private Date datestock;
     private Long idcustomer;
     private String customerName;
     private String customerAlias;
@@ -25,6 +26,14 @@ public class PrintPackingList {
     private Long countEdit;
     private String namaUser;
     private List<PackingListDataItemDetail> items;
+
+    public Date getDatestock() {
+        return datestock;
+    }
+
+    public void setDatestock(Date datestock) {
+        this.datestock = datestock;
+    }
 
     public Long getCountPrint() {
         return countPrint;
