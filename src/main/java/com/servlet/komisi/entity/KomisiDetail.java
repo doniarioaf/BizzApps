@@ -17,6 +17,33 @@ public class KomisiDetail {
     private Timestamp modifieddate;
     private Double additional_commission;
     private String description;
+    private Long fileId;
+    private String fileName;
+    private String fileContentType;
+
+    public String getFileContentType() {
+        return fileContentType;
+    }
+
+    public void setFileContentType(String fileContentType) {
+        this.fileContentType = fileContentType;
+    }
+
+    public Long getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(Long fileId) {
+        this.fileId = fileId;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
 
     public Double getAdditional_commission() {
         return additional_commission;
