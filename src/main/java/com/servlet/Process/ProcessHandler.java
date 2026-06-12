@@ -931,8 +931,17 @@ public class ProcessHandler implements ProcessService{
 				}
 			}
 			else if(codepermission.equals(ConstansPermission.CREATE_PELUNASANHUTANG)) {
-				BodyPelunasanHutang param = (BodyPelunasanHutang) data;
-				ReturnData valReturn = pelunasanHutangService.save(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),param);
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				ReturnData valReturn = new ReturnData();
+				if(type.equals("CREATE")) {
+					BodyPelunasanHutang body = (BodyPelunasanHutang) param.get("body");
+					valReturn = pelunasanHutangService.save(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),body);
+				}else if(type.equals("UPLOADFILE")) {
+					long id = (long) param.get("id");
+					MultipartFile file = (MultipartFile) param.get("body");
+					valReturn = pelunasanHutangService.uploadFileDoc(id,file,auth.getIdcompany(), auth.getIdbranch(), auth.getId());
+				}
 				if(valReturn.isSuccess()) {
 					val.setData(valReturn.getId());
 				}else {
@@ -1017,8 +1026,18 @@ public class ProcessHandler implements ProcessService{
 			}
 
 			else if(codepermission.equals(ConstansPermission.CREATE_PELUNASANPIUTANG)) {
-				BodyPelunasanPiutang param = (BodyPelunasanPiutang) data;
-				ReturnData valReturn = pelunasanPiutangService.save(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),param);
+				HashMap<String, Object> param = (HashMap<String, Object>) data;
+				String type = (String) param.get("type");
+				ReturnData valReturn = new ReturnData();
+				if(type.equals("CREATE")) {
+					BodyPelunasanPiutang body = (BodyPelunasanPiutang) param.get("body");
+					valReturn = pelunasanPiutangService.save(auth.getIdcompany(),auth.getIdbranch(),auth.getId(),body);
+				}else if(type.equals("UPLOADFILE")) {
+					long id = (long) param.get("id");
+					MultipartFile file = (MultipartFile) param.get("body");
+					valReturn = pelunasanPiutangService.uploadFileDoc(id,file,auth.getIdcompany(), auth.getIdbranch(), auth.getId());
+				}
+
 				if(valReturn.isSuccess()) {
 					val.setData(valReturn.getId());
 				}else {
@@ -1087,16 +1106,6 @@ public class ProcessHandler implements ProcessService{
 				if(valReturn.isSuccess()) {
 					val.setData(valReturn.getId());
 				}else {
-					val.setSuccess(valReturn.isSuccess());
-					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
-					val.setValidations(valReturn.getValidations());
-					val.setData(null);
-				}
-
-
-				if (valReturn.isSuccess()) {
-					val.setData(valReturn.getId());
-				} else {
 					val.setSuccess(valReturn.isSuccess());
 					val.setHttpcode(HttpStatus.BAD_REQUEST.value());
 					val.setValidations(valReturn.getValidations());
@@ -1701,6 +1710,9 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
 					val.setData(pelunasanHutangService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DOWNLOADFILE")) {
+					long id = (long) param.get("id");
+					val.setData(pelunasanHutangService.downloadFile(id,auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}
 
@@ -1720,6 +1732,9 @@ public class ProcessHandler implements ProcessService{
 				}else if(type.equals("DETAIL")) {
 					long id = (long) param.get("id");
 					val.setData(pelunasanPiutangService.getDetail(id,auth.getIdcompany(), auth.getIdbranch()));
+				}else if(type.equals("DOWNLOADFILE")) {
+					long id = (long) param.get("id");
+					val.setData(pelunasanPiutangService.downloadFile(id,auth.getIdcompany(), auth.getIdbranch()));
 				}
 			}
 
