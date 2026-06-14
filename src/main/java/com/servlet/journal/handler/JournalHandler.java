@@ -437,7 +437,7 @@ public class JournalHandler implements JournalService {
 //                        System.out.println("val.getSetor_pinjaman() "+val.getSetor_pinjaman());
 //                        System.out.println("val.isIsdelete() "+val.isIsdelete());
 //                    }
-                    if(val.isIsdelete()){
+                    if(val.isIsdelete() || val.getSetor() < 1){
                         listSourceNumber.add(val.getNodocument());
                         repo.deleteBySourceNumber(val.getNodocument());
                         detailrepo.deleteDetailBySourceNumber(val.getNodocument());
