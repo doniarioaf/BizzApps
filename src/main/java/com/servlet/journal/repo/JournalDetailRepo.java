@@ -59,4 +59,9 @@ public interface JournalDetailRepo extends JpaRepository<JournalDetail, JournalD
     @Modifying
     @Query(value ="DELETE FROM journal_detail jd WHERE EXISTS ( SELECT 1 FROM journal_detail jd2  WHERE jd.accountcode = jd2.accountcode AND jd.sourcenumber = jd2.sourcenumber AND jd.idvendor = jd2.idvendor  AND jd.journalid < jd2.journalid) ",nativeQuery = true)
     void deleteDetailDoubleSourceNumberData();
+
+    @Transactional
+    @Modifying
+    @Query(value ="delete from journal_detail where sourcenumber = :sourcenumber AND accountcode = :accountcode ",nativeQuery = true)
+    void deleteDetailBySourceNumberAccCode(@Param("sourcenumber") String sourcenumber, @Param("accountcode") String accountcode);
 }

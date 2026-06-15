@@ -437,7 +437,7 @@ public class JournalHandler implements JournalService {
 //                        System.out.println("val.getSetor_pinjaman() "+val.getSetor_pinjaman());
 //                        System.out.println("val.isIsdelete() "+val.isIsdelete());
 //                    }
-                    if(val.isIsdelete() || val.getSetor() < 1){
+                    if(val.isIsdelete()){
                         listSourceNumber.add(val.getNodocument());
                         repo.deleteBySourceNumber(val.getNodocument());
                         detailrepo.deleteDetailBySourceNumber(val.getNodocument());
@@ -499,6 +499,17 @@ public class JournalHandler implements JournalService {
                         }
 
                     }
+
+                    //fungsi dibawah ini, untuk menghapus nominal yang lebih besar dari 0, padahal di data PRC nya 0
+                    //kenapa dilakuin disini , karena di fungsi postingJournal sudah ada penjagaan harus > 0 jadi ketika data 0, ttidak terupdate mau dihapus, takut impact kemana2
+                    if(val.getSetor() < 1){
+                        detailrepo.deleteDetailBySourceNumberAccCode(val.getNodocument(),AccountCOAEnum.DEPOSITVENDOR_ASSET.getAccCode());
+                    }
+                    if(val.getSetor_pinjaman() < 1){
+                        detailrepo.deleteDetailBySourceNumberAccCode(val.getNodocument(),AccountCOAEnum.PINJAMANVENDOR_LIABILITY.getAccCode());
+                    }
+                    //
+
                 }
             }
 
