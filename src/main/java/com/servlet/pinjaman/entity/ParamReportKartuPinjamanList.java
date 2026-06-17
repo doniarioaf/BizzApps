@@ -6,6 +6,15 @@ public class ParamReportKartuPinjamanList {
     private Long idvendor;
     private String listIdVendor;
     private String isactive;
+    private String transaksiTime;
+
+    public String getTransaksiTime() {
+        return transaksiTime;
+    }
+
+    public void setTransaksiTime(String transaksiTime) {
+        this.transaksiTime = transaksiTime;
+    }
 
     public String getIsactive() {
         return isactive;
