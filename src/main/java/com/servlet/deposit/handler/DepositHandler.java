@@ -517,6 +517,10 @@ public class DepositHandler implements DepositService {
         if(param.getListIdVendor() != null && !param.getListIdVendor().equals("")){
             sqlBuilder.append(" and data.idvendor in ("+param.getListIdVendor()+") ");
         }
+
+        if(param.getTransaksiTime() != null){
+            sqlBuilder.append(" and data.createddate <= '"+param.getTransaksiTime().toString()+"'");
+        }
         final Object[] queryParameters = new Object[] {idcompany};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryReportKartuDeposit(), queryParameters);
     }
@@ -617,7 +621,8 @@ public class DepositHandler implements DepositService {
     @Override
     public PagingData getListVendorSisaDeposit(Long idcompany, Long idbranch, Integer Limit, Integer Offset, String search) {
         final StringBuilder sqlBuilder = new StringBuilder(new QueryVendorSisaDeposit().schema());
-        sqlBuilder.append(" where v.idcompany = ? and v.idbranch = ? and v.isdelete = false and v.type = 'UDANG' and COALESCE(j.balance,0) > 0 ");
+//        sqlBuilder.append(" where v.idcompany = ? and v.idbranch = ? and v.isdelete = false and v.type = 'UDANG' and COALESCE(j.balance,0) > 0 ");
+        sqlBuilder.append(" where v.idcompany = ? and v.idbranch = ? and v.isdelete = false and v.type = 'UDANG' and COALESCE(j.balanceDeposit, 0) - COALESCE(jpr.balancePemakaianDeposit, 0) > 0 ");
         if(!search.equals("")){
             sqlBuilder.append(" and ( LOWER(v.nama) LIKE LOWER(CONCAT('%' ,'"+search+"', '%')) or LOWER(v.alias) LIKE LOWER(CONCAT('%' ,'"+search+"', '%')) )");
         }

@@ -10,6 +10,15 @@ public class FilterParamPurchaseReceive {
     private String listIdProduct;
     private String listIdCategoryProduct;
     private String type;
+    private String transaksiTime;
+
+    public String getTransaksiTime() {
+        return transaksiTime;
+    }
+
+    public void setTransaksiTime(String transaksiTime) {
+        this.transaksiTime = transaksiTime;
+    }
 
     public String getType() {
         return type;

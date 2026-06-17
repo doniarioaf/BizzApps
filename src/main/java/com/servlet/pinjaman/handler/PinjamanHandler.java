@@ -455,6 +455,9 @@ public class PinjamanHandler implements PinjamanService {
         if(param.getListIdVendor() != null && !param.getListIdVendor().equals("")){
             sqlBuilder.append(" and data.idvendor in ("+param.getListIdVendor()+") ");
         }
+        if(param.getTransaksiTime() != null){
+            sqlBuilder.append(" and data.createddate <= '"+param.getTransaksiTime().toString()+"'");
+        }
         final Object[] queryParameters = new Object[] {idcompany};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryReportKartuPinjaman(), queryParameters);
     }
@@ -462,7 +465,8 @@ public class PinjamanHandler implements PinjamanService {
     @Override
     public PagingData getListVendorSisaPinjaman(Long idcompany, Long idbranch, Integer Limit, Integer Offset, String search) {
         final StringBuilder sqlBuilder = new StringBuilder(new QueryVendorSisaPinjaman().schema());
-        sqlBuilder.append(" where v.idcompany = ? and v.idbranch = ? and v.isdelete = false and v.type = 'UDANG' and COALESCE(j.balance,0) > 0  ");
+//        sqlBuilder.append(" where v.idcompany = ? and v.idbranch = ? and v.isdelete = false and v.type = 'UDANG' and COALESCE(j.balance,0) > 0  ");
+        sqlBuilder.append(" where v.idcompany = ? and v.idbranch = ? and v.isdelete = false and v.type = 'UDANG' and COALESCE(j.balancePinjaman, 0) - COALESCE(jpr.balancePembayaranPinjaman, 0) > 0  ");
         if(!search.equals("")){
             sqlBuilder.append(" and ( LOWER(v.nama) LIKE LOWER(CONCAT('%' ,'"+search+"', '%')) or LOWER(v.alias) LIKE LOWER(CONCAT('%' ,'"+search+"', '%')) )");
         }

@@ -8,6 +8,15 @@ public class SaldoJournalParam {
     private String listVendor;
     private String accountCode;
     private String transaksiTime;
+    private String typeCalc;
+
+    public String getTypeCalc() {
+        return typeCalc;
+    }
+
+    public void setTypeCalc(String typeCalc) {
+        this.typeCalc = typeCalc;
+    }
 
     public String getTransaksiTime() {
         return transaksiTime;
