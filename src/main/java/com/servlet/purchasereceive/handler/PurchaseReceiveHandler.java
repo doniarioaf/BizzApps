@@ -538,6 +538,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         paramDeposit.setIdbranch(idbranch);
         paramDeposit.setIdvendor(idvendor);
         paramDeposit.setAccountCode(AccountCOAEnum.DEPOSITVENDOR_ASSET.getAccCode());
+        paramDeposit.setTypeCalc("ALL_EQ_REPORT");
         SaldoJournal saldoDeposit = journalService.calculateSaldo(paramDeposit);
 
         SaldoJournalParam paramPinjaman = new SaldoJournalParam();
@@ -545,6 +546,7 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         paramPinjaman.setIdbranch(idbranch);
         paramPinjaman.setIdvendor(idvendor);
         paramPinjaman.setAccountCode(AccountCOAEnum.PINJAMANVENDOR_LIABILITY.getAccCode());
+        paramPinjaman.setTypeCalc("ALL_EQ_REPORT");
         SaldoJournal saldoPinjaman = journalService.calculateSaldo(paramPinjaman);
 
 //        data.setSisaDeposit(depositService.calculateSisaDepositByIdVendor(idcompany,idbranch,idvendor));
@@ -1055,6 +1057,9 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             sqlBuilder.append(" and data.idvendor in ("+param.getListIdVendor()+") ");
         }
 
+        if(param.getTransaksiTime() != null){
+            sqlBuilder.append(" and data.createddate <= '"+param.getTransaksiTime().toString()+"'");
+        }
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPRReportKartuDeposit(), queryParameters);
     }
@@ -1076,6 +1081,9 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
             sqlBuilder.append(" and data.idvendor in ("+param.getListIdVendor()+") ");
         }
 
+        if(param.getTransaksiTime() != null){
+            sqlBuilder.append(" and data.createddate <= '"+param.getTransaksiTime().toString()+"'");
+        }
         final Object[] queryParameters = new Object[] {idcompany,idbranch};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPRReportKartuPinjaman(), queryParameters);
     }

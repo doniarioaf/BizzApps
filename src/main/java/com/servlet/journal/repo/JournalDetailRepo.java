@@ -64,4 +64,14 @@ public interface JournalDetailRepo extends JpaRepository<JournalDetail, JournalD
     @Modifying
     @Query(value ="delete from journal_detail where sourcenumber = :sourcenumber AND accountcode = :accountcode ",nativeQuery = true)
     void deleteDetailBySourceNumberAccCode(@Param("sourcenumber") String sourcenumber, @Param("accountcode") String accountcode);
+
+    @Transactional
+    @Modifying
+    @Query(value ="delete from journal_detail WHERE idcompany =:idcompany and idbranch =:idbranch ",nativeQuery = true)
+    void deleteAllJournalDetail(@Param("idcompany") Long idcompany,@Param("idbranch") Long idbranch);
+
+    @Transactional
+    @Modifying
+    @Query(value ="delete from journal_detail where idcompany =:idcompany AND idbranch =:idbranch AND sourcedocumentdate >= :fromdate AND sourcedocumentdate <= :thruDate ",nativeQuery = true)
+    void deleteAllJournalDetailBySourceDocDate(@Param("idcompany") Long idcompany,@Param("idbranch") Long idbranch,@Param("fromdate") String fromdate,@Param("thruDate") String thruDate);
 }

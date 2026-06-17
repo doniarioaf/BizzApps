@@ -12,14 +12,36 @@ public class QueryVendorSisaPinjaman implements RowMapper<VendorSisaPinjaman> {
 
     public QueryVendorSisaPinjaman() {
         // TODO Auto-generated constructor stub
-        final StringBuilder sqlBuilder = new StringBuilder(10);
+        final StringBuilder sqlBuilder = new StringBuilder(512);
         sqlBuilder.append("SELECT " +
                 "    v.id, " +
                 "    v.nama, " +
                 "    v.alias, " +
-                "    COALESCE(j.balance,0) AS sisaPinjaman ");
-        sqlBuilder.append(" from m_vendor as v ");
-        sqlBuilder.append(" LEFT JOIN (SELECT jd.idvendor, SUM(jd.credit) - SUM(jd.debit) AS balance FROM journal_detail as jd WHERE jd.accountcode = '"+ AccountCOAEnum.PINJAMANVENDOR_LIABILITY.getAccCode()+"' GROUP BY jd.idvendor ) as j ON v.id = j.idvendor  ");
+                "    COALESCE(j.balancePinjaman, 0) AS totalPinjaman, " +
+                "    COALESCE(jpr.balancePembayaranPinjaman, 0) AS totalPembayaranPinjaman, " +
+                "    COALESCE(j.balancePinjaman, 0) - COALESCE(jpr.balancePembayaranPinjaman, 0) AS sisaPinjaman ");
+        sqlBuilder.append(" FROM m_vendor AS v ");
+        sqlBuilder.append(" LEFT JOIN ( " +
+                "    SELECT jd.idvendor, SUM(jd.amount) AS balancePinjaman " +
+                "    FROM pinjaman AS jd " +
+                "    WHERE jd.isdelete = false " +
+                "    GROUP BY jd.idvendor " +
+                ") AS j ON v.id = j.idvendor ");
+        sqlBuilder.append(" LEFT JOIN ( " +
+                "    SELECT pr.idvendor, SUM(pr.setor_pinjaman) AS balancePembayaranPinjaman " +
+                "    FROM purchasereceive AS pr " +
+                "    WHERE pr.isdelete = false " +
+                "    GROUP BY pr.idvendor " +
+                ") AS jpr ON v.id = jpr.idvendor ");
+
+//        final StringBuilder sqlBuilder = new StringBuilder(10);
+//        sqlBuilder.append("SELECT " +
+//                "    v.id, " +
+//                "    v.nama, " +
+//                "    v.alias, " +
+//                "    COALESCE(j.balance,0) AS sisaPinjaman ");
+//        sqlBuilder.append(" from m_vendor as v ");
+//        sqlBuilder.append(" LEFT JOIN (SELECT jd.idvendor, SUM(jd.credit) - SUM(jd.debit) AS balance FROM journal_detail as jd WHERE jd.accountcode = '"+ AccountCOAEnum.PINJAMANVENDOR_LIABILITY.getAccCode()+"' GROUP BY jd.idvendor ) as j ON v.id = j.idvendor  ");
 
         this.schemaSql = sqlBuilder.toString();
     }

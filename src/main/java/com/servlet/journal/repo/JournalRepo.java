@@ -32,4 +32,14 @@ public interface JournalRepo extends JpaRepository<Journal, Long> {
     @Modifying
     @Query(value ="delete from journal where concat(idvendor,sourcenumber) IN (:idvendorsourcenumber) ",nativeQuery = true)
     void deleteByListSourceNumberIdVendor(@Param("idvendorsourcenumber") List<String> idvendorsourcenumber);
+
+    @Transactional
+    @Modifying
+    @Query(value ="delete from journal WHERE idcompany =:idcompany and idbranch =:idbranch ",nativeQuery = true)
+    void deleteAllJournal(@Param("idcompany") Long idcompany,@Param("idbranch") Long idbranch);
+
+    @Transactional
+    @Modifying
+    @Query(value ="delete from journal j where idcompany =:idcompany and idbranch =:idbranch and j.id IN ( select jd.journalid from journal_detail jd where jd.idcompany =:idcompany and jd.idbranch =:idbranch and jd.sourcedocumentdate >= :fromdate AND jd.sourcedocumentdate <= :thruDate ) ",nativeQuery = true)
+    void deleteAllJournalBySourceDocDate(@Param("idcompany") Long idcompany,@Param("idbranch") Long idbranch,@Param("fromdate") String fromdate,@Param("thruDate") String thruDate);
 }
