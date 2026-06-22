@@ -1,7 +1,9 @@
 package com.servlet.komisi.service;
 
+import com.servlet.filedocument.entity.FileDocumentData;
 import com.servlet.komisi.entity.*;
 import com.servlet.shared.ReturnData;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -26,4 +28,7 @@ public interface KomisiService {
 
     List<KomisiDataReportKomisi> getListReportKomisi(Long idcompany, Long idbranch, ParamKomisiReportKomisi param);
     ReturnData catatDownload(Long id,Long idcompany, Long idbranch, Long iduser);
+
+    ReturnData uploadFileDoc(Long id, MultipartFile file, Long idcompany, Long idbranch, Long iduser);
+    FileDocumentData downloadFile(Long id, Long idcompany, Long idbranch);
 }

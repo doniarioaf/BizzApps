@@ -2,6 +2,9 @@ package com.servlet.pelunasanhutang.handler;
 
 import com.servlet.cargo.entity.ParamCargoSearch;
 import com.servlet.cargo.service.CargoService;
+import com.servlet.filedocument.entity.BodyFileDocument;
+import com.servlet.filedocument.entity.FileDocumentData;
+import com.servlet.filedocument.service.FileDocumentService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.pelunasanhutang.entity.*;
 import com.servlet.pelunasanhutang.mapper.*;
@@ -13,9 +16,13 @@ import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.upload.image.FileStorageService;
+import com.servlet.upload.image.InfoFile;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -42,6 +49,10 @@ public class PelunasanHutangHandler implements PelunasanHutangService {
 
     @Autowired
     private HistoryAppsService historyAppsService;
+    @Autowired
+    private FileDocumentService fileDocumentService;
+    @Autowired
+    private FileStorageService fileStorageService;
     protected final String namaMenu = "PELUNASANHUTANG";
 
     @Override
@@ -100,7 +111,14 @@ public class PelunasanHutangHandler implements PelunasanHutangService {
         final Object[] queryParameters = new Object[] {id,idcompany,idbranch};
         List<PelunasanHutangDataDetail> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryPelunasanHutangDataDetail(), queryParameters);
         if(list != null && list.size() > 0){
-            return list.get(0);
+            PelunasanHutangDataDetail data =list.get(0);
+            FileDocumentData file  =fileDocumentService.getDetail(data.getId(),namaMenu,idcompany,idbranch);
+            if(file != null){
+                data.setFileId(file.getId());
+                data.setFileName(file.getFilename());
+                data.setFileContentType(file.getFilecontenttype());
+            }
+            return data;
         }
         return null;
     }
@@ -271,6 +289,56 @@ public class PelunasanHutangHandler implements PelunasanHutangService {
     @Override
     public List<PelunasanHutangDataNotJoin> getDataByIdPr(Long idcompany, Long idbranch, Long idPr) {
         return getListPembayaranHutangByIDPR(idcompany,idbranch,idPr);
+    }
+
+    @Override
+    public ReturnData uploadFileDoc(Long id, MultipartFile file, Long idcompany, Long idbranch, Long iduser) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        if(validations.size() == 0) {
+            try{
+                byte[] fileencode = Base64.encodeBase64(file.getBytes());
+                String result = new String(fileencode);
+                InfoFile infofile = fileStorageService.getInfoFile(file);
+                String fileName = infofile.getNamaFile();//fileStorageService.storeFile(file);
+                String contentType = infofile.getContectType();//fileStorageService.getContentType(file);
+
+                if(contentType.equals("application/pdf") || contentType.equals("image/jpeg") || contentType.equals("image/jpg") || contentType.equals("image/png")) {
+
+                }else {
+                    ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_DOCUMENT_INCORRECT_FORMAT,"Hanya format PDF,JPG,PNG yang bisa di upload");
+                    validations.add(msg);
+                }
+                if(validations.size() == 0) {
+                    BodyFileDocument bodyFileDocument = new BodyFileDocument();
+                    bodyFileDocument.setIddata(id);
+                    bodyFileDocument.setMenu(namaMenu);
+                    bodyFileDocument.setFilename(fileName);
+                    bodyFileDocument.setFiledocument(result);
+                    bodyFileDocument.setFilecontenttype(contentType);
+                    ReturnData data = fileDocumentService.uploadDoc(idcompany,idbranch,iduser,ts,bodyFileDocument);
+                    idsave = data.getId();
+                    if(data.getValidations().size() > 0){
+                        validations.add(data.getValidations().get(0));
+                    }
+                }
+            }catch (Exception e) {
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
+        }
+
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public FileDocumentData downloadFile(Long id, Long idcompany, Long idbranch) {
+        return fileDocumentService.getDetail(id,namaMenu,idcompany,idbranch);
     }
 
     private List<PelunasanHutangDataNotJoin> getListPembayaranHutangByIDPR(Long idcompany, Long idbranch, Long idpurchasereceive) {

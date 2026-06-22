@@ -19,6 +19,34 @@ public class PelunasanHutangDataDetail {
     private String modifiedbyName;
     private Timestamp modifieddate;
 
+    private Long fileId;
+    private String fileName;
+    private String fileContentType;
+
+    public Long getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(Long fileId) {
+        this.fileId = fileId;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getFileContentType() {
+        return fileContentType;
+    }
+
+    public void setFileContentType(String fileContentType) {
+        this.fileContentType = fileContentType;
+    }
+
     public String getNotes() {
         return notes;
     }

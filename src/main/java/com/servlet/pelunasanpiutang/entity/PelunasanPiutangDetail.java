@@ -15,6 +15,34 @@ public class PelunasanPiutangDetail {
     private Timestamp modifieddate;
     private List<PelunasanPiutangItemDetail> items;
 
+    private Long fileId;
+    private String fileName;
+    private String fileContentType;
+
+    public Long getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(Long fileId) {
+        this.fileId = fileId;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getFileContentType() {
+        return fileContentType;
+    }
+
+    public void setFileContentType(String fileContentType) {
+        this.fileContentType = fileContentType;
+    }
+
     public Long getId() {
         return id;
     }

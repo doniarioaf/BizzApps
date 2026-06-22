@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 
@@ -68,7 +69,10 @@ public class PelunasanPiutangAPI {
 
     @PostMapping
     ResponseEntity<Response> createObject(@RequestBody @Validated BodyPelunasanPiutang body, @RequestHeader(ConstansKey.AUTH) String authorization) {
-        Response response = securityService.response(ConstansPermission.CREATE_PELUNASANPIUTANG,body,authorization);
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "CREATE");
+        param.put("body", body);
+        Response response = securityService.response(ConstansPermission.CREATE_PELUNASANPIUTANG,param,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
@@ -84,6 +88,25 @@ public class PelunasanPiutangAPI {
     @DeleteMapping("{id}")
     ResponseEntity<Response> deleteObject(@PathVariable long id, @RequestHeader(ConstansKey.AUTH) String authorization) {
         Response response = securityService.response(ConstansPermission.DELETE_PELUNASANPIUTANG,id,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @PostMapping("/file/{id}")
+    ResponseEntity<Response> uploadFile(@RequestParam("file") MultipartFile file, @PathVariable long id, @RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "UPLOADFILE");
+        param.put("body", file);
+        param.put("id", id);
+        Response response = securityService.response(ConstansPermission.CREATE_PELUNASANPIUTANG,param,authorization);
+        return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @GetMapping("/downloadfile/{idph}")
+    ResponseEntity<Response> getDownloadFile(@PathVariable long idph,@RequestHeader(ConstansKey.AUTH) String authorization) {
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("type", "DOWNLOADFILE");
+        param.put("id", idph);
+        Response response = securityService.response(ConstansPermission.READ_PELUNASANPIUTANG,param,authorization);
         return ResponseEntity.status(response.getHttpcode()).contentType(MediaType.APPLICATION_JSON).body(response);
     }
 }

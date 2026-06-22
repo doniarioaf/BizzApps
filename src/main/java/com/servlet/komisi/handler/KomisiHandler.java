@@ -2,6 +2,9 @@ package com.servlet.komisi.handler;
 
 import com.servlet.charge.entity.ChargeList;
 import com.servlet.charge.service.ChargeService;
+import com.servlet.filedocument.entity.BodyFileDocument;
+import com.servlet.filedocument.entity.FileDocumentData;
+import com.servlet.filedocument.service.FileDocumentService;
 import com.servlet.historyapps.service.HistoryAppsService;
 import com.servlet.komisi.entity.*;
 import com.servlet.komisi.mapper.*;
@@ -14,13 +17,17 @@ import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ConstantCodeDocument;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
+import com.servlet.upload.image.FileStorageService;
+import com.servlet.upload.image.InfoFile;
 import com.servlet.user.entity.UserListData;
 import com.servlet.user.service.UserAppsService;
 import com.servlet.vendor.entity.ParamVendor;
 import com.servlet.vendor.service.VendorService;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -56,6 +63,10 @@ public class KomisiHandler implements KomisiService {
 
     @Autowired
     private UserAppsService userAppsService;
+    @Autowired
+    private FileDocumentService fileDocumentService;
+    @Autowired
+    private FileStorageService fileStorageService;
 
     protected final String namaMenu = "Komisi";
 
@@ -252,6 +263,12 @@ public class KomisiHandler implements KomisiService {
 
             KomisiDetail data = list.get(0);
             data.setItems(purchaseReceiveService.getListKomisi(idcompany,idbranch,pk));
+            FileDocumentData file  =fileDocumentService.getDetail(data.getId(),namaMenu,idcompany,idbranch);
+            if(file != null){
+                data.setFileId(file.getId());
+                data.setFileName(file.getFilename());
+                data.setFileContentType(file.getFilecontenttype());
+            }
 
             return data;
 
@@ -365,6 +382,56 @@ public class KomisiHandler implements KomisiService {
         data.setSuccess(validations.size() > 0?false:true);
         data.setValidations(validations);
         return data;
+    }
+
+    @Override
+    public ReturnData uploadFileDoc(Long id, MultipartFile file, Long idcompany, Long idbranch, Long iduser) {
+        List<ValidationDataMessage> validations = new ArrayList<>();
+        long idsave = 0;
+        Timestamp ts = new Timestamp(new java.util.Date().getTime());
+        if(validations.size() == 0) {
+            try{
+                byte[] fileencode = Base64.encodeBase64(file.getBytes());
+                String result = new String(fileencode);
+                InfoFile infofile = fileStorageService.getInfoFile(file);
+                String fileName = infofile.getNamaFile();//fileStorageService.storeFile(file);
+                String contentType = infofile.getContectType();//fileStorageService.getContentType(file);
+
+                if(contentType.equals("application/pdf") || contentType.equals("image/jpeg") || contentType.equals("image/jpg") || contentType.equals("image/png")) {
+
+                }else {
+                    ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VALIDASI_DOCUMENT_INCORRECT_FORMAT,"Hanya format PDF,JPG,PNG yang bisa di upload");
+                    validations.add(msg);
+                }
+                if(validations.size() == 0) {
+                    BodyFileDocument bodyFileDocument = new BodyFileDocument();
+                    bodyFileDocument.setIddata(id);
+                    bodyFileDocument.setMenu(namaMenu);
+                    bodyFileDocument.setFilename(fileName);
+                    bodyFileDocument.setFiledocument(result);
+                    bodyFileDocument.setFilecontenttype(contentType);
+                    ReturnData data = fileDocumentService.uploadDoc(idcompany,idbranch,iduser,ts,bodyFileDocument);
+                    idsave = data.getId();
+                    if(data.getValidations().size() > 0){
+                        validations.add(data.getValidations().get(0));
+                    }
+                }
+            }catch (Exception e) {
+                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
+                validations.add(msg);
+            }
+        }
+
+        ReturnData data = new ReturnData();
+        data.setId(idsave);
+        data.setSuccess(validations.size() > 0?false:true);
+        data.setValidations(validations);
+        return data;
+    }
+
+    @Override
+    public FileDocumentData downloadFile(Long id, Long idcompany, Long idbranch) {
+        return fileDocumentService.getDetail(id,namaMenu,idcompany,idbranch);
     }
 
     private HashMap<Object,Object> setItems(Long idcompany, Long idbranch, Long idkomisi, BodyKomisiItem[] items){
