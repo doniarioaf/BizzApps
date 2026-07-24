@@ -16,8 +16,14 @@ public class QueryPelunasanPiutangDetail implements RowMapper<PelunasanPiutangDe
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.id as id, data.nodocument as nodocument, data.date as date, data.kurs as kurs, ");
         sqlBuilder.append("data.createddate as createddate, data.modifieddate as modifieddate, ");
-        sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama ");
+        sqlBuilder.append("usercreate.nama as createdname, usermodified.nama as modifiednama, ");
+        sqlBuilder.append("cust.nama as custNama, cust.alias as custAlias ");
+
         sqlBuilder.append("from pelunasanpiutang as data ");
+        sqlBuilder.append("left join pelunasanpiutang_item as items on items.idinvoice = (select item.idinvoice from pelunasanpiutang_item as item where item.idpelunasanpiutang =data.id ORDER BY item.idinvoice desc LIMIT 1) ");
+        sqlBuilder.append("left join invoice as inv on inv.id = items.idinvoice ");
+        sqlBuilder.append("left join packinglist as pl on pl.id = inv.idpackinglist ");
+        sqlBuilder.append("left join m_customer as cust on cust.id = pl.idcustomer ");
         sqlBuilder.append("left join m_user_apps as usercreate on usercreate.id = data.createdby ");
         sqlBuilder.append("left join m_user_apps as usermodified on usermodified.id = data.modifiedby ");
 
@@ -40,6 +46,9 @@ public class QueryPelunasanPiutangDetail implements RowMapper<PelunasanPiutangDe
         final String createdname = rs.getString("createdname");
         final String modifiednama = rs.getString("modifiednama");
 
+        final String custNama = rs.getString("custNama");
+        final String custAlias = rs.getString("custAlias");
+
         PelunasanPiutangDetail data = new PelunasanPiutangDetail();
         data.setId(id);
         data.setNodocument(nodocument);
@@ -49,6 +58,8 @@ public class QueryPelunasanPiutangDetail implements RowMapper<PelunasanPiutangDe
         data.setModifieddate(modifieddate);
         data.setCreatedbyName(createdname);
         data.setModifiedbyName(modifiednama);
+        data.setCustomerName(custNama);
+        data.setCustomerAlias(custAlias);
         return data;
     }
 }

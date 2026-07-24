@@ -13,11 +13,29 @@ public class PelunasanPiutangDetail {
     private Timestamp createddate;
     private String modifiedbyName;
     private Timestamp modifieddate;
+    private String customerName;
+    private String customerAlias;
     private List<PelunasanPiutangItemDetail> items;
 
     private Long fileId;
     private String fileName;
     private String fileContentType;
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getCustomerAlias() {
+        return customerAlias;
+    }
+
+    public void setCustomerAlias(String customerAlias) {
+        this.customerAlias = customerAlias;
+    }
 
     public Long getFileId() {
         return fileId;

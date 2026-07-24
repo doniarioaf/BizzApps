@@ -1,5 +1,7 @@
 package com.servlet.pelunasanpiutang.entity;
 
+import java.sql.Date;
+
 public class PelunasanPiutangItemDetail {
     private long idinvoice;
     private String nodocumentInvoice;
@@ -10,6 +12,15 @@ public class PelunasanPiutangItemDetail {
     private Double biayabank;
     private Double pembayaran;
     private String metodepembayaran;
+    private Date invoiceDate;
+
+    public Date getInvoiceDate() {
+        return invoiceDate;
+    }
+
+    public void setInvoiceDate(Date invoiceDate) {
+        this.invoiceDate = invoiceDate;
+    }
 
     public long getIdinvoice() {
         return idinvoice;
