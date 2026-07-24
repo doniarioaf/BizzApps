@@ -2,6 +2,8 @@ package com.servlet.pelunasanpiutang.mapper;
 
 import com.servlet.pelunasanpiutang.entity.PelunasanPiutangItemDetail;
 import org.springframework.jdbc.core.RowMapper;
+
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -13,7 +15,7 @@ public class QueryPelunasanPiutangItemDetail implements RowMapper<PelunasanPiuta
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.idinvoice as idinvoice, data.biayabebanudangmati as biayabebanudangmati, data.biayabank as biayabank, data.pembayaran as pembayaran, ");
         sqlBuilder.append("data.metodepembayaran as metodepembayaran, ");
-        sqlBuilder.append("inv.nodocument as invnodocument, inv.kurs as invkurs,inv.amount as invamount, inv.outstanding as invoutstanding ");
+        sqlBuilder.append("inv.nodocument as invnodocument, inv.kurs as invkurs,inv.amount as invamount, inv.outstanding as invoutstanding, inv.date as invdate ");
         sqlBuilder.append("from pelunasanpiutang_item as data ");
         sqlBuilder.append("left join invoice as inv on inv.id = data.idinvoice ");
 
@@ -35,6 +37,8 @@ public class QueryPelunasanPiutangItemDetail implements RowMapper<PelunasanPiuta
         final Double invkurs = rs.getDouble("invkurs");
         final Double invamount = rs.getDouble("invamount");
         final Double invoutstanding = rs.getDouble("invoutstanding");
+        final Date invdate = rs.getDate("invdate");
+
         PelunasanPiutangItemDetail data = new PelunasanPiutangItemDetail();
         data.setIdinvoice(idinvoice);
         data.setBiayabebanudangmati(biayabebanudangmati);
@@ -45,6 +49,7 @@ public class QueryPelunasanPiutangItemDetail implements RowMapper<PelunasanPiuta
         data.setKursInvoice(invkurs);
         data.setAmountInvoice(invamount);
         data.setOutstandingInvoice(invoutstanding);
+        data.setInvoiceDate(invdate);
         return data;
     }
 }
