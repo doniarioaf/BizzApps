@@ -117,11 +117,15 @@ public class PinjamanHandler implements PinjamanService {
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
 
         if(validations.size() == 0) {
-            ListVendorData ven = vendorService.checkVendorIsParent(param.getIdcompany(),param.getIdbranch(), param.getBody().getIdvendor());
-            if(ven == null){
-                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_PARENT, "Vendor Bukan Parent");
-                validations.add(msg);
+            ListVendorData venPinjaman = vendorService.checkVendorCanDepositOrPinjaman(param.getIdcompany(),param.getIdbranch(), param.getBody().getIdvendor(),"Y","N");
+            if(venPinjaman == null){
+                ListVendorData ven = vendorService.checkVendorIsParent(param.getIdcompany(),param.getIdbranch(), param.getBody().getIdvendor());
+                if(ven == null){
+                    ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_PARENT, "Vendor Bukan Parent");
+                    validations.add(msg);
+                }
             }
+
         }
 
         String docNumber = "";
@@ -202,7 +206,7 @@ public class PinjamanHandler implements PinjamanService {
                 summaryPinjaman = summaryPinjaman - table.getAmount();
                 summaryPinjaman = summaryPinjaman + param.getBody().getAmount();
 
-                List<Long> listidven = vendorService.getListSubIdParent(table.getIdcompany(), table.getIdbranch(), table.getIdvendor());
+                List<Long> listidven = vendorService.getListSubIdParent(table.getIdcompany(), table.getIdbranch(), table.getIdvendor(),"Y","N");
 //                //kenapa di add, karena di anggap ini idparent, jika query diatas ga dapet, hanya sub nya saja
                 listidven.add(table.getIdvendor());
                 String listidvendor = "";
@@ -219,10 +223,13 @@ public class PinjamanHandler implements PinjamanService {
                     }
                 }
                 if (validations.size() == 0) {
-                    ListVendorData ven = vendorService.checkVendorIsParent(param.getIdcompany(), param.getIdbranch(), param.getBody().getIdvendor());
-                    if (ven == null) {
-                        ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_PARENT, "Vendor Bukan Parent");
-                        validations.add(msg);
+                    ListVendorData venPinjaman = vendorService.checkVendorCanDepositOrPinjaman(param.getIdcompany(),param.getIdbranch(), param.getBody().getIdvendor(),"Y","N");
+                    if(venPinjaman == null) {
+                        ListVendorData ven = vendorService.checkVendorIsParent(param.getIdcompany(), param.getIdbranch(), param.getBody().getIdvendor());
+                        if (ven == null) {
+                            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_PARENT, "Vendor Bukan Parent");
+                            validations.add(msg);
+                        }
                     }
                 }
                 if (validations.size() == 0 && !table.isIsdelete()) {
@@ -287,7 +294,7 @@ public class PinjamanHandler implements PinjamanService {
                 double summaryPinjaman = calculateAmountByIdVendor(table.getIdcompany(), table.getIdbranch(), paramPinjaman).doubleValue();
                 summaryPinjaman = summaryPinjaman - table.getAmount();
 
-                List<Long> listidven = vendorService.getListSubIdParent(table.getIdcompany(), table.getIdbranch(), table.getIdvendor());
+                List<Long> listidven = vendorService.getListSubIdParent(table.getIdcompany(), table.getIdbranch(), table.getIdvendor(),"Y","N");
 //                //kenapa di add, karena di anggap ini idparent, jika query diatas ga dapet, hanya sub nya saja
                 listidven.add(table.getIdvendor());
                 String listidvendor = "";
@@ -329,6 +336,7 @@ public class PinjamanHandler implements PinjamanService {
         PinjamanTemplate template = new PinjamanTemplate();
         ParamVendor paramVendor = new ParamVendor();
         paramVendor.setOnlyParent("Y");
+        paramVendor.setForPinjaman("Y");
         template.setVendorOpt(vendorService.getListDropdown(param.getIdcompany(), param.getIdbranch(),paramVendor));
         return template;
     }
@@ -386,11 +394,15 @@ public class PinjamanHandler implements PinjamanService {
     @Override
     public Double calculateAmountByIdVendor(Long idcompany, Long idbranch, ParameterPinjaman param) {
         Long idvendor = param.getIdvendor();
-        Long idven = vendorService.getIdParent(idcompany,idbranch,idvendor);
-        if(idven == null){
-            idven = idvendor;
-        }else if(idven == 0){
-            idven = idvendor;
+        Long idven = idvendor;
+        ListVendorData venPinjaman = vendorService.checkVendorCanDepositOrPinjaman(param.getIdcompany(),param.getIdbranch(), param.getBody().getIdvendor(),"Y","N");
+        if(venPinjaman == null) {
+            idven = vendorService.getIdParent(idcompany, idbranch, idvendor);
+            if (idven == null) {
+                idven = idvendor;
+            } else if (idven == 0) {
+                idven = idvendor;
+            }
         }
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountPinjaman().schema());
         sqlBuilder.append(" where data.idcompany = ? and data.idvendor = ?  and data.isdelete = false ");
@@ -413,13 +425,17 @@ public class PinjamanHandler implements PinjamanService {
         parameterPinjaman.setDate(dateFrom);
         parameterPinjaman.setOperatorPerbandingan("<");
         double summaryAmount = calculateAmountByIdVendor(idcompany,idbranch,parameterPinjaman).doubleValue();
-        Long idven = vendorService.getIdParent(idcompany,idbranch,idvendor);
-        if(idven == null){
-            idven = idvendor;
-        }else if(idven == 0){
-            idven = idvendor;
+        Long idven = idvendor;
+        ListVendorData venPinjaman = vendorService.checkVendorCanDepositOrPinjaman(idcompany,idbranch, idvendor,"Y","N");
+        if(venPinjaman == null) {
+            idven = vendorService.getIdParent(idcompany, idbranch, idvendor);
+            if (idven == null) {
+                idven = idvendor;
+            } else if (idven == 0) {
+                idven = idvendor;
+            }
         }
-        List<Long> listidven = vendorService.getListSubIdParent(idcompany,idbranch,idven);
+        List<Long> listidven = vendorService.getListSubIdParent(idcompany,idbranch,idven,"Y","N");
         //kenapa di add, karena di anggap ini idparent, jika query diatas ga dapet hanya sub nya saja
         listidven.add(idven);
         String listidvendor = "";
@@ -495,5 +511,20 @@ public class PinjamanHandler implements PinjamanService {
         paging.setTotalElements(totalElements);
         paging.setData(list);
         return paging;
+    }
+
+    @Override
+    public Boolean checkVendorAdaTransaksiPinjaman(Long idcompany, Long idbranch, Long idvendor) {
+        final StringBuilder sqlBuilder = new StringBuilder(
+                "select exists (select 1 from pinjaman data " +
+                        " where data.idcompany = ? and data.idbranch = ? and data.idvendor = ? and data.isdelete = false "
+        );
+
+        sqlBuilder.append(") as ada_transaksi");
+
+        final Object[] queryParameters = new Object[] {idcompany, idbranch,idvendor};
+
+        Boolean result = this.jdbcTemplate.queryForObject(sqlBuilder.toString(), Boolean.class, queryParameters);
+        return Boolean.TRUE.equals(result);
     }
 }

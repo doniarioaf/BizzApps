@@ -715,7 +715,7 @@ public class JournalHandler implements JournalService {
         ParamVendor paramvendor =  new ParamVendor();
         paramvendor.setListIdVendor(listIdVendor);
         List<VendorDataForTemplate> getListVendor = vendorService.getListDropdown(param.getIdcompany(),param.getIdbranch(),paramvendor);
-        List<Long> listIdParentAndSubIdParent = vendorService.getListSubIdParentByListIdParent(param.getIdcompany(),param.getIdbranch(),listIdVendor);
+        List<Long> listIdParentAndSubIdParent = vendorService.getListSubIdParentByListIdParent(param.getIdcompany(),param.getIdbranch(),listIdVendor,"N","Y");
         for(VendorDataForTemplate ven : getListVendor){
             listIdParentAndSubIdParent.add(ven.getId());
         }
@@ -760,7 +760,7 @@ public class JournalHandler implements JournalService {
         ParamVendor paramvendor =  new ParamVendor();
         paramvendor.setListIdVendor(listIdVendor);
         List<VendorDataForTemplate> getListVendor = vendorService.getListDropdown(param.getIdcompany(),param.getIdbranch(),paramvendor);
-        List<Long> listIdParentAndSubIdParent = vendorService.getListSubIdParentByListIdParent(param.getIdcompany(),param.getIdbranch(),listIdVendor);
+        List<Long> listIdParentAndSubIdParent = vendorService.getListSubIdParentByListIdParent(param.getIdcompany(),param.getIdbranch(),listIdVendor,"Y","N");
         for(VendorDataForTemplate ven : getListVendor){
             listIdParentAndSubIdParent.add(ven.getId());
         }

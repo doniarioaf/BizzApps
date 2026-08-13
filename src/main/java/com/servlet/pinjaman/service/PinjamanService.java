@@ -21,4 +21,5 @@ public interface PinjamanService {
     Double calculateSisaPinjamanByIdVendor(Long idcompany, Long idbranch, Long idvendor,Date dateFrom);
     List<ReportKartuPinjaman> getListReportKartuPinjaman(Long idcompany, Long idbranch, ParamReportKartuPinjamanList param);
     PagingData getListVendorSisaPinjaman(Long idcompany, Long idbranch, Integer Limit, Integer Offset, String search);
+    Boolean checkVendorAdaTransaksiPinjaman(Long idcompany, Long idbranch,Long idvendor);
 }

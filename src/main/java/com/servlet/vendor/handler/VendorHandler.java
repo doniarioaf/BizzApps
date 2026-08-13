@@ -3,7 +3,10 @@ package com.servlet.vendor.handler;
 import com.servlet.area.service.AreaService;
 import com.servlet.categoryproduct.entity.ParamTemplate;
 import com.servlet.categoryproduct.service.CategoryProductService;
+import com.servlet.deposit.service.DepositService;
 import com.servlet.historyapps.service.HistoryAppsService;
+import com.servlet.pinjaman.service.PinjamanService;
+import com.servlet.purchasereceive.service.PurchaseReceiveService;
 import com.servlet.shared.ConstansCodeMessage;
 import com.servlet.shared.ReturnData;
 import com.servlet.shared.ValidationDataMessage;
@@ -35,6 +38,15 @@ public class VendorHandler implements VendorService {
 
     @Autowired
     private AreaService areaService;
+
+    @Autowired
+    private PinjamanService pinjamanService;
+
+    @Autowired
+    private DepositService depositService;
+
+    @Autowired
+    private PurchaseReceiveService purchaseReceiveService;
 
     @Autowired
     private HistoryAppsService historyAppsService;
@@ -114,6 +126,14 @@ public class VendorHandler implements VendorService {
                 vendor.setNpwp(body.getNpwp());
                 vendor.setPhone(body.getPhone());
                 vendor.setLimittransaction(body.getLimittransaction().equals("Y")?true:false);
+                if(body.getIsparent()){
+                    vendor.setCan_deposit(true);
+                    vendor.setCan_loan(true);
+                }else{
+                    vendor.setCan_deposit(body.getCandeposit().equals("Y")?true:false);
+                    vendor.setCan_loan(body.getCanloan().equals("Y")?true:false);
+                }
+
                 vendor.setIsdelete(false);
                 vendor.setCreateddate(ts);
                 vendor.setCreatedby(iduser);
@@ -178,6 +198,44 @@ public class VendorHandler implements VendorService {
             }
         }
         if(validations.size() == 0) {
+            String canPinjaman = vendor.getCan_loan() ? "Y" : "N";
+            if (!canPinjaman.equals(body.getCanloan())) {
+                if (body.getCanloan().equals("N")) {
+                    Boolean checkPinjaman1 = pinjamanService.checkVendorAdaTransaksiPinjaman(idcompany, idbranch, id);
+                    if (checkPinjaman1) {
+                        ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_EXIST_TRANSACTION_PINJAMAN, "Parameter Can_Loan tidak bisa diubah, sudah terjadi tranksasi Pinjaman");
+                        validations.add(msg);
+                    } else {
+                        Boolean checkPinjaman2 = purchaseReceiveService.checkVendorAdaTransaksiPinjamanDeposit(idcompany, idbranch, id, "Y", "N");
+                        if (checkPinjaman2) {
+                            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_EXIST_TRANSACTION_PINJAMAN, "Parameter Can_Loan tidak bisa diubah, sudah terjadi tranksasi Pinjaman");
+                            validations.add(msg);
+                        }
+                    }
+                }
+            }
+        }
+
+        if(validations.size() == 0) {
+            String canDeposit = vendor.getCan_deposit() ? "Y" : "N";
+            if (!canDeposit.equals(body.getCandeposit())) {
+                if (body.getCandeposit().equals("N")) {
+                    Boolean checkDeposit1 = depositService.checkVendorAdaTransaksiDeposit(idcompany, idbranch, id);
+                    if (checkDeposit1) {
+                        ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_EXIST_TRANSACTION_DEPOSIT, "Parameter Can_Deposit tidak bisa diubah, sudah terjadi tranksasi Deposit");
+                        validations.add(msg);
+                    } else {
+                        Boolean checkDeposit2 = purchaseReceiveService.checkVendorAdaTransaksiPinjamanDeposit(idcompany, idbranch, id, "N", "Y");
+                        if (checkDeposit2) {
+                            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_EXIST_TRANSACTION_DEPOSIT, "Parameter Can_Deposit tidak bisa diubah, sudah terjadi tranksasi Deposit");
+                            validations.add(msg);
+                        }
+                    }
+                }
+            }
+        }
+
+        if(validations.size() == 0) {
             try {
 
                 vendor.setNama(body.getNama());
@@ -204,6 +262,8 @@ public class VendorHandler implements VendorService {
                 }else{
                     vendor.setIdvendorbroker(null);
                 }
+                vendor.setCan_loan(body.getCanloan().equals("Y")?true:false);
+                vendor.setCan_deposit(body.getCandeposit().equals("Y")?true:false);
                 vendor.setIdarea(body.getIdarea());
                 vendor.setAddress1(body.getAddress1());
                 vendor.setAddress2(body.getAddress2());
@@ -310,9 +370,33 @@ public class VendorHandler implements VendorService {
         if(param.getVendorTypes() != null && !param.getVendorTypes().equals("")){
             sqlBuilder.append(" and data.type in ("+param.getVendorTypes()+") ");
         }
+
+        // gabungkan kondisi loan/deposit dalam satu grup OR, lalu AND-kan ke where utama
+        boolean forPinjaman = param.getForPinjaman() != null && param.getForPinjaman().equals("Y");
+        boolean forDeposit = param.getForDeposit() != null && param.getForDeposit().equals("Y");
+
         if(param.getOnlyParent() != null && !param.getOnlyParent().equals("")){
-            sqlBuilder.append(" and data.isparent = true ");
+            if (forPinjaman || forDeposit) {
+                List<String> conds = new ArrayList<>();
+                conds.add("data.isparent = true");
+                if (forPinjaman) conds.add("data.can_loan = true");
+                if (forDeposit) conds.add("data.can_deposit = true");
+                sqlBuilder.append(" and (").append(String.join(" or ", conds)).append(") ");
+            }else{
+                sqlBuilder.append(" and data.isparent = true ");
+            }
+
+        }else{
+            if (forPinjaman || forDeposit) {
+                List<String> conds = new ArrayList<>();
+                if (forPinjaman) conds.add("data.can_loan = true");
+                if (forDeposit) conds.add("data.can_deposit = true");
+                sqlBuilder.append(" and (").append(String.join(" or ", conds)).append(") ");
+            }
         }
+
+
+
 
         final Object[] queryParameters = new Object[] {idcompany};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryListForDropdownList(), queryParameters);
@@ -338,6 +422,24 @@ public class VendorHandler implements VendorService {
     }
 
     @Override
+    public ListVendorData checkVendorCanDepositOrPinjaman(Long idcompany, Long idbranch,Long idvendor,String forPinjaman,String forDeposit) {
+        final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryListVendor().schema());
+        sqlBuilder.append(" where data.id = ? and data.idcompany = ?  and data.isdelete = false ");
+        if(forPinjaman != null && forPinjaman.equals("Y")){
+            sqlBuilder.append(" and data.can_loan = true ");
+        }
+        if(forDeposit != null && forDeposit.equals("Y")){
+            sqlBuilder.append(" and data.can_deposit = true ");
+        }
+        final Object[] queryParameters = new Object[] {idvendor,idcompany};
+        List<ListVendorData> list = this.jdbcTemplate.query(sqlBuilder.toString(), new QueryListVendor(), queryParameters);
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return null;
+    }
+
+    @Override
     public Long getIdParent(Long idcompany, Long idbranch, Long idvendor) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryGetIdParent().schema());
         sqlBuilder.append(" where data.id = ? and data.idcompany = ?  and data.isdelete = false ");
@@ -351,18 +453,30 @@ public class VendorHandler implements VendorService {
     }
 
     @Override
-    public List<Long> getListSubIdParent(Long idcompany, Long idbranch, Long idvendor) {
+    public List<Long> getListSubIdParent(Long idcompany, Long idbranch, Long idvendor,String forPinjaman,String forDeposit) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryGetId().schema());
         sqlBuilder.append(" where data.idvendorparent = ? and data.idcompany = ?  and data.isdelete = false ");
+        if(forPinjaman.equals("Y")){
+            sqlBuilder.append(" and data.can_loan = false ");
+        }
+        if(forDeposit.equals("Y")){
+            sqlBuilder.append(" and data.can_deposit = false ");
+        }
         final Object[] queryParameters = new Object[] {idvendor,idcompany};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryGetId(), queryParameters);
     }
 
     @Override
-    public List<Long> getListSubIdParentByListIdParent(Long idcompany, Long idbranch, String listidvendorparents) {
+    public List<Long> getListSubIdParentByListIdParent(Long idcompany, Long idbranch, String listidvendorparents,String forPinjaman,String forDeposit) {
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryGetId().schema());
         sqlBuilder.append(" where data.idcompany = ?  and data.isdelete = false ");
         sqlBuilder.append(" and data.idvendorparent in ("+listidvendorparents+") ");
+        if(forPinjaman.equals("Y")){
+            sqlBuilder.append(" and data.can_loan = false ");
+        }
+        if(forDeposit.equals("Y")){
+            sqlBuilder.append(" and data.can_deposit = false ");
+        }
         final Object[] queryParameters = new Object[] {idcompany};
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryGetId(), queryParameters);
     }

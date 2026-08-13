@@ -48,4 +48,5 @@ public interface PurchaseReceiveService {
     PurchaseReceiveDataDetail getDetailLastDocumentByVendor(Long idcompany, Long idbranch, Long idvendor);
     List<Long> checkIdCP(Long idcompany, Long idbranch, Long idcategoryProduct);
     List<QueryLastPriceSellData> listLastPriceSell(Long idcompany, Long idbranch);
+    Boolean checkVendorAdaTransaksiPinjamanDeposit(Long idcompany, Long idbranch,Long idvendor,String forPinjaman,String forDeposit);
 }

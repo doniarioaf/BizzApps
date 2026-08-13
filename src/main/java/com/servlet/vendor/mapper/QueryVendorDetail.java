@@ -17,7 +17,7 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         sqlBuilder.append("data.bank as bank, data.accountnobank as accountnobank, data.accountnamebank as accountnamebank, ");
         sqlBuilder.append("data.pricebox as pricebox, data.priceongkos as priceongkos, data.isparent as isparent, data.idvendorparent as idvendorparent, ");
         sqlBuilder.append("data.packing as packing, data.kurir as kurir,data.address1 as address1, data.address2 as address2, data.npwp as npwp,data.phone as phone, ");
-        sqlBuilder.append("data.komisi as komisi, data.profit as profit,data.value1 as value1,data.limittransaction as limittransaction, ");
+        sqlBuilder.append("data.komisi as komisi, data.profit as profit,data.value1 as value1,data.limittransaction as limittransaction, data.can_deposit as candeposit, data.can_loan as canloan, ");
         sqlBuilder.append("ven.nama as vennama, ven.alias as venalias, ");
         sqlBuilder.append("area.id as idarea, area.nama as areaname, ");
         sqlBuilder.append("data.idvendorbroker as idvendorbroker, venbroker.nama as venbrokernama, venbroker.alias as venbrokeralias, ");
@@ -74,6 +74,8 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         final String npwp = rs.getString("npwp");
         final String phone = rs.getString("phone");
         final Boolean limittransaction = rs.getBoolean("limittransaction");
+        final Boolean canloan = rs.getBoolean("canloan");
+        final Boolean candeposit = rs.getBoolean("candeposit");
 
 
         VendorData data = new VendorData();
@@ -111,6 +113,8 @@ public class QueryVendorDetail implements RowMapper<VendorData> {
         data.setNpwp(npwp);
         data.setPhone(phone);
         data.setLimittransaction(limittransaction);
+        data.setCanloan(canloan);
+        data.setCandeposit(candeposit);
         return data;
     }
 }

@@ -24,6 +24,24 @@ public class BodyVendor {
     private String npwp;
     private String phone;
     private String limittransaction;
+    private String candeposit;
+    private String canloan;
+
+    public String getCandeposit() {
+        return candeposit;
+    }
+
+    public void setCandeposit(String candeposit) {
+        this.candeposit = candeposit;
+    }
+
+    public String getCanloan() {
+        return canloan;
+    }
+
+    public void setCanloan(String canloan) {
+        this.canloan = canloan;
+    }
 
     public String getLimittransaction() {
         return limittransaction;

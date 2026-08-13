@@ -14,7 +14,7 @@ public class QueryListForDropdownList implements RowMapper<VendorDataForTemplate
         final StringBuilder sqlBuilder = new StringBuilder(10);
         sqlBuilder.append("data.id as id, data.nama as nama, data.alias as alias,data.type as type, ");
         sqlBuilder.append("data.bank as bank, data.accountnobank as accountnobank, data.accountnamebank as accountnamebank, ");
-        sqlBuilder.append("data.pricebox as pricebox, data.priceongkos as priceongkos, data.idarea as idarea ");
+        sqlBuilder.append("data.pricebox as pricebox, data.priceongkos as priceongkos, data.idarea as idarea,data.can_deposit as candeposit,data.can_deposit as candeposit, data.can_loan as canloan ");
         sqlBuilder.append("from m_vendor as data ");
 
         this.schemaSql = sqlBuilder.toString();
@@ -35,6 +35,8 @@ public class QueryListForDropdownList implements RowMapper<VendorDataForTemplate
         final Double pricebox = rs.getDouble("pricebox");
         final Double priceongkos = rs.getDouble("priceongkos");
         final Long idarea = rs.getLong("idarea");
+        final Boolean candeposit = rs.getBoolean("candeposit");
+        final Boolean canloan = rs.getBoolean("canloan");
 
 
         VendorDataForTemplate data = new VendorDataForTemplate();
@@ -48,6 +50,8 @@ public class QueryListForDropdownList implements RowMapper<VendorDataForTemplate
         data.setPricebox(pricebox);
         data.setPriceongkos(priceongkos);
         data.setIdarea(idarea);
+        data.setCanDeposit(candeposit);
+        data.setCanLoan(canloan);
         return data;
     }
 }
