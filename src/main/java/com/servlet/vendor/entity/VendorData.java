@@ -38,10 +38,28 @@ public class VendorData {
     private String npwp;
     private String phone;
     private Boolean limittransaction;
+    private Boolean canloan;
+    private Boolean candeposit;
     private List<ListVendorData> listSubParent;
 
     public List<ListVendorData> getListSubParent() {
         return listSubParent;
+    }
+
+    public Boolean getCanloan() {
+        return canloan;
+    }
+
+    public void setCanloan(Boolean canloan) {
+        this.canloan = canloan;
+    }
+
+    public Boolean getCandeposit() {
+        return candeposit;
+    }
+
+    public void setCandeposit(Boolean candeposit) {
+        this.candeposit = candeposit;
     }
 
     public void setListSubParent(List<ListVendorData> listSubParent) {

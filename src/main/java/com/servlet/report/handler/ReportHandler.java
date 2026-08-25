@@ -174,13 +174,13 @@ public class ReportHandler implements ReportService {
         XSSFSheet sheet = workbook.createSheet("Packing List");
         sheet.setDefaultColumnWidth(1000);
         List<Integer> columns = new ArrayList<>();
-        columns.add(5000); //0
-        columns.add(5000); //1
-        columns.add(5000); //2
-        columns.add(5000); //3
-        columns.add(5000); //4
-        columns.add(5000); //5
-        columns.add(5000); //6
+        columns.add(2000); //0
+        columns.add(2000); //1
+        columns.add(3000); //2
+        columns.add(3000); //3
+        columns.add(3500); //4
+        columns.add(3000); //5
+        columns.add(3000); //6
 
         PrintPackingList print = packingListService.getPrintData(id,idcompany,idbranch,null,null);
         if(print != null) {
@@ -194,6 +194,8 @@ public class ReportHandler implements ReportService {
             borderStyle.setBorderBottom(BorderStyle.THIN);
             borderStyle.setBorderLeft(BorderStyle.THIN);
             borderStyle.setBorderRight(BorderStyle.THIN);
+            borderStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            borderStyle.setAlignment(HorizontalAlignment.CENTER);
 
             XSSFFont font = workbook.createFont();
             font.setBold(false);
@@ -4424,11 +4426,13 @@ public class ReportHandler implements ReportService {
         ParamVendor paramvendor =  new ParamVendor();
         if(param.getIdvendors().equals("ALL")){
             paramvendor.setVendorTypes("'UDANG'");
+            paramvendor.setOnlyParent("Y");
+            paramvendor.setForDeposit("Y");
         }else{
             paramvendor.setListIdVendor(param.getIdvendors());
         }
         List<String> list = new ArrayList<>();
-        //ini list vendorparent
+        //ini list vendorparent dan canDeposit = true
         List<VendorDataForTemplate> getListVendor = vendorService.getListDropdown(idcompany,idbranch,paramvendor);
         List<String> idvendors = new ArrayList<>();
         for(VendorDataForTemplate ven : getListVendor){
@@ -4438,7 +4442,7 @@ public class ReportHandler implements ReportService {
         String listIdVendor = idvendors.toString().replaceAll("\\[","");
         listIdVendor = listIdVendor.replaceAll("\\]","");
 
-        List<Long> listIdParentAndSubIdParent = vendorService.getListSubIdParentByListIdParent(idcompany,idbranch,listIdVendor);
+        List<Long> listIdParentAndSubIdParent = vendorService.getListSubIdParentByListIdParent(idcompany,idbranch,listIdVendor,"N","Y");
         for(VendorDataForTemplate ven : getListVendor){
             listIdParentAndSubIdParent.add(ven.getId());
         }
@@ -4956,6 +4960,8 @@ public class ReportHandler implements ReportService {
         ParamVendor paramvendor =  new ParamVendor();
         if(param.getIdvendors().equals("ALL")){
             paramvendor.setVendorTypes("'UDANG'");
+            paramvendor.setOnlyParent("Y");
+            paramvendor.setForPinjaman("Y");
         }else{
             paramvendor.setListIdVendor(param.getIdvendors());
         }
@@ -4972,7 +4978,7 @@ public class ReportHandler implements ReportService {
         listIdVendor = listIdVendor.replaceAll("\\]","");
 
 
-        List<Long> listIdParentAndSubIdParent = vendorService.getListSubIdParentByListIdParent(idcompany,idbranch,listIdVendor);
+        List<Long> listIdParentAndSubIdParent = vendorService.getListSubIdParentByListIdParent(idcompany,idbranch,listIdVendor,"Y","N");
         for(VendorDataForTemplate ven : getListVendor){
             listIdParentAndSubIdParent.add(ven.getId());
         }
@@ -5300,6 +5306,7 @@ public class ReportHandler implements ReportService {
         ParamVendor paramVendor = new ParamVendor();
         paramVendor.setVendorTypes("'UDANG'");
         paramVendor.setOnlyParent("Y");
+        paramVendor.setForDeposit("Y");
         ReportTemplate data = new ReportTemplate();
         data.setVendorOpt(vendorService.getListDropdown (idcompany,idbranch,paramVendor));
         return data;
@@ -5310,6 +5317,7 @@ public class ReportHandler implements ReportService {
         ParamVendor paramVendor = new ParamVendor();
         paramVendor.setVendorTypes("'UDANG'");
         paramVendor.setOnlyParent("Y");
+        paramVendor.setForPinjaman("Y");
         ReportTemplate data = new ReportTemplate();
         data.setVendorOpt(vendorService.getListDropdown (idcompany,idbranch,paramVendor));
         return data;

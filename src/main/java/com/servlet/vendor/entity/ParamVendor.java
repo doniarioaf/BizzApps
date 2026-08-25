@@ -4,6 +4,24 @@ public class ParamVendor {
     private String listIdVendor;
     private String vendorTypes;
     private String onlyParent; //Y or N
+    private String forPinjaman; //Y or N
+    private String forDeposit; //Y or N
+
+    public String getForPinjaman() {
+        return forPinjaman;
+    }
+
+    public void setForPinjaman(String forPinjaman) {
+        this.forPinjaman = forPinjaman;
+    }
+
+    public String getForDeposit() {
+        return forDeposit;
+    }
+
+    public void setForDeposit(String forDeposit) {
+        this.forDeposit = forDeposit;
+    }
 
     public String getOnlyParent() {
         return onlyParent;

@@ -16,9 +16,10 @@ public interface VendorService {
     List<VendorDataForTemplate> getListDropdown(Long idcompany, Long idbranch, ParamVendor param);
     String queryIdVendorCategoryProductNotInclud(Long idcompany, Long idbranch,Long idvendor);
     ListVendorData checkVendorIsParent(Long idcompany, Long idbranch,Long idvendor);
+    ListVendorData checkVendorCanDepositOrPinjaman(Long idcompany, Long idbranch,Long idvendor,String forPinjaman,String forDeposit);
     Long getIdParent(Long idcompany, Long idbranch,Long idvendor);
-    List<Long> getListSubIdParent(Long idcompany, Long idbranch,Long idvendor);
-    List<Long> getListSubIdParentByListIdParent(Long idcompany, Long idbranch,String listidvendorparents);
+    List<Long> getListSubIdParent(Long idcompany, Long idbranch,Long idvendor,String forPinjaman,String forDeposit);
+    List<Long> getListSubIdParentByListIdParent(Long idcompany, Long idbranch,String listidvendorparents,String forPinjaman,String forDeposit);
     List<Long> checkIdCP(Long idcompany, Long idbranch, Long idcategoryProduct);
     Boolean isLimitTransaksi(Long id);
 }

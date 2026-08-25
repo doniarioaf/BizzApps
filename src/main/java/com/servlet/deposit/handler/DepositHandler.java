@@ -119,11 +119,15 @@ public class DepositHandler implements DepositService {
 
     @Override
     public Double calculateAmountByIdVendor(Long idcompany, Long idbranch, Long idvendor) {
-        Long idven = vendorService.getIdParent(idcompany,idbranch,idvendor);
-        if(idven == null){
-            idven = idvendor;
-        }else if(idven == 0){
-            idven = idvendor;
+        Long idven = idvendor;
+        ListVendorData venDeposit = vendorService.checkVendorCanDepositOrPinjaman(idcompany,idbranch, idvendor,"N","Y");
+        if(venDeposit == null) {
+            idven = vendorService.getIdParent(idcompany, idbranch, idvendor);
+            if (idven == null) {
+                idven = idvendor;
+            } else if (idven == 0) {
+                idven = idvendor;
+            }
         }
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountDeposit().schema());
         sqlBuilder.append(" where data.idcompany = ? and data.idvendor = ?  and data.isdelete = false ");
@@ -139,13 +143,17 @@ public class DepositHandler implements DepositService {
     public Double calculateSisaDepositByIdVendor(Long idcompany, Long idbranch, Long idvendor) {
 
         double summaryDeposit = calculateAmountByIdVendor(idcompany,idbranch,idvendor).doubleValue();
-        Long idven = vendorService.getIdParent(idcompany,idbranch,idvendor);
-        if(idven == null){
-            idven = idvendor;
-        }else if(idven == 0){
-            idven = idvendor;
+        Long idven = idvendor;
+        ListVendorData venDeposit = vendorService.checkVendorCanDepositOrPinjaman(idcompany,idbranch, idvendor,"N","Y");
+        if(venDeposit == null) {
+            idven = vendorService.getIdParent(idcompany, idbranch, idvendor);
+            if (idven == null) {
+                idven = idvendor;
+            } else if (idven == 0) {
+                idven = idvendor;
+            }
         }
-        List<Long> listidven = vendorService.getListSubIdParent(idcompany,idbranch,idven);
+        List<Long> listidven = vendorService.getListSubIdParent(idcompany,idbranch,idven,"N","Y");
         //kenapa di add, karena di anggap ini idparent, jika query diatas ga dapet hanya sub nya saja
         listidven.add(idven);
         String listidvendor = "";
@@ -166,11 +174,15 @@ public class DepositHandler implements DepositService {
     }
 
     private Double calculateAmountByIdVendorNotInIDDeposit(Long id,Long idcompany, Long idbranch, Long idvendor) {
-        Long idven = vendorService.getIdParent(idcompany,idbranch,idvendor);
-        if(idven == null){
-            idven = idvendor;
-        }else if(idven == 0){
-            idven = idvendor;
+        Long idven = idvendor;
+        ListVendorData venDeposit = vendorService.checkVendorCanDepositOrPinjaman(idcompany,idbranch, idvendor,"N","Y");
+        if(venDeposit == null) {
+            idven = vendorService.getIdParent(idcompany, idbranch, idvendor);
+            if (idven == null) {
+                idven = idvendor;
+            } else if (idven == 0) {
+                idven = idvendor;
+            }
         }
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountDeposit().schema());
         sqlBuilder.append(" where data.idcompany = ? and data.idvendor = ?  and data.isdelete = false and data.id not in ("+id+")");
@@ -190,10 +202,13 @@ public class DepositHandler implements DepositService {
         Timestamp ts = new Timestamp(new java.util.Date().getTime());
 
         if(validations.size() == 0) {
-            ListVendorData ven = vendorService.checkVendorIsParent(idcompany,idbranch, body.getIdvendor());
-            if(ven == null){
-                ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_PARENT, "Vendor Bukan Parent");
-                validations.add(msg);
+            ListVendorData venDeposit = vendorService.checkVendorCanDepositOrPinjaman(idcompany,idbranch, body.getIdvendor(),"N","Y");
+            if(venDeposit == null) {
+                ListVendorData ven = vendorService.checkVendorIsParent(idcompany, idbranch, body.getIdvendor());
+                if (ven == null) {
+                    ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_PARENT, "Vendor Bukan Parent");
+                    validations.add(msg);
+                }
             }
         }
 
@@ -275,7 +290,7 @@ public class DepositHandler implements DepositService {
         if(validations.size() == 0) {
             try {
                 double summaryDeposit = calculateAmountByIdVendorNotInIDDeposit(id, idcompany, idbranch, table.getIdvendor()).doubleValue() + body.getAmount().doubleValue();
-                List<Long> listidven = vendorService.getListSubIdParent(idcompany, idbranch, table.getIdvendor());
+                List<Long> listidven = vendorService.getListSubIdParent(idcompany, idbranch, table.getIdvendor(),"N","Y");
                 //kenapa di add, karena di anggap ini idparent, jika query diatas ga dapet, hanya sub nya saja
                 listidven.add(table.getIdvendor());
                 String listidvendor = "";
@@ -298,10 +313,13 @@ public class DepositHandler implements DepositService {
                     }
                 }
                 if (validations.size() == 0) {
-                    ListVendorData ven = vendorService.checkVendorIsParent(idcompany, idbranch, body.getIdvendor());
-                    if (ven == null) {
-                        ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_PARENT, "Vendor Bukan Parent");
-                        validations.add(msg);
+                    ListVendorData venDeposit = vendorService.checkVendorCanDepositOrPinjaman(idcompany,idbranch, body.getIdvendor(),"N","Y");
+                    if(venDeposit == null) {
+                        ListVendorData ven = vendorService.checkVendorIsParent(idcompany, idbranch, body.getIdvendor());
+                        if (ven == null) {
+                            ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.VENDOR_NOT_PARENT, "Vendor Bukan Parent");
+                            validations.add(msg);
+                        }
                     }
                 }
                 if (validations.size() == 0 && !table.isIsdelete()) {
@@ -362,7 +380,7 @@ public class DepositHandler implements DepositService {
         if(validations.size() == 0) {
             try {
                 double summaryDeposit = calculateAmountByIdVendorNotInIDDeposit(id, idcompany, idbranch, table.getIdvendor()).doubleValue();
-                List<Long> listidven = vendorService.getListSubIdParent(idcompany, idbranch, table.getIdvendor());
+                List<Long> listidven = vendorService.getListSubIdParent(idcompany, idbranch, table.getIdvendor(),"N","Y");
                 //kenapa di add, karena di anggap ini idparent, jika query diatas ga dapet, hanya sub nya saja
                 listidven.add(table.getIdvendor());
                 String listidvendor = "";
@@ -413,6 +431,7 @@ public class DepositHandler implements DepositService {
         DepositTemplate template = new DepositTemplate();
         ParamVendor paramVendor = new ParamVendor();
         paramVendor.setOnlyParent("Y");
+        paramVendor.setForDeposit("Y");
         template.setVendorOpt(vendorService.getListDropdown(idcompany,idbranch,paramVendor));
         return template;
     }
@@ -437,13 +456,17 @@ public class DepositHandler implements DepositService {
     @Override
     public Double calculateSaldoDepositByIdVendorAndBeforeDateCreated(Long idcompany, Long idbranch, ParamCalculateDeposit param) {
         double summaryDeposit = summaryCalculateSaldoDepositByIdVendorAndBeforeDateCreated(idcompany,idbranch,param).doubleValue();
-        Long idven = vendorService.getIdParent(idcompany,idbranch,param.getIdvendor());
-        if(idven == null){
-            idven = param.getIdvendor();
-        }else if(idven == 0){
-            idven = param.getIdvendor();
+        Long idven = param.getIdvendor();
+        ListVendorData venDeposit = vendorService.checkVendorCanDepositOrPinjaman(idcompany,idbranch, param.getIdvendor(),"N","Y");
+        if(venDeposit == null) {
+            idven = vendorService.getIdParent(idcompany, idbranch, param.getIdvendor());
+            if (idven == null) {
+                idven = param.getIdvendor();
+            } else if (idven == 0) {
+                idven = param.getIdvendor();
+            }
         }
-        List<Long> listidven = vendorService.getListSubIdParent(idcompany,idbranch,idven);
+        List<Long> listidven = vendorService.getListSubIdParent(idcompany,idbranch,idven,"N","Y");
         //kenapa di add, karena di anggap ini idparent, jika query diatas ga dapet, hanya sub nya saja
         listidven.add(idven);
         String listidvendor = "";
@@ -458,13 +481,17 @@ public class DepositHandler implements DepositService {
     @Override
     public Double calculateSaldoDepositForPrinted(Long idcompany, Long idbranch, ParamCalculateDeposit param) {
         double summaryDeposit = summaryCalculateSaldoDepositForPrinted(idcompany,idbranch,param).doubleValue();
-        Long idven = vendorService.getIdParent(idcompany,idbranch,param.getIdvendor());
-        if(idven == null){
-            idven = param.getIdvendor();
-        }else if(idven == 0){
-            idven = param.getIdvendor();
+        Long idven = param.getIdvendor();
+        ListVendorData venDeposit = vendorService.checkVendorCanDepositOrPinjaman(idcompany,idbranch, param.getIdvendor(),"N","Y");
+        if(venDeposit == null) {
+            idven = vendorService.getIdParent(idcompany, idbranch, param.getIdvendor());
+            if (idven == null) {
+                idven = param.getIdvendor();
+            } else if (idven == 0) {
+                idven = param.getIdvendor();
+            }
         }
-        List<Long> listidven = vendorService.getListSubIdParent(idcompany,idbranch,idven);
+        List<Long> listidven = vendorService.getListSubIdParent(idcompany,idbranch,idven,"N","Y");
         listidven.add(idven);
         String listidvendor = "";
         if(listidven != null && listidven.size() > 0){
@@ -480,14 +507,17 @@ public class DepositHandler implements DepositService {
     @Override
     public Double calculateSaldoDepositByIdVendorAndBeforeDate(Long idcompany, Long idbranch, Long idvendor, Long date) {
         double summaryDeposit = summaryCalculateSaldoDepositByIdVendorAndBeforeDate(idcompany,idbranch,idvendor,date).doubleValue();
-
-        Long idven = vendorService.getIdParent(idcompany,idbranch,idvendor);
-        if(idven == null){
-            idven = idvendor;
-        }else if(idven == 0){
-            idven = idvendor;
+        Long idven = idvendor;
+        ListVendorData venDeposit = vendorService.checkVendorCanDepositOrPinjaman(idcompany,idbranch, idvendor,"N","Y");
+        if(venDeposit == null) {
+            idven = vendorService.getIdParent(idcompany, idbranch, idvendor);
+            if (idven == null) {
+                idven = idvendor;
+            } else if (idven == 0) {
+                idven = idvendor;
+            }
         }
-        List<Long> listidven = vendorService.getListSubIdParent(idcompany,idbranch,idven);
+        List<Long> listidven = vendorService.getListSubIdParent(idcompany,idbranch,idven,"N","Y");
         //kenapa di add, karena di anggap ini idparent, jika query diatas ga dapet, hanya sub nya saja
         listidven.add(idven);
         String listidvendor = "";
@@ -651,12 +681,31 @@ public class DepositHandler implements DepositService {
         return paging;//this.jdbcTemplate.query(sqlBuilder.toString(), new QueryVendorSisaDeposit(), queryParameters);
     }
 
+    @Override
+    public Boolean checkVendorAdaTransaksiDeposit(Long idcompany, Long idbranch, Long idvendor) {
+        final StringBuilder sqlBuilder = new StringBuilder(
+                "select exists (select 1 from deposit data " +
+                        " where data.idcompany = ? and data.idbranch = ? and data.idvendor = ? and data.isdelete = false "
+        );
+
+        sqlBuilder.append(") as ada_transaksi");
+
+        final Object[] queryParameters = new Object[] {idcompany, idbranch,idvendor};
+
+        Boolean result = this.jdbcTemplate.queryForObject(sqlBuilder.toString(), Boolean.class, queryParameters);
+        return Boolean.TRUE.equals(result);
+    }
+
     private Double summaryCalculateSaldoDepositForPrinted(Long idcompany, Long idbranch, ParamCalculateDeposit param){
-        Long idven = vendorService.getIdParent(idcompany,idbranch,param.getIdvendor());
-        if(idven == null){
-            idven = param.getIdvendor();
-        }else if(idven == 0){
-            idven = param.getIdvendor();
+        Long idven = param.getIdvendor();
+        ListVendorData venDeposit = vendorService.checkVendorCanDepositOrPinjaman(idcompany,idbranch, param.getIdvendor(),"N","Y");
+        if(venDeposit == null) {
+            idven = vendorService.getIdParent(idcompany, idbranch, param.getIdvendor());
+            if (idven == null) {
+                idven = param.getIdvendor();
+            } else if (idven == 0) {
+                idven = param.getIdvendor();
+            }
         }
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountDeposit().schema());
         sqlBuilder.append(" where data.idcompany = ? and data.idvendor = ?  and data.isdelete = false ");
@@ -672,11 +721,15 @@ public class DepositHandler implements DepositService {
     }
 
     private Double summaryCalculateSaldoDepositByIdVendorAndBeforeDateCreated(Long idcompany, Long idbranch, ParamCalculateDeposit param){
-        Long idven = vendorService.getIdParent(idcompany,idbranch,param.getIdvendor());
-        if(idven == null){
-            idven = param.getIdvendor();
-        }else if(idven == 0){
-            idven = param.getIdvendor();
+        Long idven = param.getIdvendor();
+        ListVendorData venDeposit = vendorService.checkVendorCanDepositOrPinjaman(idcompany,idbranch, param.getIdvendor(),"N","Y");
+        if(venDeposit == null) {
+            idven = vendorService.getIdParent(idcompany, idbranch, param.getIdvendor());
+            if (idven == null) {
+                idven = param.getIdvendor();
+            } else if (idven == 0) {
+                idven = param.getIdvendor();
+            }
         }
         Timestamp dt = new Timestamp(param.getDate());
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountDeposit().schema());
@@ -693,11 +746,15 @@ public class DepositHandler implements DepositService {
     }
 
     private Double summaryCalculateSaldoDepositByIdVendorAndBeforeDate(Long idcompany, Long idbranch, Long idvendor, Long date){
-        Long idven = vendorService.getIdParent(idcompany,idbranch,idvendor);
-        if(idven == null){
-            idven = idvendor;
-        }else if(idven == 0){
-            idven = idvendor;
+        Long idven = idvendor;
+        ListVendorData venDeposit = vendorService.checkVendorCanDepositOrPinjaman(idcompany,idbranch, idvendor,"N","Y");
+        if(venDeposit == null) {
+            idven = vendorService.getIdParent(idcompany, idbranch, idvendor);
+            if (idven == null) {
+                idven = idvendor;
+            } else if (idven == 0) {
+                idven = idvendor;
+            }
         }
         Date dt = new Date(date);
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryCalculateAmountDeposit().schema());

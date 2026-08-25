@@ -29,4 +29,5 @@ public interface DepositService {
     List<DepositDataNotJoin> getListDepositActive(Long idcompany, Long idbranch, ParamList param);
     ReturnData updateStatusDeposit(Long id,Long idcompany, Long idbranch, Long iduser,Boolean status);
     PagingData getListVendorSisaDeposit(Long idcompany, Long idbranch, Integer Limit, Integer Offset, String search);
+    Boolean checkVendorAdaTransaksiDeposit(Long idcompany, Long idbranch,Long idvendor);
 }

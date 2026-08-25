@@ -11,6 +11,24 @@ public class VendorDataForTemplate {
     private Double pricebox;
     private Double priceongkos;
     private Long idarea;
+    private Boolean canDeposit;
+    private Boolean canLoan;
+
+    public Boolean getCanDeposit() {
+        return canDeposit;
+    }
+
+    public void setCanDeposit(Boolean canDeposit) {
+        this.canDeposit = canDeposit;
+    }
+
+    public Boolean getCanLoan() {
+        return canLoan;
+    }
+
+    public void setCanLoan(Boolean canLoan) {
+        this.canLoan = canLoan;
+    }
 
     public Long getIdarea() {
         return idarea;

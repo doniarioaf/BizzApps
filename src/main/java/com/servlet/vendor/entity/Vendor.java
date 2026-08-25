@@ -44,6 +44,8 @@ public class Vendor implements Serializable {
     private String npwp;
     private String phone;
     private Boolean limittransaction;
+    private Boolean can_deposit;
+    private Boolean can_loan;
     @Override
     public String toString() {
         return "Vendor{" +
@@ -70,7 +72,25 @@ public class Vendor implements Serializable {
                 ", npwp='" + npwp + '\'' +
                 ", phone='" + phone + '\'' +
                 ", limittransaction='" + limittransaction + '\'' +
+                ", can_deposit='" + can_deposit + '\'' +
+                ", can_loan='" + can_loan + '\'' +
                 '}';
+    }
+
+    public Boolean getCan_deposit() {
+        return can_deposit;
+    }
+
+    public void setCan_deposit(Boolean can_deposit) {
+        this.can_deposit = can_deposit;
+    }
+
+    public Boolean getCan_loan() {
+        return can_loan;
+    }
+
+    public void setCan_loan(Boolean can_loan) {
+        this.can_loan = can_loan;
     }
 
     public Boolean getLimittransaction() {

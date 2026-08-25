@@ -1258,6 +1258,29 @@ public class PurchaseReceiveHandler implements PurchaseReceiveService {
         return this.jdbcTemplate.query(sqlBuilder.toString(), new QueryLastPriceSell(idcompany,idbranch,idCust), queryParameters);
     }
 
+    @Override
+    public Boolean checkVendorAdaTransaksiPinjamanDeposit(Long idcompany, Long idbranch, Long idvendor, String forPinjaman, String forDeposit) {
+        final StringBuilder sqlBuilder = new StringBuilder(
+                "select exists (select 1 from purchasereceive data " +
+                        " where data.idcompany = ? and data.idbranch = ? and data.isdelete = false "
+        );
+        if(forPinjaman.equals("Y") && forPinjaman.equals("Y")){
+            sqlBuilder.append(" and (data.setor > 0 or data.setor_pinjaman > 0) ");
+        }else if(forPinjaman.equals("Y")){
+            sqlBuilder.append(" and data.setor_pinjaman > 0 ");
+        }else if(forDeposit.equals("Y")){
+            sqlBuilder.append(" and data.setor > 0 ");
+        }
+
+        sqlBuilder.append(") as ada_transaksi");
+
+        final Object[] queryParameters = new Object[] {idcompany, idbranch};
+
+        Boolean result = this.jdbcTemplate.queryForObject(sqlBuilder.toString(), Boolean.class, queryParameters);
+        return Boolean.TRUE.equals(result);
+//        return null;
+    }
+
     private List<Long> getListIdDeposit(Long idpurchasereceive){
         final StringBuilder sqlBuilder = new StringBuilder("select " + new QueryDataPurchaseReceiveDeposit().schema());
         sqlBuilder.append(" where data.idpurchasereceive = ?  ");
