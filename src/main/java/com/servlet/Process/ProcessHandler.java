@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.servlet.admin.db.DbData;
+import com.servlet.admin.db.service.DbService;
 import com.servlet.area.entity.BodyArea;
 import com.servlet.area.service.AreaService;
 import com.servlet.bank.entity.BodyBank;
@@ -71,6 +73,7 @@ import com.servlet.vendor.service.VendorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -185,9 +188,12 @@ public class ProcessHandler implements ProcessService{
 
 	@Autowired
 	JournalService journalService;
+
+	@Autowired
+	DbService dbService;
 	
 	@Override
-	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) {
+	public ProcessReturn ProcessingFunction(String codepermission,Object data,String authorization) throws IOException, InterruptedException {
 		
 		// TODO Auto-generated constructor stub
 //		Object val = null;
@@ -1248,6 +1254,9 @@ public class ProcessHandler implements ProcessService{
 					val.setValidations(valReturn.getValidations());
 					val.setData(null);
 				}
+			}else if(codepermission.equals(ConstansPermission.CREATE_FILE_BACKUP_DB)) {
+				DbData resource = dbService.backUpDb();
+				val.setData(resource);
 			}
 
 

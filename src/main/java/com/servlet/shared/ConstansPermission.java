@@ -138,4 +138,5 @@ public class ConstansPermission {
 	public static final String EDIT_CANCELPACKINGLIST = "EDIT_CANCELPACKINGLIST";
 	public static final String READ_REPORT_CANCELPACKINGLIST = "READ_REPORT_CANCELPACKINGLIST";
 	public static final String CREATE_INTEGRASI = "CREATE_INTEGRASI";
+	public static final String CREATE_FILE_BACKUP_DB = "CREATE_FILE_BACKUP_DB";
 }

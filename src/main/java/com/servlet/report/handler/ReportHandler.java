@@ -174,13 +174,13 @@ public class ReportHandler implements ReportService {
         XSSFSheet sheet = workbook.createSheet("Packing List");
         sheet.setDefaultColumnWidth(1000);
         List<Integer> columns = new ArrayList<>();
-        columns.add(5000); //0
-        columns.add(5000); //1
-        columns.add(5000); //2
-        columns.add(5000); //3
-        columns.add(5000); //4
-        columns.add(5000); //5
-        columns.add(5000); //6
+        columns.add(2000); //0
+        columns.add(2000); //1
+        columns.add(3000); //2
+        columns.add(3000); //3
+        columns.add(3500); //4
+        columns.add(3000); //5
+        columns.add(3000); //6
 
         PrintPackingList print = packingListService.getPrintData(id,idcompany,idbranch,null,null);
         if(print != null) {
@@ -194,6 +194,8 @@ public class ReportHandler implements ReportService {
             borderStyle.setBorderBottom(BorderStyle.THIN);
             borderStyle.setBorderLeft(BorderStyle.THIN);
             borderStyle.setBorderRight(BorderStyle.THIN);
+            borderStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            borderStyle.setAlignment(HorizontalAlignment.CENTER);
 
             XSSFFont font = workbook.createFont();
             font.setBold(false);
