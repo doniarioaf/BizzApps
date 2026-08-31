@@ -199,7 +199,7 @@ public class PinjamanHandler implements PinjamanService {
         }
         if(validations.size() == 0) {
             try {
-                ParameterPinjaman paramPinjaman = new ParameterPinjaman();
+                ParameterPinjaman paramPinjaman = param;//new ParameterPinjaman();
                 paramPinjaman.setIdvendor(table.getIdvendor());
 
                 double summaryPinjaman = calculateAmountByIdVendor(table.getIdcompany(), table.getIdbranch(), paramPinjaman).doubleValue();
@@ -265,6 +265,7 @@ public class PinjamanHandler implements PinjamanService {
 
                 }
             }catch (Exception e) {
+                e.printStackTrace();
                 ValidationDataMessage msg = new ValidationDataMessage(ConstansCodeMessage.CODE_MESSAGE_INTERNAL_SERVER_ERROR, "Kesalahan Pada Server");
                 validations.add(msg);
             }
@@ -395,7 +396,7 @@ public class PinjamanHandler implements PinjamanService {
     public Double calculateAmountByIdVendor(Long idcompany, Long idbranch, ParameterPinjaman param) {
         Long idvendor = param.getIdvendor();
         Long idven = idvendor;
-        ListVendorData venPinjaman = vendorService.checkVendorCanDepositOrPinjaman(param.getIdcompany(),param.getIdbranch(), param.getBody().getIdvendor(),"Y","N");
+        ListVendorData venPinjaman = vendorService.checkVendorCanDepositOrPinjaman(idcompany,idbranch, param.getBody().getIdvendor(),"Y","N");
         if(venPinjaman == null) {
             idven = vendorService.getIdParent(idcompany, idbranch, idvendor);
             if (idven == null) {
