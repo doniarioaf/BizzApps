@@ -22,7 +22,7 @@ public class versionApi {
     @GetMapping("/version")
     public Map<String, String> getVersion() {
         Map<String, String> response = new HashMap<>();
-        String version = "25.08.2026";
+        String version = "31.08.2026";
         response.put("version", version);
         return response;
     }
